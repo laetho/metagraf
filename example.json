@@ -1,0 +1,34 @@
+{
+  "kind": "MetaGraph",
+  "version": "v0",
+  "metadata": {
+    "name": "UniqueComponentName",
+	"version": "0.1.0",
+    "annotations": {
+      "norsk-tipping.no/component_type": "frontend",
+      "norsk-tipping.no/exposable": "true",
+      "norsk-tipping.no/appcode": "123"
+    }
+  },
+  "spec": {
+    "resources": {
+      "UniqueComponentName": {
+        "type": "component",
+        "version": "4.3.3",
+        "match": "<logical expression>",
+        "optional": "false"
+      },
+      "UniqueComponentName": {
+
+      }
+    },
+    "properties": {
+      "introduces": {
+
+      },
+      "consumes": {
+
+      }
+    }
+  }
+}
