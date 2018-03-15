@@ -1,0 +1,83 @@
+{
+  "kind": "MetaGraf",
+  "version": "v0",
+  "metadata": {
+    "name": "Payment",
+    "version": "4.1.9",
+    "description": "Payment is a RESTful web service for doing payment, responsible gaming verification and logging for later reconciliation.",
+    "annotations": {
+      "norsk-tipping.no/component_type": "frontend",
+      "norsk-tipping.no/exposable": "true",
+      "norsk-tipping.no/appcode": "123",
+      "norsk-tipping.no/tags": "id, betaling"
+    }
+  },
+  "spec": {
+    "resources": {
+      "GetEnviromentProperties": {
+        "type": "service",
+        "version": "4.3.3",
+        "match": ">=",
+        "required": "true"
+      },
+      "Session": {
+        "type": "service",
+        "version": "4.3.0",
+        "match": ">=",
+        "required": "true"
+      },
+      "GetBPCardUserInformation": {
+        "type": "service",
+        "version": "3.4.1",
+        "match": ">=",
+        "required": "true"
+      },
+      "DoPayment": {
+        "type": "service",
+        "version": "4.2.3",
+        "match": ">=",
+        "required": "true"
+      }
+    },
+    "environment": {
+      "local": {
+        "GetEnvironmentPropertiesURL": {
+          "required": "true",
+          "type": "string",
+          "description": "URL til GetEnviromentProperties tjeneste"
+        },
+        "EnvironmentName": {
+          "required": "true",
+          "type": "string",
+          "description": "Name of environment"
+        }
+      },
+      "external": {
+        "SessionURL": {
+          "required": "true",
+          "description": "URL to Session service"
+        },
+        "DoPaymentURL": {
+          "required": "true",
+          "description": "URL to DoPayment service"
+        },
+        "GetBPCardUserInformationURL": {
+          "required": "true",
+          "description": "URL to GetBPCardUserInformation service"
+        }
+      }
+    },
+    "config": {
+      "Payment.LogRequestsAndResponses": {
+        "required": "false",
+        "description": "For troubleshooting, Enable the Jersey LoggingFilter to log http requests to Payment and responses from Payment (not other sub-services). NB: This property is only read during application startup.",
+        "type": "boolean",
+        "default": "false"
+      },
+      "Payment.SocketTimeout": {
+        "required": "false"
+
+      }
+    }
+  }
+}
