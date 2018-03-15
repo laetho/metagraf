@@ -1,25 +1,43 @@
 {
-  "kind": "MetaGraph",
+  "kind": "MetaGraf",
   "version": "v0",
   "metadata": {
-    "name": "UniqueComponentName",
-	"version": "0.1.0",
+    "name": "Payment",
+    "version": "4.1.9",
+    "description": "Payment is a RESTful web service for doing payment, responsible gaming verification and logging for later reconciliation.",
     "annotations": {
       "norsk-tipping.no/component_type": "frontend",
       "norsk-tipping.no/exposable": "true",
-      "norsk-tipping.no/appcode": "123"
+      "norsk-tipping.no/appcode": "123",
+      "norsk-tipping.no/tags": "id, betaling"
+
     }
   },
   "spec": {
     "resources": {
-      "UniqueComponentName": {
-        "type": "component",
+      "GetEnviromentProperties": {
+        "type": "service",
         "version": "4.3.3",
-        "match": "<logical expression>",
-        "optional": "false"
+        "match": ">=",
+        "required": "true"
       },
-      "UniqueComponentName": {
-
+      "Session": {
+        "type": "service",
+        "version": "4.3.0",
+        "match": ">=",
+        "required": "true"
+      },
+      "GetBPCardUserInformation": {
+        "type": "service",
+        "version": "3.4.1",
+        "match": ">=",
+        "required": "true"
+      },
+      "DoPayment": {
+        "type": "service",
+        "version": "4.2.3",
+        "match": ">=",
+        "required": "true"
       }
     },
     "properties": {
