@@ -2,20 +2,18 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"metagraf/src/metagraf"
+	"os"
 	"path/filepath"
 	"strings"
 )
-
-
 
 func main() {
 	var files []string
 	basepath := "/home/a01595/go/src/metagraf/collections/poc"
 
 	// Wal the directory provided in basepath
-	err := filepath.Walk(basepath, func( path string, info os.FileInfo, err error) error {
+	err := filepath.Walk(basepath, func(path string, info os.FileInfo, err error) error {
 		files = append(files, path)
 		return nil
 	})
@@ -27,9 +25,13 @@ func main() {
 	// ignore basepath itself, and ignore file names not containing "json"
 	// Parse each json file
 	for _, file := range files {
-		if file == basepath { continue }
-		if !strings.Contains( file, "json") { continue }
+		if file == basepath {
+			continue
+		}
+		if !strings.Contains(file, "json") {
+			continue
+		}
 		fmt.Println("Parsing MetaGraf ", file)
-		metagraf.Parse( file )
+		metagraf.Parse(file)
 	}
 }

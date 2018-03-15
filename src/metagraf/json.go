@@ -1,10 +1,9 @@
 package metagraf
 
-
 // JSON structure for a MetaGraf entity
 type MetaGraf struct {
-	Kind 	string
-	Version string
+	Kind     string
+	Version  string
 	Metadata struct {
 		Name              string
 		Version           string
@@ -16,9 +15,9 @@ type MetaGraf struct {
 		Annotations       map[string]string
 	}
 	Spec struct {
-		Resources []Resource
+		Resources   []Resource
 		Environment struct {
-			Local []EnvironmentVar
+			Local    []EnvironmentVar
 			External []EnvironmentVar
 		}
 	}
@@ -26,22 +25,22 @@ type MetaGraf struct {
 }
 
 type Resource struct {
-	Name          string
-	Type          string
-	Version       string
-	Match         string
-	Required      bool
+	Name     string
+	Type     string
+	Version  string
+	Match    string
+	Required bool
 }
 type ConfigParam struct {
-	Name 		string
-	Required 	bool
+	Name        string
+	Required    bool
 	Description string
-	Type 		string
+	Type        string
 	Default     string
 }
 type EnvironmentVar struct {
-	Name 		string
-	Required 	bool
-	Type 		string
+	Name        string
+	Required    bool
+	Type        string
 	Description string
 }

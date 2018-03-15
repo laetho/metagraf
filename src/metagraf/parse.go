@@ -1,13 +1,13 @@
 package metagraf
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"encoding/json"
 )
 
-func Parse( filepath string ) {
-	b, err := ioutil.ReadFile( filepath )
+func Parse(filepath string) {
+	b, err := ioutil.ReadFile(filepath)
 	if err != nil {
 		panic(err)
 	}
@@ -19,7 +19,7 @@ func Parse( filepath string ) {
 		panic(err)
 	}
 
-	fmt.Printf( "%T", mg )
-	fmt.Println( mg )
+	fmt.Printf("%T", mg)
+	fmt.Println(mg)
 
 }
