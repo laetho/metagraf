@@ -18,7 +18,10 @@ type MetaGraf struct {
 		Resources   []Resource
 		Environment struct {
 			Local    []EnvironmentVar
-			External []EnvironmentVar
+			External struct {
+				Introduces []EnvironmentVar
+				Consumes   []EnvironmentVar
+			}
 		}
 	}
 	Config []ConfigParam

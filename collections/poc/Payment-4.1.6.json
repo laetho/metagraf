@@ -58,23 +58,26 @@
           "description": "Name of environment"
         }
       ],
-      "external": [
-        {
-          "name": "SessionURL",
-          "required": "true",
-          "description": "URL to Session service"
-        },
-        {
-          "name": "DoPaymentURL",
-          "required": "true",
-          "description": "URL to DoPayment service"
-        },
-        {
-          "name": "GetBPCardUserInformationURL",
-          "required": "true",
-          "description": "URL to GetBPCardUserInformation service"
-        }
-      ]
+      "external": {
+        "consumes": [
+          {
+            "name": "SessionURL",
+            "required": "true",
+            "description": "URL to Session service"
+          },
+          {
+            "name": "DoPaymentURL",
+            "required": "true",
+            "description": "URL to DoPayment service"
+          },
+          {
+            "name": "GetBPCardUserInformationURL",
+            "required": "true",
+            "description": "URL to GetBPCardUserInformation service"
+          }
+        ],
+        "introduces": []
+      }
     },
     "config": [
       {
