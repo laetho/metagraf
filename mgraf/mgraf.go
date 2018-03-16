@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"metagraf/src/metagraf"
+	"metagraf"
 	"os"
 	"path/filepath"
 	"strings"
@@ -10,7 +10,7 @@ import (
 
 func main() {
 	var files []string
-	basepath := "/home/a01595/go/src/metagraf/collections/poc"
+	basepath := "/home/a01595/go/mgraf/metagraf/collections/poc"
 
 	// Wal the directory provided in basepath
 	err := filepath.Walk(basepath, func(path string, info os.FileInfo, err error) error {
