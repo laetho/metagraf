@@ -4,7 +4,7 @@
   "metadata": {
     "name": "Payment",
     "version": "4.1.9",
-    "description": "Payment is a RESTful web service for doing payment, responsible gaming verification and logging for later reconciliation.",
+    "description": "Payment is a RESTfull web service for doing payment, responsible gaming verification and logging for later reconciliation.",
     "annotations": {
       "norsk-tipping.no/component_type": "frontend",
       "norsk-tipping.no/exposable": "true",

@@ -2,13 +2,19 @@ package main
 
 import (
 	"fmt"
-	"./metagraf"
+	"metagraf/mgraf/metagraf"
 	"os"
 	"path/filepath"
 	"strings"
 )
 
 func main() {
+
+	// Calling poc() function
+	poc()
+}
+
+func poc() {
 	var files []string
 	basepath := "/home/a01595/go/src/metagraf/collections/poc"
 
@@ -32,6 +38,10 @@ func main() {
 			continue
 		}
 		fmt.Println("Parsing MetaGraf ", file)
-		metagraf.Parse(file)
+		mg := metagraf.Parse(file)
+		// wtf... mg.Metadata.Name == "stuff"
+		metagraf.Refgen( mg )
+
 	}
 }
+
