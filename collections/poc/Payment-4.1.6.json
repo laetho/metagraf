@@ -1,10 +1,12 @@
 {
   "kind": "MetaGraf",
-  "version": "v0",
+  "version": "v0alpha1",
   "metadata": {
     "name": "Payment",
     "version": "4.1.9",
     "description": "Payment is a RESTfull web service for doing payment, responsible gaming verification and logging for later reconciliation.",
+    "labels": {
+    },
     "annotations": {
       "norsk-tipping.no/component_type": "frontend",
       "norsk-tipping.no/exposable": "true",

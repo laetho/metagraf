@@ -1,52 +1,57 @@
 {
   "kind": "MetaGraf",
-  "version": "v0",
+  "version": "v0alpha1",
   "metadata": {
-    "name": "Payment",
-    "version": "4.1.9",
-    "description": "Payment is a RESTful web service for doing payment, responsible gaming verification and logging for later reconciliation.",
+    "name": "ExampleComponent",
+    "version": "1.0.0",
+    "description": "Example Component, does nothing!",
+    "labels": {
+    },
     "annotations": {
       "norsk-tipping.no/component_type": "frontend",
       "norsk-tipping.no/exposable": "true",
       "norsk-tipping.no/appcode": "123",
-      "norsk-tipping.no/tags": "id, betaling"
-
+      "norsk-tipping.no/tags": "nothing"
     }
   },
   "spec": {
-    "resources": {
-      "GetEnviromentProperties": {
+    "resources": [
+      {
+        "name": "SomeResource",
         "type": "service",
         "version": "4.3.3",
         "match": ">=",
         "required": "true"
-      },
-      "Session": {
-        "type": "service",
-        "version": "4.3.0",
-        "match": ">=",
-        "required": "true"
-      },
-      "GetBPCardUserInformation": {
-        "type": "service",
-        "version": "3.4.1",
-        "match": ">=",
-        "required": "true"
-      },
-      "DoPayment": {
-        "type": "service",
-        "version": "4.2.3",
-        "match": ">=",
-        "required": "true"
+      }
+    ],
+    "environment": {
+      "local": [
+        {
+          "name": "LocalVariableName",
+          "required": "true",
+          "type": "string",
+          "description": "Some local variable name description"
+        }
+      ],
+      "external": {
+        "consumes": [
+          {
+            "name": "VariableName",
+            "required": "true",
+            "description": "Some external variable description"
+          }
+        ],
+        "introduces": []
       }
     },
-    "properties": {
-      "introduces": {
-
-      },
-      "consumes": {
-
+    "config": [
+      {
+        "name": "Configuration option",
+        "required": "false",
+        "description": "This configuration option does less than nothing",
+        "type": "boolean",
+        "default": "false"
       }
-    }
+    ]
   }
 }

@@ -17,24 +17,18 @@ limitations under the License.
 package metagraf
 
 import (
-	"encoding/json"
-	"io/ioutil"
+	"fmt"
 )
 
-func Parse(filepath string) MetaGraf {
-	b, err := ioutil.ReadFile(filepath)
-	if err != nil {
-		panic(err)
+// Takes a pointer to a metagraf.MetaGraf struct
+func Refgen(mg *MetaGraf) {
+	fmt.Println(mg)
+	fmt.Println(mg.Metadata.Name, mg.Metadata.Version, mg.Metadata.Annotations)
+}
+
+func ResourceDotGen(mg *MetaGraf) {
+	fmt.Println("\""+mg.Metadata.Name+"-"+mg.Metadata.Version+"\"")
+	for _, svc := range mg.Spec.Resources {
+		fmt.Println("\"" + mg.Metadata.Name + "-"+mg.Metadata.Version+"\" -> \"" + svc.Name +"-"+svc.Version+ "\"")
 	}
-
-	var mg MetaGraf
-
-	json.Unmarshal(b, &mg)
-	if err != nil {
-		panic(err)
-	}
-
-	//fmt.Printf("%T", mg)
-	//fmt.Println(mg)
-	return mg
 }
