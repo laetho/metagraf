@@ -83,15 +83,20 @@
     },
     "config": [
       {
-        "name": "Payment.LogRequestsAndResponses",
-        "required": "false",
-        "description": "For troubleshooting, Enable the Jersey LoggingFilter to log http requests to Payment and responses from Payment (not other sub-services). NB: This property is only read during application startup.",
-        "type": "boolean",
-        "default": "false"
-      },
-      {
-        "name": "Payment.SocketTimeout",
-        "required": "false"
+        "filename": "INTPL.config",
+        "options": [
+          {
+            "name": "Payment.LogRequestsAndResponses",
+            "required": "false",
+            "description": "For troubleshooting, Enable the Jersey LoggingFilter to log http requests to Payment and responses from Payment (not other sub-services). NB: This property is only read during application startup.",
+            "type": "boolean",
+            "default": "false"
+          },
+          {
+            "name": "Payment.SocketTimeout",
+            "required": "false"
+          }
+        ]
       }
     ]
   }

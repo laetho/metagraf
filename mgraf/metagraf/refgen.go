@@ -18,17 +18,30 @@ package metagraf
 
 import (
 	"fmt"
+	"html/template"
+	"os"
 )
 
 // Takes a pointer to a metagraf.MetaGraf struct
 func Refgen(mg *MetaGraf) {
-	fmt.Println(mg)
-	fmt.Println(mg.Metadata.Name, mg.Metadata.Version, mg.Metadata.Annotations)
+	tmplBasePath := "/home/a01595/go/src/metagraf/templates"
+	tmpl := template.Must(template.ParseFiles(tmplBasePath + "/refdoc.html"))
+	f, err := os.OpenFile("/home/a01595/go/src/metagraf/docs/refdoc/"+mg.Metadata.Name+"-"+mg.Metadata.Version+".html", os.O_TRUNC|os.O_RDWR|os.O_CREATE, 0777)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer f.Close()
+
+	err = tmpl.Execute(f, mg)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
 func ResourceDotGen(mg *MetaGraf) {
-	fmt.Println("\""+mg.Metadata.Name+"-"+mg.Metadata.Version+"\"")
+	fmt.Println("\"" + mg.Metadata.Name + "-" + mg.Metadata.Version + "\"")
 	for _, svc := range mg.Spec.Resources {
-		fmt.Println("\"" + mg.Metadata.Name + "-"+mg.Metadata.Version+"\" -> \"" + svc.Name +"-"+svc.Version+ "\"")
+		fmt.Println("\"" + mg.Metadata.Name + "-" + mg.Metadata.Version + "\" -> \"" + svc.Name + "-" + svc.Version + "\"")
 	}
 }

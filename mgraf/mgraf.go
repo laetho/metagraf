@@ -17,7 +17,6 @@ limitations under the License.
 package main
 
 import (
-	"fmt"
 	"metagraf/mgraf/metagraf"
 	"os"
 	"path/filepath"
@@ -53,11 +52,9 @@ func poc() {
 		if !strings.Contains(file, "json") {
 			continue
 		}
-		fmt.Println("Parsing MetaGraf ", file)
 		mg := metagraf.Parse(file)
 		// wtf... mg.Metadata.Name == "stuff"
 		metagraf.Refgen(&mg)
 		metagraf.ResourceDotGen(&mg)
-
 	}
 }

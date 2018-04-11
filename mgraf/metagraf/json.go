@@ -40,7 +40,10 @@ type MetaGraf struct {
 			}
 		}
 	}
-	Config []ConfigParam
+	Config []struct{
+		FileName string
+		Options []ConfigParam
+	}
 }
 
 type Resource struct {

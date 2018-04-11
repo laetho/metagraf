@@ -1,0 +1,17 @@
+<h1>{{ .Metadata.Name }} {{ .Metadata.Version }}</h1>
+<p>{{ .Metadata.Description }}</p>
+
+<h2>Resources</h2>
+
+<ul>
+{{range .Spec.Resources}}
+    <li>{{ .Name }}</li>
+{{ end }}
+</ul>
+
+<h2>Local Enviroment Variables</h2>
+<ul>
+{{ range .Spec.Environment.Local}}
+  <li>{{ .Name }}</li>
+{{ end }}
+</ul>
