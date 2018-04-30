@@ -40,6 +40,10 @@ Kubernetes Operators/Controllers that act on the metadata and
 collections of metadata.
 
 
+Acknowledgements
+-
 
+A thank you to my current employer <a href="https://norsk-tipping.no">Norsk Tipping AS</a>, for letting me share this work under
+open source license.
 
 
