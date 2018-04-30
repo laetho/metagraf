@@ -15,8 +15,9 @@ One of the goals of **metaGraf** is to indentify missing nodes or edges
 of a component not currently deployed or a new version of an existing
 component. Desired state vs existing state.
 
-In other words, determining what needs to be present to fulfil the
-explicit dependencies of the new component entering the enviroment.
+In other words, determining what needs to be present or changed to 
+fulfil the explicit dependencies of the new component entering an
+environment.
 
 Another goal is to aid in documentation of software components and
 their dependencies on a component level.
@@ -45,7 +46,8 @@ Direction
 -
 Since cloud-native now eats the world, the goal is to enable building 
 Kubernetes Operators/Controllers that act on the metadata and 
-collections of metadata.
+collections of metadata. The structure so far is also inspired by a 
+Kubernetes resource so a metaGraf could be a CRD. 
 
 
 Acknowledgements
