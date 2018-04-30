@@ -53,7 +53,7 @@ Kubernetes resource so a metaGraf could be a CRD.
 Acknowledgements
 -
 
-A thank you to my current employer <a href="https://www.norsk-tipping.no">Norsk Tipping AS</a>, for letting me share this work under
+A thank you to my current employer <a href="https://www.norsk-tipping.no">Norsk Tipping AS</a>, for letting me share this work under an
 open source license.
 
 
