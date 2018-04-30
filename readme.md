@@ -30,12 +30,16 @@ architects, operations and a organization as a whole.
 
 I have not found any projects that aims to solve the complexities of
 managing software components at scale in this way. If a similar thing
-exist or people are working on it, please let me know.
+exist or people are working on it, please let me know. 
 
 Apparently the paragraph above is no longer true. It seems 
 <a href="http://ddd.ward.wiki.org/view/welcome-visitors/view/ward-cunningham">Ward Cunningham</a> 
 is dabbling with something in this space at a broader scope: 
 http://ddd.ward.wiki.org/view/about-the-el-dorado-project/
+
+If anyone is  interested in this subject, please reach out and hopefully
+ we can get a discussion going. Input and suggestions are always welcome.
+  
 
 Direction
 -
