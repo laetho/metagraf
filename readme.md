@@ -43,7 +43,7 @@ collections of metadata.
 Acknowledgements
 -
 
-A thank you to my current employer <a href="https://norsk-tipping.no">Norsk Tipping AS</a>, for letting me share this work under
+A thank you to my current employer <a href="https://www.norsk-tipping.no">Norsk Tipping AS</a>, for letting me share this work under
 open source license.
 
 
