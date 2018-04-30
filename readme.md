@@ -50,7 +50,7 @@ collections of metadata. The structure so far is also inspired by a
 Kubernetes resource so a metaGraf could be a CRD. 
 
 
-Acknowledgements
+Acknowledgement
 -
 
 A thank you to my current employer <a href="https://www.norsk-tipping.no">Norsk Tipping AS</a>, for letting me share this work under an
