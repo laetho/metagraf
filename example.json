@@ -1,25 +1,31 @@
 {
   "kind": "MetaGraf",
-  "version": "v0alpha1",
+  "version": "v1alpha1",
   "metadata": {
-    "name": "ExampleComponent",
-    "version": "1.0.0",
-    "description": "Example Component, does nothing!",
+    "name": "ExampleService",
+    "version": "0.1.0",
+    "description": "Example service that returns hello, world.",
     "labels": {
     },
     "annotations": {
-      "norsk-tipping.no/component_type": "frontend",
-      "norsk-tipping.no/exposable": "true",
-      "norsk-tipping.no/appcode": "123",
-      "norsk-tipping.no/tags": "nothing"
+      "example.com/component_type": "frontend",
+      "example.com/exposable": "true",
+      "example.com/appcode": "123"
     }
   },
   "spec": {
     "resources": [
       {
-        "name": "SomeResource",
+        "name": "ExampleServiceDataStore",
         "type": "service",
-        "version": "4.3.3",
+        "version": "0.1.1",
+        "match": ">=",
+        "required": "true"
+      },
+      {
+        "name": "ConfigManagement",
+        "type": "service",
+        "version": "1.0.1",
         "match": ">=",
         "required": "true"
       }
@@ -27,18 +33,24 @@
     "environment": {
       "local": [
         {
-          "name": "LocalVariableName",
+          "name": "ConfigManagementURL",
           "required": "true",
           "type": "string",
-          "description": "Some local variable name description"
+          "description": "URL til ConfigManagement tjeneste"
+        },
+        {
+          "name": "EnvironmentName",
+          "required": "true",
+          "type": "string",
+          "description": "Name of environment"
         }
       ],
       "external": {
         "consumes": [
           {
-            "name": "VariableName",
+            "name": "ExampleServiceDataStoreURL",
             "required": "true",
-            "description": "Some external variable description"
+            "description": "URL to Session service"
           }
         ],
         "introduces": []
@@ -46,11 +58,22 @@
     },
     "config": [
       {
-        "name": "Configuration option",
-        "required": "false",
-        "description": "This configuration option does less than nothing",
-        "type": "boolean",
-        "default": "false"
+        "filename": "examplie.config",
+        "options": [
+          {
+            "name": "LogRequestsAndResponses",
+            "required": "false",
+            "description": "For troubleshooting..",
+            "type": "boolean",
+            "default": "false"
+          },
+          {
+            "name": "SocketTimeout",
+            "required": "false",
+	    "default": 30,
+	    "description", "Timeout in seconds"
+          }
+        ]
       }
     ]
   }
