@@ -26,7 +26,7 @@ import (
 func Refgen(mg *MetaGraf) {
 	tmplBasePath := "/home/a01595/go/src/metagraf/templates"
 	tmpl := template.Must(template.ParseFiles(tmplBasePath + "/refdoc.html"))
-	f, err := os.OpenFile("/home/a01595/go/src/metagraf/docs/refdoc/"+mg.Metadata.Name+"-"+mg.Metadata.Version+".html", os.O_TRUNC|os.O_RDWR|os.O_CREATE, 0777)
+	f, err := os.OpenFile("/home/a01595/go/src/metagraf/docs/refdoc/"+mg.Metadata.Name+"-"+mg.Metadata.Version+".html", os.O_CREATE|os.O_TRUNC|os.O_RDWR, 0777)
 	if err != nil {
 		fmt.Println(err)
 		return

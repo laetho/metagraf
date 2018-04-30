@@ -21,6 +21,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"fmt"
 )
 
 func main() {
@@ -45,6 +46,7 @@ func poc() {
 	// Loop through all files in the directory given in basepath,
 	// ignore basepath itself, and ignore file names not containing "json"
 	// Parse each json file
+	fmt.Println( "digraph {")
 	for _, file := range files {
 		if file == basepath {
 			continue
@@ -57,4 +59,5 @@ func poc() {
 		metagraf.Refgen(&mg)
 		metagraf.ResourceDotGen(&mg)
 	}
+	fmt.Println( "}")
 }
