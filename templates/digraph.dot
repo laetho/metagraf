@@ -1,0 +1,9 @@
+digraph {
+rankdir=tplr
+{{ range $mg := . -}}
+"{{ $mg.Metadata.Name -}}-v{{$mg.Metadata.Version}}"
+{{ range $mg.Spec.Resources -}}
+"{{ $mg.Metadata.Name}}-v{{$mg.Metadata.Version}}" -> "{{ .Name }}-v{{.Version}}"
+{{ end -}}
+{{ end -}}
+}
