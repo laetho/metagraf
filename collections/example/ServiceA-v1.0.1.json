@@ -2,30 +2,28 @@
   "kind": "MetaGraf",
   "version": "v1alpha1",
   "metadata": {
-    "name": "ExampleService",
-    "version": "0.1.0",
-    "description": "Example service that returns hello, world.",
+    "name": "ServiceA",
+    "version": "1.0.1",
+    "description": "Service A.",
     "labels": {
     },
     "annotations": {
-      "example.com/component_type": "frontend",
-      "example.com/exposable": "true",
-      "example.com/appcode": "123"
+      "example.com/somevalue": "123"
     }
   },
   "spec": {
     "resources": [
       {
-        "name": "ExampleServiceDataStore",
+        "name": "ServiceB",
         "type": "service",
         "version": "0.1.1",
         "match": ">=",
         "required": "true"
       },
       {
-        "name": "ConfigManagement",
+        "name": "ServiceD",
         "type": "service",
-        "version": "1.0.1",
+        "version": "2.2.0",
         "match": ">=",
         "required": "true"
       }
@@ -48,7 +46,7 @@
       "external": {
         "consumes": [
           {
-            "name": "ExampleServiceDataStoreURL",
+            "name": "ServiceDataStoreURL",
             "required": "true",
             "description": "URL to Session service"
           }

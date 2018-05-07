@@ -17,11 +17,11 @@ limitations under the License.
 package main
 
 import (
+	"fmt"
 	"metagraf/mgraf/metagraf"
 	"os"
 	"path/filepath"
 	"strings"
-	"fmt"
 )
 
 func main() {
@@ -32,7 +32,7 @@ func main() {
 
 func poc() {
 	var files []string
-	basepath := "/home/a01595/go/src/metagraf/collections/poc"
+	basepath := "/home/a01595/go/src/metagraf/collections/example"
 
 	// Wal the directory provided in basepath
 	err := filepath.Walk(basepath, func(path string, info os.FileInfo, err error) error {
@@ -46,7 +46,7 @@ func poc() {
 	// Loop through all files in the directory given in basepath,
 	// ignore basepath itself, and ignore file names not containing "json"
 	// Parse each json file
-	fmt.Println( "digraph {")
+	fmt.Println("digraph {")
 	for _, file := range files {
 		if file == basepath {
 			continue
@@ -59,5 +59,5 @@ func poc() {
 		metagraf.Refgen(&mg)
 		metagraf.ResourceDotGen(&mg)
 	}
-	fmt.Println( "}")
+	fmt.Println("}")
 }
