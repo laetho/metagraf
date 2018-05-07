@@ -18,14 +18,15 @@ package metagraf
 
 import (
 	"fmt"
-	"html/template"
+	"text/template"
 	"os"
 )
 
+var TmplBasePath = "/home/a01595/go/src/metagraf/templates"
+
 // Takes a pointer to a metagraf.MetaGraf struct
 func Refgen(mg *MetaGraf) {
-	tmplBasePath := "/home/a01595/go/src/metagraf/templates"
-	tmpl := template.Must(template.ParseFiles(tmplBasePath + "/refdoc.html"))
+	tmpl := template.Must(template.ParseFiles(TmplBasePath + "/refdoc.html"))
 	f, err := os.OpenFile("/home/a01595/go/src/metagraf/docs/refdoc/"+mg.Metadata.Name+"-"+mg.Metadata.Version+".html", os.O_CREATE|os.O_TRUNC|os.O_RDWR, 0777)
 	if err != nil {
 		fmt.Println(err)
@@ -39,9 +40,17 @@ func Refgen(mg *MetaGraf) {
 	}
 }
 
-func ResourceDotGen(mg *MetaGraf) {
-	fmt.Println("\"" + mg.Metadata.Name + "-" + mg.Metadata.Version + "\"")
-	for _, svc := range mg.Spec.Resources {
-		fmt.Println("\"" + mg.Metadata.Name + "-" + mg.Metadata.Version + "\" -> \"" + svc.Name + "-" + svc.Version + "\"")
+func ResourceDotGen(mgs *[]MetaGraf) {
+	tmpl := template.Must(template.ParseFiles(TmplBasePath + "/digraph.dot"))
+	f, err := os.OpenFile("/home/a01595/go/src/metagraf/docs/dots/enviroment.dot", os.O_CREATE|os.O_TRUNC|os.O_RDWR, 0777)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer f.Close()
+
+	err = tmpl.Execute(f, mgs)
+	if err != nil {
+		fmt.Println(err)
 	}
 }

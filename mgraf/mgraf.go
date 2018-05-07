@@ -17,7 +17,6 @@ limitations under the License.
 package main
 
 import (
-	"fmt"
 	"metagraf/mgraf/metagraf"
 	"os"
 	"path/filepath"
@@ -46,7 +45,9 @@ func poc() {
 	// Loop through all files in the directory given in basepath,
 	// ignore basepath itself, and ignore file names not containing "json"
 	// Parse each json file
-	fmt.Println("digraph {")
+
+	var mgs []metagraf.MetaGraf
+
 	for _, file := range files {
 		if file == basepath {
 			continue
@@ -55,9 +56,9 @@ func poc() {
 			continue
 		}
 		mg := metagraf.Parse(file)
-		// wtf... mg.Metadata.Name == "stuff"
 		metagraf.Refgen(&mg)
-		metagraf.ResourceDotGen(&mg)
+		mgs = append(mgs, mg)
 	}
-	fmt.Println("}")
+	metagraf.ResourceDotGen(&mgs)
+
 }
