@@ -1,0 +1,69 @@
+{
+  "kind": "MetaGraf",
+  "version": "v1alpha1",
+  "metadata": {
+    "name": "ServiceD",
+    "version": "2.2.0",
+    "description": "SerivceD.",
+    "labels": {
+    },
+    "annotations": {
+      "example.com/somevalue": "123"
+    }
+  },
+  "spec": {
+    "resources": [
+      {
+        "name": "ServiceD-DS",
+        "type": "datasource",
+        "required": "true"
+      }
+    ],
+    "environment": {
+      "local": [
+        {
+          "name": "ConfigManagementURL",
+          "required": "true",
+          "type": "string",
+          "description": "URL til ConfigManagement tjeneste"
+        },
+        {
+          "name": "EnvironmentName",
+          "required": "true",
+          "type": "string",
+          "description": "Name of environment"
+        }
+      ],
+      "external": {
+        "consumes": [
+          {
+            "name": "ExampleServiceDataStoreURL",
+            "required": "true",
+            "description": "URL to Session service"
+          }
+        ],
+        "introduces": []
+      }
+    },
+    "config": [
+      {
+        "filename": "examplie.config",
+        "options": [
+          {
+            "name": "LogRequestsAndResponses",
+            "required": "false",
+            "description": "For troubleshooting..",
+            "type": "boolean",
+            "default": "false"
+          },
+          {
+            "name": "SocketTimeout",
+            "required": "false",
+	        "default": 30,
+	        "description": "Timeout in seconds"
+          }
+        ]
+      }
+    ]
+  }
+}
