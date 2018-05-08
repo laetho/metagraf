@@ -29,11 +29,14 @@ with a structure for describing software components and how that
 information can be used to assist CI and CD pipelines, developers,
 architects, operations and a organization as a whole.
 
-I have not found any projects that aims to solve the complexities of
-managing software components at scale in this way. If a similar thing
-exist or people are working on it, please let me know. 
+I have not found many projects that solve the complexities of
+managing software components in an enviroment similar to the goals
+of metaGraf.
 
-Apparently the paragraph above is no longer true. It seems 
+The <a href="https://getnelson.github.io/nelson/">Nelson</a> project is
+the closest thing I have found (after some pointers). It has a concept of
+topology map (graph) of deployments in an environment.
+
 <a href="http://ddd.ward.wiki.org/view/welcome-visitors/view/ward-cunningham">Ward Cunningham</a> 
 is dabbling with something in this space at a broader scope: 
 http://ddd.ward.wiki.org/view/about-the-el-dorado-project/
