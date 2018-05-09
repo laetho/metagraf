@@ -1,6 +1,9 @@
 digraph {
-rankdir=tplr
-node [shape=circle,bgcolor="#c0c0c0"]
+  rankdir=tplr
+  node [color=grey25,
+        fillcolor=wheat,
+        shape=box,
+        style="rounded,filled"];
 {{ range $mg := . -}}
 "{{ $mg.Metadata.Name -}}-v{{$mg.Metadata.Version}}"
 {{ range $mg.Spec.Resources -}}
