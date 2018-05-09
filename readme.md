@@ -65,9 +65,9 @@ Usage straight from source:
 
 > go run mgraf -c /path/to/collection/of/metagraphs
 
-You can use the example collection provided to experiment. It produces output like this:
+You can use the example collection provided to experiment. It produces output like ihis if the resulting
 
-<img src="data:image/png/base64,iVBORw0KGgoAAAANSUhEUgAAAbQAAAG7CAYAAACrYmCTAAAABmJLR0QA/wD/AP+gvaeTAAAgAElE
+<img src="data:image/png:base64,iVBORw0KGgoAAAANSUhEUgAAAbQAAAG7CAYAAACrYmCTAAAABmJLR0QA/wD/AP+gvaeTAAAgAElE
                                 QVR4nOzdd1RU19rH8S+gSLWCiF2siA1UQKwI9t6wxMSCNWo0iUaN3Whs0VhTLOg1igZNVLDFHlFs
                                 KFjATrBiwUpvM+8fllcFpQ2cAZ7PWq5175R9fofMmWfOPvvsraNWq9UIIYQQOZyu0gGEEEIITZCC
                                 JoQQIleQgiaEECJXyKd0ACFyGrVazYMHDwgLCyMiIgK5DC3SS19fHxMTEypUqICpqanScXINKWhC
