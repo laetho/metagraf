@@ -67,8 +67,7 @@ Usage straight from source:
 
 You can use the example collection provided to experiment. It produces output like ihis if the resulting
 
-![Image](../metagraf/raw/master/example.png)
-
+<img src="https://github.com/laetho/metagraf/raw/master/example.png" alt="Example graph">
 Acknowledgement
 -
 
