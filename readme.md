@@ -67,7 +67,7 @@ Usage straight from source:
 
 You can use the example collection provided to experiment. It produces output like ihis if the resulting
 
-![Image](../metagraf/master/example.png?raw=true)
+![Image](../metagraf/raw/master/example.png)
 
 Acknowledgement
 -
