@@ -5,9 +5,9 @@ digraph {
         shape=box,
         style="rounded,filled"];
 {{ range $mg := . -}}
-"{{ $mg.Metadata.Name -}}-v{{$mg.Metadata.Version}}"
 {{ range $mg.Spec.Resources -}}
-"{{ $mg.Metadata.Name}}-v{{$mg.Metadata.Version}}" -> "{{ .Name }}-v{{.Version}}"
+"{{.Name}}{{if .Version}}-v{{.Version}}{{end}}" [{{ if eq .Type "datasource" }}shape=cylinder,fillcolor=lightskyblue{{end}}]
+"{{ $mg.Metadata.Name}}-v{{$mg.Metadata.Version}}" -> "{{ .Name }}{{if .Version}}-v{{.Version}}{{end}}"
 {{ end -}}
 {{ end -}}
 }
