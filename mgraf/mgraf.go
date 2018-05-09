@@ -17,6 +17,7 @@ limitations under the License.
 package main
 
 import (
+	"flag"
 	"metagraf/mgraf/metagraf"
 	"os"
 	"path/filepath"
@@ -24,17 +25,21 @@ import (
 )
 
 func main() {
+	colPtr := flag.String("c", "", "path to a directory holding a collection")
+	flag.Parse()
 
-	// Calling poc() function
-	poc()
+	if len(*colPtr) == 0 {
+		panic("need a path to a collection")
+	}
+
+	poc(*colPtr)
 }
 
-func poc() {
+func poc(cpath string) {
 	var files []string
-	basepath := "/home/a01595/go/src/metagraf/collections/example"
 
-	// Wal the directory provided in basepath
-	err := filepath.Walk(basepath, func(path string, info os.FileInfo, err error) error {
+	// Walk the directory passed with cpath
+	err := filepath.Walk(cpath, func(path string, info os.FileInfo, err error) error {
 		files = append(files, path)
 		return nil
 	})
@@ -49,7 +54,7 @@ func poc() {
 	var mgs []metagraf.MetaGraf
 
 	for _, file := range files {
-		if file == basepath {
+		if file == cpath {
 			continue
 		}
 		if !strings.Contains(file, "json") {
@@ -59,6 +64,6 @@ func poc() {
 		metagraf.Refgen(&mg)
 		mgs = append(mgs, mg)
 	}
-	metagraf.ResourceDotGen(&mgs)
-
+	sp := strings.Split(strings.TrimRight(cpath, "/"),"/")
+	metagraf.ResourceDotGen(&mgs, sp[len(sp)-1])
 }
