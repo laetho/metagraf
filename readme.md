@@ -69,6 +69,7 @@ You can use the example collection provided to experiment. It produces output li
 this if the resulting file is used with the **dot** utility from graphviz.
 
 <img src="https://github.com/laetho/metagraf/raw/master/example.png" alt="Example graph">
+
 Acknowledgement
 -
 
