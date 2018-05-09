@@ -65,7 +65,8 @@ Usage straight from source:
 
 > go run mgraf -c /path/to/collection/of/metagraphs
 
-You can use the example collection provided to experiment. It produces output like ihis if the resulting
+You can use the example collection provided to experiment. It produces output like 
+this if the resulting file is used with the **dot** utility from graphviz.
 
 <img src="https://github.com/laetho/metagraf/raw/master/example.png" alt="Example graph">
 Acknowledgement
