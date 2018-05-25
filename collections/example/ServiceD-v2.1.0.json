@@ -4,6 +4,7 @@
   "metadata": {
     "name": "ServiceD",
     "version": "2.1.0",
+    "type": "service"
     "description": "SerivceD.",
     "labels": {
     },
@@ -47,7 +48,7 @@
     },
     "config": [
       {
-        "filename": "examplie.config",
+        "filename": "example.config",
         "options": [
           {
             "name": "LogRequestsAndResponses",

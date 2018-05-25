@@ -16,15 +16,13 @@
       {
         "name": "ServiceC",
         "type": "service",
-        "version": "2.1.1",
-        "match": ">=",
+        "semver": "2.1.1",
         "required": "true"
       },
       {
         "name": "ServiceD",
         "type": "service",
-        "version": "2.1.0",
-        "match": ">=",
+        "semver": "2.1.0",
         "required": "true"
       }
     ],

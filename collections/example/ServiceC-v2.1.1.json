@@ -16,8 +16,7 @@
       {
         "name": "ServiceD",
         "type": "service",
-        "version": "2.1.0",
-        "match": ">=",
+        "semver": "2.1.0",
         "required": "true"
       }
     ],

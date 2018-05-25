@@ -6,9 +6,14 @@ The MetaGraf datastructure is inspired by a kubernetes resource (kind).
 
 ## Metadata
 
+```
+
+```
+
+
 ### Annotations
 
-While the **Spec** structure is rigid, you can add custom information 
+While the **Spec** structure is rigid, you can add custom organizational or solution information 
 about a component using annotations. That your tooling may glean knowledge
 from or react on. 
 
@@ -50,6 +55,10 @@ it **introduces**.
 
 * `introduces` Variables introduced by component
 * `consumes` Variables consumed by component introduced by other components.
+
+### Config
+
+This section is the spec is for defining traditional configuration variables group by `filename`.
 
 ## Status  
 
