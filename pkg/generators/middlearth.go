@@ -1,7 +1,7 @@
 package generators
 
 import (
-	"metagraf/mgraf/metagraf"
+	"metagraf/pkg/metagraf"
 )
 
 func MiddlearthApp( mg *metagraf.MetaGraf ) {

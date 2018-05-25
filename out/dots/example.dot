@@ -1,0 +1,21 @@
+digraph {
+  rankdir=tplr
+  node [color=grey25,
+        fillcolor=wheat,
+        shape=box,
+        style="rounded,filled"];
+"ServiceB-v1.2.1" []
+"ServiceA-v1.0.1" -> "ServiceB-v1.2.1"
+"ServiceD-v2.2.0" []
+"ServiceA-v1.0.1" -> "ServiceD-v2.2.0"
+"ServiceC-v2.1.1" []
+"ServiceB-v1.2.1" -> "ServiceC-v2.1.1"
+"ServiceD-v2.1.0" []
+"ServiceB-v1.2.1" -> "ServiceD-v2.1.0"
+"ServiceD-v2.1.0" []
+"ServiceC-v2.1.1" -> "ServiceD-v2.1.0"
+"ServiceD-DS" [shape=cylinder,fillcolor=lightskyblue]
+"ServiceD-v2.1.0" -> "ServiceD-DS"
+"ServiceD-DS" [shape=cylinder,fillcolor=lightskyblue]
+"ServiceD-v2.2.0" -> "ServiceD-DS"
+}
