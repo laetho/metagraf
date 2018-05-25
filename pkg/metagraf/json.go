@@ -47,11 +47,10 @@ type MetaGraf struct {
 }
 
 type Resource struct {
-	Name     string
-	Type     string
-	Version  string
-	Match    string
-	Required bool
+	Name     	string
+	Type     	string
+	Semver  	string
+	Required 	bool
 }
 type ConfigParam struct {
 	Name        string
