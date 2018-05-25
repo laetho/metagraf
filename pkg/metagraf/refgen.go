@@ -20,11 +20,13 @@ import (
 	"fmt"
 	"text/template"
 	"os"
+	"metagraf/mgraf/metagraf/generators"
 )
 
 var TmplBasePath = "/home/a01595/go/src/metagraf/templates"
 
-// Takes a pointer to a metagraf.MetaGraf struct
+
+
 func Refgen(mg *MetaGraf) {
 	tmpl := template.Must(template.ParseFiles(TmplBasePath + "/refdoc.html"))
 	f, err := os.OpenFile("/home/a01595/go/src/metagraf/docs/refdoc/"+mg.Metadata.Name+"-"+mg.Metadata.Version+".html", os.O_CREATE|os.O_TRUNC|os.O_RDWR, 0777)
@@ -33,6 +35,7 @@ func Refgen(mg *MetaGraf) {
 		return
 	}
 	defer f.Close()
+
 
 	err = tmpl.Execute(f, mg)
 	if err != nil {

@@ -18,7 +18,7 @@ package main
 
 import (
 	"flag"
-	"metagraf/mgraf/metagraf"
+	"metagraf/pkg/metagraf"
 	"os"
 	"path/filepath"
 	"strings"
