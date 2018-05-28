@@ -34,7 +34,7 @@
         "semop": "eq",
         "semver": "1.0.0",
         "required": "true"
-      },
+      }
     ],
     "environment": {
       "local": [

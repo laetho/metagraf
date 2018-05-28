@@ -4,16 +4,33 @@ digraph {
         fillcolor=wheat,
         shape=box,
         style="rounded,filled"];
-"FunctionB-v2.0.0" []
+"FunctionB-v2.0.0" [
+  shape=hexagon,fillcolor=darkseagreen
+]
 "FunctionA-v1.0.0" -> "FunctionB-v2.0.0"
-"ServiceC-v2.1.1" []
+"ServiceB-v1.2.1" [
+]
+"ServiceA-v1.0.1" -> "ServiceB-v1.2.1"
+"ServiceD-v2.2.0" [
+]
+"ServiceA-v1.0.1" -> "ServiceD-v2.2.0"
+"FunctionA-v1.0.0" [
+  shape=hexagon,fillcolor=darkseagreen
+]
+"ServiceA-v1.0.1" -> "FunctionA-v1.0.0"
+"ServiceC-v2.1.1" [
+]
 "ServiceB-v1.2.1" -> "ServiceC-v2.1.1"
-"ServiceD-v2.1.0" []
+"ServiceD-v2.1.0" [
+]
 "ServiceB-v1.2.1" -> "ServiceD-v2.1.0"
-"ServiceD-v2.1.0" []
+"ServiceD-v2.1.0" [
+]
 "ServiceC-v2.1.1" -> "ServiceD-v2.1.0"
-"ServiceD-DS" [shape=cylinder,fillcolor=lightskyblue]
+"ServiceD-DS" [
+shape=cylinder,fillcolor=lightskyblue]
 "ServiceD-v2.1.0" -> "ServiceD-DS"
-"ServiceD-DS" [shape=cylinder,fillcolor=lightskyblue]
+"ServiceD-DS" [
+shape=cylinder,fillcolor=lightskyblue]
 "ServiceD-v2.2.0" -> "ServiceD-DS"
 }
