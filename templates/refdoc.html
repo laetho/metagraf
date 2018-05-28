@@ -1,5 +1,5 @@
-<h1>{{ .Metadata.Name }} {{ .Metadata.Version }}</h1>
-<p>{{ .Metadata.Description }}</p>
+<h1>{{ .Metadata.Name }} {{ .Spec.Version }}</h1>
+<p>{{ .Spec.Description }}</p>
 
 <h2>Resources</h2>
 
@@ -13,5 +13,21 @@
 <ul>
 {{ range .Spec.Environment.Local}}
   <li>{{ .Name }}</li>
+{{ end }}
+</ul>
+
+<h2>External Enviroment Variables</h2>
+
+<h3>Environment Variables Introduced by Component</h3>
+<ul>
+{{ range .Spec.Environment.External.Introduces}}
+    <li>{{ .Name }} Type: {{ .Type }},Required: {{ .Required}}</li>
+{{ end }}
+</ul>
+
+<h3>Environment Variables Consumed by Component</h3>
+<ul>
+{{ range .Spec.Environment.External.Introduces}}
+    <li>{{ .Name }} Type: {{ .Type }},Required: {{ .Required}}</li>
 {{ end }}
 </ul>

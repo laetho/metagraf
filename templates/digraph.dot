@@ -6,8 +6,8 @@ digraph {
         style="rounded,filled"];
 {{ range $mg := . -}}
 {{ range $mg.Spec.Resources -}}
-"{{.Name}}{{if .Version}}-v{{.Version}}{{end}}" [{{ if eq .Type "datasource" }}shape=cylinder,fillcolor=lightskyblue{{end}}]
-"{{ $mg.Metadata.Name}}-v{{$mg.Metadata.Version}}" -> "{{ .Name }}{{if .Version}}-v{{.Version}}{{end}}"
+"{{.Name}}{{if .Semver}}-v{{.Semver}}{{end}}" [{{ if eq .Type "datasource" }}shape=cylinder,fillcolor=lightskyblue{{end}}]
+"{{ $mg.Metadata.Name}}-v{{$mg.Spec.Version}}" -> "{{ .Name }}{{if .Semver}}-v{{.Semver}}{{end}}"
 {{ end -}}
 {{ end -}}
 }

@@ -16,21 +16,22 @@ limitations under the License.
 
 package metagraf
 
+
 // JSON structure for a MetaGraf entity
 type MetaGraf struct {
 	Kind     string
-	Version  string
 	Metadata struct {
 		Name              string
-		Version           string
 		ResourceVersion   string
 		Namespace         string
 		CreationTimestamp string
-		Description       string
 		Labels            map[string]string
 		Annotations       map[string]string
 	}
 	Spec struct {
+		Type 		string
+		Version		string
+		Description	string
 		Resources   []Resource
 		Environment struct {
 			Local    []EnvironmentVar
