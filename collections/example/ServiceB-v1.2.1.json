@@ -3,8 +3,6 @@
   "version": "v1alpha1",
   "metadata": {
     "name": "ServiceB",
-    "version": "1.2.1",
-    "description": "Service B",
     "labels": {
     },
     "annotations": {
@@ -12,16 +10,21 @@
     }
   },
   "spec": {
+    "version": "1.2.1",
+    "type": "service",
+    "description": "Service B",
     "resources": [
       {
         "name": "ServiceC",
         "type": "service",
+        "semop": "gte",
         "semver": "2.1.1",
         "required": "true"
       },
       {
         "name": "ServiceD",
         "type": "service",
+        "semop": "gte",
         "semver": "2.1.0",
         "required": "true"
       }

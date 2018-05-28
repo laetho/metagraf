@@ -3,9 +3,6 @@
   "version": "v1alpha1",
   "metadata": {
     "name": "ServiceD",
-    "version": "2.1.0",
-    "type": "service"
-    "description": "SerivceD.",
     "labels": {
     },
     "annotations": {
@@ -13,6 +10,9 @@
     }
   },
   "spec": {
+    "version": "2.1.0",
+    "type": "service",
+    "description": "SerivceD.",
     "resources": [
       {
         "name": "ServiceD-DS",
