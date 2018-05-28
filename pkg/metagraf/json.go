@@ -50,6 +50,7 @@ type MetaGraf struct {
 type Resource struct {
 	Name     	string
 	Type     	string
+	Semop		string
 	Semver  	string
 	Required 	bool
 }

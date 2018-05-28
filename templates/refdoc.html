@@ -2,10 +2,9 @@
 <p>{{ .Spec.Description }}</p>
 
 <h2>Resources</h2>
-
 <ul>
 {{range .Spec.Resources}}
-    <li>{{ .Name }}</li>
+    <li>{{ .Name }}, Semver: {{ .Semver}}</li>
 {{ end }}
 </ul>
 
@@ -27,7 +26,7 @@
 
 <h3>Environment Variables Consumed by Component</h3>
 <ul>
-{{ range .Spec.Environment.External.Introduces}}
+{{ range .Spec.Environment.External.Consumes}}
     <li>{{ .Name }} Type: {{ .Type }},Required: {{ .Required}}</li>
 {{ end }}
 </ul>

@@ -4,6 +4,8 @@ digraph {
         fillcolor=wheat,
         shape=box,
         style="rounded,filled"];
+"RGValidation-v4.3.3" []
+"DoPayment-v4.2.3" -> "RGValidation-v4.3.3"
 "GetEnvironmentProperties-vgt('4.3.3')" []
 "Payment-v4.1.9" -> "GetEnvironmentProperties-vgt('4.3.3')"
 "Session-vgt(v4)" []

@@ -1,14 +1,20 @@
 # MetaGraf datastructure
 
 
-The MetaGraf datastructure is inspired by a kubernetes resource (kind).
+The MetaGraf datastructure is inspired by a kubernetes resource (kind). Doing this in JSON instead of YAML.
 
 
 ## Metadata
 
-```
+Follows the Kubernetes metadata specification.
 
 ```
+    "labels": {
+      "component": "ComponentName"
+    }
+```
+
+### Labels
 
 
 ### Annotations
@@ -27,6 +33,7 @@ from or react on.
 
 ## Spec
 
+* Version needs to be a valid SemVer specification version. Vill get reduced to Major, Minor and Patch during evaluations and comparisions. 
 
 ### Resources
 
