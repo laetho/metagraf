@@ -11,7 +11,7 @@ digraph {
 shape=cylinder,fillcolor=lightskyblue
 {{- else }}
   {{- if eq .Type "function" }}
-  shape=hexagon,fillcolor=darkseagreen
+shape=hexagon,fillcolor=darkseagreen
   {{- end }}
 {{end}}]
 "{{ $mg.Metadata.Name}}-v{{$mg.Spec.Version}}" -> "{{ .Name }}{{if .Semver}}-v{{.Semver}}{{end}}"
