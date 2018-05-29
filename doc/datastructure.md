@@ -8,20 +8,21 @@ The MetaGraf datastructure is inspired by a kubernetes resource (kind). Doing th
 
 Follows the Kubernetes metadata specification.
 
+### Labels
+
 ```
     "labels": {
       "component": "ComponentName"
     }
 ```
 
-### Labels
+
 
 
 ### Annotations
 
 While the **Spec** structure is rigid, you can add custom organizational or solution information 
-about a component using annotations. That your tooling may glean knowledge
-from or react on. 
+about a component using annotations, that your tooling may glean knowledge from or react on. 
 
 ```
     "annotations": {
