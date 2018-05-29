@@ -17,6 +17,7 @@
       {
         "name": "FunctionB",
         "type": "function",
+        "semop": "gte"
         "semver": "2.0.0",
         "required": "true"
       }

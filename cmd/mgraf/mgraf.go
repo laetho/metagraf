@@ -22,6 +22,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"metagraf/pkg/generators"
 )
 
 func main() {
@@ -62,6 +63,7 @@ func poc(cpath string) {
 		}
 		mg := metagraf.Parse(file)
 		metagraf.Refgen(&mg)
+		generators.MiddlearthApp(&mg)
 		mgs = append(mgs, mg)
 	}
 	sp := strings.Split(strings.TrimRight(cpath, "/"),"/")
