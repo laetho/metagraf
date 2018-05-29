@@ -28,7 +28,7 @@ type Middlearth struct {
 	Sha1           string            `json:"sha1,omitempty"`
 	Server         MEServer          `json:"server,omitempty"`
 	Logging        MELogging         `json:"logging"`
-	Features       []string  		 `json:"features,omitempty"`
+	Features       []string          `json:"features,omitempty"`
 	Certs          []MECert          `json:"certs,omitempty"`
 	Datasources    []MEDataSource    `json:"datasources,omitempty"`
 	Jms            []MiddlearthJMS   `json:"jms,omitempty"`
@@ -66,45 +66,45 @@ type MEDataSource struct {
 }
 
 type MiddlearthJMS struct {
-	ConMgr 		   []MEConMgr			`json:"conMgr,omitempty"`
-	Qcf 		   []MEQcf				`json:"qcf,omitempty"`
-	Queues 		   []MEQueue			`json:"queues,omitempty"`
-	ActivationSpec []MEActivationSpec	`json:"activationSpec,omitempty"`
+	ConMgr         []MEConMgr         `json:"conMgr,omitempty"`
+	Qcf            []MEQcf            `json:"qcf,omitempty"`
+	Queues         []MEQueue          `json:"queues,omitempty"`
+	ActivationSpec []MEActivationSpec `json:"activationSpec,omitempty"`
 }
 
 type MEConMgr struct {
-	Id          string	`json:"id"`
-	MaxPoolSize int32	`json:"maxPoolSize"`
+	Id          string `json:"id"`
+	MaxPoolSize int32  `json:"maxPoolSize"`
 }
 
 type MEQcf struct {
-	JndiName      string	`json:"jndiName"`
-	Topic         bool		`json:"topic"`
-	ConMgr        string	`json:"conMgr"`
-	UserName      string	`json:"userName"`
-	ClientId      string	`json:"clientId"`
-	TransportType string	`json:"transportType"`
-	HostName      string	`json:"hostName"`
-	Port          int16		`json:"port"`
-	Channel       string	`json:"channel"`
-	Qmgr          string	`json:"qmgr"`
+	JndiName      string `json:"jndiName"`
+	Topic         bool   `json:"topic"`
+	ConMgr        string `json:"conMgr"`
+	UserName      string `json:"userName"`
+	ClientId      string `json:"clientId"`
+	TransportType string `json:"transportType"`
+	HostName      string `json:"hostName"`
+	Port          int16  `json:"port"`
+	Channel       string `json:"channel"`
+	Qmgr          string `json:"qmgr"`
 }
 
 type MEQueue struct {
-	Id       string	`json:"id"`
-	JndiName string	`json:"jndiName"`
-	Qname    string	`json:"qname"`
-	Qmgr     string	`json:"qmgr"`
+	Id       string `json:"id"`
+	JndiName string `json:"jndiName"`
+	Qname    string `json:"qname"`
+	Qmgr     string `json:"qmgr"`
 }
 
 type MEActivationSpec struct {
-	EJBPath       string	`json:"EJBPath"`
-	QRefId        string	`json:"qRefId"`
-	TransportType string	`json:"transportType"`
-	Qmgr          string	`json:"qmgr"`
-	HostName      string	`json:"hostname"`
-	Port          int16		`json:"port"`
-	Channel       string	`json:"channel"`
+	EJBPath       string `json:"EJBPath"`
+	QRefId        string `json:"qRefId"`
+	TransportType string `json:"transportType"`
+	Qmgr          string `json:"qmgr"`
+	HostName      string `json:"hostname"`
+	Port          int16  `json:"port"`
+	Channel       string `json:"channel"`
 }
 
 type MEFile struct {
@@ -134,22 +134,20 @@ func MiddlearthApp(mg *metagraf.MetaGraf) {
 	mea.Logging.MaxFiles = 3
 	mea.Logging.MaxFileSize = 100
 
-	for k,v := range mg.Metadata.Annotations {
+	for k, v := range mg.Metadata.Annotations {
 		switch k {
 		case "middlearth.norsk-tipping.no/jolokia":
 			b, _ := strconv.ParseBool(v)
 			mea.Jolokia = b
 		case "middlearth.norsk-tipping.no/features":
-			s:= strings.Split(v,",")
-			for _ , v := range s {
-				mea.Features = append( mea.Features, strings.TrimSpace(v))
+			s := strings.Split(v, ",")
+			for _, v := range s {
+				mea.Features = append(mea.Features, strings.TrimSpace(v))
 			}
 		case "middlearth.norsk-tipping.no/libertyVersion":
 			mea.LibertyVersion = v
 		}
 	}
-
-
 
 	b, err := json.Marshal(mea)
 	if err != nil {
