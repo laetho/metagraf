@@ -1,7 +1,7 @@
 package generators
 
 // Middlearth is a Norsk Tipping internal solution for configuration management of
-// Jave applications on WebSphere Liberty
+// Java applications on WebSphere Liberty
 
 import (
 	"encoding/json"
