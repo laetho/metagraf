@@ -22,8 +22,13 @@ environment.
 Another goal is to aid in documentation of software components and
 their dependencies on a component level.
 
-Background
--
+## Status
+
+Current focus is experimentation with the model and trying out some use cases
+that might help communicate what this structure and tooling might accomplish.
+
+## Background
+
 metaGraf is currently a research project and a place to experiment
 with a structure for describing software components and how that
 information can be used to assist CI and CD pipelines, developers,
