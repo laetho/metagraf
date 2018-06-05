@@ -16,7 +16,6 @@ limitations under the License.
 
 package metagraf
 
-
 // JSON structure for a MetaGraf entity
 type MetaGraf struct {
 	Kind     string
@@ -42,8 +41,10 @@ type MetaGraf struct {
 		}
 	}
 	Config []struct{
-		FileName string
-		Options []ConfigParam
+		FileName 	string
+		Type 		string
+		Description string
+		Options 	[]ConfigParam
 	}
 }
 
@@ -66,4 +67,5 @@ type EnvironmentVar struct {
 	Required    bool
 	Type        string
 	Description string
+	Default		string
 }
