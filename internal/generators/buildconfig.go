@@ -1,6 +1,6 @@
 package generators
 
-import "metagraf/pkg/metagraf"
+import "metagraf/internal/metagraf"
 
 type BuildConfig struct {
 

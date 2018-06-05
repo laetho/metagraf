@@ -1,13 +1,14 @@
 package generators
 
 // Middlearth is a Norsk Tipping internal solution for configuration management of
-// Java applications on WebSphere Liberty
+// Java applications on WebSphere Liberty. Much of this complexity should be hidden
+// in the process of building the artifact/container image.
 
 import (
 	"encoding/json"
 	"fmt"
 	semver "github.com/blang/semver"
-	"metagraf/pkg/metagraf"
+	"metagraf/internal/metagraf"
 	"strconv"
 	"strings"
 )

@@ -18,11 +18,11 @@ package main
 
 import (
 	"flag"
-	"metagraf/pkg/metagraf"
+	"metagraf/internal/metagraf"
 	"os"
 	"path/filepath"
 	"strings"
-	"metagraf/pkg/generators"
+	"metagraf/internal/generators"
 )
 
 func main() {
