@@ -20,7 +20,7 @@ package metagraf
 type MetaGraf struct {
 	Kind     string
 	Metadata struct {
-		Name              string
+		Name              string	`json:"name"`
 		ResourceVersion   string
 		Namespace         string
 		CreationTimestamp string
@@ -28,32 +28,34 @@ type MetaGraf struct {
 		Annotations       map[string]string
 	}
 	Spec struct {
-		Type 		string
-		Version		string
-		Description	string
+		Type        string
+		Version     string
+		Description string
 		Resources   []Resource
 		Environment struct {
-			Local    []EnvironmentVar
+			Build []EnvironmentVar
+			Local []EnvironmentVar
 			External struct {
 				Introduces []EnvironmentVar
 				Consumes   []EnvironmentVar
 			}
 		}
-	}
-	Config []struct{
-		FileName 	string
-		Type 		string
-		Description string
-		Options 	[]ConfigParam
+		Config []struct {
+			Name    string
+			Type        string
+			Description string
+			Options     []ConfigParam	`json:"options,omitempty"`
+		}
 	}
 }
 
 type Resource struct {
-	Name     	string
-	Type     	string
-	Semop		string
-	Semver  	string
-	Required 	bool
+	Name     	string	`json:"name"`
+	Type     	string	`json:"type"`
+	Semop		string	`json:"semop"`
+	Semver  	string	`json:"semver"`
+	Required 	bool	`json:"required"`
+	Dsn			string  `json:"dsn,omitempty"`
 }
 type ConfigParam struct {
 	Name        string
