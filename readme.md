@@ -3,7 +3,7 @@ metaGraf
 
 **metaGraf** provides a generic structure of metadata about a software component. 
 **metagraf** is inspired by the <a href="https://12factor.net">twelve-factor app</a> 
-guidelines to aid automation tasks or decisions about a component or collection of compoenents.
+methodology to aid automation tasks or decisions about a component or collection of compoenents.
 
 **metaGraf** operates on an individual or collections of metagraph(s)
  (software components) to produce metadata or aggregated metadata to support 
