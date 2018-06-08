@@ -52,7 +52,7 @@ func poc(cpath string) {
 	// ignore basepath itself, and ignore file names not containing "json"
 	// Parse each json file
 
-	var mgs []metagraf.MetaGraf
+	//var mgs []metagraf.MetaGraf
 
 	for _, file := range files {
 		if file == cpath {
@@ -62,10 +62,13 @@ func poc(cpath string) {
 			continue
 		}
 		mg := metagraf.Parse(file)
-		metagraf.Refgen(&mg)
-		generators.MiddlearthApp(&mg)
-		mgs = append(mgs, mg)
+
+
+		generators.GenConfigMaps( &mg )
+		//metagraf.Refgen(&mg)
+		//generators.MiddlearthApp(&mg)
+		//mgs = append(mgs, mg)
 	}
-	sp := strings.Split(strings.TrimRight(cpath, "/"),"/")
-	metagraf.ResourceDotGen(&mgs, sp[len(sp)-1])
+	//sp := strings.Split(strings.TrimRight(cpath, "/"),"/")
+	//metagraf.ResourceDotGen(&mgs, sp[len(sp)-1])
 }
