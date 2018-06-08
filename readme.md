@@ -1,14 +1,13 @@
 metaGraf
 ========
 
-**metaGraf** provides a generic and implementation agnostic
-"structure" of metadata about a software component. **metagraf**
-is inspired by the <a href="https://12factor.net">twelve-factor app</a> guidelines to 
-aid automation tasks or decisions about a component or collection of compoenents.
+**metaGraf** provides a generic structure of metadata about a software component. 
+**metagraf** is inspired by the <a href="https://12factor.net">twelve-factor app</a> 
+methodology to aid automation tasks or decisions about a component or collection of compoenents.
 
 **metaGraf** operates on an individual or collections of metagraph(s)
- (software components) to produce aggregated metadata to support your
-toolchain or pipelines with information that can be acted upon.
+ (software components) to produce metadata or aggregated metadata to support 
+ your toolchain or pipelines with information that can be acted upon.
 
 One of the goals of **metaGraf** is to indentify missing nodes or edges
 (components) when comparing a running enviroment with the graph/branch
