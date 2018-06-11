@@ -40,12 +40,7 @@ type MetaGraf struct {
 				Consumes   []EnvironmentVar
 			}
 		}
-		Config []struct {
-			Name    string
-			Type        string
-			Description string
-			Options     []ConfigParam	`json:"options,omitempty"`
-		}
+		Config []Config
 	}
 }
 
@@ -57,6 +52,14 @@ type Resource struct {
 	Required 	bool	`json:"required"`
 	Dsn			string  `json:"dsn,omitempty"`
 }
+
+type Config struct {
+	Name    	string
+	Type        string
+	Description string
+	Options     []ConfigParam	`json:"options,omitempty"`
+}
+
 type ConfigParam struct {
 	Name        string
 	Required    bool
