@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"strconv"
 	"github.com/blang/semver"
+	"strings"
 )
 
 type ConfigMap struct {
@@ -15,7 +16,10 @@ type ConfigMap struct {
 	Data map[string]string	`json:"data,omitempty"`
 }
 
-
+/*
+Entry function for creating a slew of configmaps, this will be very
+specific to NT internal workings for now.
+ */
 func GenConfigMaps( mg *metagraf.MetaGraf) {
 
 	/*
@@ -28,12 +32,20 @@ func GenConfigMaps( mg *metagraf.MetaGraf) {
 
 	*/
 
-	genJvmParams(mg)
+	for _, c := range mg.Spec.Config {
+		if c.Type != "parameters" {
+			continue
+		}
+		genConfigMapFromConfig(&c, mg)
+	}
 
 
 }
 
-func genJvmParams( mg *metagraf.MetaGraf ) {
+/*
+Generates a configmap for jvm.params file for Liberty java apps
+ */
+func genConfigMapFromConfig( conf *metagraf.Config, mg *metagraf.MetaGraf) {
 
 	// Parse version with semver library
 	sv, err := semver.Parse(mg.Spec.Version)
@@ -43,15 +55,15 @@ func genJvmParams( mg *metagraf.MetaGraf ) {
 
 	cm := ConfigMap{}
 	// Need to initialize the map defined in struct
+	// Should be done in a factory maybe.
 	cm.Data = make(map[string]string)
+	cm.TypeMeta.Kind = "ConfigMap"
+	cm.TypeMeta.APIVersion = "v1"
 
-	cm.Name = mg.Metadata.Name + "v" + strconv.FormatUint(sv.Major, 10) + "-jvm.params"
-	for _, e  := range mg.Spec.Environment.Local {
-		if !e.Required {
-			cm.Data["blah"] = "placeholder"
-		}
+	cm.Name = strings.ToLower(mg.Metadata.Name+ "v" + strconv.FormatUint(sv.Major, 10) +"-"+ conf.Name)
+	for _, o  := range conf.Options {
+		cm.Data[o.Name] = o.Default
 	}
-
 
 	b, err := json.Marshal(cm)
 	if err != nil {
@@ -59,5 +71,4 @@ func genJvmParams( mg *metagraf.MetaGraf ) {
 		return
 	}
 	fmt.Println(string(b))
-
 }

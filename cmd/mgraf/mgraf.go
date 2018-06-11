@@ -61,10 +61,10 @@ func poc(cpath string) {
 		if !strings.Contains(file, "json") {
 			continue
 		}
+
 		mg := metagraf.Parse(file)
-
-
 		generators.GenConfigMaps( &mg )
+
 		//metagraf.Refgen(&mg)
 		//generators.MiddlearthApp(&mg)
 		//mgs = append(mgs, mg)
