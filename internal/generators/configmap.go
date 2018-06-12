@@ -16,6 +16,7 @@ type ConfigMap struct {
 	Data map[string]string	`json:"data,omitempty"`
 }
 
+
 /*
 Entry function for creating a slew of configmaps, this will be somewhat
 specific to NT internal workings for now.
