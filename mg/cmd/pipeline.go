@@ -21,10 +21,10 @@ import (
 	"flag"
 	"os"
 	"strings"
-	"metagraf/internal/generators"
-	"metagraf/internal/metagraf"
 	"github.com/spf13/cobra"
 	"fmt"
+	"metagraf/internal/metagraf"
+	"metagraf/internal/generators"
 )
 
 var pmgf string
@@ -32,7 +32,6 @@ var pmgf string
 
 func init() {
 	pipelineCreateCmd.Flags().StringVar(&pmgf, "metagraf", "","path to metaGraf file")
-
 	pipelineCmd.AddCommand(pipelineCreateCmd)
 	rootCmd.AddCommand(pipelineCmd)
 }
@@ -58,9 +57,12 @@ var pipelineCreateCmd = &cobra.Command{
 }
 
 func pipelineCreate(mgf string) {
+	fmt.Println("doing stuff")
 	mg := metagraf.Parse(mgf)
+	fmt.Println(mg.Metadata.Name)
 	generators.GenConfigMaps(&mg)
-	generators.GenBuildConfig(&mg)
+	//generators.GenBuildConfig(&mg)
+
 }
 
 func maind() {
@@ -100,8 +102,7 @@ func poc(cpath string) {
 			continue
 		}
 
-		mg := metagraf.Parse(file)
-		generators.GenConfigMaps(&mg)
+		//mg := metagraf.Parse(file)
 
 		//metagraf.Refgen(&mg)
 		//generators.MiddlearthApp(&mg)

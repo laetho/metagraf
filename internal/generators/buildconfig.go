@@ -1,9 +1,13 @@
 package generators
 
 import (
-"metagraf/internal/metagraf"
-metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"fmt"
+
+	"metagraf/internal/metagraf"
+
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"github.com/openshift/api/build/v1"
+	"encoding/json"
 )
 
 type BuildConfig struct {
@@ -45,6 +49,14 @@ type BuildConfigStatus struct {
 	LastVersion int64	`json:"lastVersion"`
 }
 
-func GenBuildConfig( mg metagraf.MetaGraf) {
+func GenBuildConfig( mg *metagraf.MetaGraf) {
 	fmt.Println("do buildconfig generation")
+
+	bc := v1.BuildConfig{}
+	b, err := json.Marshal(bc)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(string(b))
 }
