@@ -17,7 +17,7 @@ type ConfigMap struct {
 }
 
 /*
-Entry function for creating a slew of configmaps, this will be very
+Entry function for creating a slew of configmaps, this will be somewhat
 specific to NT internal workings for now.
  */
 func GenConfigMaps( mg *metagraf.MetaGraf) {
