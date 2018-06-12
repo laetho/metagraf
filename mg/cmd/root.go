@@ -14,16 +14,27 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package main
+package cmd
 
 import (
-
-	"metagraf/mg/cmd"
+	"github.com/spf13/cobra"
+	"fmt"
+	"os"
 )
 
-func main() {
-	cmd.Execute()
+var rootCmd = &cobra.Command{
+	Use:   "mg",
+	Short: "mg operates on collections of metaGraf's objects.",
+	Long: `A utility that understands the metaGraf datastructure that will
+			help you generate kubernetes primitives.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		// Do Stuff Here
+	},
 }
 
-
-
+func Execute() {
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+}
