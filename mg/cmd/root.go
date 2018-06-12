@@ -25,11 +25,17 @@ import (
 var rootCmd = &cobra.Command{
 	Use:   "mg",
 	Short: "mg operates on collections of metaGraf's objects.",
-	Long: `A utility that understands the metaGraf datastructure that will
-			help you generate kubernetes primitives.`,
+	Long: `mg (metagraf) is a utility that understands the metaGraf
+datastructure and help you generate kubernetes primitives`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// Do Stuff Here
 	},
+}
+
+var Verbose	bool
+
+func init() {
+	rootCmd.PersistentFlags().BoolVar(&Verbose,"verbose", false, "verbose output")
 }
 
 func Execute() {
