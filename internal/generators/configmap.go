@@ -24,13 +24,10 @@ specific to NT internal workings for now.
 func GenConfigMaps( mg *metagraf.MetaGraf) {
 
 	/*
-
 	We need to create the following ConfigMaps:
-
 		* INTPL.Config.properties
 		* jvm.params
 		* server.xml
-
 	*/
 
 	for _, c := range mg.Spec.Config {
