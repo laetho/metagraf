@@ -2,3 +2,5 @@
 collections/
 vendor/
 out/
+Gopkg.lock
+
