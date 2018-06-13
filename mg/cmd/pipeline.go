@@ -18,7 +18,6 @@ package cmd
 
 import (
 	"path/filepath"
-	"flag"
 	"os"
 	"strings"
 	"github.com/spf13/cobra"
@@ -57,24 +56,12 @@ var pipelineCreateCmd = &cobra.Command{
 }
 
 func pipelineCreate(mgf string) {
-	fmt.Println("doing stuff")
 	mg := metagraf.Parse(mgf)
-	fmt.Println(mg.Metadata.Name)
 	generators.GenConfigMaps(&mg)
-	//generators.GenBuildConfig(&mg)
+	generators.GenBuildConfig(&mg)
 
 }
 
-func maind() {
-	colPtr := flag.String("c", "", "path to a directory holding a collection")
-	flag.Parse()
-
-	if len(*colPtr) == 0 {
-		panic("need a path to a collection")
-	}
-
-	poc(*colPtr)
-}
 
 func poc(cpath string) {
 	var files []string

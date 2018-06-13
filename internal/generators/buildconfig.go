@@ -1,62 +1,53 @@
+/*
+Copyright 2018 The MetaGraph Authors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package generators
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
+	"encoding/json"
 
 	"metagraf/internal/metagraf"
+	"github.com/blang/semver"
 
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"github.com/openshift/api/build/v1"
-	"encoding/json"
+	buildv1 "github.com/openshift/api/build/v1"
 )
 
-type BuildConfig struct {
-	metav1.TypeMeta			`json:",inline"`
-	metav1.ObjectMeta		`json:"metadata"`
-	BuildConfigStatus		`json:"status"`
-}
-
-type Trigger struct {
-	Type string 		`json:"type"`
-	Map map[string]string `json:",inline"`
-
-}
-
-type BuildConfigStrategy struct {
-	Type string		`json:"type"`
-	SourceStrategy 	BuildConfigSourceStrategy `json:"sourceStrategy"`
-}
-
-type BuildConfigSourceStrategy struct {
-
-}
-
-type BuildConfigSpec struct {
-	Triggers []Trigger  `json:"triggers,omitempty"`
-	RunPolicy string	`json:"runPolicy"`
-	Source map[string]string
-	Strategy BuildConfigStrategy `json:"strategy"`
-	Output struct {}
-	Resources struct{}
-	PostCommit struct{}
-	NodeSelector string
-	SuccessfulBuildsHistoryLimit int
-	FailedBuildsHistoryLimit int
-
-}
-
-type BuildConfigStatus struct {
-	LastVersion int64	`json:"lastVersion"`
-}
-
 func GenBuildConfig( mg *metagraf.MetaGraf) {
-	fmt.Println("do buildconfig generation")
-
-	bc := v1.BuildConfig{}
-	b, err := json.Marshal(bc)
+	sv, err := semver.Parse(mg.Spec.Version)
 	if err != nil {
 		fmt.Println(err)
-		return
 	}
-	fmt.Println(string(b))
+
+	bc := buildv1.BuildConfig{}
+	bc.SetName( strings.ToLower(mg.Metadata.Name +"v"+strconv.FormatUint(sv.Major, 10)) )
+
+	btp := buildv1.BuildTriggerPolicy{}
+	btp.Type = "GitHub"
+
+
+
+	bc.Spec.Triggers = append(bc.Spec.Triggers, btp)
+
+
+	ba, err := json.Marshal(bc)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(string(ba))
 }
