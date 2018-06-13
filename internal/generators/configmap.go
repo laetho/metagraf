@@ -1,33 +1,32 @@
 package generators
 
 import (
-	"metagraf/internal/metagraf"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"fmt"
 	"encoding/json"
-	"strconv"
+	"fmt"
 	"github.com/blang/semver"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"metagraf/internal/metagraf"
+	"strconv"
 	"strings"
 )
 
 type ConfigMap struct {
-	metav1.TypeMeta			`json:",inline"`
-	metav1.ObjectMeta		`json:"metadata"`
-	Data map[string]string	`json:"data,omitempty"`
+	metav1.TypeMeta   `json:",inline"`
+	metav1.ObjectMeta `json:"metadata"`
+	Data              map[string]string `json:"data,omitempty"`
 }
-
 
 /*
 Entry function for creating a slew of configmaps, this will be somewhat
 specific to NT internal workings for now.
- */
-func GenConfigMaps( mg *metagraf.MetaGraf) {
+*/
+func GenConfigMaps(mg *metagraf.MetaGraf) {
 
 	/*
-	We need to create the following ConfigMaps:
-		* INTPL.Config.properties
-		* jvm.params
-		* server.xml
+		We need to create the following ConfigMaps:
+			* INTPL.Config.properties
+			* jvm.params
+			* server.xml
 	*/
 
 	for _, c := range mg.Spec.Config {
@@ -37,13 +36,12 @@ func GenConfigMaps( mg *metagraf.MetaGraf) {
 		genConfigMapFromConfig(&c, mg)
 	}
 
-
 }
 
 /*
 Generates a configmap for jvm.params file for Liberty java apps
- */
-func genConfigMapFromConfig( conf *metagraf.Config, mg *metagraf.MetaGraf) {
+*/
+func genConfigMapFromConfig(conf *metagraf.Config, mg *metagraf.MetaGraf) {
 
 	// Parse version with semver library
 	sv, err := semver.Parse(mg.Spec.Version)
@@ -58,8 +56,8 @@ func genConfigMapFromConfig( conf *metagraf.Config, mg *metagraf.MetaGraf) {
 	cm.TypeMeta.Kind = "ConfigMap"
 	cm.TypeMeta.APIVersion = "v1"
 
-	cm.Name = strings.ToLower(mg.Metadata.Name+ "v" + strconv.FormatUint(sv.Major, 10) +"-"+ conf.Name)
-	for _, o  := range conf.Options {
+	cm.Name = strings.ToLower(mg.Metadata.Name + "v" + strconv.FormatUint(sv.Major, 10) + "-" + conf.Name)
+	for _, o := range conf.Options {
 		cm.Data[o.Name] = o.Default
 	}
 
