@@ -25,19 +25,25 @@ import (
 	"github.com/blang/semver"
 	"metagraf/internal/metagraf"
 
+	corev1 "k8s.io/api/core/v1"
 	buildv1 "github.com/openshift/api/build/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+/*
+ @todo: Figure out how to best inject artifact
+ */
 func GenBuildConfig(mg *metagraf.MetaGraf) {
 	sv, err := semver.Parse(mg.Spec.Version)
 	if err != nil {
 		fmt.Println(err)
 	}
 
+	bcname := strings.ToLower(mg.Metadata.Name + "v" + strconv.FormatUint(sv.Major, 10))
+
 	bc := buildv1.BuildConfig{
 		ObjectMeta: metav1.ObjectMeta{
-			Name: strings.ToLower(mg.Metadata.Name + "v" + strconv.FormatUint(sv.Major, 10)),
+			Name: bcname,
 		},
 		Spec: buildv1.BuildConfigSpec{
 			Triggers: []buildv1.BuildTriggerPolicy{
@@ -56,10 +62,24 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 				},
 				Strategy: buildv1.BuildStrategy{
 					Type: buildv1.SourceBuildStrategyType,
+					SourceStrategy: &buildv1.SourceBuildStrategy{
+						From: corev1.ObjectReference{
+							Kind: "ImageStreamTag",
+							Namespace: "openshift",
+							Name: "nt-wlp-pipeline:latest",
+						},
+					},
+				},
+				Output: buildv1.BuildOutput{
+					To: &corev1.ObjectReference{
+						Kind: "ImageStreamTag",
+						Name: bcname+":latest",
+					},
 				},
 			},
 		},
 	}
+
 
 	/*
 		bc := buildv1.BuildConfig{}
