@@ -57,7 +57,7 @@ var pipelineCreateCmd = &cobra.Command{
 
 func pipelineCreate(mgf string) {
 	mg := metagraf.Parse(mgf)
-	generators.GenConfigMaps(&mg)
+	//generators.GenConfigMaps(&mg)
 	generators.GenBuildConfig(&mg)
 
 }

@@ -42,6 +42,10 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 	bcname := strings.ToLower(mg.Metadata.Name + "v" + strconv.FormatUint(sv.Major, 10))
 
 	bc := buildv1.BuildConfig{
+		TypeMeta: metav1.TypeMeta{
+			Kind: "BuildConfig",
+			APIVersion: "v1",
+		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name: bcname,
 		},
@@ -79,15 +83,6 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 			},
 		},
 	}
-
-
-	/*
-		bc := buildv1.BuildConfig{}
-		bc.SetName( strings.ToLower(mg.Metadata.Name +"v"+strconv.FormatUint(sv.Major, 10)) )
-		btp := buildv1.BuildTriggerPolicy{}
-		btp.Type = "GitHub"
-		bc.Spec.Triggers = append(bc.Spec.Triggers, btp)
-	*/
 
 	ba, err := json.Marshal(bc)
 	if err != nil {
