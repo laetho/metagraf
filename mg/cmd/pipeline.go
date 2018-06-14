@@ -17,20 +17,25 @@ limitations under the License.
 package cmd
 
 import (
-	"path/filepath"
 	"os"
-	"strings"
-	"github.com/spf13/cobra"
 	"fmt"
+	"strings"
+	"path/filepath"
+
+	"github.com/spf13/cobra"
+
 	"metagraf/internal/metagraf"
 	"metagraf/internal/generators"
 )
 
-var pmgf string
-
+var (
+	Metagraf string
+	Namespace string
+)
 
 func init() {
-	pipelineCreateCmd.Flags().StringVar(&pmgf, "metagraf", "","path to metaGraf file")
+	pipelineCreateCmd.Flags().StringVar(&Metagraf, "metagraf", "","path to metaGraf file")
+	pipelineCreateCmd.Flags().StringVar(&Namespace, "namespace", "", "kubernetes namespace")
 	pipelineCmd.AddCommand(pipelineCreateCmd)
 	rootCmd.AddCommand(pipelineCmd)
 }
@@ -51,15 +56,19 @@ var pipelineCreateCmd = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		//fmt.Println("mg pipeline create")
-		pipelineCreate( pmgf )
+		if len(Namespace) == 0 {
+			fmt.Println("Namespace must be supplied")
+			os.Exit(1)
+		}
+		pipelineCreate( Metagraf, Namespace )
 	},
 }
 
-func pipelineCreate(mgf string) {
+func pipelineCreate(mgf string, namespace string) {
 	mg := metagraf.Parse(mgf)
 	//generators.GenConfigMaps(&mg)
-	generators.GenBuildConfig(&mg)
-
+	generators.GenImageStream(&mg, namespace)
+	//generators.GenBuildConfig(&mg)
 }
 
 
