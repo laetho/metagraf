@@ -20,16 +20,21 @@ import (
 	"fmt"
 	"strings"
 	"strconv"
+	"encoding/json"
+	"github.com/blang/semver"
 
 	"metagraf/internal/metagraf"
 
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	imagev1 "github.com/openshift/api/image/v1"
-	"database/sql/driver"
 )
 
-func GenImageStream( mg *metagraf.MetaGraf) {
+func GenImageStream( mg *metagraf.MetaGraf, namespace string) {
+	sv, err := semver.Parse(mg.Spec.Version)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	isname := strings.ToLower(mg.Metadata.Name + "v" + strconv.FormatUint(sv.Major, 10))
 
@@ -37,10 +42,20 @@ func GenImageStream( mg *metagraf.MetaGraf) {
 	objref.Kind = ""
 
 	is := imagev1.ImageStream{
+		TypeMeta: metav1.TypeMeta{
+			Kind: "ImageStream",
+			APIVersion: "v1",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name: isname,
+		},
 		Spec: imagev1.ImageStreamSpec{
 			Tags: []imagev1.TagReference{
 				{
-					From: corev1.ObjectReference{},
+					From: &corev1.ObjectReference{
+						Kind: "DockerImage",
+						Name: "docker-registry.default.svc:5000/"+namespace+"/"+isname+":latest",
+					},
 					Name: "latest",
 				},
 			},
