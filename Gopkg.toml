@@ -49,6 +49,10 @@
   branch = "release-1.9"
   name = "k8s.io/apimachinery"
 
+[[constraint]]
+  branch = "release-1.9"
+  name = "k8s.io/api"
+
 [prune]
   go-tests = true
   unused-packages = true

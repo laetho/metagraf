@@ -17,9 +17,42 @@ limitations under the License.
 package generators
 
 import (
+	"fmt"
+	"encoding/json"
+	"github.com/blang/semver"
+
 	"metagraf/internal/metagraf"
+
+	//corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	appsv1 "k8s.io/api/apps/v1"
+
 )
 
 func GenDeployment(mg *metagraf.MetaGraf) {
+	sv, err := semver.Parse(mg.Spec.Version)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	d := appsv1.Deployment{
+		TypeMeta: metav1.TypeMeta{
+			Kind: "Deployment",
+			APIVersion: "v1",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name: "",
+		},
+		Spec: appsv1.DeploymentSpec{
+
+		},
+		Status: appsv1.DeploymentStatus{},
+	}
+
+	ba, err := json.Marshal(d)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(string(ba))
 
 }
