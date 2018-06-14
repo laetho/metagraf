@@ -46,7 +46,7 @@
   version = "1.12.2"
 
 [[constraint]]
-  branch = "master"
+  branch = "release-1.9"
   name = "k8s.io/apimachinery"
 
 [prune]
