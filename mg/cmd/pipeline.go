@@ -69,6 +69,7 @@ func pipelineCreate(mgf string, namespace string) {
 	//generators.GenConfigMaps(&mg)
 	generators.GenImageStream(&mg, namespace)
 	//generators.GenBuildConfig(&mg)
+	generators.GenDeploymentConfig(&mg)
 }
 
 
