@@ -27,6 +27,8 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	appsv1 "k8s.io/api/apps/v1"
 
+	"strings"
+	"strconv"
 )
 
 func GenDeployment(mg *metagraf.MetaGraf) {
@@ -35,13 +37,16 @@ func GenDeployment(mg *metagraf.MetaGraf) {
 		fmt.Println(err)
 	}
 
-	d := appsv1.Deployment{
+	objname := strings.ToLower(mg.Metadata.Name + "v" + strconv.FormatUint(sv.Major, 10))
+
+	obj := appsv1.Deployment{
 		TypeMeta: metav1.TypeMeta{
 			Kind: "Deployment",
-			APIVersion: "v1",
+			APIVersion: "apps/v1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name: "",
+			Name: objname,
+			
 		},
 		Spec: appsv1.DeploymentSpec{
 
@@ -49,7 +54,7 @@ func GenDeployment(mg *metagraf.MetaGraf) {
 		Status: appsv1.DeploymentStatus{},
 	}
 
-	ba, err := json.Marshal(d)
+	ba, err := json.Marshal(obj)
 	if err != nil {
 		panic(err)
 	}
