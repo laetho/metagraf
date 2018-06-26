@@ -36,7 +36,11 @@ func GenImageStream( mg *metagraf.MetaGraf, namespace string) {
 		fmt.Println(err)
 	}
 
-	isname := strings.ToLower(mg.Metadata.Name + "v" + strconv.FormatUint(sv.Major, 10))
+	objname := strings.ToLower(mg.Metadata.Name + "v" + strconv.FormatUint(sv.Major, 10))
+
+	// Resource labels
+	l := make(map[string]string)
+	l["app"] = objname
 
 	objref := corev1.ObjectReference{}
 	objref.Kind = ""
@@ -47,14 +51,14 @@ func GenImageStream( mg *metagraf.MetaGraf, namespace string) {
 			APIVersion: "v1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name: isname,
+			Name: objname,
 		},
 		Spec: imagev1.ImageStreamSpec{
 			Tags: []imagev1.TagReference{
 				{
 					From: &corev1.ObjectReference{
 						Kind: "DockerImage",
-						Name: "docker-registry.default.svc:5000/"+namespace+"/"+isname+":latest",
+						Name: "docker-registry.default.svc:5000/"+namespace+"/"+objname+":latest",
 					},
 					Name: "latest",
 				},

@@ -39,7 +39,11 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 		fmt.Println(err)
 	}
 
-	bcname := strings.ToLower(mg.Metadata.Name + "v" + strconv.FormatUint(sv.Major, 10))
+	objname := strings.ToLower(mg.Metadata.Name + "v" + strconv.FormatUint(sv.Major, 10))
+
+	// Resource labels
+	l := make(map[string]string)
+	l["app"] = objname
 
 	bc := buildv1.BuildConfig{
 		TypeMeta: metav1.TypeMeta{
@@ -47,7 +51,7 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 			APIVersion: "v1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name: bcname,
+			Name: objname,
 		},
 		Spec: buildv1.BuildConfigSpec{
 			Triggers: []buildv1.BuildTriggerPolicy{
@@ -77,7 +81,7 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 				Output: buildv1.BuildOutput{
 					To: &corev1.ObjectReference{
 						Kind: "ImageStreamTag",
-						Name: bcname+":latest",
+						Name: objname+":latest",
 					},
 				},
 			},

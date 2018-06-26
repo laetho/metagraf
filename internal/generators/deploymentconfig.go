@@ -31,6 +31,7 @@ import (
 	"strconv"
 )
 
+
 func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 	sv, err := semver.Parse(mg.Spec.Version)
 	if err != nil {
@@ -39,6 +40,10 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 
 	objname := strings.ToLower(mg.Metadata.Name + "v" + strconv.FormatUint(sv.Major, 10))
 
+	// Resource labels
+	l := make(map[string]string)
+	l["app"] = objname
+
 	obj := appsv1.DeploymentConfig{
 		TypeMeta: metav1.TypeMeta{
 			Kind: "DeploymentConfig",
@@ -46,7 +51,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name: objname,
-			
+			Labels: l,
 		},
 		Spec: appsv1.DeploymentConfigSpec{
 

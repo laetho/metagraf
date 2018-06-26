@@ -38,6 +38,9 @@ func GenDeployment(mg *metagraf.MetaGraf) {
 	}
 
 	objname := strings.ToLower(mg.Metadata.Name + "v" + strconv.FormatUint(sv.Major, 10))
+	// Resource labels
+	l := make(map[string]string)
+	l["app"] = objname
 
 	obj := appsv1.Deployment{
 		TypeMeta: metav1.TypeMeta{
