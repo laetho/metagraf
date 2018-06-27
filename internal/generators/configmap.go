@@ -48,6 +48,10 @@ func genConfigMapFromConfig(conf *metagraf.Config, mg *metagraf.MetaGraf) {
 	if err != nil {
 		fmt.Println(err)
 	}
+	objname := strings.ToLower(mg.Metadata.Name + "v" + strconv.FormatUint(sv.Major, 10))
+
+	l := make(map[string]string)
+	l["app"] = objname
 
 	cm := ConfigMap{}
 	// Need to initialize the map defined in struct
@@ -55,6 +59,7 @@ func genConfigMapFromConfig(conf *metagraf.Config, mg *metagraf.MetaGraf) {
 	cm.Data = make(map[string]string)
 	cm.TypeMeta.Kind = "ConfigMap"
 	cm.TypeMeta.APIVersion = "v1"
+	cm.ObjectMeta.Labels = l
 
 	cm.Name = strings.ToLower(mg.Metadata.Name + "v" + strconv.FormatUint(sv.Major, 10) + "-" + conf.Name)
 	for _, o := range conf.Options {

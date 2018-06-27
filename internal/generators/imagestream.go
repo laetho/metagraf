@@ -52,6 +52,7 @@ func GenImageStream( mg *metagraf.MetaGraf, namespace string) {
 		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name: objname,
+			Labels: l,
 		},
 		Spec: imagev1.ImageStreamSpec{
 			Tags: []imagev1.TagReference{
