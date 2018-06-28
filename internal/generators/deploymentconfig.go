@@ -18,17 +18,18 @@ package generators
 
 import (
 	"fmt"
+	"strings"
+	"strconv"
 	"encoding/json"
 	"github.com/blang/semver"
 
 	"metagraf/internal/metagraf"
+	"k8s.io/apimachinery/pkg/util/intstr"
 
-	//corev1 "k8s.io/api/core/v1"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	appsv1 "github.com/openshift/api/apps/v1"
 
-	"strings"
-	"strconv"
 )
 
 
@@ -44,6 +45,42 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 	l := make(map[string]string)
 	l["app"] = objname
 
+	s := make(map[string]string)
+	s["app"] = objname
+	s["deploymentconfig"] = objname
+
+	var RevisionHistoryLimit int32 = 5
+	var ActiveDeadlineSeconds int64 = 21600
+	var TimeoutSeconds int64 = 600
+	var UpdatePeriodSeconds int64 = 1
+	var IntervalSeconds	int64 = 1
+	var MaxSurge intstr.IntOrString
+	MaxSurge.StrVal = "25%"
+	MaxSurge.Type = 1
+	var MaxUnavailable intstr.IntOrString
+	MaxUnavailable.StrVal = "25%"
+	MaxUnavailable.Type = 1
+
+	// Instance of RollingDeploymentStrategyParams
+	rollingParams := appsv1.RollingDeploymentStrategyParams{
+		MaxSurge: &MaxSurge,
+		MaxUnavailable: &MaxUnavailable,
+		TimeoutSeconds: &TimeoutSeconds,
+		IntervalSeconds: &IntervalSeconds,
+		UpdatePeriodSeconds: &UpdatePeriodSeconds,
+	}
+
+	// Containers
+	var Containers []corev1.Container
+	// Build tempalte container
+	Container := corev1.Container{
+		Name: objname,
+		Image: "",
+
+	}
+	Containers = append( Containers, Container)
+
+
 	obj := appsv1.DeploymentConfig{
 		TypeMeta: metav1.TypeMeta{
 			Kind: "DeploymentConfig",
@@ -54,6 +91,25 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 			Labels: l,
 		},
 		Spec: appsv1.DeploymentConfigSpec{
+			Replicas: 0,
+			RevisionHistoryLimit: &RevisionHistoryLimit,
+			Selector: s,
+			Strategy: appsv1.DeploymentStrategy{
+				ActiveDeadlineSeconds: &ActiveDeadlineSeconds,
+				Type: appsv1.DeploymentStrategyTypeRolling,
+				RollingParams: &rollingParams,
+			},
+			Template: &corev1.PodTemplateSpec{
+				ObjectMeta: metav1.ObjectMeta{
+					Name: objname,
+					Labels: l,
+				},
+				Spec: corev1.PodSpec{
+					Containers: Containers,
+				},
+			},
+
+
 
 		},
 		Status: appsv1.DeploymentConfigStatus{},

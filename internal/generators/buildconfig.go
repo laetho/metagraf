@@ -74,7 +74,7 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 						From: corev1.ObjectReference{
 							Kind: "ImageStreamTag",
 							Namespace: "openshift",
-							Name: "nt-wlp-pipeline:latest",
+							Name: "nt-wlp-pipeline:latest", // @todo: parameterize buildimage
 						},
 					},
 				},
