@@ -54,6 +54,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 	var TimeoutSeconds int64 = 600
 	var UpdatePeriodSeconds int64 = 1
 	var IntervalSeconds	int64 = 1
+
 	var MaxSurge intstr.IntOrString
 	MaxSurge.StrVal = "25%"
 	MaxSurge.Type = 1
@@ -70,13 +71,26 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 		UpdatePeriodSeconds: &UpdatePeriodSeconds,
 	}
 
+
+
+
 	// Containers
 	var Containers []corev1.Container
-	// Build tempalte container
+	var ContainerPorts []corev1.ContainerPort
+
+	// Build Container ports, @todo this should be done by inspecting the image (docker inspect)
+	ContainerPort := corev1.ContainerPort{
+		Name: objname,
+		ContainerPort: 8080,
+		Protocol: "TCP",
+	}
+	ContainerPorts = append(ContainerPorts, ContainerPort)
+
 	Container := corev1.Container{
 		Name: objname,
-		Image: "",
-
+		Image: "docker-registry.default.svc:5000/devpipeline/customeridentity:latest",
+		ImagePullPolicy: corev1.PullAlways,
+		Ports: ContainerPorts,
 	}
 	Containers = append( Containers, Container)
 
