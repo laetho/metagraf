@@ -9,17 +9,10 @@ methodology to aid automation tasks or decisions about a component or collection
  (software components) to produce metadata or aggregated metadata to support 
  your toolchain or pipelines with information that can be acted upon.
 
-One of the goals of **metaGraf** is to indentify missing nodes or edges
-(components) when comparing a running enviroment with the graph/branch
-of a component not currently deployed or a new version of an existing
-component. Desired state vs existing state.
+Aggregated service graphs can be created from this and used to automate entire
+environments. Should form the declarative state necessary for a reconciliation loop. 
 
-In other words, determining what needs to be present or changed to 
-fulfil the explicit dependencies of the new component entering an
-environment.
-
-Another goal is to aid in documentation of software components and
-their dependencies on a component level.
+This will also aid in documentation of software components and their dependencies.
 
 ## Status
 
