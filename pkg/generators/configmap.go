@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/blang/semver"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"metagraf/internal/metagraf"
+	"metagraf/pkg/metagraf"
 	"strconv"
 	"strings"
 )

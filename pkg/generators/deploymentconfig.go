@@ -23,7 +23,7 @@ import (
 	"encoding/json"
 	"github.com/blang/semver"
 
-	"metagraf/internal/metagraf"
+	"metagraf/pkg/metagraf"
 	"k8s.io/apimachinery/pkg/util/intstr"
 
 	corev1 "k8s.io/api/core/v1"

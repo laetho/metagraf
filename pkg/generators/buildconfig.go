@@ -23,7 +23,7 @@ import (
 	"strings"
 
 	"github.com/blang/semver"
-	"metagraf/internal/metagraf"
+	"metagraf/pkg/metagraf"
 
 	corev1 "k8s.io/api/core/v1"
 	buildv1 "github.com/openshift/api/build/v1"

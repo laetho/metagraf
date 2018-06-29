@@ -8,7 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	semver "github.com/blang/semver"
-	"metagraf/internal/metagraf"
+	"metagraf/pkg/metagraf"
 	"strconv"
 	"strings"
 )

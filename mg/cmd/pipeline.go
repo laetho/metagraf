@@ -24,8 +24,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"metagraf/internal/metagraf"
-	"metagraf/internal/generators"
+	"metagraf/pkg/metagraf"
+	"metagraf/pkg/generators"
 )
 
 var (
