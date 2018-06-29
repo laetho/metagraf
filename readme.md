@@ -1,5 +1,5 @@
-metaGraf
-========
+# metaGraf
+
 
 **metaGraf** provides a generic structure of metadata about a software component. 
 **metagraf** is inspired by the <a href="https://12factor.net">twelve-factor app</a> 
@@ -9,7 +9,7 @@ methodology to aid automation tasks or decisions about a component or collection
  (software components) to produce metadata or aggregated metadata to support 
  your toolchain or pipelines with information that can be acted upon.
 
-Aggregated service graphs can be created from this and used to automate entire
+A aggregated service graph can be created and used to automate entire
 environments. Should form the declarative state necessary for a reconciliation loop. 
 
 This will also aid in documentation of software components and their dependencies.
