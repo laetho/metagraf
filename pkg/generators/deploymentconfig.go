@@ -24,6 +24,7 @@ import (
 	"github.com/blang/semver"
 
 	"metagraf/pkg/metagraf"
+	"metagraf/pkg/helpers"
 	"k8s.io/apimachinery/pkg/util/intstr"
 
 	corev1 "k8s.io/api/core/v1"
@@ -31,6 +32,7 @@ import (
 	appsv1 "github.com/openshift/api/apps/v1"
 
 )
+
 
 
 func GenDeploymentConfig(mg *metagraf.MetaGraf) {
@@ -81,14 +83,14 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 	// Build Container ports, @todo this should be done by inspecting the image (docker inspect)
 	ContainerPort := corev1.ContainerPort{
 		Name: objname,
-		ContainerPort: 8080,
+		ContainerPort: helpers.DockerInspectImage(objname),
 		Protocol: "TCP",
 	}
 	ContainerPorts = append(ContainerPorts, ContainerPort)
 
 	Container := corev1.Container{
 		Name: objname,
-		Image: "docker-registry.default.svc:5000/devpipeline/customeridentity:latest",
+		Image: "docker-registry.default.svc:5000/devpipeline/"+objname+":latest",
 		ImagePullPolicy: corev1.PullAlways,
 		Ports: ContainerPorts,
 	}
@@ -122,9 +124,6 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 					Containers: Containers,
 				},
 			},
-
-
-
 		},
 		Status: appsv1.DeploymentConfigStatus{},
 	}
