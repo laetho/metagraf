@@ -47,6 +47,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 	l := make(map[string]string)
 	l["app"] = objname
 
+	// Selector
 	s := make(map[string]string)
 	s["app"] = objname
 	s["deploymentconfig"] = objname
@@ -73,20 +74,22 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 		UpdatePeriodSeconds: &UpdatePeriodSeconds,
 	}
 
-
-
-
 	// Containers
 	var Containers []corev1.Container
 	var ContainerPorts []corev1.ContainerPort
 
-	// Build Container ports, @todo this should be done by inspecting the image (docker inspect)
-	ContainerPort := corev1.ContainerPort{
-		Name: objname,
-		ContainerPort: helpers.DockerInspectImage(objname),
-		Protocol: "TCP",
+
+	ImageInfo := helpers.DockerInspectImage(objname)
+
+	for k,_ := range ImageInfo.Config.ExposedPorts {
+		port, _ := strconv.Atoi(k.Port())
+		ContainerPort := corev1.ContainerPort{
+			Name: objname,
+			ContainerPort: int32(port),
+			Protocol: corev1.Protocol(k.Proto()),
+		}
+		ContainerPorts = append(ContainerPorts, ContainerPort)
 	}
-	ContainerPorts = append(ContainerPorts, ContainerPort)
 
 	Container := corev1.Container{
 		Name: objname,
