@@ -46,6 +46,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 	// Resource labels
 	l := make(map[string]string)
 	l["app"] = objname
+	l["deploymentconfig"] = objname
 
 	// Selector
 	s := make(map[string]string)
@@ -74,30 +75,56 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 		UpdatePeriodSeconds: &UpdatePeriodSeconds,
 	}
 
-	// Containers
-	var Containers []corev1.Container
-	var ContainerPorts []corev1.ContainerPort
-
 
 	ImageInfo := helpers.DockerInspectImage(objname)
 
-	for k,_ := range ImageInfo.Config.ExposedPorts {
+	// Containers
+	var Containers []corev1.Container
+	var ContainerPorts []corev1.ContainerPort
+	//var ContainerVolumes []string
+	var Volumes []corev1.Volume
+	var VolumeMounts []corev1.VolumeMount
+
+	// ContainerPorts
+	for k := range ImageInfo.Config.ExposedPorts {
 		port, _ := strconv.Atoi(k.Port())
 		ContainerPort := corev1.ContainerPort{
-			Name: objname,
 			ContainerPort: int32(port),
-			Protocol: corev1.Protocol(k.Proto()),
+			Protocol: corev1.Protocol(strings.ToUpper(k.Proto())),
 		}
 		ContainerPorts = append(ContainerPorts, ContainerPort)
 	}
 
+	// Volumes & VolumeMounts in podspec
+	for k := range ImageInfo.Config.Volumes {
+		// Volume Definitions
+		Volume := corev1.Volume{
+			Name: objname+"test",
+			VolumeSource: corev1.VolumeSource{
+				EmptyDir: &corev1.EmptyDirVolumeSource{},
+			},
+		}
+		Volumes = append(Volumes, Volume)
+
+		VolumeMount := corev1.VolumeMount{
+			MountPath: k,
+			Name: objname+"test",
+		}
+		VolumeMounts = append(VolumeMounts, VolumeMount)
+	}
+
+
+	// Tying Container PodSpec together
 	Container := corev1.Container{
 		Name: objname,
 		Image: "docker-registry.default.svc:5000/devpipeline/"+objname+":latest",
 		ImagePullPolicy: corev1.PullAlways,
 		Ports: ContainerPorts,
+		VolumeMounts: VolumeMounts,
 	}
 	Containers = append( Containers, Container)
+
+	// Volumes (can be mounted in podspec
 
 
 	obj := appsv1.DeploymentConfig{
@@ -125,7 +152,10 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 				},
 				Spec: corev1.PodSpec{
 					Containers: Containers,
+					Volumes: Volumes,
+
 				},
+
 			},
 		},
 		Status: appsv1.DeploymentConfigStatus{},
