@@ -20,6 +20,7 @@ import (
 	"metagraf/mg/cmd"
 )
 
+
 func main() {
 	cmd.Execute()
 }

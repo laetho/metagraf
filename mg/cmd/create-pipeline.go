@@ -55,12 +55,12 @@ var createPipelineCmd = &cobra.Command{
 
 func pipelineCreate(mgf string, namespace string) {
 	mg := metagraf.Parse(mgf)
-	generators.MiddlearthApp(&mg)
 	generators.GenConfigMaps(&mg)
 	generators.GenImageStream(&mg, namespace)
 	generators.GenBuildConfig(&mg)
 	generators.GenDeploymentConfig(&mg)
 }
+
 
 func poc(cpath string) {
 	var files []string
