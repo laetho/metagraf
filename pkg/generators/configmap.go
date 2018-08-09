@@ -3,18 +3,14 @@ package generators
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/blang/semver"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"metagraf/pkg/metagraf"
 	"strconv"
 	"strings"
-)
+	"github.com/blang/semver"
+	"metagraf/pkg/metagraf"
 
-type ConfigMap struct {
-	metav1.TypeMeta   `json:",inline"`
-	metav1.ObjectMeta `json:"metadata"`
-	Data              map[string]string `json:"data,omitempty"`
-}
+	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+)
 
 /*
 Entry function for creating a slew of configmaps, this will be somewhat
@@ -53,15 +49,25 @@ func genConfigMapFromConfig(conf *metagraf.Config, mg *metagraf.MetaGraf) {
 	l := make(map[string]string)
 	l["app"] = objname
 
-	cm := ConfigMap{}
+	cm := corev1.ConfigMap{
+		TypeMeta: metav1.TypeMeta{
+			Kind: "ConfigMap",
+			APIVersion: "v1",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name: objname,
+			Labels: l,
+		},
+	}
+
 	// Need to initialize the map defined in struct
 	// Should be done in a factory maybe.
 	cm.Data = make(map[string]string)
-	cm.TypeMeta.Kind = "ConfigMap"
-	cm.TypeMeta.APIVersion = "v1"
+	//cm.TypeMeta.Kind = "ConfigMap"
+	//cm.TypeMeta.APIVersion = "v1"
 	cm.ObjectMeta.Labels = l
 
-	cm.Name = strings.ToLower(mg.Metadata.Name + "v" + strconv.FormatUint(sv.Major, 10) + "-" + conf.Name)
+	cm.Name = strings.ToLower(mg.Metadata.Name + "v" + strconv.FormatUint(sv.Major, 10) + "-" + strings.Replace(conf.Name, ".", "-", -1 ))
 	for _, o := range conf.Options {
 		cm.Data[o.Name] = o.Default
 	}
