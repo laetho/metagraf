@@ -41,11 +41,10 @@ func init() {
 
 
 var createPipelineCmd = &cobra.Command{
-	Use:   "create",
+	Use:   "pipeline",
 	Short: "create pipeline",
-	Long:  ``,
+	Long:  `creates kubernetes primitives from a metaGraf file`,
 	Run: func(cmd *cobra.Command, args []string) {
-		//fmt.Println("mg pipeline create")
 		if len(Namespace) == 0 {
 			fmt.Println("Namespace must be supplied")
 			os.Exit(1)
@@ -62,7 +61,6 @@ func pipelineCreate(mgf string, namespace string) {
 	generators.GenBuildConfig(&mg)
 	generators.GenDeploymentConfig(&mg)
 }
-
 
 func poc(cpath string) {
 	var files []string
