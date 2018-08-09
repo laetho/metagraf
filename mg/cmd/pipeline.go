@@ -34,23 +34,13 @@ var (
 )
 
 func init() {
-	pipelineCreateCmd.Flags().StringVar(&Metagraf, "metagraf", "","path to metaGraf file")
-	pipelineCreateCmd.Flags().StringVar(&Namespace, "namespace", "", "kubernetes namespace")
-	pipelineCmd.AddCommand(pipelineCreateCmd)
-	rootCmd.AddCommand(pipelineCmd)
+	createPipelineCmd.Flags().StringVar(&Metagraf, "metagraf", "","path to metaGraf file")
+	createPipelineCmd.Flags().StringVar(&Namespace, "namespace", "", "kubernetes namespace")
+	createCmd.AddCommand(createPipelineCmd)
 }
 
-var pipelineCmd = &cobra.Command{
-	Use:   "pipeline",
-	Short: "pipeline operations",
-	Long:  ``,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("mg pipeline operations")
 
-	},
-}
-
-var pipelineCreateCmd = &cobra.Command{
+var createPipelineCmd = &cobra.Command{
 	Use:   "create",
 	Short: "create pipeline",
 	Long:  ``,
