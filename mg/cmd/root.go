@@ -20,11 +20,19 @@ import (
 	"github.com/spf13/cobra"
 	"fmt"
 	"os"
+	"github.com/spf13/viper"
+	"github.com/mitchellh/go-homedir"
 )
 
 const Banner string = "mg (metaGraf) -"
 
-var rootCmd = &cobra.Command{
+// Viper cfg file
+var cfgFile string
+
+// Flags
+var Verbose	bool
+
+var RootCmd = &cobra.Command{
 	Use:   "mg",
 	Short: "mg operates on collections of metaGraf's objects.",
 	Long:  Banner + `is a utility that understands the metaGraf
@@ -34,14 +42,33 @@ datastructure and help you generate kubernetes primitives`,
 	//},
 }
 
-var Verbose	bool
-
 func init() {
-	rootCmd.PersistentFlags().BoolVar(&Verbose,"verbose", false, "verbose output")
+	cobra.OnInitialize(initConfig)
+
+	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.config/mg/mg.yaml)")
+	RootCmd.PersistentFlags().BoolVar(&Verbose,"verbose", false, "verbose output")
+}
+
+func initConfig() {
+	if cfgFile != "" {
+		viper.SetConfigFile(cfgFile)
+	} else {
+		home, err := homedir.Dir()
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		viper.AddConfigPath(home+".config/mg/")
+		viper.SetConfigName("mg.yaml")
+	}
+	viper.AutomaticEnv()
+	if err := viper.ReadInConfig(); err == nil {
+		fmt.Println("Using config file:", viper.ConfigFileUsed())
+	}
 }
 
 func Execute() {
-	if err := rootCmd.Execute(); err != nil {
+	if err := RootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}

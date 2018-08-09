@@ -22,7 +22,7 @@ import (
 )
 
 func init() {
-	rootCmd.AddCommand(configCmd)
+	RootCmd.AddCommand(configCmd)
 	configCmd.AddCommand(configSetCmd)
 }
 
