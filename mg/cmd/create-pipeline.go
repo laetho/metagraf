@@ -26,6 +26,7 @@ import (
 
 	"metagraf/pkg/metagraf"
 	"metagraf/pkg/generators"
+	"github.com/spf13/viper"
 )
 
 var (
@@ -34,22 +35,33 @@ var (
 )
 
 func init() {
-	createPipelineCmd.Flags().StringVar(&Metagraf, "metagraf", "","path to metaGraf file")
-	createPipelineCmd.Flags().StringVar(&Namespace, "namespace", "", "kubernetes namespace")
+	createPipelineCmd.Flags().StringVar(&Namespace, "namespace", "", "namespace to work on, if not supplied it will use current working namespace")
 	createCmd.AddCommand(createPipelineCmd)
 }
 
 
 var createPipelineCmd = &cobra.Command{
-	Use:   "pipeline",
-	Short: "create pipeline",
+	Use:   "pipeline <metaGraf>",
+	Short: "create kubernetes objects for supplied <metaGraf> file",
 	Long:  `creates kubernetes primitives from a metaGraf file`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if len(Namespace) == 0 {
-			fmt.Println("Namespace must be supplied")
-			os.Exit(1)
+
+		if len(args) < 1  {
+			fmt.Println("Activ
+			return
 		}
-		pipelineCreate( Metagraf, Namespace )
+
+		if len(Namespace) == 0 {
+			Namespace = viper.GetString("namespace")
+			if len(Namespace) == 0 {
+				fmt.Println("Namespace must be supplied")
+				os.Exit(1)
+			}
+			fmt.Printf("Using namespace %v from current config.\n", Namespace)
+		}
+
+		pipelineCreate(Metagraf, Namespace)
+
 	},
 }
 

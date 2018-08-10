@@ -22,17 +22,16 @@ import (
 )
 
 func init() {
-	RootCmd.AddCommand(configCmd)
+
 	configCmd.AddCommand(configSetCmd)
+	RootCmd.AddCommand(configCmd)
+
 }
 
 var configCmd = &cobra.Command{
 	Use:   "config",
 	Short: "config operations",
 	Long:  `set, get, list, delete configuration parameters`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("mg config operations")
-	},
 }
 
 var configSetCmd = &cobra.Command{
@@ -42,4 +41,9 @@ var configSetCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("mg config set")
 	},
+}
+
+
+func ConfigSet( key string, value string) {
+
 }
