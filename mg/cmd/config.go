@@ -19,13 +19,13 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 	"fmt"
+	"github.com/spf13/viper"
 )
 
 func init() {
-
-	configCmd.AddCommand(configSetCmd)
+	configCmd.AddCommand(configCmdList)
+	configCmd.AddCommand(configCmdSet)
 	RootCmd.AddCommand(configCmd)
-
 }
 
 var configCmd = &cobra.Command{
@@ -34,12 +34,23 @@ var configCmd = &cobra.Command{
 	Long:  `set, get, list, delete configuration parameters`,
 }
 
-var configSetCmd = &cobra.Command{
-	Use:   "set",
-	Short: "set configuration",
+var configCmdSet = &cobra.Command{
+	Use:   "set <key> <value>",
+	Short: "<key> <value>",
 	Long:  `set`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("mg config set")
+	},
+}
+
+var configCmdList = &cobra.Command{
+	Use:   "list",
+	Short: "list configuration",
+	Long:  `list current configuration settings`,
+	Run: func(cmd *cobra.Command, args []string) {
+		for _, ck := range configkeys {
+			fmt.Println(ck,":",viper.GetString(ck))
+		}
 	},
 }
 
