@@ -43,8 +43,8 @@ type MetaGraf struct {
 				Consumes   []EnvironmentVar `json:"consumes,omitempty"`
 			} `json:"external,omitempty"`
 		} `json:"environment,omitempty"`
-		Config []Config
-	}
+		Config []Config `json:"config,omitempty"`
+	} `json:"spec"`
 }
 
 type Resource struct {
@@ -57,23 +57,23 @@ type Resource struct {
 }
 
 type Config struct {
-	Name    	string
-	Type        string
-	Description string
+	Name    	string			`json:"name"`
+	Type        string			`json:"type"`
+	Description string			`json:"description"`
 	Options     []ConfigParam	`json:"options,omitempty"`
 }
 
 type ConfigParam struct {
-	Name        string
-	Required    bool
-	Description string
-	Type        string
-	Default     string
+	Name        string			`json:"name"`
+	Required    bool			`json:"required"`
+	Description string			`json:"description"`
+	Type        string			`json:"type"`
+	Default     string			`json:"default"`
 }
 type EnvironmentVar struct {
-	Name        string
-	Required    bool
-	Type        string
-	Description string
-	Default		string
+	Name        string			`json:"name"`
+	Required    bool			`json:"required"`
+	Type        string			`json:"type"`
+	Description string			`json:"description"`
+	Default		string			`json:"default"`
 }
