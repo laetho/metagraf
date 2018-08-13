@@ -47,7 +47,7 @@ var createPipelineCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		if len(args) < 1  {
-			fmt.Println("Activ
+			fmt.Println("Active project is:", viper.Get("namespace"))
 			return
 		}
 
