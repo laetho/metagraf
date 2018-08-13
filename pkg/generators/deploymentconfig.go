@@ -31,7 +31,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	appsv1 "github.com/openshift/api/apps/v1"
 
-)
+	)
 
 
 
@@ -76,7 +76,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 	}
 
 
-	ImageInfo := helpers.DockerInspectImage(objname)
+	ImageInfo := helpers.DockerInspectImage(mg.Spec.)
 
 	// Containers
 	var Containers []corev1.Container
