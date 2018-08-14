@@ -20,6 +20,7 @@ import (
 	"github.com/spf13/cobra"
 	"fmt"
 	"github.com/spf13/viper"
+	"metagraf/pkg/helpers"
 )
 
 func init() {
@@ -39,7 +40,20 @@ var configCmdSet = &cobra.Command{
 	Short: "<key> <value>",
 	Long:  `set`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("mg config set")
+		if len(args) < 2 {
+			fmt.Println("Insufficient arguments")
+			return
+		}
+
+		if helpers.StringInSlice(args[0], configkeys) {
+			viper.Set( args[0], args[1])
+			err := viper.WriteConfig()
+			if err != nil {
+				fmt.Println("ERROR:", err)
+				return
+			}
+		}
+
 	},
 }
 
@@ -49,7 +63,7 @@ var configCmdList = &cobra.Command{
 	Long:  `list current configuration settings`,
 	Run: func(cmd *cobra.Command, args []string) {
 		for _, ck := range configkeys {
-			fmt.Println(ck,":",viper.GetString(ck))
+			fmt.Println(ck, ":", viper.GetString(ck))
 		}
 	},
 }

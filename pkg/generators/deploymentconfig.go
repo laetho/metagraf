@@ -31,7 +31,9 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	appsv1 "github.com/openshift/api/apps/v1"
 
-	)
+	"github.com/fsouza/go-dockerclient"
+	"github.com/spf13/viper"
+)
 
 
 
@@ -76,7 +78,12 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 	}
 
 
-	ImageInfo := helpers.DockerInspectImage(mg.Spec.)
+	auth := docker.AuthConfiguration{
+		Username: viper.GetString("user"),
+		Password: viper.GetString("password"),
+	}
+
+	ImageInfo := helpers.DockerInspectImage(mg.Spec.BaseRunImage,"latest", auth)
 
 	// Containers
 	var Containers []corev1.Container
@@ -117,7 +124,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 	// Tying Container PodSpec together
 	Container := corev1.Container{
 		Name: objname,
-		Image: "docker-registry.default.svc:5000/devpipeline/"+objname+":latest",
+		Image: "registry-default.ocp.norsk-tipping.no:443/devpipeline/"+objname+":latest",
 		ImagePullPolicy: corev1.PullAlways,
 		Ports: ContainerPorts,
 		VolumeMounts: VolumeMounts,
