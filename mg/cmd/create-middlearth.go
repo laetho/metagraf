@@ -20,19 +20,24 @@ import (
 	"github.com/spf13/cobra"
 	"metagraf/pkg/metagraf"
 	"metagraf/pkg/generators"
-	)
+	"fmt"
+)
 
 func init() {
-	createMiddlearthCmd.Flags().StringVar(&Metagraf, "metagraf", "","path to metaGraf file")
+
 	createCmd.AddCommand(createMiddlearthCmd)
 }
 
 var createMiddlearthCmd = &cobra.Command{
-	Use:   "middlearth",
+	Use:   "middlearth <metagraf>",
 	Short: "Generate middlearth application json",
 	Long:  `Outputs a middlearth application json from a metaGraf definition`,
 	Run: func(cmd *cobra.Command, args []string) {
-		createMiddlearth(Metagraf)
+		if len(args) < 1 {
+			fmt.Println("Missing path to metaGraf specification")
+			return
+		}
+		createMiddlearth(args[0])
 	},
 }
 

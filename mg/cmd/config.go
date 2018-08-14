@@ -44,7 +44,6 @@ var configCmdSet = &cobra.Command{
 			fmt.Println("Insufficient arguments")
 			return
 		}
-
 		if helpers.StringInSlice(args[0], configkeys) {
 			viper.Set( args[0], args[1])
 			err := viper.WriteConfig()
@@ -53,7 +52,6 @@ var configCmdSet = &cobra.Command{
 				return
 			}
 		}
-
 	},
 }
 
@@ -66,9 +64,4 @@ var configCmdList = &cobra.Command{
 			fmt.Println(ck, ":", viper.GetString(ck))
 		}
 	},
-}
-
-
-func ConfigSet( key string, value string) {
-
 }

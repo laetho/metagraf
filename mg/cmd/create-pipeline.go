@@ -30,7 +30,6 @@ import (
 )
 
 var (
-	Metagraf string
 	Namespace string
 )
 
@@ -48,6 +47,7 @@ var createPipelineCmd = &cobra.Command{
 
 		if len(args) < 1  {
 			fmt.Println("Active project is:", viper.Get("namespace"))
+			fmt.Println("Missing path to metaGraf specification")
 			return
 		}
 
@@ -57,10 +57,9 @@ var createPipelineCmd = &cobra.Command{
 				fmt.Println("Namespace must be supplied")
 				os.Exit(1)
 			}
-			fmt.Printf("Using namespace %v from current config.\n", Namespace)
 		}
 
-		pipelineCreate(Metagraf, Namespace)
+		pipelineCreate(args[0], Namespace)
 
 	},
 }
