@@ -23,7 +23,6 @@ var LabelBlacklistFilter []string = []string{
 	"s2i",
 	"license",
 	"k8s",
-
 }
 
 // Slice of strings that we wash environment variables with from

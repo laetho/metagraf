@@ -25,14 +25,14 @@ import (
 	"github.com/blang/semver"
 	"metagraf/pkg/metagraf"
 
-	corev1 "k8s.io/api/core/v1"
 	buildv1 "github.com/openshift/api/build/v1"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 /*
  @todo: Figure out how to best inject artifact
- */
+*/
 func GenBuildConfig(mg *metagraf.MetaGraf) {
 	sv, err := semver.Parse(mg.Spec.Version)
 	if err != nil {
@@ -47,7 +47,7 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 
 	bc := buildv1.BuildConfig{
 		TypeMeta: metav1.TypeMeta{
-			Kind: "BuildConfig",
+			Kind:       "BuildConfig",
 			APIVersion: "v1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
@@ -62,26 +62,26 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 					},
 				},
 			},
-			RunPolicy:  buildv1.BuildRunPolicySerial,
+			RunPolicy: buildv1.BuildRunPolicySerial,
 			CommonSpec: buildv1.CommonSpec{
 				Source: buildv1.BuildSource{
-					Type: "Source",
+					Type:   "Source",
 					Binary: &buildv1.BinaryBuildSource{},
 				},
 				Strategy: buildv1.BuildStrategy{
 					Type: buildv1.SourceBuildStrategyType,
 					SourceStrategy: &buildv1.SourceBuildStrategy{
 						From: corev1.ObjectReference{
-							Kind: "ImageStreamTag",
+							Kind:      "ImageStreamTag",
 							Namespace: "openshift",
-							Name: "nt-wlp-pipeline:latest", // @todo: parameterize buildimage
+							Name:      "nt-wlp-pipeline:latest", // @todo: parameterize buildimage
 						},
 					},
 				},
 				Output: buildv1.BuildOutput{
 					To: &corev1.ObjectReference{
 						Kind: "ImageStreamTag",
-						Name: objname+":latest",
+						Name: objname + ":latest",
 					},
 				},
 			},

@@ -17,20 +17,20 @@ limitations under the License.
 package generators
 
 import (
-	"fmt"
-	"strings"
-	"strconv"
 	"encoding/json"
+	"fmt"
 	"github.com/blang/semver"
+	"strconv"
+	"strings"
 
 	"metagraf/pkg/metagraf"
 
+	imagev1 "github.com/openshift/api/image/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	imagev1 "github.com/openshift/api/image/v1"
 )
 
-func GenImageStream( mg *metagraf.MetaGraf, namespace string) {
+func GenImageStream(mg *metagraf.MetaGraf, namespace string) {
 	sv, err := semver.Parse(mg.Spec.Version)
 	if err != nil {
 		fmt.Println(err)
@@ -47,11 +47,11 @@ func GenImageStream( mg *metagraf.MetaGraf, namespace string) {
 
 	is := imagev1.ImageStream{
 		TypeMeta: metav1.TypeMeta{
-			Kind: "ImageStream",
+			Kind:       "ImageStream",
 			APIVersion: "v1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name: objname,
+			Name:   objname,
 			Labels: l,
 		},
 		Spec: imagev1.ImageStreamSpec{
@@ -59,7 +59,7 @@ func GenImageStream( mg *metagraf.MetaGraf, namespace string) {
 				{
 					From: &corev1.ObjectReference{
 						Kind: "DockerImage",
-						Name: "docker-registry.default.svc:5000/"+namespace+"/"+objname+":latest",
+						Name: "docker-registry.default.svc:5000/" + namespace + "/" + objname + ":latest",
 					},
 					Name: "latest",
 				},

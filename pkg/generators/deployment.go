@@ -17,18 +17,18 @@ limitations under the License.
 package generators
 
 import (
-	"fmt"
 	"encoding/json"
+	"fmt"
 	"github.com/blang/semver"
 
 	"metagraf/pkg/metagraf"
 
 	//corev1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	appsv1 "k8s.io/api/apps/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"strings"
 	"strconv"
+	"strings"
 )
 
 func GenDeployment(mg *metagraf.MetaGraf) {
@@ -44,16 +44,13 @@ func GenDeployment(mg *metagraf.MetaGraf) {
 
 	obj := appsv1.Deployment{
 		TypeMeta: metav1.TypeMeta{
-			Kind: "Deployment",
+			Kind:       "Deployment",
 			APIVersion: "apps/v1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name: objname,
-			
 		},
-		Spec: appsv1.DeploymentSpec{
-
-		},
+		Spec:   appsv1.DeploymentSpec{},
 		Status: appsv1.DeploymentStatus{},
 	}
 

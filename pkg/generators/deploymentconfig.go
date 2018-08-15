@@ -17,23 +17,22 @@ limitations under the License.
 package generators
 
 import (
-	"fmt"
-	"strings"
-	"strconv"
 	"encoding/json"
+	"fmt"
+	"strconv"
+	"strings"
 
 	"github.com/blang/semver"
 	"github.com/fsouza/go-dockerclient"
 	"github.com/spf13/viper"
 
-	"metagraf/pkg/metagraf"
 	"metagraf/pkg/helpers"
+	"metagraf/pkg/metagraf"
 
-	"k8s.io/apimachinery/pkg/util/intstr"
+	appsv1 "github.com/openshift/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	appsv1 "github.com/openshift/api/apps/v1"
-
+	"k8s.io/apimachinery/pkg/util/intstr"
 )
 
 func GenDeploymentConfig(mg *metagraf.MetaGraf) {
@@ -58,7 +57,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 	var ActiveDeadlineSeconds int64 = 21600
 	var TimeoutSeconds int64 = 600
 	var UpdatePeriodSeconds int64 = 1
-	var IntervalSeconds	int64 = 1
+	var IntervalSeconds int64 = 1
 
 	var MaxSurge intstr.IntOrString
 	MaxSurge.StrVal = "25%"
@@ -69,10 +68,10 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 
 	// Instance of RollingDeploymentStrategyParams
 	rollingParams := appsv1.RollingDeploymentStrategyParams{
-		MaxSurge: &MaxSurge,
-		MaxUnavailable: &MaxUnavailable,
-		TimeoutSeconds: &TimeoutSeconds,
-		IntervalSeconds: &IntervalSeconds,
+		MaxSurge:            &MaxSurge,
+		MaxUnavailable:      &MaxUnavailable,
+		TimeoutSeconds:      &TimeoutSeconds,
+		IntervalSeconds:     &IntervalSeconds,
 		UpdatePeriodSeconds: &UpdatePeriodSeconds,
 	}
 
@@ -89,17 +88,17 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 		Username: viper.GetString("user"),
 		Password: viper.GetString("password"),
 	}
-	ImageInfo := helpers.DockerInspectImage(mg.Spec.BaseRunImage,"latest", auth)
+	ImageInfo := helpers.DockerInspectImage(mg.Spec.BaseRunImage, "latest", auth)
 
-	for _,e := range ImageInfo.Config.Env {
-		es := strings.Split(e,"=")
-		if helpers.SliceInString(EnvBlacklistFilter,strings.ToLower(es[0])) {
+	for _, e := range ImageInfo.Config.Env {
+		es := strings.Split(e, "=")
+		if helpers.SliceInString(EnvBlacklistFilter, strings.ToLower(es[0])) {
 			continue
 		}
 		EnvVars = append(EnvVars, corev1.EnvVar{Name: es[0], Value: es[1]})
 	}
-	for k,v := range ImageInfo.Config.Labels {
-		if helpers.SliceInString(LabelBlacklistFilter,strings.ToLower(k)) {
+	for k, v := range ImageInfo.Config.Labels {
+		if helpers.SliceInString(LabelBlacklistFilter, strings.ToLower(k)) {
 			continue
 		}
 		l[k] = v
@@ -110,7 +109,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 		port, _ := strconv.Atoi(k.Port())
 		ContainerPort := corev1.ContainerPort{
 			ContainerPort: int32(port),
-			Protocol: corev1.Protocol(strings.ToUpper(k.Proto())),
+			Protocol:      corev1.Protocol(strings.ToUpper(k.Proto())),
 		}
 		ContainerPorts = append(ContainerPorts, ContainerPort)
 	}
@@ -119,7 +118,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 	for k := range ImageInfo.Config.Volumes {
 		// Volume Definitions
 		Volume := corev1.Volume{
-			Name: objname+helpers.PathToIdentifier(k),
+			Name: objname + helpers.PathToIdentifier(k),
 			VolumeSource: corev1.VolumeSource{
 				EmptyDir: &corev1.EmptyDirVolumeSource{},
 			},
@@ -128,52 +127,50 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 
 		VolumeMount := corev1.VolumeMount{
 			MountPath: k,
-			Name: objname+helpers.PathToIdentifier(k),
+			Name:      objname + helpers.PathToIdentifier(k),
 		}
 		VolumeMounts = append(VolumeMounts, VolumeMount)
 	}
 
-
 	// Tying Container PodSpec together
 	Container := corev1.Container{
-		Name: objname,
-		Image: "registry-default.ocp.norsk-tipping.no:443/devpipeline/"+objname+":latest",
+		Name:            objname,
+		Image:           "registry-default.ocp.norsk-tipping.no:443/devpipeline/" + objname + ":latest",
 		ImagePullPolicy: corev1.PullAlways,
-		Ports: ContainerPorts,
-		VolumeMounts: VolumeMounts,
-		Env: EnvVars,
+		Ports:           ContainerPorts,
+		VolumeMounts:    VolumeMounts,
+		Env:             EnvVars,
 	}
-	Containers = append( Containers, Container)
+	Containers = append(Containers, Container)
 
+	// Tying the DeploymentObject together, literally :)
 	obj := appsv1.DeploymentConfig{
 		TypeMeta: metav1.TypeMeta{
-			Kind: "DeploymentConfig",
+			Kind:       "DeploymentConfig",
 			APIVersion: "v1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name: objname,
+			Name:   objname,
 			Labels: l,
 		},
 		Spec: appsv1.DeploymentConfigSpec{
-			Replicas: 0,
+			Replicas:             0,
 			RevisionHistoryLimit: &RevisionHistoryLimit,
-			Selector: s,
+			Selector:             s,
 			Strategy: appsv1.DeploymentStrategy{
 				ActiveDeadlineSeconds: &ActiveDeadlineSeconds,
-				Type: appsv1.DeploymentStrategyTypeRolling,
+				Type:          appsv1.DeploymentStrategyTypeRolling,
 				RollingParams: &rollingParams,
 			},
 			Template: &corev1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
-					Name: objname,
+					Name:   objname,
 					Labels: l,
 				},
 				Spec: corev1.PodSpec{
 					Containers: Containers,
-					Volumes: Volumes,
-
+					Volumes:    Volumes,
 				},
-
 			},
 		},
 		Status: appsv1.DeploymentConfigStatus{},

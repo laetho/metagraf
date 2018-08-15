@@ -19,10 +19,10 @@ package generators
 import (
 	"encoding/json"
 	"fmt"
-	"strconv"
-	"strings"
 	"github.com/blang/semver"
 	"metagraf/pkg/metagraf"
+	"strconv"
+	"strings"
 
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -67,11 +67,11 @@ func genConfigMapFromConfig(conf *metagraf.Config, mg *metagraf.MetaGraf) {
 
 	cm := corev1.ConfigMap{
 		TypeMeta: metav1.TypeMeta{
-			Kind: "ConfigMap",
+			Kind:       "ConfigMap",
 			APIVersion: "v1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name: objname,
+			Name:   objname,
 			Labels: l,
 		},
 	}
@@ -83,7 +83,7 @@ func genConfigMapFromConfig(conf *metagraf.Config, mg *metagraf.MetaGraf) {
 	//cm.TypeMeta.APIVersion = "v1"
 	cm.ObjectMeta.Labels = l
 
-	cm.Name = strings.ToLower(mg.Metadata.Name + "v" + strconv.FormatUint(sv.Major, 10) + "-" + strings.Replace(conf.Name, ".", "-", -1 ))
+	cm.Name = strings.ToLower(mg.Metadata.Name + "v" + strconv.FormatUint(sv.Major, 10) + "-" + strings.Replace(conf.Name, ".", "-", -1))
 	for _, o := range conf.Options {
 		cm.Data[o.Name] = o.Default
 	}

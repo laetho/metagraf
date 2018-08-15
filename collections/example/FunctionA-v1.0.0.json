@@ -12,7 +12,7 @@
   "spec": {
     "version": "1.0.0",
     "type": "function",
-    "description": "Serverless function that does A.",
+    "description": "\"Serverless\" function that does A.",
     "resources": [
       {
         "name": "FunctionB",
