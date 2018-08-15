@@ -21,21 +21,20 @@ import (
 	"strings"
 	"strconv"
 	"encoding/json"
+
 	"github.com/blang/semver"
+	"github.com/fsouza/go-dockerclient"
+	"github.com/spf13/viper"
 
 	"metagraf/pkg/metagraf"
 	"metagraf/pkg/helpers"
-	"k8s.io/apimachinery/pkg/util/intstr"
 
+	"k8s.io/apimachinery/pkg/util/intstr"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	appsv1 "github.com/openshift/api/apps/v1"
 
-	"github.com/fsouza/go-dockerclient"
-	"github.com/spf13/viper"
 )
-
-
 
 func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 	sv, err := semver.Parse(mg.Spec.Version)
@@ -77,20 +76,34 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 		UpdatePeriodSeconds: &UpdatePeriodSeconds,
 	}
 
-
-	auth := docker.AuthConfiguration{
-		Username: viper.GetString("user"),
-		Password: viper.GetString("password"),
-	}
-
-	ImageInfo := helpers.DockerInspectImage(mg.Spec.BaseRunImage,"latest", auth)
-
 	// Containers
 	var Containers []corev1.Container
 	var ContainerPorts []corev1.ContainerPort
 	//var ContainerVolumes []string
 	var Volumes []corev1.Volume
 	var VolumeMounts []corev1.VolumeMount
+	// Environment
+	var EnvVars []corev1.EnvVar
+
+	auth := docker.AuthConfiguration{
+		Username: viper.GetString("user"),
+		Password: viper.GetString("password"),
+	}
+	ImageInfo := helpers.DockerInspectImage(mg.Spec.BaseRunImage,"latest", auth)
+
+	for _,e := range ImageInfo.Config.Env {
+		es := strings.Split(e,"=")
+		if helpers.SliceInString(EnvBlacklistFilter,strings.ToLower(es[0])) {
+			continue
+		}
+		EnvVars = append(EnvVars, corev1.EnvVar{Name: es[0], Value: es[1]})
+	}
+	for k,v := range ImageInfo.Config.Labels {
+		if helpers.SliceInString(LabelBlacklistFilter,strings.ToLower(k)) {
+			continue
+		}
+		l[k] = v
+	}
 
 	// ContainerPorts
 	for k := range ImageInfo.Config.ExposedPorts {
@@ -128,11 +141,9 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 		ImagePullPolicy: corev1.PullAlways,
 		Ports: ContainerPorts,
 		VolumeMounts: VolumeMounts,
+		Env: EnvVars,
 	}
 	Containers = append( Containers, Container)
-
-	// Volumes (can be mounted in podspec
-
 
 	obj := appsv1.DeploymentConfig{
 		TypeMeta: metav1.TypeMeta{
