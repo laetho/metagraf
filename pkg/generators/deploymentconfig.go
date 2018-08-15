@@ -119,7 +119,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 	for k := range ImageInfo.Config.Volumes {
 		// Volume Definitions
 		Volume := corev1.Volume{
-			Name: objname+"test",
+			Name: objname+helpers.PathToIdentifier(k),
 			VolumeSource: corev1.VolumeSource{
 				EmptyDir: &corev1.EmptyDirVolumeSource{},
 			},
@@ -128,7 +128,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 
 		VolumeMount := corev1.VolumeMount{
 			MountPath: k,
-			Name: objname+"test",
+			Name: objname+helpers.PathToIdentifier(k),
 		}
 		VolumeMounts = append(VolumeMounts, VolumeMount)
 	}

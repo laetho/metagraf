@@ -39,6 +39,6 @@ func SliceInString(list []string, str string) bool {
 	return false
 }
 
-func PathToIdentifier(p string) string {
-	return "does nothing"
+func PathToIdentifier(path string) string {
+	return strings.Replace(path, "/", "-", -1)
 }
