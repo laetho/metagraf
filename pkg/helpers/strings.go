@@ -16,6 +16,10 @@ limitations under the License.
 
 package helpers
 
+import (
+	"strings"
+)
+
 func StringInSlice(a string, list []string) bool {
 	for _, b := range list {
 		if b == a {
@@ -23,4 +27,18 @@ func StringInSlice(a string, list []string) bool {
 		}
 	}
 	return false
+}
+
+// Checks if a strings in a slice is part of a string.
+func SliceInString(list []string, str string) bool {
+	for _,filter := range list {
+		if strings.Contains(str, filter) {
+			return true
+		}
+	}
+	return false
+}
+
+func PathToIdentifier(p string) string {
+	return "does nothing"
 }
