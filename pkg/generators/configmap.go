@@ -54,13 +54,13 @@ func GenConfigMaps(mg *metagraf.MetaGraf) {
 Generates a configmap for jvm.params file for Liberty java apps
 */
 func genConfigMapFromConfig(conf *metagraf.Config, mg *metagraf.MetaGraf) {
-
-	// Parse version with semver library
+	var objname string
 	sv, err := semver.Parse(mg.Spec.Version)
 	if err != nil {
-		fmt.Println(err)
+		objname = strings.ToLower(mg.Metadata.Name)
+	} else {
+		objname = strings.ToLower(mg.Metadata.Name + "v" + strconv.FormatUint(sv.Major, 10))
 	}
-	objname := strings.ToLower(mg.Metadata.Name + "v" + strconv.FormatUint(sv.Major, 10))
 
 	l := make(map[string]string)
 	l["app"] = objname

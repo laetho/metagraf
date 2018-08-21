@@ -31,12 +31,13 @@ import (
 )
 
 func GenImageStream(mg *metagraf.MetaGraf, namespace string) {
+	var objname string
 	sv, err := semver.Parse(mg.Spec.Version)
 	if err != nil {
-		fmt.Println(err)
+		objname = strings.ToLower(mg.Metadata.Name)
+	} else {
+		objname = strings.ToLower(mg.Metadata.Name + "v" + strconv.FormatUint(sv.Major, 10))
 	}
-
-	objname := strings.ToLower(mg.Metadata.Name + "v" + strconv.FormatUint(sv.Major, 10))
 
 	// Resource labels
 	l := make(map[string]string)
