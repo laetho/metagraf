@@ -33,6 +33,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
+
 )
 
 func GenDeploymentConfig(mg *metagraf.MetaGraf) {
@@ -88,7 +89,14 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 		Username: viper.GetString("user"),
 		Password: viper.GetString("password"),
 	}
-	ImageInfo := helpers.DockerInspectImage(mg.Spec.BaseRunImage, "latest", auth)
+
+	ImageInfo, err := helpers.DockerInspectImage(mg.Spec.BaseRunImage, "latest", auth)
+	if err != nil {
+		// Create an empty Image struct so the following logic can run
+		ImageInfo = &docker.Image{
+			Config: &docker.Config{},
+		}
+	}
 
 	for _, e := range ImageInfo.Config.Env {
 		es := strings.Split(e, "=")
