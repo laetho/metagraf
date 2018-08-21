@@ -87,12 +87,21 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 	// Environment
 	var EnvVars []corev1.EnvVar
 
+	var DockerImage string
+	if len(mg.Spec.BaseRunImage) > 0 {
+		DockerImage = mg.Spec.BaseRunImage
+	} else if  len(mg.Spec.BuildImage) > 0 {
+		DockerImage = mg.Spec.BuildImage
+	} else {
+		DockerImage = ""
+	}
+
 	auth := docker.AuthConfiguration{
 		Username: viper.GetString("user"),
 		Password: viper.GetString("password"),
 	}
 
-	ImageInfo, err := helpers.DockerInspectImage(mg.Spec.BaseRunImage, "latest", auth)
+	ImageInfo, err := helpers.DockerInspectImage(DockerImage, "latest", auth)
 	if err != nil {
 		// Create an empty Image struct so the following logic can run
 		ImageInfo = &docker.Image{
