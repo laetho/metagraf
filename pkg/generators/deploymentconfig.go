@@ -33,7 +33,6 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
-
 )
 
 func GenDeploymentConfig(mg *metagraf.MetaGraf) {
@@ -90,7 +89,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 	var DockerImage string
 	if len(mg.Spec.BaseRunImage) > 0 {
 		DockerImage = mg.Spec.BaseRunImage
-	} else if  len(mg.Spec.BuildImage) > 0 {
+	} else if len(mg.Spec.BuildImage) > 0 {
 		DockerImage = mg.Spec.BuildImage
 	} else {
 		DockerImage = ""
