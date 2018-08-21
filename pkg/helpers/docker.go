@@ -21,13 +21,13 @@ import (
 )
 
 // todo: verify image string
-func DockerInspectImage(image string, tag string, auth docker.AuthConfiguration) *docker.Image {
+func DockerInspectImage(image string, tag string, auth docker.AuthConfiguration) (*docker.Image, error) {
 
 	endpoint := "unix://var/run/docker.sock"
 
 	cli, err := docker.NewClient(endpoint)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	pull := docker.PullImageOptions{
@@ -37,12 +37,12 @@ func DockerInspectImage(image string, tag string, auth docker.AuthConfiguration)
 
 	err = cli.PullImage( pull, auth )
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	i, err := cli.InspectImage(image)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
-	return i
+	return i, nil
 }
