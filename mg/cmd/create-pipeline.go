@@ -29,9 +29,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-var (
-	Namespace string
-)
+
 
 func init() {
 	createPipelineCmd.Flags().StringVar(&Namespace, "namespace", "", "namespace to work on, if not supplied it will use current working namespace")

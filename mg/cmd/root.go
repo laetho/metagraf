@@ -24,7 +24,7 @@ import (
 	"github.com/mitchellh/go-homedir"
 )
 
-const Banner string = "mg (metaGraf) -"
+const Banner string = "mg (metaGraf) - "
 
 // Viper cfg file
 var cfgFile string = ""
