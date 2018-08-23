@@ -31,7 +31,8 @@ import (
 )
 
 /*
- @todo: Figure out how to best inject artifact
+ @todo handle binary build vs s2i build
+
 */
 func GenBuildConfig(mg *metagraf.MetaGraf) {
 	var objname string
@@ -40,6 +41,14 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 		objname = strings.ToLower(mg.Metadata.Name)
 	} else {
 		objname = strings.ToLower(mg.Metadata.Name + "v" + strconv.FormatUint(sv.Major, 10))
+	}
+
+	var buildsource buildv1.BuildSource
+
+	if len(mg.Spec.BuildImage) > 0 && len(mg.Spec.Repository) > 0 {
+		buildsource = genGitBuildSource(mg)
+	} else {
+		buildsource = genBinaryBuildSource()
 	}
 
 	// Resource labels
@@ -65,10 +74,7 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 			},
 			RunPolicy: buildv1.BuildRunPolicySerial,
 			CommonSpec: buildv1.CommonSpec{
-				Source: buildv1.BuildSource{
-					Type:   "Source",
-					Binary: &buildv1.BinaryBuildSource{},
-				},
+				Source: buildsource,
 				Strategy: buildv1.BuildStrategy{
 					Type: buildv1.SourceBuildStrategyType,
 					SourceStrategy: &buildv1.SourceBuildStrategy{
@@ -94,4 +100,17 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 		panic(err)
 	}
 	fmt.Println(string(ba))
+}
+
+func genBinaryBuildSource() buildv1.BuildSource {
+	return buildv1.BuildSource{
+		Type:   "Source",
+		Binary: &buildv1.BinaryBuildSource{},
+	}
+}
+
+func genGitBuildSource(mg *metagraf.MetaGraf) buildv1.BuildSource {
+	return buildv1.BuildSource{
+
+	}
 }
