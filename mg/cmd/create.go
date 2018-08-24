@@ -33,7 +33,9 @@ var (
 
 func init() {
 	RootCmd.AddCommand(createCmd)
+	createCmd.AddCommand(createConfigMapCmd)
 	createCmd.AddCommand(createDeploymentConfigCmd)
+	createCmd.AddCommand(createBuildConfigCmd)
 	createDeploymentConfigCmd.Flags().StringVar(&Namespace, "namespace", "", "namespace to work on, if not supplied it will use current working namespace")
 }
 
@@ -42,6 +44,55 @@ var createCmd = &cobra.Command{
 	Short: "create operations",
 	Long:  Banner + ` create `,
 }
+
+var createBuildConfigCmd = &cobra.Command{
+	Use:   "buildconfig <metagraf>",
+	Short: "create BuildConfig from metaGraf file",
+	Long:  Banner + `create BuildConfig`,
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) < 1  {
+			fmt.Println("Active project is:", viper.Get("namespace"))
+			fmt.Println("Missing path to metaGraf specification")
+			return
+		}
+
+		if len(Namespace) == 0 {
+			Namespace = viper.GetString("namespace")
+			if len(Namespace) == 0 {
+				fmt.Println("Namespace must be supplied")
+				os.Exit(1)
+			}
+		}
+
+		mg := metagraf.Parse(args[0])
+		generators.GenBuildConfig(&mg)
+	},
+}
+
+var createConfigMapCmd = &cobra.Command{
+	Use:   "configmap <metagraf>",
+	Short: "create ConfigMaps from metaGraf file",
+	Long:  Banner + `create ConfigMap`,
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) < 1  {
+			fmt.Println("Active project is:", viper.Get("namespace"))
+			fmt.Println("Missing path to metaGraf specification")
+			return
+		}
+
+		if len(Namespace) == 0 {
+			Namespace = viper.GetString("namespace")
+			if len(Namespace) == 0 {
+				fmt.Println("Namespace must be supplied")
+				os.Exit(1)
+			}
+		}
+
+		mg := metagraf.Parse(args[0])
+		generators.GenConfigMaps(&mg)
+	},
+}
+
 
 var createDeploymentConfigCmd = &cobra.Command{
 	Use:   "deploymentconfig <metagraf>",
@@ -66,3 +117,28 @@ var createDeploymentConfigCmd = &cobra.Command{
 		generators.GenDeploymentConfig(&mg)
 	},
 }
+
+var createImageStreamCmd = &cobra.Command{
+	Use:   "imagestream <metagraf>",
+	Short: "create ImageStream from metaGraf file",
+	Long:  Banner + `create ImageStream`,
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) < 1  {
+			fmt.Println("Active project is:", viper.Get("namespace"))
+			fmt.Println("Missing path to metaGraf specification")
+			return
+		}
+
+		if len(Namespace) == 0 {
+			Namespace = viper.GetString("namespace")
+			if len(Namespace) == 0 {
+				fmt.Println("Namespace must be supplied")
+				os.Exit(1)
+			}
+		}
+
+		mg := metagraf.Parse(args[0])
+		generators.GenImageStream(&mg, Namespace)
+	},
+}
+
