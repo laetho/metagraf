@@ -24,18 +24,25 @@ import (
 
 	"github.com/blang/semver"
 	"metagraf/pkg/metagraf"
+	"metagraf/pkg/imageurl"
 
 	buildv1 "github.com/openshift/api/build/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-/*
- @todo handle binary build vs s2i build
-
-*/
 func GenBuildConfig(mg *metagraf.MetaGraf) {
+
 	var objname string
+	var buildsource buildv1.BuildSource
+	var imageurl imageurl.ImageURL
+
+	err := imageurl.Parse(mg.Spec.BuildImage)
+	if err != nil {
+		fmt.Printf("malformed BuildImage url provided in metaGraf file; %v", mg.Spec.BuildImage)
+		return
+	}
+
 	sv, err := semver.Parse(mg.Spec.Version)
 	if err != nil {
 		objname = strings.ToLower(mg.Metadata.Name)
@@ -43,12 +50,10 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 		objname = strings.ToLower(mg.Metadata.Name + "v" + strconv.FormatUint(sv.Major, 10))
 	}
 
-	var buildsource buildv1.BuildSource
-
-	if len(mg.Spec.BuildImage) > 0 && len(mg.Spec.Repository) > 0 {
-		buildsource = genGitBuildSource(mg)
-	} else {
+	if len(mg.Spec.BaseRunImage) > 0 && len(mg.Spec.Repository) > 0 {
 		buildsource = genBinaryBuildSource()
+	} else if len(mg.Spec.BuildImage) > 0 && len(mg.Spec.BaseRunImage) < 1 {
+		buildsource = genGitBuildSource(mg)
 	}
 
 	// Resource labels
@@ -68,7 +73,7 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 				{
 					Type: "generic",
 					GenericWebHook: &buildv1.WebHookTrigger{
-						Secret: "moregibberish",
+						Secret: "wakkawakkawakka",
 					},
 				},
 			},
@@ -80,8 +85,8 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 					SourceStrategy: &buildv1.SourceBuildStrategy{
 						From: corev1.ObjectReference{
 							Kind:      "ImageStreamTag",
-							Namespace: "openshift",
-							Name:      "nt-wlp-pipeline:latest", // @todo: parameterize buildimage
+							Namespace: imageurl.Namespace,
+							Name:      imageurl.Image+":"+imageurl.Tag,
 						},
 					},
 				},
@@ -111,6 +116,10 @@ func genBinaryBuildSource() buildv1.BuildSource {
 
 func genGitBuildSource(mg *metagraf.MetaGraf) buildv1.BuildSource {
 	return buildv1.BuildSource{
-
+		Type: "Source",
+		Git: &buildv1.GitBuildSource{
+			URI: mg.Spec.Repository,
+			Ref: mg.Spec.Branch,
+		},
 	}
 }
