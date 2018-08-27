@@ -36,6 +36,7 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 	var objname string
 	var buildsource buildv1.BuildSource
 	var imageurl imageurl.ImageURL
+	var EnvVars []corev1.EnvVar
 
 	err := imageurl.Parse(mg.Spec.BuildImage)
 	if err != nil {
@@ -60,6 +61,15 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 	l := make(map[string]string)
 	l["app"] = objname
 
+	for _, e := range mg.Spec.Environment.Build {
+		if e.Required == true {
+			EnvVars = append(EnvVars, corev1.EnvVar{ Name: e.Name, Value: e.Default })
+		} else if e.Required == false {
+			EnvVars = append(EnvVars, corev1.EnvVar{ Name: e.Name, Value: "null"})
+		}
+	}
+
+
 	bc := buildv1.BuildConfig{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "BuildConfig",
@@ -83,6 +93,7 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 				Strategy: buildv1.BuildStrategy{
 					Type: buildv1.SourceBuildStrategyType,
 					SourceStrategy: &buildv1.SourceBuildStrategy{
+						Env: EnvVars,
 						From: corev1.ObjectReference{
 							Kind:      "ImageStreamTag",
 							Namespace: imageurl.Namespace,
