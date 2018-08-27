@@ -107,7 +107,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 			Config: &docker.Config{},
 		}
 	}
-
+	// Environment Variables from baserunimage
 	for _, e := range ImageInfo.Config.Env {
 		es := strings.Split(e, "=")
 		if helpers.SliceInString(EnvBlacklistFilter, strings.ToLower(es[0])) {
@@ -115,6 +115,17 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 		}
 		EnvVars = append(EnvVars, corev1.EnvVar{Name: es[0], Value: es[1]})
 	}
+
+	// Local variables from metagraf as deployment envvars
+	for _, e := range mg.Spec.Environment.Local {
+		if e.Required == true {
+			EnvVars = append(EnvVars, corev1.EnvVar{ Name: e.Name, Value: e.Default })
+		} else if e.Required == false {
+			EnvVars = append(EnvVars, corev1.EnvVar{ Name: e.Name, Value: "null"})
+		}
+	}
+
+	// Labels from baserunimage
 	for k, v := range ImageInfo.Config.Labels {
 		if helpers.SliceInString(LabelBlacklistFilter, strings.ToLower(k)) {
 			continue
