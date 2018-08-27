@@ -36,6 +36,7 @@ func init() {
 	createCmd.AddCommand(createConfigMapCmd)
 	createCmd.AddCommand(createDeploymentConfigCmd)
 	createCmd.AddCommand(createBuildConfigCmd)
+	createCmd.AddCommand(createImageStreamCmd)
 	createDeploymentConfigCmd.Flags().StringVar(&Namespace, "namespace", "", "namespace to work on, if not supplied it will use current working namespace")
 }
 
