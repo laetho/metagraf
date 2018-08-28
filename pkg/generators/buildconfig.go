@@ -35,10 +35,10 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 
 	var objname string
 	var buildsource buildv1.BuildSource
-	var imageurl imageurl.ImageURL
+	var imgurl imageurl.ImageURL
 	var EnvVars []corev1.EnvVar
 
-	err := imageurl.Parse(mg.Spec.BuildImage)
+	err := imgurl.Parse(mg.Spec.BuildImage)
 	if err != nil {
 		fmt.Printf("malformed BuildImage url provided in metaGraf file; %v", mg.Spec.BuildImage)
 		return
@@ -96,8 +96,8 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 						Env: EnvVars,
 						From: corev1.ObjectReference{
 							Kind:      "ImageStreamTag",
-							Namespace: imageurl.Namespace,
-							Name:      imageurl.Image+":"+imageurl.Tag,
+							Namespace: imgurl.Namespace,
+							Name:      imgurl.Image+":"+ imgurl.Tag,
 						},
 					},
 				},
