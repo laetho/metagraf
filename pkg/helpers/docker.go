@@ -17,7 +17,9 @@ limitations under the License.
 package helpers
 
 import (
-		"github.com/fsouza/go-dockerclient"
+	"fmt"
+	"github.com/fsouza/go-dockerclient"
+	"os"
 )
 
 // todo: verify image string
@@ -27,6 +29,7 @@ func DockerInspectImage(image string, tag string, auth docker.AuthConfiguration)
 
 	cli, err := docker.NewClient(endpoint)
 	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to authenticate to registry")
 		return nil, err
 	}
 
