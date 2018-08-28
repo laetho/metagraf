@@ -16,6 +16,9 @@ limitations under the License.
 
 package generators
 
+// todo this should be made a configuration option
+var TmplBasePath = "/home/a01595/go/src/metagraf/templates"
+
 // Slice of strings that we wash labels from baseimage with when
 // creating a deploymentconfig
 var LabelBlacklistFilter []string = []string{
