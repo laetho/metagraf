@@ -1,5 +1,5 @@
 digraph {
-  rankdir=tplr
+  rankdir=lr
   node [color=grey25,
         fillcolor=wheat,
         shape=box,
