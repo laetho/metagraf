@@ -17,18 +17,18 @@ limitations under the License.
 package generators
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/blang/semver"
 	"github.com/fsouza/go-dockerclient"
 	"github.com/spf13/viper"
+	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"metagraf/pkg/helpers"
 	"metagraf/pkg/metagraf"
 	"strconv"
 	"strings"
-	"encoding/json"
-	corev1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 func GenService(mg *metagraf.MetaGraf) {
@@ -69,11 +69,11 @@ func GenService(mg *metagraf.MetaGraf) {
 	for k := range ImageInfo.Config.ExposedPorts {
 		port, _ := strconv.Atoi(k.Port())
 		ContainerPort := corev1.ServicePort{
-			Name: strings.ToUpper(k.Proto())+"-"+k.Port(),
-			Port: int32(port),
-			Protocol:      corev1.Protocol(strings.ToUpper(k.Proto())),
+			Name:     strings.ToUpper(k.Proto()) + "-" + k.Port(),
+			Port:     int32(port),
+			Protocol: corev1.Protocol(strings.ToUpper(k.Proto())),
 			TargetPort: intstr.IntOrString{
-				Type: 0,
+				Type:   0,
 				IntVal: int32(port),
 				StrVal: k.Port(),
 			},
@@ -93,13 +93,13 @@ func GenService(mg *metagraf.MetaGraf) {
 			APIVersion: "v1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name: objname,
+			Name:   objname,
 			Labels: labels,
 		},
 		Spec: corev1.ServiceSpec{
-			Ports: serviceports,
-			Selector: selectors,
-			Type: "ClusterIP",
+			Ports:           serviceports,
+			Selector:        selectors,
+			Type:            "ClusterIP",
 			SessionAffinity: "None",
 		},
 	}

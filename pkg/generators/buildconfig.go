@@ -23,8 +23,8 @@ import (
 	"strings"
 
 	"github.com/blang/semver"
-	"metagraf/pkg/metagraf"
 	"metagraf/pkg/imageurl"
+	"metagraf/pkg/metagraf"
 
 	buildv1 "github.com/openshift/api/build/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -63,12 +63,11 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 
 	for _, e := range mg.Spec.Environment.Build {
 		if e.Required == true {
-			EnvVars = append(EnvVars, corev1.EnvVar{ Name: e.Name, Value: e.Default })
+			EnvVars = append(EnvVars, corev1.EnvVar{Name: e.Name, Value: e.Default})
 		} else if e.Required == false {
-			EnvVars = append(EnvVars, corev1.EnvVar{ Name: e.Name, Value: "null"})
+			EnvVars = append(EnvVars, corev1.EnvVar{Name: e.Name, Value: "null"})
 		}
 	}
-
 
 	bc := buildv1.BuildConfig{
 		TypeMeta: metav1.TypeMeta{
@@ -97,7 +96,7 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 						From: corev1.ObjectReference{
 							Kind:      "ImageStreamTag",
 							Namespace: imgurl.Namespace,
-							Name:      imgurl.Image+":"+ imgurl.Tag,
+							Name:      imgurl.Image + ":" + imgurl.Tag,
 						},
 					},
 				},
