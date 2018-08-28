@@ -68,38 +68,4 @@ func pipelineCreate(mgf string, namespace string) {
 	generators.GenService(&mg)
 }
 
-func poc(cpath string) {
-	var files []string
 
-	// Walk the directory passed with cpath
-	err := filepath.Walk(cpath, func(path string, info os.FileInfo, err error) error {
-		files = append(files, path)
-		return nil
-	})
-	if err != nil {
-		panic(err)
-	}
-
-	// Loop through all files in the directory given in basepath,
-	// ignore basepath itself, and ignore file names not containing "json"
-	// Parse each json file
-
-	//var mgs []metagraf.MetaGraf
-
-	for _, file := range files {
-		if file == cpath {
-			continue
-		}
-		if !strings.Contains(file, "json") {
-			continue
-		}
-
-		//mg := metagraf.Parse(file)
-
-		//metagraf.Refgen(&mg)
-		//generators.MiddlearthApp(&mg)
-		//mgs = append(mgs, mg)
-	}
-	//sp := strings.Split(strings.TrimRight(cpath, "/"),"/")
-	//metagraf.ResourceDotGen(&mgs, sp[len(sp)-1])
-}
