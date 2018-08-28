@@ -127,10 +127,13 @@ func genBinaryBuildSource() buildv1.BuildSource {
 
 func genGitBuildSource(mg *metagraf.MetaGraf) buildv1.BuildSource {
 	return buildv1.BuildSource{
-		Type: "Source",
+		Type: "Git",
 		Git: &buildv1.GitBuildSource{
 			URI: mg.Spec.Repository,
 			Ref: mg.Spec.Branch,
+		},
+		SourceSecret: &corev1.LocalObjectReference{
+			Name: mg.Spec.RepSecRef,
 		},
 	}
 }
