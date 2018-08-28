@@ -126,13 +126,20 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 		}
 	}
 
+	// todo need sanitation of docker level labels
 	// Labels from baserunimage
+	/*
 	for k, v := range ImageInfo.Config.Labels {
 		if helpers.SliceInString(LabelBlacklistFilter, strings.ToLower(k)) {
 			continue
 		}
-		l[k] = v
+		if len(v)>63 {
+			l[k] = v[0:63]
+		} else {
+			l[k] = v
+		}
 	}
+	*/
 
 	// ContainerPorts
 	for k := range ImageInfo.Config.ExposedPorts {
@@ -165,7 +172,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 	// Tying Container PodSpec together
 	Container := corev1.Container{
 		Name:            objname,
-		Image:           "registry-default.ocp.norsk-tipping.no:443/"+namespace+"/"+objname+":latest",
+		Image:           "registry-default.ocp.norsk-tipping.no:5000/"+namespace+"/"+objname+":latest",
 		ImagePullPolicy: corev1.PullAlways,
 		Ports:           ContainerPorts,
 		VolumeMounts:    VolumeMounts,

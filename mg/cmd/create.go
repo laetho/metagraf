@@ -37,6 +37,7 @@ func init() {
 	createCmd.AddCommand(createDeploymentConfigCmd)
 	createCmd.AddCommand(createBuildConfigCmd)
 	createCmd.AddCommand(createImageStreamCmd)
+	createCmd.AddCommand(createServiceCmd)
 	createDeploymentConfigCmd.Flags().StringVar(&Namespace, "namespace", "", "namespace to work on, if not supplied it will use current working namespace")
 }
 
@@ -143,3 +144,26 @@ var createImageStreamCmd = &cobra.Command{
 	},
 }
 
+var createServiceCmd = &cobra.Command{
+	Use:   "service <metagraf>",
+	Short: "create Service from metaGraf file",
+	Long:  Banner + `create Service`,
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) < 1  {
+			fmt.Println("Active project is:", viper.Get("namespace"))
+			fmt.Println("Missing path to metaGraf specification")
+			return
+		}
+
+		if len(Namespace) == 0 {
+			Namespace = viper.GetString("namespace")
+			if len(Namespace) == 0 {
+				fmt.Println("Namespace must be supplied")
+				os.Exit(1)
+			}
+		}
+
+		mg := metagraf.Parse(args[0])
+		generators.GenService(&mg)
+	},
+}
