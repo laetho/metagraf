@@ -39,6 +39,7 @@ func init() {
 	createCmd.AddCommand(createImageStreamCmd)
 	createCmd.AddCommand(createServiceCmd)
 	createCmd.AddCommand(createDotCmd)
+	createCmd.AddCommand(createRefCmd)
 	createDeploymentConfigCmd.Flags().StringVar(&Namespace, "namespace", "", "namespace to work on, if not supplied it will use current working namespace")
 }
 
@@ -178,5 +179,19 @@ var createDotCmd = &cobra.Command{
 			return
 		}
 		generators.GenDotFromPath(args[0])
+	},
+}
+
+var createRefCmd = &cobra.Command{
+	Use:   "ref <metaGraf>",
+	Short: "create ref document from metaGraf specification",
+	Long:  Banner + `create ref`,
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) < 1 {
+			fmt.Println("Missing path to metaGraf specifications")
+			return
+		}
+		mg := metagraf.Parse(args[0])
+		generators.GenRef(&mg)
 	},
 }
