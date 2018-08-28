@@ -17,25 +17,22 @@ limitations under the License.
 package cmd
 
 import (
-	"os"
 	"fmt"
-	"strings"
+	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/spf13/cobra"
 
-	"metagraf/pkg/metagraf"
-	"metagraf/pkg/generators"
 	"github.com/spf13/viper"
+	"metagraf/pkg/generators"
+	"metagraf/pkg/metagraf"
 )
-
-
 
 func init() {
 	createPipelineCmd.Flags().StringVar(&Namespace, "namespace", "", "namespace to work on, if not supplied it will use current working namespace")
 	createCmd.AddCommand(createPipelineCmd)
 }
-
 
 var createPipelineCmd = &cobra.Command{
 	Use:   "pipeline <metaGraf>",
@@ -43,7 +40,7 @@ var createPipelineCmd = &cobra.Command{
 	Long:  `creates kubernetes primitives from a metaGraf file`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		if len(args) < 1  {
+		if len(args) < 1 {
 			fmt.Println("Active project is:", viper.Get("namespace"))
 			fmt.Println("Missing path to metaGraf specification")
 			return
@@ -70,7 +67,6 @@ func pipelineCreate(mgf string, namespace string) {
 	generators.GenDeploymentConfig(&mg, namespace)
 	generators.GenService(&mg)
 }
-
 
 func poc(cpath string) {
 	var files []string

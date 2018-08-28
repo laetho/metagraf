@@ -17,11 +17,11 @@ limitations under the License.
 package cmd
 
 import (
-	"github.com/spf13/cobra"
 	"fmt"
-	"os"
-	"github.com/spf13/viper"
 	"github.com/mitchellh/go-homedir"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	"os"
 )
 
 const Banner string = "mg (metaGraf) - "
@@ -38,21 +38,21 @@ var configkeys []string = []string{
 }
 
 // Flags
-var Verbose	bool
+var Verbose bool
 
 var RootCmd = &cobra.Command{
 	Use:   "mg",
 	Short: "mg operates on collections of metaGraf's objects.",
-	Long:  Banner + `is a utility that understands the metaGraf
+	Long: Banner + `is a utility that understands the metaGraf
 datastructure and help you generate kubernetes primitives`,
 	//Run: func(cmd *cobra.Command, args []string) {
-		// Do Stuff Here
+	// Do Stuff Here
 	//},
 }
 
 func init() {
 	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.config/mg/mg.yaml)")
-	RootCmd.PersistentFlags().BoolVar(&Verbose,"verbose", false, "verbose output")
+	RootCmd.PersistentFlags().BoolVar(&Verbose, "verbose", false, "verbose output")
 }
 
 func initConfig() {
@@ -83,5 +83,3 @@ func Execute() {
 		os.Exit(1)
 	}
 }
-
-

@@ -17,8 +17,8 @@ limitations under the License.
 package cmd
 
 import (
-	"github.com/spf13/cobra"
 	"fmt"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"metagraf/pkg/helpers"
 )
@@ -45,7 +45,7 @@ var configCmdSet = &cobra.Command{
 			return
 		}
 		if helpers.StringInSlice(args[0], configkeys) {
-			viper.Set( args[0], args[1])
+			viper.Set(args[0], args[1])
 			err := viper.WriteConfig()
 			if err != nil {
 				fmt.Println("ERROR:", err)

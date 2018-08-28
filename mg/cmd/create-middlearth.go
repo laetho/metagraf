@@ -17,10 +17,10 @@ limitations under the License.
 package cmd
 
 import (
-	"github.com/spf13/cobra"
-	"metagraf/pkg/metagraf"
-	"metagraf/pkg/generators"
 	"fmt"
+	"github.com/spf13/cobra"
+	"metagraf/pkg/generators"
+	"metagraf/pkg/metagraf"
 )
 
 func init() {
@@ -41,7 +41,7 @@ var createMiddlearthCmd = &cobra.Command{
 	},
 }
 
-func createMiddlearth( mgf string) {
+func createMiddlearth(mgf string) {
 	mg := metagraf.Parse(mgf)
 	generators.MiddlearthApp(&mg)
 }

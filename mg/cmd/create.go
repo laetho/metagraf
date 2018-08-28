@@ -23,8 +23,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"metagraf/pkg/metagraf"
 	"metagraf/pkg/generators"
+	"metagraf/pkg/metagraf"
 )
 
 var (
@@ -52,7 +52,7 @@ var createBuildConfigCmd = &cobra.Command{
 	Short: "create BuildConfig from metaGraf file",
 	Long:  Banner + `create BuildConfig`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) < 1  {
+		if len(args) < 1 {
 			fmt.Println("Active project is:", viper.Get("namespace"))
 			fmt.Println("Missing path to metaGraf specification")
 			return
@@ -76,7 +76,7 @@ var createConfigMapCmd = &cobra.Command{
 	Short: "create ConfigMaps from metaGraf file",
 	Long:  Banner + `create ConfigMap`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) < 1  {
+		if len(args) < 1 {
 			fmt.Println("Active project is:", viper.Get("namespace"))
 			fmt.Println("Missing path to metaGraf specification")
 			return
@@ -95,13 +95,12 @@ var createConfigMapCmd = &cobra.Command{
 	},
 }
 
-
 var createDeploymentConfigCmd = &cobra.Command{
 	Use:   "deploymentconfig <metagraf>",
 	Short: "create DeploymentConfig from metaGraf file",
 	Long:  Banner + `create DeploymentConfig`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) < 1  {
+		if len(args) < 1 {
 			fmt.Println("Active project is:", viper.Get("namespace"))
 			fmt.Println("Missing path to metaGraf specification")
 			return
@@ -125,7 +124,7 @@ var createImageStreamCmd = &cobra.Command{
 	Short: "create ImageStream from metaGraf file",
 	Long:  Banner + `create ImageStream`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) < 1  {
+		if len(args) < 1 {
 			fmt.Println("Active project is:", viper.Get("namespace"))
 			fmt.Println("Missing path to metaGraf specification")
 			return
@@ -149,7 +148,7 @@ var createServiceCmd = &cobra.Command{
 	Short: "create Service from metaGraf file",
 	Long:  Banner + `create Service`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) < 1  {
+		if len(args) < 1 {
 			fmt.Println("Active project is:", viper.Get("namespace"))
 			fmt.Println("Missing path to metaGraf specification")
 			return
