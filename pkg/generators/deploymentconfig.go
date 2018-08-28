@@ -35,7 +35,7 @@ import (
 	"k8s.io/apimachinery/pkg/util/intstr"
 )
 
-func GenDeploymentConfig(mg *metagraf.MetaGraf) {
+func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 
 	var objname string
 	sv, err := semver.Parse(mg.Spec.Version)
@@ -102,6 +102,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 
 	ImageInfo, err := helpers.DockerInspectImage(DockerImage, "latest", auth)
 	if err != nil {
+		// @todo should we fail here?
 		// Create an empty Image struct so the following logic can run
 		ImageInfo = &docker.Image{
 			Config: &docker.Config{},
@@ -164,7 +165,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 	// Tying Container PodSpec together
 	Container := corev1.Container{
 		Name:            objname,
-		Image:           "registry-default.ocp.norsk-tipping.no:443/devpipeline/" + objname + ":latest",
+		Image:           "registry-default.ocp.norsk-tipping.no:443/"+namespace+"/"+objname+":latest",
 		ImagePullPolicy: corev1.PullAlways,
 		Ports:           ContainerPorts,
 		VolumeMounts:    VolumeMounts,

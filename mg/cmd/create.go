@@ -115,7 +115,7 @@ var createDeploymentConfigCmd = &cobra.Command{
 		}
 
 		mg := metagraf.Parse(args[0])
-		generators.GenDeploymentConfig(&mg)
+		generators.GenDeploymentConfig(&mg, Namespace)
 	},
 }
 
