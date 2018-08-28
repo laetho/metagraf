@@ -6,7 +6,7 @@ digraph {
         style="rounded,filled"];
 {{ range $mg := . -}}
 {{ range $mg.Spec.Resources -}}
-"{{.Name}}{{if .Semver}}-v{{.Semver}}{{end}}" [
+"{{.Name}}{{if .Semver}}-{{.Semver}}{{end}}" [
 {{- if eq .Type "datasource" }}
 shape=cylinder,fillcolor=lightskyblue
 {{- else }}
@@ -14,7 +14,7 @@ shape=cylinder,fillcolor=lightskyblue
 shape=hexagon,fillcolor=darkseagreen
   {{- end }}
 {{end}}]
-"{{ $mg.Metadata.Name}}-v{{$mg.Spec.Version}}" -> "{{ .Name }}{{if .Semver}}-v{{.Semver}}{{end}}"
+"{{ $mg.Metadata.Name}}-{{$mg.Spec.Version}}" -> "{{ .Name }}{{if .Semver}}-{{.Semver}}{{end}}"
 {{ end -}}
 {{ end -}}
 }
