@@ -32,6 +32,7 @@ type MetaGraf struct {
 		Version      string		`json:"version"`
 		Description  string		`json:"description"`
 		Repository   string  	`json:"repository,omitempty"`
+		RepSecRef	 string		`json:"repsecref,omitempty"`
 		Branch 		 string		`json:"branch,omitempty"`
 		BuildImage   string		`json:"buildimage,omitempty"`
 		BaseRunImage string		`json:"baserunimage,omitempty"`
