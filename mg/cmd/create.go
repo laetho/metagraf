@@ -38,6 +38,7 @@ func init() {
 	createCmd.AddCommand(createBuildConfigCmd)
 	createCmd.AddCommand(createImageStreamCmd)
 	createCmd.AddCommand(createServiceCmd)
+	createCmd.AddCommand(createDotCmd)
 	createDeploymentConfigCmd.Flags().StringVar(&Namespace, "namespace", "", "namespace to work on, if not supplied it will use current working namespace")
 }
 
@@ -164,5 +165,18 @@ var createServiceCmd = &cobra.Command{
 
 		mg := metagraf.Parse(args[0])
 		generators.GenService(&mg)
+	},
+}
+
+var createDotCmd = &cobra.Command{
+	Use:   "dot <collection directory>",
+	Short: "create Graphviz service graph from collectio of metaGraf's",
+	Long:  Banner + `create dot`,
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) < 1 {
+			fmt.Println("Missing path to collection of metaGraf specifications")
+			return
+		}
+		generators.GenDotFromPath(args[0])
 	},
 }
