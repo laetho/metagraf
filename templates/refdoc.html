@@ -17,14 +17,14 @@
 
 <h2>External Enviroment Variables</h2>
 
-<h3>Environment Variables Introduced by Component</h3>
+<h3>Introduced by Component</h3>
 <ul>
 {{ range .Spec.Environment.External.Introduces}}
     <li>{{ .Name }} Type: {{ .Type }},Required: {{ .Required}}</li>
 {{ end }}
 </ul>
 
-<h3>Environment Variables Consumed by Component</h3>
+<h3>Consumed by Component</h3>
 <ul>
 {{ range .Spec.Environment.External.Consumes}}
     <li>{{ .Name }} Type: {{ .Type }},Required: {{ .Required}}</li>
