@@ -29,6 +29,9 @@ const Banner string = "mg (metaGraf) - "
 // Viper cfg file
 var cfgFile string = ""
 
+var (
+	Namespace string
+)
 
 // Array of available config keys
 var configkeys []string = []string{
