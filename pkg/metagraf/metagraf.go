@@ -52,6 +52,8 @@ type MetaGraf struct {
 type Resource struct {
 	Name     	string	`json:"name"`
 	Type     	string	`json:"type"`
+	User 		string	`json:"user,omitempty"`
+	SecretRef	string	`json:"secretref,omitempty"`
 	Semop		string	`json:"semop"`
 	Semver  	string	`json:"semver"`
 	Required 	bool	`json:"required"`
