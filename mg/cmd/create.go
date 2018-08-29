@@ -27,10 +27,6 @@ import (
 	"metagraf/pkg/metagraf"
 )
 
-var (
-	Namespace string
-)
-
 func init() {
 	RootCmd.AddCommand(createCmd)
 	createCmd.AddCommand(createConfigMapCmd)
