@@ -57,7 +57,7 @@ type Resource struct {
 	Semop		string	`json:"semop"`
 	Semver  	string	`json:"semver"`
 	Required 	bool	`json:"required"`
-	Dsn			string  `json:"dsn,omitempty"`
+	Url			string  `json:"dsn,omitempty"`
 }
 
 type Config struct {

@@ -26,6 +26,10 @@
 
 
 [[constraint]]
+name = "github.com/openshift/client-go"
+branch = "release-3.9"
+
+[[constraint]]
   name = "github.com/blang/semver"
   version = "3.5.1"
 

@@ -14,17 +14,19 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package client
+package ocpclient
 
 import (
 	"flag"
 	"fmt"
-    "k8s.io/client-go/rest"
+	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	"os"
 	"path/filepath"
 	"runtime"
-	buildv1 "github.com/openshift/client-go/build/clientset/versioned/typed/build/v1"
+	corev1client "k8s.io/client-go/kubernetes/typed/core/v1"
+
+
 )
 
 
@@ -53,13 +55,11 @@ func getKubeConfig() string {
 	return kubeconfig
 }
 
-func GetClient() buildv1.BuildV1Client {
+// Get rest.Config from outside or inside cluster
+func getRestConfig(kc string) *rest.Config{
 	var config *rest.Config
 
-	kubeconfig := getKubeConfig()
-
-	// Determine if we are running inside the cluster or not
-	if kubeconfig == "" {
+	if kc == "" {
 		var err error
 		config, err = rest.InClusterConfig()
 		if err != nil {
@@ -67,17 +67,23 @@ func GetClient() buildv1.BuildV1Client {
 		}
 	} else {
 		var err error
-		config, err = clientcmd.BuildConfigFromFlags("", kubeconfig)
+		config, err = clientcmd.BuildConfigFromFlags("", kc)
 		if err != nil {
 			fmt.Fprintf(os.Stderr,"error %v", err)
 			os.Exit(1)
 		}
 	}
+	return config
+}
 
-	client, err := buildv1.NewForConfig(config)
+func GetCoreClient() *corev1client.CoreV1Client {
+
+	config := getRestConfig(getKubeConfig())
+
+	client, err := corev1client.NewForConfig(config)
 	if err != nil {
 		panic(err.Error())
 	}
 
-	return *client
+	return client
 }
