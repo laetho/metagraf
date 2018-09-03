@@ -69,7 +69,7 @@ func GenService(mg *metagraf.MetaGraf) {
 	for k := range ImageInfo.Config.ExposedPorts {
 		port, _ := strconv.Atoi(k.Port())
 		ContainerPort := corev1.ServicePort{
-			Name:     strings.ToUpper(k.Proto()) + "-" + k.Port(),
+			Name:     strings.ToLower(k.Proto()) + "-" + k.Port(),
 			Port:     int32(port),
 			Protocol: corev1.Protocol(strings.ToUpper(k.Proto())),
 			TargetPort: intstr.IntOrString{
