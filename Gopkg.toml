@@ -25,9 +25,13 @@
 #   unused-packages = true
 
 
+#[[constraint]]
+#name = "github.com/openshift/client-go"
+#branch = "release-3.9"
+
 [[constraint]]
-name = "github.com/openshift/client-go"
-branch = "release-3.9"
+  name = "k8s.io/client-go"
+  version = "6.0"
 
 [[constraint]]
   name = "github.com/blang/semver"
