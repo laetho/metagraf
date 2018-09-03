@@ -17,14 +17,9 @@ limitations under the License.
 package main
 
 import (
-	"fmt"
-	"metagraf/mg/ocpclient"
 	"metagraf/mg/cmd"
 )
 
 func main() {
-	coreclient := ocpclient.GetCoreClient()
-	coreclient.
-	fmt.Printf("This is my ocpclient type %t and value: %v", coreclient)
 	cmd.Execute()
 }

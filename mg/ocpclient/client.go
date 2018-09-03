@@ -21,14 +21,11 @@ import (
 	"fmt"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
+	corev1client "k8s.io/client-go/kubernetes/typed/core/v1"
 	"os"
 	"path/filepath"
 	"runtime"
-	corev1client "k8s.io/client-go/kubernetes/typed/core/v1"
-
-
 )
-
 
 // Returns the current users home directory for both windows, mac and linux.
 func getHomeDir() string {
@@ -76,14 +73,26 @@ func getRestConfig(kc string) *rest.Config{
 	return config
 }
 
+// todo handle error
 func GetCoreClient() *corev1client.CoreV1Client {
+/*
+	kubeconfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
+		clientcmd.NewDefaultClientConfigLoadingRules(),
+		&clientcmd.ConfigOverrides{},
+		)
 
-	config := getRestConfig(getKubeConfig())
-
-	client, err := corev1client.NewForConfig(config)
+	restconfig, err := kubeconfig.ClientConfig()
 	if err != nil {
-		panic(err.Error())
+		panic(err)
+	}
+*/
+	restconfig := getRestConfig(getKubeConfig())
+
+	client, err := corev1client.NewForConfig(restconfig)
+	if err != nil {
+		panic(err)
 	}
 
 	return client
 }
+

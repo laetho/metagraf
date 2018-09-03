@@ -7,7 +7,7 @@ package generators
 import (
 	"encoding/json"
 	"fmt"
-	semver "github.com/blang/semver"
+	"github.com/blang/semver"
 	"metagraf/pkg/metagraf"
 	"strconv"
 	"strings"
