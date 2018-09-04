@@ -19,12 +19,13 @@ package ocpclient
 import (
 	"flag"
 	"fmt"
-	"k8s.io/client-go/rest"
-	"k8s.io/client-go/tools/clientcmd"
-	corev1client "k8s.io/client-go/kubernetes/typed/core/v1"
 	"os"
 	"path/filepath"
 	"runtime"
+	imagev1client "github.com/openshift/client-go/image/clientset/versioned/typed/image/v1"
+	corev1client "k8s.io/client-go/kubernetes/typed/core/v1"
+	"k8s.io/client-go/tools/clientcmd"
+	"k8s.io/client-go/rest"
 )
 
 // Returns the current users home directory for both windows, mac and linux.
@@ -53,7 +54,7 @@ func getKubeConfig() string {
 }
 
 // Get rest.Config from outside or inside cluster
-func getRestConfig(kc string) *rest.Config{
+func getRestConfig(kc string) rest.Config{
 	var config *rest.Config
 
 	if kc == "" {
@@ -70,7 +71,7 @@ func getRestConfig(kc string) *rest.Config{
 			os.Exit(1)
 		}
 	}
-	return config
+	return *config
 }
 
 // todo handle error
@@ -88,7 +89,19 @@ func GetCoreClient() *corev1client.CoreV1Client {
 */
 	restconfig := getRestConfig(getKubeConfig())
 
-	client, err := corev1client.NewForConfig(restconfig)
+	client, err := corev1client.NewForConfig(&restconfig)
+	if err != nil {
+		panic(err)
+	}
+
+	return client
+}
+
+// Returns a ImageV1Client
+func GetImageClient() *imagev1client.ImageV1Client {
+	restconfig := getRestConfig(getKubeConfig())
+
+	client, err := imagev1client.NewForConfig(&restconfig)
 	if err != nil {
 		panic(err)
 	}
