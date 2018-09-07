@@ -19,25 +19,36 @@ package generators
 import (
 	"encoding/json"
 	"fmt"
+	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/runtime/schema"
+	"k8s.io/apimachinery/pkg/runtime/serializer"
+	"metagraf/mg/ocpclient"
 	"strconv"
 	"strings"
 
 	"github.com/blang/semver"
-	"github.com/fsouza/go-dockerclient"
-	"github.com/spf13/viper"
-
 	"metagraf/pkg/helpers"
+	"metagraf/pkg/imageurl"
 	"metagraf/pkg/metagraf"
 
 	appsv1 "github.com/openshift/api/apps/v1"
+	"github.com/openshift/api/image/docker10"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 )
 
+var (
+	dockerImageScheme = runtime.NewScheme()
+	dockerImageCodecs = serializer.NewCodecFactory(dockerImageScheme)
+)
+
 func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 
+	docker10.AddToSchemeInCoreGroup(dockerImageScheme)
+
 	var objname string
+
 	sv, err := semver.Parse(mg.Spec.Version)
 	if err != nil {
 		objname = strings.ToLower(mg.Metadata.Name)
@@ -94,12 +105,13 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 	} else {
 		DockerImage = ""
 	}
-
+/*
 	auth := docker.AuthConfiguration{
 		Username: viper.GetString("user"),
 		Password: viper.GetString("password"),
 	}
-
+*/
+	/*
 	ImageInfo, err := helpers.DockerInspectImage(DockerImage, "latest", auth)
 	if err != nil {
 		// @todo should we fail here?
@@ -108,6 +120,37 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 			Config: &docker.Config{},
 		}
 	}
+	*/
+	var imageurl imageurl.ImageURL
+	imageurl.Parse(DockerImage)
+
+	client := ocpclient.GetImageClient()
+
+	ist := helpers.GetImageStreamTags(
+		client,
+		imageurl.Namespace,
+		imageurl.Image+":"+imageurl.Tag)
+
+	image := helpers.GetImage(client, ist.Image.Name)
+
+	dio, err := dockerImageScheme.New(schema.GroupVersionKind{Version: "1.0", Kind: "DockerImage"})
+	if err != nil {
+		fmt.Println("DockerConfig:", err)
+		panic(err)
+	}
+
+	docker10.AddToSchemeInCoreGroup(dockerImageScheme)
+
+
+	err = runtime.DecodeInto(dockerImageCodecs.UniversalDeserializer(),image.DockerImageMetadata.Raw, dio )
+	if err != nil {
+		fmt.Println("decode into:",err)
+		panic(err)
+	}
+
+	fmt.Println(dio)
+
+	/*
 	// Environment Variables from baserunimage
 	for _, e := range ImageInfo.Config.Env {
 		es := strings.Split(e, "=")
@@ -116,6 +159,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 		}
 		EnvVars = append(EnvVars, corev1.EnvVar{Name: es[0], Value: es[1]})
 	}
+	*/
 
 	// Local variables from metagraf as deployment envvars
 	for _, e := range mg.Spec.Environment.Local {
@@ -141,6 +185,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 		}
 	*/
 
+	/*
 	// ContainerPorts
 	for k := range ImageInfo.Config.ExposedPorts {
 		port, _ := strconv.Atoi(k.Port())
@@ -150,6 +195,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 		}
 		ContainerPorts = append(ContainerPorts, ContainerPort)
 	}
+
 
 	// Volumes & VolumeMounts in podspec
 	for k := range ImageInfo.Config.Volumes {
@@ -168,6 +214,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 		}
 		VolumeMounts = append(VolumeMounts, VolumeMount)
 	}
+	*/
 
 	// Tying Container PodSpec together
 	Container := corev1.Container{

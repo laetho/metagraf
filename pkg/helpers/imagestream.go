@@ -20,14 +20,23 @@ import (
 	"fmt"
 	imagev1client "github.com/openshift/client-go/image/clientset/versioned/typed/image/v1"
 	imagev1 "github.com/openshift/api/image/v1"
-	"k8s.io/apimachinery/pkg/apis/meta/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func GetImageStreamTags(c *imagev1client.ImageV1Client, n string, i string) *imagev1.ImageStreamTag{
-	ist, err := c.ImageStreamTags(n).Get(i, v1.GetOptions{})
+func GetImageStreamTags(c *imagev1client.ImageV1Client, n string, i string) *imagev1.ImageStreamTag {
+	fmt.Println(n,i)
+	ist, err := c.ImageStreamTags(n).Get(i, metav1.GetOptions{})
+	if err != nil {
+		panic(err)
+	}
+	return ist
+}
+
+func GetImage(c *imagev1client.ImageV1Client, i string) *imagev1.Image {
+	img, err := c.Images().Get(i, metav1.GetOptions{})
 	if err != nil {
 		fmt.Println(err.Error())
 		panic(1)
 	}
-	return ist
+	return img
 }
