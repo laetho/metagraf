@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package generators
+package modules
 
 // todo this should be made a configuration option
 var TmplBasePath = "/home/a01595/go/src/metagraf/templates"

@@ -23,7 +23,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/spf13/viper"
-	"metagraf/pkg/generators"
+	"metagraf/pkg/modules"
 	"metagraf/pkg/metagraf"
 )
 
@@ -59,11 +59,11 @@ var createPipelineCmd = &cobra.Command{
 
 func pipelineCreate(mgf string, namespace string) {
 	mg := metagraf.Parse(mgf)
-	generators.GenConfigMaps(&mg)
-	generators.GenImageStream(&mg, namespace)
-	generators.GenBuildConfig(&mg)
-	generators.GenDeploymentConfig(&mg, namespace)
-	generators.GenService(&mg)
+	modules.GenConfigMaps(&mg)
+	modules.GenImageStream(&mg, namespace)
+	modules.GenBuildConfig(&mg)
+	modules.GenDeploymentConfig(&mg, namespace)
+	modules.GenService(&mg)
 }
 
 

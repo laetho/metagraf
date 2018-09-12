@@ -23,7 +23,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"metagraf/pkg/generators"
+	"metagraf/pkg/modules"
 	"metagraf/pkg/metagraf"
 )
 
@@ -65,7 +65,7 @@ var createBuildConfigCmd = &cobra.Command{
 		}
 
 		mg := metagraf.Parse(args[0])
-		generators.GenBuildConfig(&mg)
+		modules.GenBuildConfig(&mg)
 	},
 }
 
@@ -89,7 +89,7 @@ var createConfigMapCmd = &cobra.Command{
 		}
 
 		mg := metagraf.Parse(args[0])
-		generators.GenConfigMaps(&mg)
+		modules.GenConfigMaps(&mg)
 	},
 }
 
@@ -113,7 +113,7 @@ var createDeploymentConfigCmd = &cobra.Command{
 		}
 
 		mg := metagraf.Parse(args[0])
-		generators.GenDeploymentConfig(&mg, Namespace)
+		modules.GenDeploymentConfig(&mg, Namespace)
 	},
 }
 
@@ -137,7 +137,7 @@ var createImageStreamCmd = &cobra.Command{
 		}
 
 		mg := metagraf.Parse(args[0])
-		generators.GenImageStream(&mg, Namespace)
+		modules.GenImageStream(&mg, Namespace)
 	},
 }
 
@@ -161,7 +161,7 @@ var createServiceCmd = &cobra.Command{
 		}
 
 		mg := metagraf.Parse(args[0])
-		generators.GenService(&mg)
+		modules.GenService(&mg)
 	},
 }
 
@@ -174,7 +174,7 @@ var createDotCmd = &cobra.Command{
 			fmt.Println("Missing path to collection of metaGraf specifications")
 			return
 		}
-		generators.GenDotFromPath(args[0])
+		modules.GenDotFromPath(args[0])
 	},
 }
 
@@ -188,6 +188,6 @@ var createRefCmd = &cobra.Command{
 			return
 		}
 		mg := metagraf.Parse(args[0])
-		generators.GenRef(&mg)
+		modules.GenRef(&mg)
 	},
 }

@@ -14,61 +14,47 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package generators
+package modules
 
 import (
 	"encoding/json"
 	"fmt"
 	"github.com/blang/semver"
-	"strconv"
-	"strings"
 
 	"metagraf/pkg/metagraf"
 
-	imagev1 "github.com/openshift/api/image/v1"
-	corev1 "k8s.io/api/core/v1"
+	//corev1 "k8s.io/api/core/v1"
+	appsv1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
+	"strconv"
+	"strings"
 )
 
-func GenImageStream(mg *metagraf.MetaGraf, namespace string) {
-	var objname string
+func GenDeployment(mg *metagraf.MetaGraf) {
 	sv, err := semver.Parse(mg.Spec.Version)
 	if err != nil {
-		objname = strings.ToLower(mg.Metadata.Name)
-	} else {
-		objname = strings.ToLower(mg.Metadata.Name + "v" + strconv.FormatUint(sv.Major, 10))
+		fmt.Println(err)
 	}
 
+	objname := strings.ToLower(mg.Metadata.Name + "v" + strconv.FormatUint(sv.Major, 10))
 	// Resource labels
 	l := make(map[string]string)
 	l["app"] = objname
 
-	objref := corev1.ObjectReference{}
-	objref.Kind = ""
-
-	is := imagev1.ImageStream{
+	obj := appsv1.Deployment{
 		TypeMeta: metav1.TypeMeta{
-			Kind:       "ImageStream",
-			APIVersion: "v1",
+			Kind:       "Deployment",
+			APIVersion: "apps/v1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:   objname,
-			Labels: l,
+			Name: objname,
 		},
-		Spec: imagev1.ImageStreamSpec{
-			Tags: []imagev1.TagReference{
-				{
-					From: &corev1.ObjectReference{
-						Kind: "DockerImage",
-						Name: "docker-registry.default.svc:5000/" + namespace + "/" + objname + ":latest",
-					},
-					Name: "latest",
-				},
-			},
-		},
+		Spec:   appsv1.DeploymentSpec{},
+		Status: appsv1.DeploymentStatus{},
 	}
 
-	ba, err := json.Marshal(is)
+	ba, err := json.Marshal(obj)
 	if err != nil {
 		panic(err)
 	}

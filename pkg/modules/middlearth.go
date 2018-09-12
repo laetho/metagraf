@@ -1,4 +1,4 @@
-package generators
+package modules
 
 // Middlearth is a Norsk Tipping internal solution for configuration management of
 // Java applications on WebSphere Liberty. Much of this complexity should be hidden

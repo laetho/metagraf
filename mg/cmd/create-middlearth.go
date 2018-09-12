@@ -19,7 +19,7 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"metagraf/pkg/generators"
+	"metagraf/pkg/modules"
 	"metagraf/pkg/metagraf"
 )
 
@@ -43,5 +43,5 @@ var createMiddlearthCmd = &cobra.Command{
 
 func createMiddlearth(mgf string) {
 	mg := metagraf.Parse(mgf)
-	generators.MiddlearthApp(&mg)
+	modules.MiddlearthApp(&mg)
 }
