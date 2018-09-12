@@ -23,12 +23,16 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func GetImageStreamTags(c *imagev1client.ImageV1Client, n string, i string) *imagev1.ImageStreamTag {
-	fmt.Println(n,i)
-	ist, err := c.ImageStreamTags(n).Get(i, metav1.GetOptions{})
+func GetImageStreamTags(c *imagev1client.ImageV1Client, ns string, n string) *imagev1.ImageStreamTag {
+	//fmt.Println("Image:",ns,n)
+	ist, err := c.ImageStreamTags(ns).Get(n, metav1.GetOptions{})
 	if err != nil {
 		panic(err)
 	}
+
+	fmt.Println(len(ist.Image.DockerImageConfig))
+	fmt.Printf("Type: %t",ist.Image.DockerImageConfig)
+
 	return ist
 }
 
