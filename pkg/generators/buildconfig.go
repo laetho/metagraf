@@ -19,6 +19,8 @@ package generators
 import (
 	"encoding/json"
 	"fmt"
+	"metagraf/mg/ocpclient"
+	"metagraf/pkg/helpers"
 	"strconv"
 	"strings"
 
@@ -55,6 +57,24 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 		buildsource = genBinaryBuildSource()
 	} else if len(mg.Spec.BuildImage) > 0 && len(mg.Spec.BaseRunImage) < 1 {
 		buildsource = genGitBuildSource(mg)
+	}
+
+	client := ocpclient.GetImageClient()
+
+	ist := helpers.GetImageStreamTags(
+		client,
+		imgurl.Namespace,
+		imgurl.Image+":"+imgurl.Tag)
+
+	ImageInfo := helpers.GetDockerImageFromIST(ist)
+
+	// Environment Variables from buildimage
+	for _, e := range ImageInfo.Config.Env {
+		es := strings.Split(e, "=")
+		if helpers.SliceInString(EnvBlacklistFilter, strings.ToLower(es[0])) {
+			continue
+		}
+		EnvVars = append(EnvVars, corev1.EnvVar{Name: es[0], Value: es[1]})
 	}
 
 	// Resource labels
