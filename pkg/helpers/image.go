@@ -17,23 +17,57 @@ limitations under the License.
 package helpers
 
 import (
+	"encoding/json"
 	"fmt"
-	imagev1client "github.com/openshift/client-go/image/clientset/versioned/typed/image/v1"
 	imagev1 "github.com/openshift/api/image/v1"
+	imagev1client "github.com/openshift/client-go/image/clientset/versioned/typed/image/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	dockerv10 "github.com/openshift/api/image/docker10"
 )
 
 func GetImageStreamTags(c *imagev1client.ImageV1Client, ns string, n string) *imagev1.ImageStreamTag {
-	//fmt.Println("Image:",ns,n)
 	ist, err := c.ImageStreamTags(ns).Get(n, metav1.GetOptions{})
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println(len(ist.Image.DockerImageConfig))
-	fmt.Printf("Type: %t",ist.Image.DockerImageConfig)
+	if len(ist.Image.DockerImageMetadata.Raw) != 0 {
+		di := &dockerv10.DockerImage{}
+		err = json.Unmarshal(ist.Image.DockerImageMetadata.Raw, di)
+		if err != nil {
+			panic(err)
+		}
+		ist.Image.DockerImageMetadata.Object = di
+	}
+
 
 	return ist
+}
+
+// Unmarshals json data into a DockerImage type
+func GetDockerImageFromIST(i *imagev1.ImageStreamTag) *dockerv10.DockerImage {
+	di := dockerv10.DockerImage{}
+	if len(i.Image.DockerImageMetadata.Raw) != 0 {
+		err := json.Unmarshal(i.Image.DockerImageMetadata.Raw, &di)
+		if err != nil {
+			panic(err)
+		}
+		i.Image.DockerImageMetadata.Object = &di
+	}
+	return &di
+}
+
+// Unmarshals json data into a DockerImage type
+func GetDockerImageFromImage(i *imagev1.Image) *dockerv10.DockerImage {
+	di := dockerv10.DockerImage{}
+	if len(i.DockerImageMetadata.Raw) != 0 {
+		err := json.Unmarshal(i.DockerImageMetadata.Raw, &di)
+		if err != nil {
+			panic(err)
+		}
+		i.DockerImageMetadata.Object = &di
+	}
+	return &di
 }
 
 func GetImage(c *imagev1client.ImageV1Client, i string) *imagev1.Image {
@@ -44,3 +78,4 @@ func GetImage(c *imagev1client.ImageV1Client, i string) *imagev1.Image {
 	}
 	return img
 }
+
