@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"metagraf/pkg/modules"
+	"metagraf/pkg/metagraf"
 	"os"
 )
 
@@ -26,8 +28,8 @@ var InspectCmd = &cobra.Command{
 			}
 		}
 
-		//mg := metagraf.Parse(args[0])
-
+		mg := metagraf.Parse(args[0])
+		modules.InspectSecrets(&mg)
 	},
 }
 
