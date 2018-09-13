@@ -16,6 +16,8 @@ limitations under the License.
 
 package metagraf
 
+
+
 // JSON structure for a MetaGraf entity
 type MetaGraf struct {
 	Kind     string		`json:"kind"`
@@ -52,6 +54,7 @@ type MetaGraf struct {
 type Resource struct {
 	Name     	string	`json:"name"`
 	Type     	string	`json:"type"`
+	External 	bool    `json:"external"`
 	User 		string	`json:"user,omitempty"`
 	SecretRef	string	`json:"secretref,omitempty"`
 	Semop		string	`json:"semop"`
