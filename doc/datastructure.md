@@ -38,7 +38,9 @@ about a component using annotations, that your tooling may glean knowledge from 
 
 ### Resources
 
-```$golang
+The resources section in the file describes a needed or optional attached resource.
+
+```$go
 type Resource struct {
 	Name     	string	`json:"name"`
 	Type     	string	`json:"type"`
@@ -48,13 +50,11 @@ type Resource struct {
 	Semop		string	`json:"semop"`
 	Semver  	string	`json:"semver"`
 	Required 	bool	`json:"required"`
-	Url			string  `json:"dsn,omitempty"`
+	Url         string  `json:"url,omitempty"`
 }
 
 ```
 
-
-The resources section in the file describes a needed or optional attached resource.
 
 There are currently two types (Type) of resources:
 

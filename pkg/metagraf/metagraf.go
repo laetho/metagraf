@@ -16,7 +16,12 @@ limitations under the License.
 
 package metagraf
 
+type ResourceType string
 
+const (
+	Service 	ResourceType = "service"
+	DataSource 	ResourceType = "datasource"
+)
 
 // JSON structure for a MetaGraf entity
 type MetaGraf struct {
@@ -53,14 +58,14 @@ type MetaGraf struct {
 
 type Resource struct {
 	Name     	string	`json:"name"`
-	Type     	string	`json:"type"`
+	Type     	ResourceType `json:"type"`
 	External 	bool    `json:"external"`
 	User 		string	`json:"user,omitempty"`
 	SecretRef	string	`json:"secretref,omitempty"`
 	Semop		string	`json:"semop"`
 	Semver  	string	`json:"semver"`
 	Required 	bool	`json:"required"`
-	Url			string  `json:"dsn,omitempty"`
+	Url			string  `json:"url,omitempty"`
 }
 
 type Config struct {
