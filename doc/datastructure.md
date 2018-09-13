@@ -38,7 +38,26 @@ about a component using annotations, that your tooling may glean knowledge from 
 
 ### Resources
 
-The resources section in the file describes a needed or optional attached resource. 
+The resources section in the file describes a needed or optional attached resource.
+
+There are currently two types (Type) of resources:
+
+* *service* generally a http rest service
+* datasource
+
+
+
+#### Implicit Secrets
+
+If the User field is filled out and the SecretRef field is empty we, have an implicit
+secret. A convention for creating or accessing the secret must be created.
+
+In an 
+
+#### Explicit Secrets
+
+If the SecretRef field is filled out it means there is a explicit secret related to this 
+ 
 
 ### Environment
 
