@@ -1,7 +1,7 @@
-# MetaGraf datastructure
+# metaGraf Datastructure
 
 
-The MetaGraf datastructure is inspired by a kubernetes resource (kind). Doing this in JSON instead of YAML.
+The metaGraf datastructure is inspired by a kubernetes resource (kind). Doing this in JSON instead of YAML.
 
 
 ## Metadata
@@ -38,12 +38,28 @@ about a component using annotations, that your tooling may glean knowledge from 
 
 ### Resources
 
+```$golang
+type Resource struct {
+	Name     	string	`json:"name"`
+	Type     	string	`json:"type"`
+	External 	bool    `json:"external"`
+	User 		string	`json:"user,omitempty"`
+	SecretRef	string	`json:"secretref,omitempty"`
+	Semop		string	`json:"semop"`
+	Semver  	string	`json:"semver"`
+	Required 	bool	`json:"required"`
+	Url			string  `json:"dsn,omitempty"`
+}
+
+```
+
+
 The resources section in the file describes a needed or optional attached resource.
 
 There are currently two types (Type) of resources:
 
 * *service* generally a http rest service
-* datasource
+* *datasource* a database or similar backend with a connection string
 
 
 
