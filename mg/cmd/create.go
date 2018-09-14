@@ -36,7 +36,11 @@ func init() {
 	createCmd.AddCommand(createServiceCmd)
 	createCmd.AddCommand(createDotCmd)
 	createCmd.AddCommand(createRefCmd)
+	createCmd.AddCommand(createSecretCmd)
 	createDeploymentConfigCmd.Flags().StringVar(&Namespace, "namespace", "", "namespace to work on, if not supplied it will use current working namespace")
+	createBuildConfigCmd.Flags().StringVar(&Namespace, "namespace", "", "namespace to work on, if not supplied it will use current working namespace")
+	createSecretCmd.Flags().StringVar(&Namespace, "namespace", "", "namespace to work on, if not supplied it will use current working namespace")
+	createConfigMapCmd.Flags().StringVar(&Namespace, "namespace", "", "namespace to work on, if not supplied it will use current working namespace")
 }
 
 var createCmd = &cobra.Command{
@@ -189,5 +193,29 @@ var createRefCmd = &cobra.Command{
 		}
 		mg := metagraf.Parse(args[0])
 		modules.GenRef(&mg)
+	},
+}
+
+var createSecretCmd = &cobra.Command{
+	Use:   "secret <metaGraf>",
+	Short: "create Secrets from metaGraf specification",
+	Long:  Banner + `create Secret`,
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) < 1 {
+			fmt.Println("Active project is:", viper.Get("namespace"))
+			fmt.Println("Missing path to metaGraf specification")
+			return
+		}
+
+		if len(Namespace) == 0 {
+			Namespace = viper.GetString("namespace")
+			if len(Namespace) == 0 {
+				fmt.Println("Namespace must be supplied")
+				os.Exit(1)
+			}
+		}
+
+		mg := metagraf.Parse(args[0])
+		modules.GenSecrets(&mg)
 	},
 }
