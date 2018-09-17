@@ -215,6 +215,7 @@ var createSecretCmd = &cobra.Command{
 			}
 		}
 
+		modules.NameSpace = Namespace
 		mg := metagraf.Parse(args[0])
 		modules.GenSecrets(&mg)
 	},
