@@ -28,6 +28,8 @@ import (
 	"k8s.io/client-go/rest"
 )
 
+var RestConfig *rest.Config
+
 // Returns the current users home directory for both windows, mac and linux.
 func getHomeDir() string {
 	if runtime.GOOS == "windows" {
@@ -54,7 +56,7 @@ func getKubeConfig() string {
 }
 
 // Get rest.Config from outside or inside cluster
-func getRestConfig(kc string) rest.Config{
+func getRestConfig(kc string) *rest.Config{
 	var config *rest.Config
 
 	if kc == "" {
@@ -71,25 +73,16 @@ func getRestConfig(kc string) rest.Config{
 			os.Exit(1)
 		}
 	}
-	return *config
+	return config
 }
 
 // todo handle error
 func GetCoreClient() *corev1client.CoreV1Client {
-/*
-	kubeconfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
-		clientcmd.NewDefaultClientConfigLoadingRules(),
-		&clientcmd.ConfigOverrides{},
-		)
-
-	restconfig, err := kubeconfig.ClientConfig()
-	if err != nil {
-		panic(err)
+	if RestConfig == nil {
+		RestConfig = getRestConfig(getKubeConfig())
 	}
-*/
-	restconfig := getRestConfig(getKubeConfig())
 
-	client, err := corev1client.NewForConfig(&restconfig)
+	client, err := corev1client.NewForConfig(RestConfig)
 	if err != nil {
 		panic(err)
 	}
@@ -99,9 +92,12 @@ func GetCoreClient() *corev1client.CoreV1Client {
 
 // Returns a ImageV1Client
 func GetImageClient() *imagev1client.ImageV1Client {
-	restconfig := getRestConfig(getKubeConfig())
 
-	client, err := imagev1client.NewForConfig(&restconfig)
+	if RestConfig == nil {
+		RestConfig = getRestConfig(getKubeConfig())
+	}
+
+	client, err := imagev1client.NewForConfig(RestConfig)
 	if err != nil {
 		panic(err)
 	}
