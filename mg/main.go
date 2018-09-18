@@ -19,11 +19,16 @@ package main
 import (
 	"github.com/golang/glog"
 	"metagraf/mg/cmd"
+	"os"
 )
 
 func main() {
 	err := cmd.Execute()
 	if err != nil {
 		glog.Error(err)
+		glog.Flush()
+		os.Exit(1)
 	}
+	glog.Flush()
+	os.Exit(0)
 }
