@@ -41,12 +41,12 @@ func Name(mg *metagraf.MetaGraf) string {
 
 // Returns a name for a secret for a resource based on convention as follows.
 func ResourceSecretName(r *metagraf.Resource) string {
-	if len(r.User) > 0 && len(r.SecretRef) == 0 {
+	if len(r.User) > 0 && len(r.Secret) == 0 {
 		// Implicit secret name generation
 		return r.Name+"-"+r.User
-	} else if len(r.User) == 0 && len(r.SecretRef) > 0 {
+	} else if len(r.User) == 0 && len(r.Secret) > 0 {
 		// Explicit secret name generation
-		return r.Name+"-"+r.SecretRef
+		return r.Name+"-"+r.Secret
 	} else {
 		return r.Name
 	}
