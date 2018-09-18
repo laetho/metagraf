@@ -87,7 +87,8 @@ type ConfigParam struct {
 type EnvironmentVar struct {
 	Name        string			`json:"name"`
 	Required    bool			`json:"required"`
-	Type        string			`json:"type"`
+	Dynamic 	bool			`json:"dynamic,omitempty"`
+	Type        string			`json:"type,omitempty"`
 	Description string			`json:"description"`
 	Default		string			`json:"default"`
 }
