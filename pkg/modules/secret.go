@@ -31,12 +31,14 @@ import (
 func GenSecrets(mg *metagraf.MetaGraf) {
 	for _,r := range mg.Spec.Resources {
 		// Is secret generation necessary?
-		if len(r.SecretRef) == 0 && len(r.User) == 0 {
+		if len(r.Secret) == 0 && len(r.User) == 0 {
+			glog.Info("Skipping resource: ", r.Name)
 			continue
 		}
 
 		// Do not create secret if it already exist!
 		if secretExists(ResourceSecretName(&r)) {
+			glog.Info("Skipping resource: ", r.Name)
 			continue
 		}
 
@@ -60,6 +62,7 @@ func secretExists(name string) bool {
 	}
 
 	if len(l.Items) > 0 {
+		glog.Info("Secret ", name, " exists in namespace: ", NameSpace)
 		return true
 	}
 	return false
@@ -74,6 +77,18 @@ func genResourceSecret(res *metagraf.Resource, mg *metagraf.MetaGraf) *corev1.Se
 	l["name"] = ResourceSecretName(res)
 	l["app"] = objname
 
+	// Populate v1.Secret StringData and Data
+	stringdata := make(map[string]string)
+	data := make(map[string][]byte)
+
+	if len(res.User) > 0 {
+		stringdata["user"] = res.User
+		stringdata["password"] = "secretstring"
+	}
+
+	if len(res.Secret) > 0 && res.Type == "cert" {
+		data[res.Secret] = []byte("Replace this")
+	}
 
 	sec := corev1.Secret{
 		TypeMeta: metav1.TypeMeta{
@@ -81,9 +96,13 @@ func genResourceSecret(res *metagraf.Resource, mg *metagraf.MetaGraf) *corev1.Se
 			APIVersion: "v1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name: objname,
+			Name: l["name"],
 			Labels: l,
 		},
+		Type: "opaque",
+		StringData: stringdata,
+		Data: data,
+
 	}
 
 	return &sec
@@ -95,7 +114,7 @@ func InspectSecrets(mg *metagraf.MetaGraf) {
 
 	for _,r := range mg.Spec.Resources {
 		fmt.Println("Resource type:", r.Type)
-		if len(r.SecretRef) == 0 && len(r.User) > 0 {
+		if len(r.Secret) == 0 && len(r.User) > 0 {
 			fmt.Println(mg.Metadata.Name, "needs implicit secret for", r.User)
 		}
 	}
