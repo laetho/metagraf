@@ -17,9 +17,13 @@ limitations under the License.
 package main
 
 import (
+	"github.com/golang/glog"
 	"metagraf/mg/cmd"
 )
 
 func main() {
-	cmd.Execute()
+	err := cmd.Execute()
+	if err != nil {
+		glog.Error(err)
+	}
 }

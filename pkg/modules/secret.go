@@ -28,12 +28,12 @@ import (
 
 func GenSecrets(mg *metagraf.MetaGraf) {
 	for _,r := range mg.Spec.Resources {
-		// Is secret generation necessary
+		// Is secret generation necessary?
 		if len(r.SecretRef) == 0 && len(r.User) == 0 {
 			continue
 		}
 
-		// Do not create secret if it already exist
+		// Do not create secret if it already exist!
 		if secretExists(ResourceSecretName(&r)) {
 			continue
 		}

@@ -18,8 +18,10 @@ package cmd
 
 import (
 	"fmt"
+	"flag"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 	"os"
 )
@@ -57,6 +59,7 @@ datastructure and help you generate kubernetes primitives`,
 func init() {
 	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.config/mg/mg.yaml)")
 	RootCmd.PersistentFlags().BoolVar(&Verbose, "verbose", false, "verbose output")
+	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
 }
 
 func initConfig() {
@@ -80,10 +83,10 @@ func initConfig() {
 	}
 }
 
-func Execute() {
+func Execute() error {
 	initConfig()
 	if err := RootCmd.Execute(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return err
 	}
+	return nil
 }
