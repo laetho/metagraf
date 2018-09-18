@@ -61,7 +61,7 @@ type Resource struct {
 	Type     	ResourceType `json:"type"`
 	External 	bool    `json:"external"`
 	User 		string	`json:"user,omitempty"`
-	Secret		string	`json:"secretref,omitempty"`
+	Secret		string	`json:"secret,omitempty"`
 	SecretType  string	`json:"secrettype,omitempty"`
 	Semop		string	`json:"semop"`
 	Semver  	string	`json:"semver"`
