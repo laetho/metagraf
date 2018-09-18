@@ -86,7 +86,7 @@ func genResourceSecret(res *metagraf.Resource, mg *metagraf.MetaGraf) *corev1.Se
 		stringdata["password"] = "secretstring"
 	}
 
-	if len(res.Secret) > 0 && res.Type == "cert" {
+	if len(res.Secret) > 0 && res.SecretType == "cert" {
 		data[res.Secret] = []byte("Replace this")
 	}
 
@@ -102,7 +102,6 @@ func genResourceSecret(res *metagraf.Resource, mg *metagraf.MetaGraf) *corev1.Se
 		Type: "opaque",
 		StringData: stringdata,
 		Data: data,
-
 	}
 
 	return &sec
