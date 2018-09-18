@@ -85,6 +85,7 @@ func initConfig() {
 
 func Execute() error {
 	initConfig()
+	flag.Parse()
 	if err := RootCmd.Execute(); err != nil {
 		return err
 	}

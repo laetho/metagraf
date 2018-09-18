@@ -18,6 +18,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/golang/glog"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -202,15 +203,15 @@ var createSecretCmd = &cobra.Command{
 	Long:  Banner + `create Secret`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
-			fmt.Println("Active project is:", viper.Get("namespace"))
-			fmt.Println("Missing path to metaGraf specification")
-			return
+			glog.Info("Active project is:", viper.Get("namespace"))
+			glog.Error("Missing path to metaGraf specification")
+			os.Exit(1)
 		}
 
 		if len(Namespace) == 0 {
 			Namespace = viper.GetString("namespace")
 			if len(Namespace) == 0 {
-				fmt.Println("Namespace must be supplied")
+				glog.Error("Namespace must be supplied")
 				os.Exit(1)
 			}
 		}
