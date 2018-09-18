@@ -19,7 +19,9 @@ package modules
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/golang/glog"
 	"metagraf/pkg/metagraf"
+	"os"
 
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -53,7 +55,8 @@ func secretExists(name string) bool {
 	l, err := cli.Secrets(NameSpace).List(metav1.ListOptions{LabelSelector:"name = "+name})
 
 	if err != nil{
-		panic(err)
+		glog.Error(err)
+		os.Exit(1)
 	}
 
 	if len(l.Items) > 0 {
