@@ -19,8 +19,10 @@ package modules
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/golang/glog"
 	"metagraf/mg/ocpclient"
 	"metagraf/pkg/helpers"
+	"os"
 	"strconv"
 	"strings"
 
@@ -42,8 +44,9 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 
 	err := imgurl.Parse(mg.Spec.BuildImage)
 	if err != nil {
-		fmt.Printf("malformed BuildImage url provided in metaGraf file; %v", mg.Spec.BuildImage)
-		return
+
+		glog.Error("Malformed BuildImage url provided in metaGraf file; %v", mg.Spec.BuildImage)
+		os.Exit(1)
 	}
 
 	sv, err := semver.Parse(mg.Spec.Version)
