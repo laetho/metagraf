@@ -17,14 +17,14 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
+	"github.com/golang/glog"
 	"os"
 
 	"github.com/spf13/cobra"
 
 	"github.com/spf13/viper"
-	"metagraf/pkg/modules"
 	"metagraf/pkg/metagraf"
+	"metagraf/pkg/modules"
 )
 
 func init() {
@@ -39,15 +39,15 @@ var createPipelineCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		if len(args) < 1 {
-			fmt.Println("Active project is:", viper.Get("namespace"))
-			fmt.Println("Missing path to metaGraf specification")
+			glog.Info("Active project is:", viper.Get("namespace"))
+			glog.Error("Missing path to metaGraf specification")
 			return
 		}
 
 		if len(Namespace) == 0 {
 			Namespace = viper.GetString("namespace")
 			if len(Namespace) == 0 {
-				fmt.Println("Namespace must be supplied")
+				glog.Error("Namespace must be supplied")
 				os.Exit(1)
 			}
 		}
@@ -59,6 +59,7 @@ var createPipelineCmd = &cobra.Command{
 
 func pipelineCreate(mgf string, namespace string) {
 	mg := metagraf.Parse(mgf)
+	modules.GenSecrets(&mg)
 	modules.GenConfigMaps(&mg)
 	modules.GenImageStream(&mg, namespace)
 	modules.GenBuildConfig(&mg)
