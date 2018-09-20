@@ -20,12 +20,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/blang/semver"
-	"github.com/fsouza/go-dockerclient"
-	"github.com/spf13/viper"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
+	"metagraf/mg/ocpclient"
 	"metagraf/pkg/helpers"
+	"metagraf/pkg/imageurl"
 	"metagraf/pkg/metagraf"
 	"strconv"
 	"strings"
@@ -52,30 +52,29 @@ func GenService(mg *metagraf.MetaGraf) {
 		DockerImage = ""
 	}
 
-	auth := docker.AuthConfiguration{
-		Username: viper.GetString("user"),
-		Password: viper.GetString("password"),
-	}
+	var imgurl imageurl.ImageURL
+	imgurl.Parse(DockerImage)
 
-	ImageInfo, err := helpers.DockerInspectImage(DockerImage, "latest", auth)
-	if err != nil {
-		// @todo should we fail here?
-		// Create an empty Image struct so the following logic can run
-		ImageInfo = &docker.Image{
-			Config: &docker.Config{},
-		}
-	}
+	client := ocpclient.GetImageClient()
+
+	ist := helpers.GetImageStreamTags(
+		client,
+		imgurl.Namespace,
+		imgurl.Image+":"+imgurl.Tag)
+
+	ImageInfo := helpers.GetDockerImageFromIST(ist)
 
 	for k := range ImageInfo.Config.ExposedPorts {
-		port, _ := strconv.Atoi(k.Port())
+		ss := strings.Split(k,"/")
+		port, _ := strconv.Atoi(ss[0])
 		ContainerPort := corev1.ServicePort{
-			Name:     strings.ToLower(k.Proto()) + "-" + k.Port(),
+			Name:     strings.ToLower(ss[0]) + "-" + ss[1],
 			Port:     int32(port),
-			Protocol: corev1.Protocol(strings.ToUpper(k.Proto())),
+			Protocol: corev1.Protocol(strings.ToUpper(ss[1])),
 			TargetPort: intstr.IntOrString{
 				Type:   0,
 				IntVal: int32(port),
-				StrVal: k.Port(),
+				StrVal: ss[1],
 			},
 		}
 		serviceports = append(serviceports, ContainerPort)

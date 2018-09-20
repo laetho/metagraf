@@ -138,7 +138,6 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 	// ContainerPorts
 	for k := range ImageInfo.Config.ExposedPorts {
 		ss := strings.Split(k,"/")
-
 		port, _ := strconv.Atoi(ss[0])
 		ContainerPort := corev1.ContainerPort{
 			ContainerPort: int32(port),
