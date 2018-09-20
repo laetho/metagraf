@@ -1,32 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Title of the document</title>
+    <meta charset="UTF-8">
+    <style>
+body {
+    font-size : 12pt;
+
+}
+
+table {
+    border : 1px dotted #555555;
+}
+
+th {
+    background-color : #c0c0c0;
+}
+
+td, th {
+    border-spacing: 1px;
+    padding : 5px;
+
+}
+
+    </style>
+</head>
+
+<body>
+
 <h1>{{ .Metadata.Name }} {{ .Spec.Version }}</h1>
 <p>{{ .Spec.Description }}</p>
 
-<h2>Resources</h2>
-<ul>
+<h2>Resource Dependencies</h2>
+    <table>
+        <tr>
+            <th>Resource</th>
+            <th>Version</th>
+            <th>Type</th>
+            <th>External</th>
+            <th>Required</th>
+            <th width="200px">Description</th>
+        </tr>
 {{range .Spec.Resources}}
-    <li>{{ .Name }}, Semver: {{ .Semver}}</li>
+        <tr>
+            <td>{{.Name}}</td>
+            <td>{{.Semop}} {{.Semver}}</td>
+            <td>{{.Type}}</td>
+            <td>{{.External}}</td>
+            <td>{{.Required}}</td>
+            <td>{{.Description}}</td>
+        </tr>
 {{ end }}
-</ul>
+    </table>
 
 <h2>Local Enviroment Variables</h2>
-<ul>
+<table>
+    <tr>
+        <th>Variable</th>
+        <th>Required</th>
+        <th>Default Value</th>
+        <th>Description</th>
+    </tr>
 {{ range .Spec.Environment.Local}}
-  <li>{{ .Name }}</li>
+
+  <tr>
+      <td>{{.Name}}</td>
+      <td>{{.Required}}</td>
+      <td>{{.Default}}</td>
+      <td>{{.Description}}</td>
+  </tr>
 {{ end }}
-</ul>
+</table>
 
 <h2>External Enviroment Variables</h2>
 
 <h3>Introduced by Component</h3>
-<ul>
+<table>
+    <tr>
+        <th>Variable</th>
+        <th>Required</th>
+        <th>Dynamic</th>
+        <th>Default</th>
+        <th>Description</th>
+    </tr>
+
 {{ range .Spec.Environment.External.Introduces}}
-    <li>{{ .Name }} Type: {{ .Type }},Required: {{ .Required}}</li>
+    <tr>
+        <td>{{.Name}}</td>
+        <td>{{.Required}}</td>
+        <td>{{.Dynamic}}</td>
+        <td>{{.Default}}</td>
+        <td>{{.Description}}</td>
+    </tr>
 {{ end }}
-</ul>
+</table>
 
 <h3>Consumed by Component</h3>
-<ul>
+<table>
+    <tr>
+        <th>Variable</th>
+        <th>Required</th>
+        <th>Dynamic</th>
+        <th>Default</th>
+        <th>Description</th>
+    </tr>
 {{ range .Spec.Environment.External.Consumes}}
-    <li>{{ .Name }} Type: {{ .Type }},Required: {{ .Required}}</li>
+    <tr>
+        <td>{{.Name}}</td>
+        <td>{{.Required}}</td>
+        <td>{{.Dynamic}}</td>
+        <td>{{.Default}}</td>
+        <td>{{.Description}}</td>
+    </tr>
 {{ end }}
-</ul>
+</table>
+
+</body>
+</html>
