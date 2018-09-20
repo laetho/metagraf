@@ -109,20 +109,3 @@ func genResourceSecret(res *metagraf.Resource, mg *metagraf.MetaGraf) *corev1.Se
 
 
 
-func InspectSecrets(mg *metagraf.MetaGraf) {
-
-	for _,r := range mg.Spec.Resources {
-		fmt.Println("Resource type:", r.Type)
-		if len(r.Secret) == 0 && len(r.User) > 0 {
-			fmt.Println(mg.Metadata.Name, "needs implicit secret for", r.User)
-		}
-	}
-
-	for _,r := range mg.Spec.Config {
-		if r.Type != "secret" {
-			continue
-		}
-		fmt.Println(mg.Metadata.Name, "needs the following secret", r.Name)
-	}
-
-}

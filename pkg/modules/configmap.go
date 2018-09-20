@@ -95,3 +95,4 @@ func genConfigMapFromConfig(conf *metagraf.Config, mg *metagraf.MetaGraf) {
 	}
 	fmt.Println(string(b))
 }
+

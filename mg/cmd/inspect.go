@@ -30,6 +30,7 @@ var InspectCmd = &cobra.Command{
 
 		mg := metagraf.Parse(args[0])
 		modules.InspectSecrets(&mg)
+		modules.InspectConfigMaps(&mg)
 	},
 }
 
