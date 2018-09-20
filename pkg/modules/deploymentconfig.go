@@ -126,16 +126,14 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 	}
 
 	// Labels from baserunimage
+	/*
 	for k, v := range ImageInfo.Config.Labels {
 		if helpers.SliceInString(LabelBlacklistFilter, strings.ToLower(k)) {
 			continue
 		}
-		if len(v) > 63 {
-			l[k] = v[0:63]
-		} else {
-			l[k] = v
-		}
+		l[k] = helpers.LabelString(v)
 	}
+	*/
 
 	// ContainerPorts
 	for k := range ImageInfo.Config.ExposedPorts {

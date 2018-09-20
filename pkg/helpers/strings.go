@@ -29,6 +29,13 @@ func StringInSlice(a string, list []string) bool {
 	}
 	return false
 }
+// Sanitize a string for a k8s label field
+func LabelString(s string) string {
+	if len(s) > 63 {
+		s = s[0:63]
+	}
+	return s
+}
 
 // Checks if a strings in a slice is part of a string.
 func SliceInString(list []string, str string) bool {
