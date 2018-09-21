@@ -93,6 +93,7 @@ about a component using annotations, that your tooling may glean knowledge from 
 ```
 
 | Field | - | Description |
+|-------|---|-------------|
 | version | required | Need to be a valid SemVer specification version. Might be reduced to major, minor, patch during evaluations and comparisons.|
 | type | required | There are currently two component types at the moment: service and datastore.|
 | description | required | A textual description of the software component.|
@@ -106,11 +107,11 @@ The resources section in the file describes a needed or optional attached resour
 
 ```go
 type Resource struct {
-	Name        string	`json:"name"`
-	Type        string	`json:"type"`
+	Name        string  `json:"name"`
+	Type        string  `json:"type"`
 	External    bool    `json:"external"`
-	User        string	`json:"user,omitempty"`
-	Secret      string	`json:"secret,omitempty"`
+	User        string  `json:"user,omitempty"`
+	Secret      string  `json:"secret,omitempty"`
 	SecretType  string  `json:"secrettype,omitempty"`
 	Semop       string  `json:"semop"`
 	Semver      string  `json:"semver"`
