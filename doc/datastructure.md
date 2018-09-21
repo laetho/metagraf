@@ -99,8 +99,19 @@ about a component using annotations, that your tooling may glean knowledge from 
 | description | required | A textual description of the software component.|
 | repository | optional | Repository URL.|
 | branch | optional | Branch name.| 
+|repsecref|optional|Reference to secret for accessing the repository.|
+|buildimage|optional|Registry url to the image we build from/on. If no buildimage is provided we won't attempt to build anything.|
+|baserunimage|optional|Registry url to the runtime image. Used for binary builds or finished components.|
+|resources|optional|An array of Resource records. See Resources section.|
+|environment|optional|Environment variables. See Environment section.|
+|config|optional|Array of Config records. See Config section.|
 
- 
+* If only repository url is provided it indicates a source build.
+* If only repository and buildimage is provided it indicates a s2i build image or similar.
+* If buildimage and baserunimage is provided it indicates a binary build with 
+* If only a baserunimage is provided it indicates instrumentation of a prebuilt component. 
+
+
 ### Resources
 
 The resources section in the file describes a needed or optional attached resource.
