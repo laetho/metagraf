@@ -92,23 +92,24 @@ about a component using annotations, that your tooling may glean knowledge from 
 }
 ```
 
-* Version needs to be a valid SemVer specification version. Vill get reduced to Major, Minor and Patch during evaluations and comparisions. 
-
+* **Version** needs to be a valid SemVer specification version. Vill get reduced to Major, Minor and Patch during evaluations and comparisions. 
+* **Type** there are currently two types of metaGraf component types: _service_ and _datastore_.
+* 
 ### Resources
 
 The resources section in the file describes a needed or optional attached resource.
 
 ```go
 type Resource struct {
-	Name     	string	`json:"name"`
-	Type     	string	`json:"type"`
-	External 	bool    `json:"external"`
-	User 		string	`json:"user,omitempty"`
-	Secret	    string	`json:"secret,omitempty"`
+	Name        string	`json:"name"`
+	Type        string	`json:"type"`
+	External    bool    `json:"external"`
+	User        string	`json:"user,omitempty"`
+	Secret      string	`json:"secret,omitempty"`
 	SecretType  string  `json:"secrettype,omitempty"`
-	Semop		string	`json:"semop"`
-	Semver  	string	`json:"semver"`
-	Required 	bool	`json:"required"`
+	Semop       string	`json:"semop"`
+	Semver      string	`json:"semver"`
+	Required    bool	`json:"required"`
 	Url         string  `json:"url,omitempty"`
 }
 
