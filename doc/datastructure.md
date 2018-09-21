@@ -78,10 +78,10 @@ about a component using annotations, that your tooling may glean knowledge from 
 {
  "spec": {
     "version": "4.2.3",
-    "branch": "master",
     "type": "service",
     "description": "Some kind of software component.",
     "repository" : "Repository URL",
+    "branch": "master",
     "repsecref": "Referense to name of secret to pull source code",
     "buildimage" : "URL to image on registry",
     "baserunimage" : "URL to image on registry",
@@ -92,9 +92,14 @@ about a component using annotations, that your tooling may glean knowledge from 
 }
 ```
 
-* **Version** needs to be a valid SemVer specification version. Vill get reduced to Major, Minor and Patch during evaluations and comparisions. 
-* **Type** there are currently two types of metaGraf component types: _service_ and _datastore_.
-* 
+| Field | - | Description |
+| version | required | Need to be a valid SemVer specification version. Might be reduced to major, minor, patch during evaluations and comparisons.|
+| type | required | There are currently two component types at the moment: service and datastore.|
+| description | required | A textual description of the software component.|
+| repository | optional | Repository URL.|
+| branch | optional | Branch name.| 
+
+ 
 ### Resources
 
 The resources section in the file describes a needed or optional attached resource.
@@ -107,9 +112,9 @@ type Resource struct {
 	User        string	`json:"user,omitempty"`
 	Secret      string	`json:"secret,omitempty"`
 	SecretType  string  `json:"secrettype,omitempty"`
-	Semop       string	`json:"semop"`
-	Semver      string	`json:"semver"`
-	Required    bool	`json:"required"`
+	Semop       string  `json:"semop"`
+	Semver      string  `json:"semver"`
+	Required    bool    `json:"required"`
 	Url         string  `json:"url,omitempty"`
 }
 
