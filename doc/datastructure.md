@@ -1,22 +1,60 @@
 # metaGraf Datastructure
 
 
-The metaGraf datastructure is inspired by a kubernetes resource (kind). Doing this in JSON instead of YAML.
+The metaGraf datastructure is inspired by a kubernetes resource (kind). This document
+shows examples in JSON.
 
+Examples in JSON are stubs of the complete spec. For complete examples take a look
+at the examples provided in the repository.
+
+Follows the Kubernetes metadata specification.
+```json
+{
+  "kind": "MetaGraf",
+  "version": "v1alpha1",
+  "metadata": {},
+  "spec" : {}
+}
+```
 
 ## Metadata
 
 Follows the Kubernetes metadata specification.
+```json
+{
+  "metadata": {
+    "name":"ComponentName",
+    "annotations": {
+      "example.com/my_annotation": "my value",
+      "example.com/another_annotation" : "another value"
+    },
+    "labels": {
+      "app" : "ComponentName"
+    }
+  }
+}
+```
+
 
 ### Labels
 
-```
+```json
+{
     "labels": {
-      "component": "ComponentName"
+      "label": "labelvalue"
     }
+}
 ```
 
+For all resources belonging to a component it's advisable to label it with the component name:
 
+```json
+{
+    "labels" : {
+      "component" : "component name"
+    }
+}
+```
 
 
 ### Annotations
@@ -24,15 +62,35 @@ Follows the Kubernetes metadata specification.
 While the **Spec** structure is rigid, you can add custom organizational or solution information 
 about a component using annotations, that your tooling may glean knowledge from or react on. 
 
-```
+```json
+{
     "annotations": {
       "myapp.example.com/application-type": "frontend",
       "myapp.example.com/maintainer": "John Doe <john@example.com>"
     }
+}
 ```
 
 
 ## Spec
+
+```json
+{
+ "spec": {
+    "version": "4.2.3",
+    "branch": "master",
+    "type": "service",
+    "description": "Some kind of software component.",
+    "repository" : "Repository URL",
+    "repsecref": "Referense to name of secret to pull source code",
+    "buildimage" : "URL to image on registry",
+    "baserunimage" : "URL to image on registry",
+    "resources": [],
+    "environment": {},
+    "config" : []
+    }
+}
+```
 
 * Version needs to be a valid SemVer specification version. Vill get reduced to Major, Minor and Patch during evaluations and comparisions. 
 
@@ -40,7 +98,7 @@ about a component using annotations, that your tooling may glean knowledge from 
 
 The resources section in the file describes a needed or optional attached resource.
 
-```$go
+```go
 type Resource struct {
 	Name     	string	`json:"name"`
 	Type     	string	`json:"type"`
