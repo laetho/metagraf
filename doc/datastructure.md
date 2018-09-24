@@ -163,20 +163,6 @@ If the SecretRef field is filled out it means there is a explicit secret related
 }
 ```
 
-Each of the arrays in the stub above will contain from 0 to n number of
-EnvironmentVar instances:
-
-```go
-type EnvironmentVar struct {
-	Name        string			`json:"name"`
-	Required    bool			`json:"required"`
-	Dynamic 	bool			`json:"dynamic,omitempty"`
-	Type        string			`json:"type,omitempty"`
-	Description string			`json:"description"`
-	Default		string			`json:"default,omitempty"`
-}
-```
-
 This section of the specification is split in two local and external.
 * `build` Build level environment variables
 * `local` Environment variables that needs to be set locally. Example: Where to 
@@ -186,6 +172,19 @@ management solution. This would just reference a unique key and downstream
 processing should produce the desired value or be overridden explicitly in 
 a deployment.
 
+Each of the arrays in the stub above will contain from 0 to n number of
+EnvironmentVar instances:
+
+```go
+type EnvironmentVar struct {
+	Name        string			`json:"name"`
+	Required    bool			`json:"required"`
+	Dynamic     bool			`json:"dynamic,omitempty"`
+	Type        string			`json:"type,omitempty"`
+	Description string			`json:"description"`
+	Default     string			`json:"default,omitempty"`
+}
+```
 
 Any environment variable defined in `local` or `external` will become part of a 
 deployment. 
