@@ -118,12 +118,17 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 
 	// Local variables from metagraf as deployment envvars
 	for _, e := range mg.Spec.Environment.Local {
-		if e.Required == true {
-			EnvVars = append(EnvVars, corev1.EnvVar{Name: e.Name, Value: e.Default})
-		} else if e.Required == false {
-			EnvVars = append(EnvVars, corev1.EnvVar{Name: e.Name, Value: "null"})
-		}
+		EnvVars = append(EnvVars, EnvToEnvVar(&e))
 	}
+
+	// External variables from metagraf as deployment envvars
+	for _, e := range mg.Spec.Environment.External.Consumes {
+		EnvVars = append(EnvVars, EnvToEnvVar(&e))
+	}
+	for _, e := range mg.Spec.Environment.External.Introduces {
+		EnvVars = append(EnvVars, EnvToEnvVar(&e))
+	}
+
 
 	// Labels from baserunimage
 	/*
