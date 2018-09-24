@@ -21,6 +21,7 @@ import (
 	"metagraf/pkg/metagraf"
 	"strconv"
 	"strings"
+	corev1 "k8s.io/api/core/v1"
 )
 
 var (
@@ -50,4 +51,24 @@ func ResourceSecretName(r *metagraf.Resource) string {
 	} else {
 		return strings.ToLower(r.Name)
 	}
+}
+
+// Applies mg logic to an environment variable and returns a corev1.EnvVar{}
+// @todo expand local variables from mg values or environment
+func EnvToEnvVar(e *metagraf.EnvironmentVar) corev1.EnvVar {
+	if e.Required == false {
+		return corev1.EnvVar{
+			Name: e.Name,
+			Value: "",
+		}
+	}
+
+	if len(e.Default) == 0 {e.Default = "$"+e.Name}
+
+	return corev1.EnvVar{
+		Name:  e.Name,
+		Value: e.Default,
+	}
+
+
 }
