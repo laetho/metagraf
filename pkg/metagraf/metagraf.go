@@ -57,17 +57,17 @@ type MetaGraf struct {
 }
 
 type Resource struct {
-	Name     	string	`json:"name"`
-	Type     	ResourceType `json:"type"`
-	External 	bool    `json:"external"`
-	User 		string	`json:"user,omitempty"`
-	Secret		string	`json:"secret,omitempty"`
-	SecretType  string	`json:"secrettype,omitempty"`
-	Semop		string	`json:"semop"`
-	Semver  	string	`json:"semver"`
-	Required 	bool	`json:"required"`
-	Url			string  `json:"url,omitempty"`
-	Description string 	`json:"description,omitempty"`
+	Name     	string			`json:"name"`
+	Type     	ResourceType	`json:"type"`
+	External 	bool    		`json:"external"`
+	User 		string			`json:"user,omitempty"`
+	Secret		string			`json:"secret,omitempty"`
+	SecretType  string			`json:"secrettype,omitempty"`
+	Semop		string			`json:"semop"`
+	Semver  	string			`json:"semver"`
+	Required 	bool			`json:"required"`
+	Url			string  		`json:"url,omitempty"`
+	Description string 			`json:"description,omitempty"`
 }
 
 type Config struct {
