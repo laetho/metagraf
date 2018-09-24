@@ -91,5 +91,5 @@ type EnvironmentVar struct {
 	Dynamic 	bool			`json:"dynamic,omitempty"`
 	Type        string			`json:"type,omitempty"`
 	Description string			`json:"description"`
-	Default		string			`json:"default"`
+	Default		string			`json:"default,omitempty"`
 }
