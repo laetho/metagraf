@@ -1,8 +1,7 @@
 # metaGraf Datastructure
 
-
 The metaGraf datastructure is inspired by a kubernetes resource (kind). This document
-shows examples in JSON.
+shows examples in JSON. Long term it might become a CRD itself.
 
 Examples in JSON are stubs of the complete spec. For complete examples take a look
 at the examples provided in the repository.
@@ -20,6 +19,7 @@ Follows the Kubernetes metadata specification.
 ## Metadata
 
 Follows the Kubernetes metadata specification.
+
 ```json
 {
   "metadata": {
@@ -106,11 +106,11 @@ about a component using annotations, that your tooling may glean knowledge from 
 |environment|optional|Environment variables. See Environment section.|
 |config|optional|Array of Config records. See Config section.|
 
-* If only repository url is provided it indicates a source build.
+* If only repository url is provided it indicates a build from source and Dockerfile.
 * If only repository and buildimage is provided it indicates a s2i build image or similar.
 * If buildimage and baserunimage is provided it indicates a binary build with 
 * If only a baserunimage is provided it indicates instrumentation of a prebuilt component. 
-
+The scenarios here needs work.
 
 ### Resources
 
@@ -129,7 +129,6 @@ type Resource struct {
 	Required    bool    `json:"required"`
 	Url         string  `json:"url,omitempty"`
 }
-
 ```
 
 
@@ -154,14 +153,28 @@ If the SecretRef field is filled out it means there is a explicit secret related
 
 ### Environment
 
-This section of the specification is split in two local and external.
+```json
+{
+    "environment": {
+      "build": [],
+      "local": [],
+      "external": []
+      }
+}
+```
 
+This section of the specification is split in two local and external.
+* `build` Build level environment variables
 * `local` Environment variables that needs to be set locally. Example: Where to 
 get centrally managed config.
 * `external` Environment variables that come from some configuration
 management solution. This would just reference a unique key and downstream 
 processing should produce the desired value or be overridden explicitly in 
 a deployment.
+
+
+#### Build
+
 
 #### Local
 
@@ -178,7 +191,33 @@ it **introduces**.
 
 ### Config
 
-This section is the spec is for defining traditional configuration variables group by `filename`.
+This section is the spec is for defining traditional configuration variables 
+group by `filename`. Options is an array of ConfigParam.
+
+```json
+{
+    "config": [
+      {
+        "name": "name_of_file",
+        "type": "parameters",
+        "description": "",
+        "options": []
+      }
+    ]
+}
+```
+
+ConfigParam example: 
+```json
+  {
+    "name": "parameter.name",
+    "required": "true",
+    "description": "Description of parameter",
+    "type": "string",
+    "default": "512"
+  }
+```
+
 
 ## Status  
 
