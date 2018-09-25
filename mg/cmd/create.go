@@ -28,6 +28,8 @@ import (
 	"metagraf/pkg/metagraf"
 )
 
+
+
 func init() {
 	RootCmd.AddCommand(createCmd)
 	createCmd.AddCommand(createConfigMapCmd)
@@ -38,6 +40,7 @@ func init() {
 	createCmd.AddCommand(createDotCmd)
 	createCmd.AddCommand(createRefCmd)
 	createCmd.AddCommand(createSecretCmd)
+	createCmd.Flags().StringArray("cvars", CVars, "String array of KEY=VALUE variables.", )
 	createDeploymentConfigCmd.Flags().StringVar(&Namespace, "namespace", "", "namespace to work on, if not supplied it will use current working namespace")
 	createBuildConfigCmd.Flags().StringVar(&Namespace, "namespace", "", "namespace to work on, if not supplied it will use current working namespace")
 	createSecretCmd.Flags().StringVar(&Namespace, "namespace", "", "namespace to work on, if not supplied it will use current working namespace")
