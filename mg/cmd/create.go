@@ -40,7 +40,7 @@ func init() {
 	createCmd.AddCommand(createDotCmd)
 	createCmd.AddCommand(createRefCmd)
 	createCmd.AddCommand(createSecretCmd)
-	createCmd.Flags().StringArray("cvars", CVars, "String array of KEY=VALUE variables.", )
+	createCmd.Flags().StringArray("cvars", CVars, "Array of KEY=VALUE pairs.", )
 	createDeploymentConfigCmd.Flags().StringVar(&Namespace, "namespace", "", "namespace to work on, if not supplied it will use current working namespace")
 	createBuildConfigCmd.Flags().StringVar(&Namespace, "namespace", "", "namespace to work on, if not supplied it will use current working namespace")
 	createSecretCmd.Flags().StringVar(&Namespace, "namespace", "", "namespace to work on, if not supplied it will use current working namespace")
@@ -59,15 +59,15 @@ var createBuildConfigCmd = &cobra.Command{
 	Long:  Banner + `create BuildConfig`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
-			fmt.Println("Active project is:", viper.Get("namespace"))
-			fmt.Println("Missing path to metaGraf specification")
-			return
+			glog.Info(StrActiveProject, viper.Get("namespace"))
+			glog.Error(StrMissingMetaGraf)
+			os.Exit(1)
 		}
 
 		if len(Namespace) == 0 {
 			Namespace = viper.GetString("namespace")
 			if len(Namespace) == 0 {
-				fmt.Println("Namespace must be supplied")
+				glog.Error(StrMissingNamespace)
 				os.Exit(1)
 			}
 		}
@@ -83,15 +83,15 @@ var createConfigMapCmd = &cobra.Command{
 	Long:  Banner + `create ConfigMap`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
-			fmt.Println("Active project is:", viper.Get("namespace"))
-			fmt.Println("Missing path to metaGraf specification")
-			return
+			glog.Info(StrActiveProject, viper.Get("namespace"))
+			glog.Error(StrMissingMetaGraf)
+			os.Exit(1)
 		}
 
 		if len(Namespace) == 0 {
 			Namespace = viper.GetString("namespace")
 			if len(Namespace) == 0 {
-				fmt.Println("Namespace must be supplied")
+				glog.Error(StrMissingNamespace)
 				os.Exit(1)
 			}
 		}
@@ -107,15 +107,15 @@ var createDeploymentConfigCmd = &cobra.Command{
 	Long:  Banner + `create DeploymentConfig`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
-			fmt.Println("Active project is:", viper.Get("namespace"))
-			fmt.Println("Missing path to metaGraf specification")
-			return
+			glog.Info(StrActiveProject, viper.Get("namespace"))
+			glog.Error(StrMissingMetaGraf)
+			os.Exit(1)
 		}
 
 		if len(Namespace) == 0 {
 			Namespace = viper.GetString("namespace")
 			if len(Namespace) == 0 {
-				fmt.Println("Namespace must be supplied")
+				glog.Error(StrMissingNamespace)
 				os.Exit(1)
 			}
 		}
@@ -131,15 +131,15 @@ var createImageStreamCmd = &cobra.Command{
 	Long:  Banner + `create ImageStream`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
-			fmt.Println("Active project is:", viper.Get("namespace"))
-			fmt.Println("Missing path to metaGraf specification")
-			return
+			glog.Info(StrActiveProject, viper.Get("namespace"))
+			glog.Error(StrMissingMetaGraf)
+			os.Exit(1)
 		}
 
 		if len(Namespace) == 0 {
 			Namespace = viper.GetString("namespace")
 			if len(Namespace) == 0 {
-				fmt.Println("Namespace must be supplied")
+				glog.Error(StrMissingNamespace)
 				os.Exit(1)
 			}
 		}
@@ -155,15 +155,15 @@ var createServiceCmd = &cobra.Command{
 	Long:  Banner + `create Service`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
-			fmt.Println("Active project is:", viper.Get("namespace"))
-			fmt.Println("Missing path to metaGraf specification")
-			return
+			glog.Info(StrActiveProject, viper.Get("namespace"))
+			glog.Error(StrMissingMetaGraf)
+			os.Exit(1)
 		}
 
 		if len(Namespace) == 0 {
 			Namespace = viper.GetString("namespace")
 			if len(Namespace) == 0 {
-				fmt.Println("Namespace must be supplied")
+				fmt.Println(StrMissingNamespace)
 				os.Exit(1)
 			}
 		}
@@ -179,7 +179,7 @@ var createDotCmd = &cobra.Command{
 	Long:  Banner + `create dot`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
-			fmt.Println("Missing path to collection of metaGraf specifications")
+			fmt.Println(StrMissingCollection)
 			return
 		}
 		modules.GenDotFromPath(args[0])
@@ -192,7 +192,7 @@ var createRefCmd = &cobra.Command{
 	Long:  Banner + `create ref`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
-			fmt.Println("Missing path to metaGraf specifications")
+			fmt.Println(StrMissingCollection)
 			return
 		}
 		mg := metagraf.Parse(args[0])
@@ -206,15 +206,15 @@ var createSecretCmd = &cobra.Command{
 	Long:  Banner + `create Secret`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
-			glog.Info("Active project is:", viper.Get("namespace"))
-			glog.Error("Missing path to metaGraf specification")
+			glog.Info(StrActiveProject, viper.Get("namespace"))
+			glog.Error(StrMissingMetaGraf)
 			os.Exit(1)
 		}
 
 		if len(Namespace) == 0 {
 			Namespace = viper.GetString("namespace")
 			if len(Namespace) == 0 {
-				glog.Error("Namespace must be supplied")
+				glog.Error(StrMissingNamespace)
 				os.Exit(1)
 			}
 		}

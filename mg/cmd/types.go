@@ -16,6 +16,9 @@ limitations under the License.
 
 package cmd
 
-var StrActiveProject = "Active project is:"
-var StrMissingMetaGraf = "Missing path to metaGraf specification."
-var StrMissingNamespace = "Namespace must be supplied or configured."
+type CmdMessage string
+
+var StrActiveProject CmdMessage = "Active project is:"
+var StrMissingMetaGraf CmdMessage = "Missing path to metaGraf specification."
+var StrMissingCollection CmdMessage = "Missing path to collection of metaGraf specifications."
+var StrMissingNamespace CmdMessage = "Namespace must be supplied or configured."
