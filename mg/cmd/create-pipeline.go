@@ -29,6 +29,7 @@ import (
 
 func init() {
 	createPipelineCmd.Flags().StringVar(&Namespace, "namespace", "", "namespace to work on, if not supplied it will use current working namespace")
+	createPipelineCmd.Flags().StringArray("cvars", CVars, "Array of KEY=VALUE pairs.", )
 	createCmd.AddCommand(createPipelineCmd)
 }
 
@@ -39,15 +40,15 @@ var createPipelineCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		if len(args) < 1 {
-			glog.Info("Active project is:", viper.Get("namespace"))
-			glog.Error("Missing path to metaGraf specification")
+			glog.Info(StrActiveProject, viper.Get("namespace"))
+			glog.Error(StrMissingMetaGraf)
 			return
 		}
 
 		if len(Namespace) == 0 {
 			Namespace = viper.GetString("namespace")
 			if len(Namespace) == 0 {
-				glog.Error("Namespace must be supplied")
+				glog.Error(StrMissingNamespace)
 				os.Exit(1)
 			}
 		}

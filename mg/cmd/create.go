@@ -40,11 +40,14 @@ func init() {
 	createCmd.AddCommand(createDotCmd)
 	createCmd.AddCommand(createRefCmd)
 	createCmd.AddCommand(createSecretCmd)
-	createCmd.Flags().StringArray("cvars", CVars, "Array of KEY=VALUE pairs.", )
 	createDeploymentConfigCmd.Flags().StringVar(&Namespace, "namespace", "", "namespace to work on, if not supplied it will use current working namespace")
+	createDeploymentConfigCmd.Flags().StringArray("cvars", CVars, "Array of KEY=VALUE pairs.", )
 	createBuildConfigCmd.Flags().StringVar(&Namespace, "namespace", "", "namespace to work on, if not supplied it will use current working namespace")
+	createBuildConfigCmd.Flags().StringArray("cvars", CVars, "Array of KEY=VALUE pairs.", )
 	createSecretCmd.Flags().StringVar(&Namespace, "namespace", "", "namespace to work on, if not supplied it will use current working namespace")
+	createSecretCmd.Flags().StringArray("cvars", CVars, "Array of KEY=VALUE pairs.", )
 	createConfigMapCmd.Flags().StringVar(&Namespace, "namespace", "", "namespace to work on, if not supplied it will use current working namespace")
+	createConfigMapCmd.Flags().StringArray("cvars", CVars, "Array of KEY=VALUE pairs.", )
 }
 
 var createCmd = &cobra.Command{

@@ -17,15 +17,17 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
+	"github.com/golang/glog"
 	"github.com/spf13/cobra"
-	"metagraf/pkg/modules"
 	"metagraf/pkg/metagraf"
+	"metagraf/pkg/modules"
+	"os"
 )
 
 func init() {
 
 	createCmd.AddCommand(createMiddlearthCmd)
+	createMiddlearthCmd.Flags().StringArray("cvars", CVars, "Array of KEY=VALUE pairs.", )
 }
 
 var createMiddlearthCmd = &cobra.Command{
@@ -34,8 +36,8 @@ var createMiddlearthCmd = &cobra.Command{
 	Long:  `Outputs a middlearth application json from a metaGraf definition`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
-			fmt.Println("Missing path to metaGraf specification")
-			return
+			glog.Error(StrMissingMetaGraf)
+			os.Exit(1)
 		}
 		createMiddlearth(args[0])
 	},
