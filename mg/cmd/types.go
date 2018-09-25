@@ -18,7 +18,7 @@ package cmd
 
 type CmdMessage string
 
-var StrActiveProject CmdMessage = "Active project is:"
-var StrMissingMetaGraf CmdMessage = "Missing path to metaGraf specification."
-var StrMissingCollection CmdMessage = "Missing path to collection of metaGraf specifications."
-var StrMissingNamespace CmdMessage = "Namespace must be supplied or configured."
+var StrActiveProject		CmdMessage = "Active project is:"
+var StrMissingMetaGraf		CmdMessage = "Missing path to metaGraf specification."
+var StrMissingCollection	CmdMessage = "Missing path to collection of metaGraf specifications."
+var StrMissingNamespace 	CmdMessage = "Namespace must be supplied or configured."
