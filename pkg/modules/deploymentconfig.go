@@ -19,7 +19,9 @@ package modules
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/golang/glog"
 	"metagraf/mg/ocpclient"
+	"os"
 	"strconv"
 	"strings"
 
@@ -215,7 +217,8 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 
 	ba, err := json.Marshal(obj)
 	if err != nil {
-		panic(err)
+		glog.Error(err)
+		os.Exit(1)
 	}
 	fmt.Println(string(ba))
 
