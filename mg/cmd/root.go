@@ -29,10 +29,11 @@ import (
 const Banner string = "mg (metaGraf) - "
 
 // Viper cfg file
-var cfgFile string = ""
+var CfgFile string = ""
 
 var (
-	Namespace string
+	Namespace 	string
+	CVars		[]string
 )
 
 // Array of available config keys
@@ -57,7 +58,7 @@ datastructure and help you generate kubernetes primitives`,
 }
 
 func init() {
-	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.config/mg/mg.yaml)")
+	RootCmd.PersistentFlags().StringVar(&CfgFile, "config", "", "config file (default is $HOME/.config/mg/mg.yaml)")
 	RootCmd.PersistentFlags().BoolVar(&Verbose, "verbose", false, "verbose output")
 	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
 }
@@ -73,8 +74,8 @@ func initConfig() {
 	viper.AddConfigPath(home + "/.config/mg/")
 	viper.SetConfigName("config")
 
-	if cfgFile != "" {
-		viper.SetConfigFile(cfgFile)
+	if CfgFile != "" {
+		viper.SetConfigFile(CfgFile)
 	}
 
 	viper.AutomaticEnv()
