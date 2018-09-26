@@ -16,9 +16,36 @@ limitations under the License.
 
 package cmd
 
+import (
+	"github.com/golang/glog"
+	"strings"
+)
+
 type CmdMessage string
 
 var StrActiveProject		CmdMessage = "Active project is:"
 var StrMissingMetaGraf		CmdMessage = "Missing path to metaGraf specification."
 var StrMissingCollection	CmdMessage = "Missing path to collection of metaGraf specifications."
 var StrMissingNamespace 	CmdMessage = "Namespace must be supplied or configured."
+var StrMalformedVar			CmdMessage = "Malformed key=value pair supplied through --cvars :"
+
+// Type for mg custom variables
+type CmdCVars	[]string
+type CmdVars	map[string]string
+
+
+var CVars []string
+
+// Returns a map (CmdVars) parsed from --cvars flag
+func (v CmdCVars) Parse() CmdVars {
+	cm := make(CmdVars)
+	for _,str := range v {
+		split := strings.Split(str,"=")
+		if len(split) < 1 {
+			glog.Info(StrMalformedVar)
+			continue
+		}
+		cm[split[0]]=split[1]
+	}
+	return cm
+}
