@@ -33,7 +33,6 @@ var CfgFile string = ""
 
 var (
 	Namespace 	string
-	CVars		[]string
 )
 
 // Array of available config keys
