@@ -24,8 +24,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"metagraf/pkg/modules"
 	"metagraf/pkg/metagraf"
+	"metagraf/pkg/modules"
 )
 
 
@@ -41,13 +41,13 @@ func init() {
 	createCmd.AddCommand(createRefCmd)
 	createCmd.AddCommand(createSecretCmd)
 	createDeploymentConfigCmd.Flags().StringVar(&Namespace, "namespace", "", "namespace to work on, if not supplied it will use current working namespace")
-	createDeploymentConfigCmd.Flags().StringArray("cvars", CVars, "Array of KEY=VALUE pairs.", )
+	createDeploymentConfigCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
 	createBuildConfigCmd.Flags().StringVar(&Namespace, "namespace", "", "namespace to work on, if not supplied it will use current working namespace")
-	createBuildConfigCmd.Flags().StringArray("cvars", CVars, "Array of KEY=VALUE pairs.", )
+	createBuildConfigCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
 	createSecretCmd.Flags().StringVar(&Namespace, "namespace", "", "namespace to work on, if not supplied it will use current working namespace")
-	createSecretCmd.Flags().StringArray("cvars", CVars, "Array of KEY=VALUE pairs.", )
+	createSecretCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
 	createConfigMapCmd.Flags().StringVar(&Namespace, "namespace", "", "namespace to work on, if not supplied it will use current working namespace")
-	createConfigMapCmd.Flags().StringArray("cvars", CVars, "Array of KEY=VALUE pairs.", )
+	createConfigMapCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
 }
 
 var createCmd = &cobra.Command{
@@ -124,6 +124,11 @@ var createDeploymentConfigCmd = &cobra.Command{
 		}
 
 		mg := metagraf.Parse(args[0])
+		cvars := CmdCVars(CVars).Parse()
+		if cvars == nil {
+			cvars = cvars
+		}
+		//fmt.Println(cvars["this"])
 		modules.GenDeploymentConfig(&mg, Namespace)
 	},
 }
