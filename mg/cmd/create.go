@@ -124,12 +124,9 @@ var createDeploymentConfigCmd = &cobra.Command{
 		}
 
 		mg := metagraf.Parse(args[0])
-		cvars := CmdCVars(CVars).Parse()
-		if cvars == nil {
-			cvars = cvars
-		}
-		mgvars := VarsFromMetaGraf(&mg)
-		fmt.Println(VarsFromEnv(mgvars))
+
+		vars := OverrideVars(&mg, CmdCVars(CVars).Parse())
+		fmt.Println(vars)
 
 		modules.GenDeploymentConfig(&mg, Namespace)
 	},

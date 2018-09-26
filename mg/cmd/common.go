@@ -17,7 +17,6 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
 	"metagraf/pkg/metagraf"
 	"os"
 	"strings"
@@ -27,7 +26,6 @@ import (
 // metaGraf specification that can be found in the execution environment.
 func VarsFromEnv(mgv MGVars) EnvVars {
 	envs := EnvVars{}
-	fmt.Println(mgv)
 	for _,v := range os.Environ() {
 		key, val := keyValueFromEnv(v)
 		if _, ok := mgv[key]; ok {
@@ -35,6 +33,17 @@ func VarsFromEnv(mgv MGVars) EnvVars {
 		}
 	}
 	return envs
+}
+
+func VarsFromCmd(mgv MGVars, cvars CmdVars) map[string]string {
+	vars := make(map[string]string)
+
+	for k,v := range cvars {
+		if _, ok := mgv[k]; ok {
+			vars[k] = v
+		}
+	}
+	return vars
 }
 
 func keyValueFromEnv(s string) (string,string) {
@@ -47,6 +56,7 @@ func keyValueFromEnv(s string) (string,string) {
 func VarsFromMetaGraf(mg *metagraf.MetaGraf) MGVars {
 	vars := MGVars{}
 
+	// Environment Section
 	for _,env := range mg.Spec.Environment.Local {
 		vars[env.Name] = ""
 	}
@@ -57,5 +67,24 @@ func VarsFromMetaGraf(mg *metagraf.MetaGraf) MGVars {
 		vars[env.Name] = ""
 	}
 
+	// Config section
+
 	return vars
+}
+
+// Returns a list of variables from command line or environment where
+// command line is the most significant.
+func OverrideVars(mg *metagraf.MetaGraf, cvars CmdVars) map[string]string {
+	ovars := make(map[string]string)
+
+	// Fetch possible variables form metaGraf specification
+	mgvars := VarsFromMetaGraf(mg)
+	for k,v := range VarsFromEnv(mgvars) {
+		ovars[k] = v
+	}
+	for k,v := range VarsFromCmd(mgvars,cvars) {
+		ovars[k] = v
+	}
+
+	return ovars
 }
