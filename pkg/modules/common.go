@@ -69,6 +69,4 @@ func EnvToEnvVar(e *metagraf.EnvironmentVar) corev1.EnvVar {
 		Name:  e.Name,
 		Value: e.Default,
 	}
-
-
 }

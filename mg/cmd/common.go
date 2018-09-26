@@ -17,6 +17,7 @@ limitations under the License.
 package cmd
 
 import (
+	"fmt"
 	"metagraf/pkg/metagraf"
 	"os"
 	"strings"
@@ -26,19 +27,23 @@ import (
 // metaGraf specification that can be found in the execution environment.
 func VarsFromEnv(mgv MGVars) EnvVars {
 	envs := EnvVars{}
-
+	fmt.Println(mgv)
 	for _,v := range os.Environ() {
-		if
+		key, val := keyValueFromEnv(v)
+		if _, ok := mgv[key]; ok {
+			envs[key] = val
+		}
 	}
 	return envs
 }
 
-func keyFromEnv(s string) string {
-	return strings.Split(s,"=")[0]
+func keyValueFromEnv(s string) (string,string) {
+	return strings.Split(s,"=")[0],strings.Split(s,"=")[1]
 }
 
 // Returns a slice of strings of alle parameterized fields in a metaGraf
 // specification.
+// @todo need to look for parameterized fields in more places
 func VarsFromMetaGraf(mg *metagraf.MetaGraf) MGVars {
 	vars := MGVars{}
 

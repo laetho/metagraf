@@ -128,7 +128,9 @@ var createDeploymentConfigCmd = &cobra.Command{
 		if cvars == nil {
 			cvars = cvars
 		}
-		//fmt.Println(cvars["this"])
+		mgvars := VarsFromMetaGraf(&mg)
+		fmt.Println(VarsFromEnv(mgvars))
+
 		modules.GenDeploymentConfig(&mg, Namespace)
 	},
 }

@@ -30,11 +30,12 @@ var StrMissingNamespace 	CmdMessage = "Namespace must be supplied or configured.
 var StrMalformedVar			CmdMessage = "Malformed key=value pair supplied through --cvars :"
 
 // Type for mg custom variables
-type CmdCVars	[]string
-type CmdVars	map[string]string
+type EnvVars		map[string]string
+type MGVars			map[string]string
+type CmdCVars		[]string
+type CmdVars		map[string]string
 
-
-var CVars []string
+var CVars 	[]string
 
 // Returns a map (CmdVars) parsed from --cvars flag
 func (v CmdCVars) Parse() CmdVars {
