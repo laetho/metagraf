@@ -24,7 +24,7 @@ import (
 
 // Returns a slice of strings of potential parameterized variables in a
 // metaGraf specification that can be found in the execution environment.
-func VarsFromEnv(mgv map[string]string) EnvVars {
+func VarsFromEnv(mgv metagraf.MGVars) EnvVars {
 	envs := EnvVars{}
 	for _,v := range os.Environ() {
 		key, val := keyValueFromEnv(v)
@@ -35,7 +35,7 @@ func VarsFromEnv(mgv map[string]string) EnvVars {
 	return envs
 }
 
-func VarsFromCmd(mgv map[string]string, cvars CmdVars) map[string]string {
+func VarsFromCmd(mgv metagraf.MGVars, cvars CmdVars) map[string]string {
 	vars := make(map[string]string)
 
 	for k,v := range cvars {
@@ -68,7 +68,7 @@ func OverrideVars(mg *metagraf.MetaGraf, cvars CmdVars) map[string]string {
 	return ovars
 }
 
-func MergeVars(base MGVars, override map[string]string) MGVars {
+func MergeVars(base metagraf.MGVars, override map[string]string) metagraf.MGVars {
 	for k,v := range override {
 		base[k] = v
 	}

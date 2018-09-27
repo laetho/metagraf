@@ -23,6 +23,9 @@ const (
 	DataSource 	ResourceType = "datasource"
 )
 
+// Map to hold all variables from a specification
+type MGVars			map[string]string
+
 // JSON structure for a MetaGraf entity
 type MetaGraf struct {
 	Kind     string		`json:"kind"`

@@ -31,7 +31,6 @@ var StrMalformedVar			CmdMessage = "Malformed key=value pair supplied through --
 
 // Type for mg custom variables
 type EnvVars		map[string]string
-type MGVars			map[string]string
 type CmdCVars		[]string
 type CmdVars		map[string]string
 
