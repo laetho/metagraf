@@ -24,7 +24,7 @@ import (
 
 // Returns a slice of strings of potential parameterized variables in a
 // metaGraf specification that can be found in the execution environment.
-func VarsFromEnv(mgv MGVars) EnvVars {
+func VarsFromEnv(mgv map[string]string) EnvVars {
 	envs := EnvVars{}
 	for _,v := range os.Environ() {
 		key, val := keyValueFromEnv(v)
@@ -35,7 +35,7 @@ func VarsFromEnv(mgv MGVars) EnvVars {
 	return envs
 }
 
-func VarsFromCmd(mgv MGVars, cvars CmdVars) map[string]string {
+func VarsFromCmd(mgv map[string]string, cvars CmdVars) map[string]string {
 	vars := make(map[string]string)
 
 	for k,v := range cvars {
@@ -50,34 +50,6 @@ func keyValueFromEnv(s string) (string,string) {
 	return strings.Split(s,"=")[0],strings.Split(s,"=")[1]
 }
 
-// Returns a slice of strings of alle parameterized fields in a metaGraf
-// specification.
-// @todo need to look for parameterized fields in more places
-func VarsFromMetaGraf(mg *metagraf.MetaGraf) MGVars {
-	vars := MGVars{}
-
-	// Environment Section
-	for _,env := range mg.Spec.Environment.Local {
-		vars[env.Name] = ""
-	}
-	for _,env := range mg.Spec.Environment.External.Introduces {
-		vars[env.Name] = ""
-	}
-	for _,env := range mg.Spec.Environment.External.Consumes {
-		vars[env.Name] = ""
-	}
-
-	// Config section, find parameters from
-	for _,conf := range mg.Spec.Config {
-		if len(conf.Options) == 0 || conf.Type != "parameters" {continue}
-
-		for _,opts := range conf.Options {
-			vars[opts.Name] = opts.Default
-		}
-	}
-
-	return vars
-}
 
 // Returns a list of variables from command line or environment where
 // command line is the most significant.
@@ -85,7 +57,7 @@ func OverrideVars(mg *metagraf.MetaGraf, cvars CmdVars) map[string]string {
 	ovars := make(map[string]string)
 
 	// Fetch possible variables form metaGraf specification
-	mgvars := VarsFromMetaGraf(mg)
+	mgvars := mg.VarsFromMetaGraf()
 	for k,v := range VarsFromEnv(mgvars) {
 		ovars[k] = v
 	}
