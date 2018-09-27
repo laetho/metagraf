@@ -125,9 +125,15 @@ var createDeploymentConfigCmd = &cobra.Command{
 
 		mg := metagraf.Parse(args[0])
 
-		vars := OverrideVars(&mg, CmdCVars(CVars).Parse())
-		fmt.Println(vars)
+		if modules.Variables == nil {
+			vars := MergeVars(
+				VarsFromMetaGraf(&mg),
+				OverrideVars(&mg, CmdCVars(CVars).Parse()))
+			modules.Variables = vars
+		}
+		if len(modules.NameSpace) == 0 { modules.NameSpace = Namespace}
 
+		// @todo pass as argument or set exported module variable?
 		modules.GenDeploymentConfig(&mg, Namespace)
 	},
 }
