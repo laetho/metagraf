@@ -53,15 +53,14 @@ func keyValueFromEnv(s string) (string,string) {
 
 // Returns a list of variables from command line or environment where
 // command line is the most significant.
-func OverrideVars(mg *metagraf.MetaGraf, cvars CmdVars) map[string]string {
+func OverrideVars(mgv metagraf.MGVars, cvars CmdVars) map[string]string {
 	ovars := make(map[string]string)
 
 	// Fetch possible variables form metaGraf specification
-	mgvars := mg.GetVars()
-	for k,v := range VarsFromEnv(mgvars) {
+	for k,v := range VarsFromEnv(mgv) {
 		ovars[k] = v
 	}
-	for k,v := range VarsFromCmd(mgvars,cvars) {
+	for k,v := range VarsFromCmd(mgv,cvars) {
 		ovars[k] = v
 	}
 

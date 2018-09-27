@@ -128,7 +128,7 @@ var createDeploymentConfigCmd = &cobra.Command{
 		if modules.Variables == nil {
 			vars := MergeVars(
 				mg.GetVars(),
-				OverrideVars(&mg, CmdCVars(CVars).Parse()))
+				OverrideVars(mg.GetVars(), CmdCVars(CVars).Parse()))
 			modules.Variables = vars
 		}
 		if len(modules.NameSpace) == 0 { modules.NameSpace = Namespace}
