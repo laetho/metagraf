@@ -67,7 +67,14 @@ func VarsFromMetaGraf(mg *metagraf.MetaGraf) MGVars {
 		vars[env.Name] = ""
 	}
 
-	// Config section
+	// Config section, find parameters from
+	for _,conf := range mg.Spec.Config {
+		if len(conf.Options) == 0 || conf.Type != "parameters" {continue}
+
+		for _,opts := range conf.Options {
+			vars[opts.Name] = opts.Default
+		}
+	}
 
 	return vars
 }
@@ -87,4 +94,11 @@ func OverrideVars(mg *metagraf.MetaGraf, cvars CmdVars) map[string]string {
 	}
 
 	return ovars
+}
+
+func MergeVars(base MGVars, override map[string]string) MGVars {
+	for k,v := range override {
+		base[k] = v
+	}
+	return base
 }
