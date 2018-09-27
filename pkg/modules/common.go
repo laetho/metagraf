@@ -18,15 +18,17 @@ package modules
 
 import (
 	"github.com/blang/semver"
+	corev1 "k8s.io/api/core/v1"
 	"metagraf/pkg/metagraf"
 	"strconv"
 	"strings"
-	corev1 "k8s.io/api/core/v1"
 )
 
 var (
 	NameSpace string	// Used to pass namespace from cmd to module to avoid import cycle.
 )
+
+var Variables map[string]string
 
 // Returns a name for a resource based on convention as follows.
 func Name(mg *metagraf.MetaGraf) string {
