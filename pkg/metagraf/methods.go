@@ -16,10 +16,10 @@ limitations under the License.
 
 package metagraf
 
-// Returns a slice of strings of alle parameterized fields in a metaGraf
+// Returns a map of all parameterized fields in a metaGraf
 // specification.
 // @todo need to look for parameterized fields in more places
-func (mg *MetaGraf) VarsFromMetaGraf() MGVars {
+func (mg *MetaGraf) GetVars() MGVars {
 	vars := MGVars{}
 
 	// Environment Section

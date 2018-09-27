@@ -127,7 +127,7 @@ var createDeploymentConfigCmd = &cobra.Command{
 
 		if modules.Variables == nil {
 			vars := MergeVars(
-				mg.VarsFromMetaGraf(),
+				mg.GetVars(),
 				OverrideVars(&mg, CmdCVars(CVars).Parse()))
 			modules.Variables = vars
 		}

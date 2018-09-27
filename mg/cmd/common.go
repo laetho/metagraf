@@ -57,7 +57,7 @@ func OverrideVars(mg *metagraf.MetaGraf, cvars CmdVars) map[string]string {
 	ovars := make(map[string]string)
 
 	// Fetch possible variables form metaGraf specification
-	mgvars := mg.VarsFromMetaGraf()
+	mgvars := mg.GetVars()
 	for k,v := range VarsFromEnv(mgvars) {
 		ovars[k] = v
 	}
