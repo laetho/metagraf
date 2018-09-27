@@ -109,6 +109,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 
 	ImageInfo := helpers.GetDockerImageFromIST(ist)
 
+
 	// Environment Variables from baserunimage
 	for _, e := range ImageInfo.Config.Env {
 		es := strings.Split(e, "=")
