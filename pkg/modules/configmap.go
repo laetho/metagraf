@@ -85,7 +85,11 @@ func genConfigMapFromConfig(conf *metagraf.Config, mg *metagraf.MetaGraf) {
 
 	cm.Name = strings.ToLower(mg.Metadata.Name + "v" + strconv.FormatUint(sv.Major, 10) + "-" + strings.Replace(conf.Name, ".", "-", -1))
 	for _, o := range conf.Options {
-		cm.Data[o.Name] = o.Default
+		if ValueFromEnv(o.Name) {
+			cm.Data[o.Name] = Variables[o.Name]
+		} else {
+			cm.Data[o.Name] = o.Default
+		}
 	}
 
 	b, err := json.Marshal(cm)

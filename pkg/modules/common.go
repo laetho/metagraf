@@ -82,3 +82,10 @@ func EnvToEnvVar(e *metagraf.EnvironmentVar) corev1.EnvVar {
 		Value: e.Default,
 	}
 }
+
+func ValueFromEnv(key string) bool {
+	if _, t := Variables[key]; t {
+		return true
+	}
+	return false
+}
