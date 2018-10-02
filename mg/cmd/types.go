@@ -41,8 +41,8 @@ func (v CmdCVars) Parse() CmdVars {
 	cm := make(CmdVars)
 	for _,str := range v {
 		split := strings.Split(str,"=")
-		if len(split) < 1 {
-			glog.Info(StrMalformedVar)
+		if len(split) <= 1 {
+			glog.Warning(StrMalformedVar)
 			continue
 		}
 		cm[split[0]]=split[1]
