@@ -66,8 +66,8 @@ type Resource struct {
 	User 		string			`json:"user,omitempty"`
 	Secret		string			`json:"secret,omitempty"`
 	SecretType  string			`json:"secrettype,omitempty"`
-	Semop		string			`json:"semop"`
-	Semver  	string			`json:"semver"`
+	Semop		string			`json:"semop,omitempty"`
+	Semver  	string			`json:"semver,omitempty"`
 	Required 	bool			`json:"required"`
 	Url			string  		`json:"url,omitempty"`
 	Description string 			`json:"description,omitempty"`
