@@ -4,10 +4,28 @@ digraph {
         fillcolor=wheat,
         shape=box,
         style="rounded,filled"];
+
+  subgraph cluster_0 {
+    node [style="rounded,filled",
+          fillcolor="coral2",
+          shape="box"];
+    style="rounded";
+    color="orange";
+    shape="box";
+    label="External Services"
+    {{ range $t := . -}}
+    {{ range $t.Spec.Resources -}}
+    {{- if .External }}
+    {{.Name}}{{if .Semver}}-{{.Semver}}{{end}}
+    {{ end -}}
+    {{ end -}}
+    {{ end -}}
+  }
+
 {{ range $mg := . -}}
 {{ range $mg.Spec.Resources -}}
 "{{.Name}}{{if .Semver}}-{{.Semver}}{{end}}" [
-{{- if eq .Type "datasource" }}
+{{- if eq .Type "jdbc:oracle" }}
 shape=cylinder,fillcolor=lightskyblue
 {{- else }}
   {{- if eq .Type "function" }}
