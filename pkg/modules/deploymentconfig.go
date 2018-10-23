@@ -133,6 +133,18 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 	}
 
 
+	/* Norsk Tipping Specific Logic regarding
+	   WLP / OpenLiberty Features. Should maybe
+	   look at some plugin approach to this later.
+	*/
+	if len(mg.Metadata.Labels["norsk-tipping.no/libertyfeatures"]) > 0 {
+		EnvVars = append(EnvVars, corev1.EnvVar{
+			Name: "LIBERTY_FEATURES",
+			Value: mg.Metadata.Labels["norsk-tipping.no/libertyfeatures"],
+		})
+	}
+
+
 	// Labels from baserunimage
 	/*
 	for k, v := range ImageInfo.Config.Labels {
