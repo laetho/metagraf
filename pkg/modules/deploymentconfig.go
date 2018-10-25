@@ -137,10 +137,10 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 	   WLP / OpenLiberty Features. Should maybe
 	   look at some plugin approach to this later.
 	*/
-	if len(mg.Metadata.Labels["norsk-tipping.no/libertyfeatures"]) > 0 {
+	if len(mg.Metadata.Annotations["norsk-tipping.no/libertyfeatures"]) > 0 {
 		EnvVars = append(EnvVars, corev1.EnvVar{
 			Name: "LIBERTY_FEATURES",
-			Value: mg.Metadata.Labels["norsk-tipping.no/libertyfeatures"],
+			Value: mg.Metadata.Annotations["norsk-tipping.no/libertyfeatures"],
 		})
 	}
 
