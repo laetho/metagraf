@@ -20,6 +20,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/golang/glog"
+	"github.com/spf13/viper"
 	"metagraf/mg/ocpclient"
 	"os"
 	"strconv"
@@ -187,7 +188,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 	// Tying Container PodSpec together
 	Container := corev1.Container{
 		Name:            objname,
-		Image:           "registry-default.ocp.norsk-tipping.no:5000/" + namespace + "/" + objname + ":latest",
+		Image:           viper.GetString("registry")+ "/" + namespace + "/" + objname + ":latest",
 		ImagePullPolicy: corev1.PullAlways,
 		Ports:           ContainerPorts,
 		VolumeMounts:    VolumeMounts,
