@@ -110,10 +110,14 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 
 	ImageInfo := helpers.GetDockerImageFromIST(ist)
 
-	// Adding name of component as en environment variable
+	// Adding name and version of component as en environment variable
 	EnvVars = append(EnvVars, corev1.EnvVar{
-		Name: "APPNAME",
+		Name: "MG_APP_NAME",
 		Value: mg.Metadata.Name,
+	})
+	EnvVars = append(EnvVars, corev1.EnvVar{
+		Name: "MG_APP_VERSION",
+		Value: mg.Spec.Version,
 	})
 
 	// Environment Variables from baserunimage
