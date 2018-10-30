@@ -113,7 +113,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 	// Adding name and version of component as en environment variable
 	EnvVars = append(EnvVars, corev1.EnvVar{
 		Name: "MG_APP_NAME",
-		Value: mg.Metadata.Name,
+		Value: mg.Metadata.Name+"v" + strconv.FormatUint(sv.Major, 10),
 	})
 	EnvVars = append(EnvVars, corev1.EnvVar{
 		Name: "MG_APP_VERSION",
