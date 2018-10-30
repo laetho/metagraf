@@ -16,12 +16,6 @@ limitations under the License.
 
 package metagraf
 
-type ResourceType string
-
-const (
-	Service 	ResourceType = "service"
-	DataSource 	ResourceType = "datasource"
-)
 
 // Map to hold all variables from a specification
 type MGVars			map[string]string
@@ -61,7 +55,7 @@ type MetaGraf struct {
 
 type Resource struct {
 	Name     	string			`json:"name"`
-	Type     	ResourceType	`json:"type"`
+	Type     	string			`json:"type"`
 	External 	bool    		`json:"external"`
 	User 		string			`json:"user,omitempty"`
 	Secret		string			`json:"secret,omitempty"`
