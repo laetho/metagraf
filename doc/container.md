@@ -8,6 +8,10 @@ strucutre exist inside a metaGraf powered container or buildImage.
 /mg/config
 ```
 
+It's up to the container image implementation to use the following information
+to produce a working image. metaGraf only standardizes how that information will
+be presented
+
 ## /mg
 
 
