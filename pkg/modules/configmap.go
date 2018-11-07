@@ -42,8 +42,8 @@ func GenConfigMaps(mg *metagraf.MetaGraf) {
 			continue
 		}
 		genConfigMapFromConfig(&c, mg)
-		genConfigMapFromResources(mg)
 	}
+	genConfigMapFromResources(mg)
 }
 
 /*
@@ -94,7 +94,6 @@ func genConfigMapFromConfig(conf *metagraf.Config, mg *metagraf.MetaGraf) {
 	fmt.Println(string(b))
 }
 
-// @todo function should be split up with regards to diffrent generators
 func genConfigMapFromResources(mg *metagraf.MetaGraf) {
 	var objname string
 	sv, err := semver.Parse(mg.Spec.Version)
@@ -104,54 +103,53 @@ func genConfigMapFromResources(mg *metagraf.MetaGraf) {
 		objname = strings.ToLower(mg.Metadata.Name + "v" + strconv.FormatUint(sv.Major, 10))
 	}
 
-	l := make(map[string]string)
-	l["app"] = objname
-
 	for _, r := range mg.Spec.Resources {
-		// Abort generation if not wanted type
-		if !strings.Contains(r.Type,"jdbc") {
-			continue
-		}
-
 		if strings.Contains(r.Type, "oracle") {
-			dstemplate := `<datasSource id="{{ .User }}" jndiName="jdbc/{{ .User }}">
-<jdbcDriver libraryRef="OracleLib" />
-<properties.oracle URL="jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=$OVIS_HOST)(PORT=$OVIS_PORT))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=OVIS_ACTIVE)))" user="dbadmin" password="$PASSWORD"/>
-<connectionManager maxPoolSize="10" minPoolSize="2" />
-</dataSource>
-`
-			t,_ := template.New("ds").Parse(dstemplate)
-			var o bytes.Buffer
-			if err := t.Execute(&o,r); err != nil {
-				glog.Errorf("%v",err)
-				os.Exit(1)
-			}
-
-			cm := corev1.ConfigMap{
-				TypeMeta: metav1.TypeMeta{
-					Kind:       "ConfigMap",
-					APIVersion: "v1",
-				},
-				ObjectMeta: metav1.ObjectMeta{
-					Name:   objname+"-"+strings.ToLower(r.User),
-					Labels: l,
-				},
-			}
-
-			cm.Data = make(map[string]string)
-			cm.ObjectMeta.Labels = l
-			cm.Data["DS"] = o.String()
-			// @todo this should really come from secretRef/vault
-			cm.Data["PASSWORD"] = "test123"
-
+			cm := genJDBCOracle(objname, &r)
 			b, err := json.Marshal(cm)
 			if err != nil {
 				fmt.Println(err)
 				return
 			}
 			fmt.Println(string(b))
-
 		}
 	}
 }
 
+func genJDBCOracle(objname string, r *metagraf.Resource,) corev1.ConfigMap {
+
+	l := make(map[string]string)
+	l["app"] = objname
+
+	dstemplate := `<datasSource id="{{ .User }}" jndiName="jdbc/{{ .User }}">
+<jdbcDriver libraryRef="OracleLib" />
+<properties.oracle URL="jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=$OVIS_HOST)(PORT=$OVIS_PORT))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=OVIS_ACTIVE)))" user="dbadmin" password="$PASSWORD"/>
+<connectionManager maxPoolSize="10" minPoolSize="2" />
+</dataSource>
+`
+	t,_ := template.New("ds").Parse(dstemplate)
+	var o bytes.Buffer
+	if err := t.Execute(&o,r); err != nil {
+		glog.Errorf("%v",err)
+		os.Exit(1)
+	}
+
+	cm := corev1.ConfigMap{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "ConfigMap",
+			APIVersion: "v1",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:   objname+"-"+strings.ToLower(r.User),
+			Labels: l,
+		},
+	}
+
+	cm.Data = make(map[string]string)
+	cm.ObjectMeta.Labels = l
+	cm.Data["DS"] = o.String()
+
+	// @todo this should really come from secretRef/vault
+	cm.Data["PASSWORD"] = "test123"
+	return cm
+}
