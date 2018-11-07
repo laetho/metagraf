@@ -41,15 +41,15 @@ func GenConfigMaps(mg *metagraf.MetaGraf) {
 		if c.Type != "parameters" {
 			continue
 		}
-		genConfigMapFromConfig(&c, mg)
+		genConfigMapsFromConfig(&c, mg)
 	}
-	genConfigMapFromResources(mg)
+	genConfigMapsFromResources(mg)
 }
 
 /*
 Generates a configmap for jvm.params file for Liberty java apps
 */
-func genConfigMapFromConfig(conf *metagraf.Config, mg *metagraf.MetaGraf) {
+func genConfigMapsFromConfig(conf *metagraf.Config, mg *metagraf.MetaGraf) {
 	var objname string
 	sv, err := semver.Parse(mg.Spec.Version)
 	if err != nil {
@@ -94,7 +94,7 @@ func genConfigMapFromConfig(conf *metagraf.Config, mg *metagraf.MetaGraf) {
 	fmt.Println(string(b))
 }
 
-func genConfigMapFromResources(mg *metagraf.MetaGraf) {
+func genConfigMapsFromResources(mg *metagraf.MetaGraf) {
 	var objname string
 	sv, err := semver.Parse(mg.Spec.Version)
 	if err != nil {
