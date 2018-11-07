@@ -116,11 +116,13 @@ func genConfigMapsFromResources(mg *metagraf.MetaGraf) {
 	}
 }
 
+
 func genJDBCOracle(objname string, r *metagraf.Resource,) corev1.ConfigMap {
 
 	l := make(map[string]string)
 	l["app"] = objname
 
+	// todo: should this be fetched from EnvironmentVar Template, possibly
 	dstemplate := `<datasSource id="{{ .User }}" jndiName="jdbc/{{ .User }}">
 <jdbcDriver libraryRef="OracleLib" />
 <properties.oracle URL="jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=$OVIS_HOST)(PORT=$OVIS_PORT))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=OVIS_ACTIVE)))" user="dbadmin" password="$PASSWORD"/>
