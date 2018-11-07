@@ -16,7 +16,6 @@ limitations under the License.
 
 package metagraf
 
-
 // Map to hold all variables from a specification
 type MGVars			map[string]string
 
@@ -63,7 +62,7 @@ type Resource struct {
 	Semop		string			`json:"semop,omitempty"`
 	Semver  	string			`json:"semver,omitempty"`
 	Required 	bool			`json:"required"`
-	Url			string  		`json:"url,omitempty"`
+	Template	string  		`json:"template,omitempty"`
 	Description string 			`json:"description,omitempty"`
 }
 
@@ -87,6 +86,7 @@ type EnvironmentVar struct {
 	Required    bool			`json:"required"`
 	Dynamic 	bool			`json:"dynamic,omitempty"`
 	Type        string			`json:"type,omitempty"`
+	EnvFrom		string			`json:"envfrom,omitempty"`
 	Description string			`json:"description"`
 	Default		string			`json:"default,omitempty"`
 }
