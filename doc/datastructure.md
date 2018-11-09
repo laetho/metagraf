@@ -4,7 +4,7 @@ The metaGraf datastructure is inspired by a kubernetes resource (kind). This doc
 shows examples in JSON. Long term it might become a CRD itself.
 
 Examples in JSON are stubs of the complete spec. For complete examples take a look
-at the examples provided in the repository.
+at the examples provided in the repository. (They are out of date, needs to be revised)
 
 Follows the Kubernetes metadata specification.
 ```json
