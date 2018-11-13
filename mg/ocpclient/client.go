@@ -19,6 +19,7 @@ package ocpclient
 import (
 	"flag"
 	"fmt"
+	buildv1client "github.com/openshift/client-go/build/clientset/versioned/typed/build/v1"
 	appsv1client "github.com/openshift/client-go/apps/clientset/versioned/typed/apps/v1"
 	imagev1client "github.com/openshift/client-go/image/clientset/versioned/typed/image/v1"
 	corev1client "k8s.io/client-go/kubernetes/typed/core/v1"
@@ -113,6 +114,20 @@ func GetAppsClient() *appsv1client.AppsV1Client {
 	}
 
 	client, err := appsv1client.NewForConfig(RestConfig)
+	if err != nil {
+		panic(err)
+	}
+
+	return client
+}
+
+// Returns a build client
+func GetBuildClient() *buildv1client.BuildV1Client {
+	if RestConfig == nil {
+		RestConfig = getRestConfig(getKubeConfig())
+	}
+
+	client, err := buildv1client.NewForConfig(RestConfig)
 	if err != nil {
 		panic(err)
 	}
