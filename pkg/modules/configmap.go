@@ -157,7 +157,7 @@ func genJDBCOracle(objname string, r *metagraf.Resource,) corev1.ConfigMap {
 	cm.Data["DS"] = o.String()
 
 	// @todo this should really come from secretRef/vault
-	cm.Data["PASSWORD"] = "test123"
+	cm.Data["PASSWORD"] = "$PASSWORD"
 	return cm
 }
 
