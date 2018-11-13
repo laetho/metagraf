@@ -166,6 +166,7 @@ var createImageStreamCmd = &cobra.Command{
 		}
 
 		mg := metagraf.Parse(args[0])
+		if len(modules.NameSpace) == 0 { modules.NameSpace = Namespace}
 		modules.GenImageStream(&mg, Namespace)
 	},
 }
@@ -190,6 +191,7 @@ var createServiceCmd = &cobra.Command{
 		}
 
 		mg := metagraf.Parse(args[0])
+		if len(modules.NameSpace) == 0 { modules.NameSpace = Namespace}
 		modules.GenService(&mg)
 	},
 }

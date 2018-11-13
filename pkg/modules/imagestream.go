@@ -17,9 +17,9 @@ limitations under the License.
 package modules
 
 import (
-	"encoding/json"
-	"fmt"
 	"github.com/blang/semver"
+	"github.com/golang/glog"
+	"metagraf/mg/ocpclient"
 	"strconv"
 	"strings"
 
@@ -31,6 +31,7 @@ import (
 )
 
 func GenImageStream(mg *metagraf.MetaGraf, namespace string) {
+
 	var objname string
 	sv, err := semver.Parse(mg.Spec.Version)
 	if err != nil {
@@ -68,10 +69,37 @@ func GenImageStream(mg *metagraf.MetaGraf, namespace string) {
 		},
 	}
 
+	StoreImageStream(is)
+	/*
 	ba, err := json.Marshal(is)
 	if err != nil {
 		panic(err)
 	}
 	fmt.Println(string(ba))
+	*/
 
+}
+
+func StoreImageStream(i imagev1.ImageStream) {
+
+	glog.Infof("ResourceVersion: %v Length: %v", i.ResourceVersion, len(i.ResourceVersion))
+	glog.Infof("Namespace: %v", NameSpace)
+	isclient := ocpclient.GetImageClient().ImageStreams(NameSpace)
+
+	if len(i.ResourceVersion) > 0 {
+		// update
+		result, err := isclient.Update(&i)
+		if err != nil {
+			glog.Error(err)
+			//os.Exit(1)
+		}
+		glog.Infof("Updated ImageStream: %v(%v)", result.Name, i.Name)
+	} else {
+		result, err := isclient.Create(&i)
+		if err != nil {
+			glog.Error(err)
+			//os.Exit(1)
+		}
+		glog.Infof("Created ImageStream: %v(%v)", result.Name,i.Name)
+	}
 }
