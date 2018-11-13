@@ -52,7 +52,7 @@ var createPipelineCmd = &cobra.Command{
 				os.Exit(1)
 			}
 		}
-
+		if len(modules.NameSpace) == 0 { modules.NameSpace = Namespace}
 		pipelineCreate(args[0], Namespace)
 
 	},
