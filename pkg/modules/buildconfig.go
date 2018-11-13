@@ -17,8 +17,6 @@ limitations under the License.
 package modules
 
 import (
-	"encoding/json"
-	"fmt"
 	"github.com/golang/glog"
 	"metagraf/mg/ocpclient"
 	"metagraf/pkg/helpers"
@@ -133,11 +131,14 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 		},
 	}
 
+	StoreBuildConfig(bc)
+	/*
 	ba, err := json.Marshal(bc)
 	if err != nil {
 		panic(err)
 	}
 	fmt.Println(string(ba))
+	*/
 }
 
 func genBinaryBuildSource() buildv1.BuildSource {
@@ -157,5 +158,28 @@ func genGitBuildSource(mg *metagraf.MetaGraf) buildv1.BuildSource {
 		SourceSecret: &corev1.LocalObjectReference{
 			Name: mg.Spec.RepSecRef,
 		},
+	}
+}
+
+func StoreBuildConfig(obj buildv1.BuildConfig ) {
+
+	glog.Infof("ResourceVersion: %v Length: %v", obj.ResourceVersion, len(obj.ResourceVersion))
+	glog.Infof("Namespace: %v", NameSpace)
+
+	client := ocpclient.GetBuildClient().BuildConfigs(NameSpace)
+
+	if len(obj.ResourceVersion) > 0 {
+		// update
+		result, err := client.Update(&obj)
+		if err != nil {
+			glog.Info(err)
+		}
+		glog.Infof("Updated BuildConfig: %v(%v)", result.Name, obj.Name)
+	} else {
+		result, err := client.Create(&obj)
+		if err != nil {
+			glog.Info(err)
+		}
+		glog.Infof("Created BuildConfig: %v(%v)", result.Name, obj.Name)
 	}
 }

@@ -17,8 +17,6 @@ limitations under the License.
 package modules
 
 import (
-	"encoding/json"
-	"fmt"
 	"github.com/golang/glog"
 	"metagraf/pkg/metagraf"
 	"os"
@@ -42,12 +40,17 @@ func GenSecrets(mg *metagraf.MetaGraf) {
 			continue
 		}
 
+
 		obj := genResourceSecret(&r, mg)
+		StoreSecret(*obj)
+
+		/*
 		ba, err := json.Marshal(obj)
 		if err != nil {
 			panic(err)
 		}
 		fmt.Println(string(ba))
+		*/
 	}
 }
 
@@ -108,4 +111,25 @@ func genResourceSecret(res *metagraf.Resource, mg *metagraf.MetaGraf) *corev1.Se
 }
 
 
+func StoreSecret(obj corev1.Secret) {
 
+	glog.Infof("ResourceVersion: %v Length: %v", obj.ResourceVersion, len(obj.ResourceVersion))
+	glog.Infof("Namespace: %v", NameSpace)
+
+	client := ocpclient.GetCoreClient().Secrets(NameSpace)
+
+	if len(obj.ResourceVersion) > 0 {
+		// update
+		result, err := client.Update(&obj)
+		if err != nil {
+			glog.Info(err)
+		}
+		glog.Infof("Updated Secret: %v(%v)", result.Name, obj.Name)
+	} else {
+		result, err := client.Create(&obj)
+		if err != nil {
+			glog.Info(err)
+		}
+		glog.Infof("Created Secret: %v(%v)", result.Name, obj.Name)
+	}
+}
