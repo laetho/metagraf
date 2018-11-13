@@ -19,13 +19,14 @@ package ocpclient
 import (
 	"flag"
 	"fmt"
+	appsv1client "github.com/openshift/client-go/apps/clientset/versioned/typed/apps/v1"
+	imagev1client "github.com/openshift/client-go/image/clientset/versioned/typed/image/v1"
+	corev1client "k8s.io/client-go/kubernetes/typed/core/v1"
+	"k8s.io/client-go/rest"
+	"k8s.io/client-go/tools/clientcmd"
 	"os"
 	"path/filepath"
 	"runtime"
-	imagev1client "github.com/openshift/client-go/image/clientset/versioned/typed/image/v1"
-	corev1client "k8s.io/client-go/kubernetes/typed/core/v1"
-	"k8s.io/client-go/tools/clientcmd"
-	"k8s.io/client-go/rest"
 )
 
 var RestConfig *rest.Config
@@ -105,3 +106,16 @@ func GetImageClient() *imagev1client.ImageV1Client {
 	return client
 }
 
+// Returns a Apps client
+func GetAppsClient() *appsv1client.AppsV1Client {
+	if RestConfig == nil {
+		RestConfig = getRestConfig(getKubeConfig())
+	}
+
+	client, err := appsv1client.NewForConfig(RestConfig)
+	if err != nil {
+		panic(err)
+	}
+
+	return client
+}
