@@ -15,7 +15,7 @@ limitations under the License.
 */
 
 package helpers
-
+/*
 import (
 	"fmt"
 	"github.com/fsouza/go-dockerclient"
@@ -49,3 +49,4 @@ func DockerInspectImage(image string, tag string, auth docker.AuthConfiguration)
 	}
 	return i, nil
 }
+*/
