@@ -76,6 +76,7 @@ var createBuildConfigCmd = &cobra.Command{
 		}
 
 		mg := metagraf.Parse(args[0])
+		if len(modules.NameSpace) == 0 { modules.NameSpace = Namespace}
 		modules.GenBuildConfig(&mg)
 	},
 }
