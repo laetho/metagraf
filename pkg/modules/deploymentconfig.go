@@ -194,6 +194,9 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 		VolumeMounts = append(VolumeMounts, VolumeMount)
 	}
 
+	// Put ConfigMap mounts into PodSpec
+	// How to identify the ConfigMaps to mount
+
 	// Tying Container PodSpec together
 	Container := corev1.Container{
 		Name:            objname,

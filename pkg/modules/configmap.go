@@ -18,16 +18,14 @@ package modules
 
 import (
 	"bytes"
-	"encoding/json"
-	"fmt"
 	"github.com/blang/semver"
 	"github.com/golang/glog"
 	"metagraf/mg/ocpclient"
-	"text/template"
 	"metagraf/pkg/metagraf"
 	"os"
 	"strconv"
 	"strings"
+	"text/template"
 
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -87,12 +85,15 @@ func genConfigMapsFromConfig(conf *metagraf.Config, mg *metagraf.MetaGraf) {
 		}
 	}
 
+	StoreConfigMap(cm)
+	/*
 	b, err := json.Marshal(cm)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 	fmt.Println(string(b))
+	*/
 }
 
 func genConfigMapsFromResources(mg *metagraf.MetaGraf) {
@@ -107,12 +108,15 @@ func genConfigMapsFromResources(mg *metagraf.MetaGraf) {
 	for _, r := range mg.Spec.Resources {
 		if strings.Contains(r.Type, "oracle") {
 			cm := genJDBCOracle(objname, &r)
+			StoreConfigMap(cm)
+			/*
 			b, err := json.Marshal(cm)
 			if err != nil {
 				fmt.Println(err)
 				return
 			}
 			fmt.Println(string(b))
+			*/
 		}
 	}
 }
@@ -157,7 +161,7 @@ func genJDBCOracle(objname string, r *metagraf.Resource,) corev1.ConfigMap {
 	return cm
 }
 
-func StoreConfigMap(m *corev1.ConfigMap) {
+func StoreConfigMap(m corev1.ConfigMap) {
 
 	glog.Infof("ResourceVersion: %v Length: %v", m.ResourceVersion, len(m.ResourceVersion))
 
@@ -165,18 +169,18 @@ func StoreConfigMap(m *corev1.ConfigMap) {
 
 	if len(m.ResourceVersion) > 0 {
 		// update
-		result, err := cmclient.Update(m)
+		result, err := cmclient.Update(&m)
 		if err != nil {
 			glog.Error(err)
-			os.Exit(1)
+			//os.Exit(1)
 		}
-		glog.Infof("Updated configmap: %v", m.Name)
+		glog.Infof("Updated configmap: %v(%v)", result.Name, m.Name)
 	} else {
-		result, err := cmclient.Create(m)
+		result, err := cmclient.Create(&m)
 		if err != nil {
 			glog.Error(err)
-			os.Exit(1)
+			//os.Exit(1)
 		}
-		glog.Infof("Created configmap: %v", m.Name)
+		glog.Infof("Created configmap: %v(%v)", result.Name,m.Name)
 	}
 }
