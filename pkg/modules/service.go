@@ -126,12 +126,12 @@ func StoreService(obj corev1.Service) {
 		if err != nil {
 			glog.Info(err)
 		}
-		glog.Infof("Updated ImageStream: %v(%v)", result.Name, obj.Name)
+		glog.Infof("Updated Service: %v(%v)", result.Name, obj.Name)
 	} else {
 		result, err := client.Create(&obj)
 		if err != nil {
 			glog.Info(err)
 		}
-		glog.Infof("Created ImageStream: %v(%v)", result.Name, obj.Name)
+		glog.Infof("Created Service: %v(%v)", result.Name, obj.Name)
 	}
 }

@@ -17,12 +17,9 @@ limitations under the License.
 package modules
 
 import (
-	"encoding/json"
-	"fmt"
 	"github.com/golang/glog"
 	"github.com/spf13/viper"
 	"metagraf/mg/ocpclient"
-	"os"
 	"strconv"
 	"strings"
 
@@ -241,11 +238,36 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 		Status: appsv1.DeploymentConfigStatus{},
 	}
 
+	StoreDeploymentConfig(obj)
+	/*
 	ba, err := json.Marshal(obj)
 	if err != nil {
 		glog.Error(err)
 		os.Exit(1)
 	}
 	fmt.Println(string(ba))
+	*/
+}
 
+func StoreDeploymentConfig(obj appsv1.DeploymentConfig) {
+
+	glog.Infof("ResourceVersion: %v Length: %v", obj.ResourceVersion, len(obj.ResourceVersion))
+	glog.Infof("Namespace: %v", NameSpace)
+
+	client := ocpclient.GetAppsClient().DeploymentConfigs(NameSpace)
+
+	if len(obj.ResourceVersion) > 0 {
+		// update
+		result, err := client.Update(&obj)
+		if err != nil {
+			glog.Info(err)
+		}
+		glog.Infof("Updated DeploymentConfig: %v(%v)", result.Name, obj.Name)
+	} else {
+		result, err := client.Create(&obj)
+		if err != nil {
+			glog.Info(err)
+		}
+		glog.Infof("Created DeploymentConfig: %v(%v)", result.Name, obj.Name)
+	}
 }
