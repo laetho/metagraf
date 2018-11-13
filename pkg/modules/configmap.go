@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"github.com/blang/semver"
 	"github.com/golang/glog"
+	"metagraf/mg/ocpclient"
 	"text/template"
 	"metagraf/pkg/metagraf"
 	"os"
@@ -154,4 +155,28 @@ func genJDBCOracle(objname string, r *metagraf.Resource,) corev1.ConfigMap {
 	// @todo this should really come from secretRef/vault
 	cm.Data["PASSWORD"] = "test123"
 	return cm
+}
+
+func StoreConfigMap(m *corev1.ConfigMap) {
+
+	glog.Infof("ResourceVersion: %v Length: %v", m.ResourceVersion, len(m.ResourceVersion))
+
+	cmclient := ocpclient.GetCoreClient().ConfigMaps(NameSpace)
+
+	if len(m.ResourceVersion) > 0 {
+		// update
+		result, err := cmclient.Update(m)
+		if err != nil {
+			glog.Error(err)
+			os.Exit(1)
+		}
+		glog.Infof("Updated configmap: %v", m.Name)
+	} else {
+		result, err := cmclient.Create(m)
+		if err != nil {
+			glog.Error(err)
+			os.Exit(1)
+		}
+		glog.Infof("Created configmap: %v", m.Name)
+	}
 }
