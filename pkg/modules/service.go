@@ -17,9 +17,8 @@ limitations under the License.
 package modules
 
 import (
-	"encoding/json"
-	"fmt"
 	"github.com/blang/semver"
+	"github.com/golang/glog"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
@@ -103,10 +102,36 @@ func GenService(mg *metagraf.MetaGraf) {
 		},
 	}
 
+	StoreService(obj)
+	/*
 	ba, err := json.Marshal(obj)
 	if err != nil {
 		panic(err)
 	}
 	fmt.Println(string(ba))
+	*/
 
+}
+
+func StoreService(obj corev1.Service) {
+
+	glog.Infof("ResourceVersion: %v Length: %v", obj.ResourceVersion, len(obj.ResourceVersion))
+	glog.Infof("Namespace: %v", NameSpace)
+
+	client := ocpclient.GetCoreClient().Services(NameSpace)
+
+	if len(obj.ResourceVersion) > 0 {
+		// update
+		result, err := client.Update(&obj)
+		if err != nil {
+			glog.Info(err)
+		}
+		glog.Infof("Updated ImageStream: %v(%v)", result.Name, obj.Name)
+	} else {
+		result, err := client.Create(&obj)
+		if err != nil {
+			glog.Info(err)
+		}
+		glog.Infof("Created ImageStream: %v(%v)", result.Name, obj.Name)
+	}
 }

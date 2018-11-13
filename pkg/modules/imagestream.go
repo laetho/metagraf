@@ -80,26 +80,25 @@ func GenImageStream(mg *metagraf.MetaGraf, namespace string) {
 
 }
 
-func StoreImageStream(i imagev1.ImageStream) {
+func StoreImageStream(obj imagev1.ImageStream) {
 
-	glog.Infof("ResourceVersion: %v Length: %v", i.ResourceVersion, len(i.ResourceVersion))
+	glog.Infof("ResourceVersion: %v Length: %v", obj.ResourceVersion, len(obj.ResourceVersion))
 	glog.Infof("Namespace: %v", NameSpace)
-	isclient := ocpclient.GetImageClient().ImageStreams(NameSpace)
 
-	if len(i.ResourceVersion) > 0 {
+	client := ocpclient.GetImageClient().ImageStreams(NameSpace)
+
+	if len(obj.ResourceVersion) > 0 {
 		// update
-		result, err := isclient.Update(&i)
+		result, err := client.Update(&obj)
 		if err != nil {
-			glog.Error(err)
-			//os.Exit(1)
+			glog.Info(err)
 		}
-		glog.Infof("Updated ImageStream: %v(%v)", result.Name, i.Name)
+		glog.Infof("Updated ImageStream: %v(%v)", result.Name, obj.Name)
 	} else {
-		result, err := isclient.Create(&i)
+		result, err := client.Create(&obj)
 		if err != nil {
-			glog.Error(err)
-			//os.Exit(1)
+			glog.Info(err)
 		}
-		glog.Infof("Created ImageStream: %v(%v)", result.Name,i.Name)
+		glog.Infof("Created ImageStream: %v(%v)", result.Name, obj.Name)
 	}
 }
