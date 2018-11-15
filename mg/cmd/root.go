@@ -17,12 +17,13 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
 	"flag"
+	"fmt"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
+	"metagraf/pkg/modules"
 	"os"
 )
 
@@ -92,13 +93,19 @@ func initConfig() {
 func Execute() error {
 	initConfig()
 	flag.Parse()
-	if err := RootCmd.Execute(); err != nil {
-		return err
-	}
 
 	if Dryrun {
 		Output = true
 	}
+	// Push flags to modules (hack)
+	modules.Version = Version
+	modules.Output = Output
+	modules.Dryrun = Dryrun
+	modules.NameSpace = Namespace
+	modules.Verbose = Verbose
 
+	if err := RootCmd.Execute(); err != nil {
+		return err
+	}
 	return nil
 }
