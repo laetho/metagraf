@@ -43,7 +43,6 @@ func Name(mg *metagraf.MetaGraf) string {
 	var objname string
 
 	if len(Version) > 0 {
-		fmt.Println(mg.Spec.Version)
 		sv, err := semver.Parse(mg.Spec.Version)
 		if err != nil {
 			return strings.ToLower(mg.Metadata.Name + "-") + Version

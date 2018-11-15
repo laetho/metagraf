@@ -193,7 +193,7 @@ var createServiceCmd = &cobra.Command{
 		if len(Namespace) == 0 {
 			Namespace = viper.GetString("namespace")
 			if len(Namespace) == 0 {
-				fmt.Println(StrMissingNamespace)
+				glog.Error(StrMissingNamespace)
 				os.Exit(1)
 			}
 		}

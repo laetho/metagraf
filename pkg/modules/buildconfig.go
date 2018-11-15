@@ -17,7 +17,6 @@ limitations under the License.
 package modules
 
 import (
-	"fmt"
 	"github.com/golang/glog"
 	"metagraf/mg/ocpclient"
 	"metagraf/pkg/helpers"
@@ -122,8 +121,6 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 			},
 		},
 	}
-
-	fmt.Println(Dryrun,Output)
 
 	if !Dryrun { StoreBuildConfig(bc) }
 	if Output { MarshalObject(bc) }
