@@ -76,6 +76,8 @@ var createBuildConfigCmd = &cobra.Command{
 		}
 
 		mg := metagraf.Parse(args[0])
+		OverrideVersion(&mg)
+
 		if len(modules.NameSpace) == 0 { modules.NameSpace = Namespace}
 		modules.GenBuildConfig(&mg)
 	},
@@ -101,6 +103,7 @@ var createConfigMapCmd = &cobra.Command{
 		}
 
 		mg := metagraf.Parse(args[0])
+		OverrideVersion(&mg)
 		if modules.Variables == nil {
 			vars := MergeVars(
 				mg.GetVars(),
@@ -133,6 +136,8 @@ var createDeploymentConfigCmd = &cobra.Command{
 		}
 
 		mg := metagraf.Parse(args[0])
+		OverrideVersion(&mg)
+
 
 		if modules.Variables == nil {
 			vars := MergeVars(
@@ -167,6 +172,8 @@ var createImageStreamCmd = &cobra.Command{
 		}
 
 		mg := metagraf.Parse(args[0])
+		OverrideVersion(&mg)
+
 		if len(modules.NameSpace) == 0 { modules.NameSpace = Namespace}
 		modules.GenImageStream(&mg, Namespace)
 	},
@@ -192,6 +199,8 @@ var createServiceCmd = &cobra.Command{
 		}
 
 		mg := metagraf.Parse(args[0])
+		OverrideVersion(&mg)
+
 		if len(modules.NameSpace) == 0 { modules.NameSpace = Namespace}
 		modules.GenService(&mg)
 	},
@@ -220,6 +229,8 @@ var createRefCmd = &cobra.Command{
 			return
 		}
 		mg := metagraf.Parse(args[0])
+		OverrideVersion(&mg)
+
 		modules.GenRef(&mg)
 	},
 }
@@ -245,6 +256,8 @@ var createSecretCmd = &cobra.Command{
 
 		modules.NameSpace = Namespace
 		mg := metagraf.Parse(args[0])
+		OverrideVersion(&mg)
+
 		modules.GenSecrets(&mg)
 	},
 }

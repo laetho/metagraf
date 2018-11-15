@@ -45,8 +45,9 @@ var configkeys []string = []string{
 
 // Flags
 var Verbose bool
-var Output bool
+var Output 	bool
 var Version string
+var Dryrun 	bool	// If true do not create
 
 var RootCmd = &cobra.Command{
 	Use:   "mg",
@@ -63,6 +64,7 @@ func init() {
 	RootCmd.PersistentFlags().BoolVar(&Verbose, "verbose", false, "verbose output")
 	RootCmd.PersistentFlags().BoolVar(&Output, "output", false, "also output objects in json")
 	RootCmd.PersistentFlags().StringVar(&Version,"version", "", "Override version in metaGraf specification.")
+	RootCmd.PersistentFlags().BoolVar(&Dryrun, "dryrun", false, "do not create objects, only output")
 	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
 }
 
@@ -93,5 +95,10 @@ func Execute() error {
 	if err := RootCmd.Execute(); err != nil {
 		return err
 	}
+
+	if Dryrun {
+		Output = true
+	}
+
 	return nil
 }
