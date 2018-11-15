@@ -27,7 +27,7 @@ import (
 )
 
 func GenSecrets(mg *metagraf.MetaGraf) {
-	for _,r := range mg.Spec.Resources {
+	for _, r := range mg.Spec.Resources {
 		// Is secret generation necessary?
 		if len(r.Secret) == 0 && len(r.User) == 0 {
 			glog.Info("Skipping resource: ", r.Name)
@@ -40,19 +40,22 @@ func GenSecrets(mg *metagraf.MetaGraf) {
 			continue
 		}
 
-
 		obj := genResourceSecret(&r, mg)
-		if !Dryrun { StoreSecret(*obj) }
-		if Output { MarshalObject(obj) }
+		if !Dryrun {
+			StoreSecret(*obj)
+		}
+		if Output {
+			MarshalObject(obj)
+		}
 	}
 }
 
 // Check if a named secret exsist in the current namespace.
 func secretExists(name string) bool {
 	cli := ocpclient.GetCoreClient()
-	l, err := cli.Secrets(NameSpace).List(metav1.ListOptions{LabelSelector:"name = "+name})
+	l, err := cli.Secrets(NameSpace).List(metav1.ListOptions{LabelSelector: "name = " + name})
 
-	if err != nil{
+	if err != nil {
 		glog.Error(err)
 		os.Exit(1)
 	}
@@ -92,17 +95,16 @@ func genResourceSecret(res *metagraf.Resource, mg *metagraf.MetaGraf) *corev1.Se
 			APIVersion: "v1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name: l["name"],
+			Name:   l["name"],
 			Labels: l,
 		},
-		Type: "opaque",
+		Type:       "opaque",
 		StringData: stringdata,
-		Data: data,
+		Data:       data,
 	}
 
 	return &sec
 }
-
 
 func StoreSecret(obj corev1.Secret) {
 

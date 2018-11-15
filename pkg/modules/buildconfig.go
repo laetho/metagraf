@@ -122,8 +122,12 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 		},
 	}
 
-	if !Dryrun { StoreBuildConfig(bc) }
-	if Output { MarshalObject(bc) }
+	if !Dryrun {
+		StoreBuildConfig(bc)
+	}
+	if Output {
+		MarshalObject(bc)
+	}
 }
 
 func genBinaryBuildSource() buildv1.BuildSource {

@@ -57,7 +57,7 @@ func GenService(mg *metagraf.MetaGraf) {
 	ImageInfo := helpers.GetDockerImageFromIST(ist)
 
 	for k := range ImageInfo.Config.ExposedPorts {
-		ss := strings.Split(k,"/")
+		ss := strings.Split(k, "/")
 		port, _ := strconv.Atoi(ss[0])
 		ContainerPort := corev1.ServicePort{
 			Name:     strings.ToLower(ss[0]) + "-" + ss[1],
@@ -95,8 +95,12 @@ func GenService(mg *metagraf.MetaGraf) {
 		},
 	}
 
-	if !Dryrun { StoreService(obj) }
-	if Output { MarshalObject(obj) }
+	if !Dryrun {
+		StoreService(obj)
+	}
+	if Output {
+		MarshalObject(obj)
+	}
 
 }
 

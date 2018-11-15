@@ -18,11 +18,11 @@ package modules
 
 import (
 	"fmt"
+	"html/template"
+	"metagraf/pkg/metagraf"
 	"os"
 	"path/filepath"
 	"strings"
-	"metagraf/pkg/metagraf"
-	"html/template"
 )
 
 func GenDotFromPath(cpath string) {

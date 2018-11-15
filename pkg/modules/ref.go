@@ -18,14 +18,14 @@ package modules
 
 import (
 	"fmt"
+	"html/template"
 	"metagraf/pkg/metagraf"
 	"os"
-	"html/template"
 )
 
 func GenRef(mg *metagraf.MetaGraf) {
 	tmpl := template.Must(template.ParseFiles(TmplBasePath + "/refdoc.html"))
-	filename := "/tmp/"+mg.Metadata.Name+"-"+mg.Spec.Version+".html"
+	filename := "/tmp/" + mg.Metadata.Name + "-" + mg.Spec.Version + ".html"
 	f, err := os.OpenFile(filename, os.O_CREATE|os.O_TRUNC|os.O_RDWR, 0777)
 	if err != nil {
 		fmt.Println(err)

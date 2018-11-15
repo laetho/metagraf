@@ -101,11 +101,11 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 
 	// Adding name and version of component as en environment variable
 	EnvVars = append(EnvVars, corev1.EnvVar{
-		Name: "MG_APP_NAME",
+		Name:  "MG_APP_NAME",
 		Value: objname,
 	})
 	EnvVars = append(EnvVars, corev1.EnvVar{
-		Name: "MG_APP_VERSION",
+		Name:  "MG_APP_VERSION",
 		Value: mg.Spec.Version,
 	})
 
@@ -131,32 +131,30 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 		EnvVars = append(EnvVars, EnvToEnvVar(&e))
 	}
 
-
 	/* Norsk Tipping Specific Logic regarding
 	   WLP / OpenLiberty Features. Should maybe
 	   look at some plugin approach to this later.
 	*/
 	if len(mg.Metadata.Annotations["norsk-tipping.no/libertyfeatures"]) > 0 {
 		EnvVars = append(EnvVars, corev1.EnvVar{
-			Name: "LIBERTY_FEATURES",
+			Name:  "LIBERTY_FEATURES",
 			Value: mg.Metadata.Annotations["norsk-tipping.no/libertyfeatures"],
 		})
 	}
 
-
 	// Labels from baserunimage
 	/*
-	for k, v := range ImageInfo.Config.Labels {
-		if helpers.SliceInString(LabelBlacklistFilter, strings.ToLower(k)) {
-			continue
+		for k, v := range ImageInfo.Config.Labels {
+			if helpers.SliceInString(LabelBlacklistFilter, strings.ToLower(k)) {
+				continue
+			}
+			l[k] = helpers.LabelString(v)
 		}
-		l[k] = helpers.LabelString(v)
-	}
 	*/
 
 	// ContainerPorts
 	for k := range ImageInfo.Config.ExposedPorts {
-		ss := strings.Split(k,"/")
+		ss := strings.Split(k, "/")
 		port, _ := strconv.Atoi(ss[0])
 		ContainerPort := corev1.ContainerPort{
 			ContainerPort: int32(port),
@@ -189,7 +187,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 	// Tying Container PodSpec together
 	Container := corev1.Container{
 		Name:            objname,
-		Image:           viper.GetString("registry")+ "/" + namespace + "/" + objname + ":latest",
+		Image:           viper.GetString("registry") + "/" + namespace + "/" + objname + ":latest",
 		ImagePullPolicy: corev1.PullAlways,
 		Ports:           ContainerPorts,
 		VolumeMounts:    VolumeMounts,
@@ -213,8 +211,8 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 			Selector:             s,
 			Strategy: appsv1.DeploymentStrategy{
 				ActiveDeadlineSeconds: &ActiveDeadlineSeconds,
-				Type:          appsv1.DeploymentStrategyTypeRolling,
-				RollingParams: &rollingParams,
+				Type:                  appsv1.DeploymentStrategyTypeRolling,
+				RollingParams:         &rollingParams,
 			},
 			Template: &corev1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
@@ -230,8 +228,12 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 		Status: appsv1.DeploymentConfigStatus{},
 	}
 
-	if !Dryrun { StoreDeploymentConfig(obj) }
-	if Output { MarshalObject(obj) }
+	if !Dryrun {
+		StoreDeploymentConfig(obj)
+	}
+	if Output {
+		MarshalObject(obj)
+	}
 
 }
 

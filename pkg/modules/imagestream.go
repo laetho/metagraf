@@ -59,8 +59,12 @@ func GenImageStream(mg *metagraf.MetaGraf, namespace string) {
 		},
 	}
 
-	if !Dryrun { StoreImageStream(is) }
-	if Output { MarshalObject(is) }
+	if !Dryrun {
+		StoreImageStream(is)
+	}
+	if Output {
+		MarshalObject(is)
+	}
 
 }
 

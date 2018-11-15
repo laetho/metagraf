@@ -17,8 +17,8 @@ limitations under the License.
 package modules
 
 import (
-	"fmt"
 	"encoding/json"
+	"fmt"
 	"github.com/blang/semver"
 	"github.com/golang/glog"
 	corev1 "k8s.io/api/core/v1"
@@ -29,11 +29,11 @@ import (
 
 // This is a complete hack. todo: fix this shit, restructure packages
 var (
-	NameSpace 	string	// Used to pass namespace from cmd to module to avoid import cycle.
-	Output		bool	// Flag passing hack
-	Version		string	// Flag passing hack
-	Verbose		bool	// Flag passing hack
-	Dryrun		bool	// Flag passing hack
+	NameSpace string // Used to pass namespace from cmd to module to avoid import cycle.
+	Output    bool   // Flag passing hack
+	Version   string // Flag passing hack
+	Verbose   bool   // Flag passing hack
+	Dryrun    bool   // Flag passing hack
 )
 
 var Variables map[string]string
@@ -45,7 +45,7 @@ func Name(mg *metagraf.MetaGraf) string {
 	if len(Version) > 0 {
 		sv, err := semver.Parse(mg.Spec.Version)
 		if err != nil {
-			return strings.ToLower(mg.Metadata.Name + "-") + Version
+			return strings.ToLower(mg.Metadata.Name+"-") + Version
 		} else {
 			objname = strings.ToLower(mg.Metadata.Name + "v" + strconv.FormatUint(sv.Major, 10))
 			return objname + "-" + Version
@@ -65,10 +65,10 @@ func Name(mg *metagraf.MetaGraf) string {
 func ResourceSecretName(r *metagraf.Resource) string {
 	if len(r.User) > 0 && len(r.Secret) == 0 {
 		// Implicit secret name generation
-		return strings.ToLower(r.Name+"-"+r.User)
+		return strings.ToLower(r.Name + "-" + r.User)
 	} else if len(r.User) == 0 && len(r.Secret) > 0 {
 		// Explicit secret name generation
-		return strings.ToLower(r.Name+"-"+r.Secret)
+		return strings.ToLower(r.Name + "-" + r.Secret)
 	} else {
 		return strings.ToLower(r.Name)
 	}
@@ -85,12 +85,14 @@ func EnvToEnvVar(e *metagraf.EnvironmentVar) corev1.EnvVar {
 		}
 
 		return corev1.EnvVar{
-			Name: e.Name,
+			Name:  e.Name,
 			Value: value,
 		}
 	}
 
-	if len(e.Default) == 0 {e.Default = "$"+e.Name}
+	if len(e.Default) == 0 {
+		e.Default = "$" + e.Name
+	}
 	// Handle possible overridden values for required fields
 	if v, t := Variables[e.Name]; t {
 		e.Default = v
@@ -101,7 +103,6 @@ func EnvToEnvVar(e *metagraf.EnvironmentVar) corev1.EnvVar {
 		Value: e.Default,
 	}
 }
-
 
 func ValueFromEnv(key string) bool {
 	if _, t := Variables[key]; t {

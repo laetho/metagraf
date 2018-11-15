@@ -22,15 +22,15 @@ import (
 )
 
 func InspectConfigMaps(mg *metagraf.MetaGraf) {
-	for _,c := range mg.Spec.Config {
-		fmt.Println(Name(mg),"ConfigMap",c.Name)
+	for _, c := range mg.Spec.Config {
+		fmt.Println(Name(mg), "ConfigMap", c.Name)
 	}
 }
 
 func InspectSecrets(mg *metagraf.MetaGraf) {
-	for _,r := range mg.Spec.Resources {
+	for _, r := range mg.Spec.Resources {
 		if len(r.Secret) == 0 && len(r.User) > 0 {
-			fmt.Println(Name(mg), "needs secret for user", r.User,"for resource", r.Name+".", "Secret name:", ResourceSecretName(&r))
+			fmt.Println(Name(mg), "needs secret for user", r.User, "for resource", r.Name+".", "Secret name:", ResourceSecretName(&r))
 		}
 
 		if len(r.Secret) > 0 && r.SecretType == "cert" {
@@ -38,4 +38,3 @@ func InspectSecrets(mg *metagraf.MetaGraf) {
 		}
 	}
 }
-
