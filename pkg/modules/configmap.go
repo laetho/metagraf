@@ -102,8 +102,8 @@ func genConfigMapsFromResources(mg *metagraf.MetaGraf) {
 	for _, r := range mg.Spec.Resources {
 		if strings.Contains(r.Type, "oracle") {
 			cm := genJDBCOracle(objname, &r)
-			StoreConfigMap(cm)
-			MarshalObject(cm)
+			if !Dryrun { StoreConfigMap(cm) }
+			if Output { MarshalObject(cm) }
 		}
 	}
 
