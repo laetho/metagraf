@@ -69,14 +69,8 @@ func GenImageStream(mg *metagraf.MetaGraf, namespace string) {
 		},
 	}
 
-	StoreImageStream(is)
-	/*
-	ba, err := json.Marshal(is)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(string(ba))
-	*/
+	if !Dryrun { StoreImageStream(is) }
+	if Output { MarshalObject(is) }
 
 }
 

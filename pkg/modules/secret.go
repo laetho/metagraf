@@ -42,15 +42,8 @@ func GenSecrets(mg *metagraf.MetaGraf) {
 
 
 		obj := genResourceSecret(&r, mg)
-		StoreSecret(*obj)
-
-		/*
-		ba, err := json.Marshal(obj)
-		if err != nil {
-			panic(err)
-		}
-		fmt.Println(string(ba))
-		*/
+		if !Dryrun { StoreSecret(*obj) }
+		if Output { MarshalObject(obj) }
 	}
 }
 

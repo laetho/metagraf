@@ -85,15 +85,9 @@ func genConfigMapsFromConfig(conf *metagraf.Config, mg *metagraf.MetaGraf) {
 		}
 	}
 
-	StoreConfigMap(cm)
-	/*
-	b, err := json.Marshal(cm)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Println(string(b))
-	*/
+	if !Dryrun { StoreConfigMap(cm) }
+	if Output { MarshalObject(cm) }
+
 }
 
 func genConfigMapsFromResources(mg *metagraf.MetaGraf) {
@@ -109,16 +103,10 @@ func genConfigMapsFromResources(mg *metagraf.MetaGraf) {
 		if strings.Contains(r.Type, "oracle") {
 			cm := genJDBCOracle(objname, &r)
 			StoreConfigMap(cm)
-			/*
-			b, err := json.Marshal(cm)
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
-			fmt.Println(string(b))
-			*/
+			MarshalObject(cm)
 		}
 	}
+
 }
 
 

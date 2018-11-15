@@ -238,15 +238,9 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 		Status: appsv1.DeploymentConfigStatus{},
 	}
 
-	StoreDeploymentConfig(obj)
-	/*
-	ba, err := json.Marshal(obj)
-	if err != nil {
-		glog.Error(err)
-		os.Exit(1)
-	}
-	fmt.Println(string(ba))
-	*/
+	if !Dryrun { StoreDeploymentConfig(obj) }
+	if Output { MarshalObject(obj) }
+
 }
 
 func StoreDeploymentConfig(obj appsv1.DeploymentConfig) {

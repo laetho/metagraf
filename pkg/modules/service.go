@@ -102,14 +102,8 @@ func GenService(mg *metagraf.MetaGraf) {
 		},
 	}
 
-	StoreService(obj)
-	/*
-	ba, err := json.Marshal(obj)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(string(ba))
-	*/
+	if !Dryrun { StoreService(obj) }
+	if Output { MarshalObject(obj) }
 
 }
 
