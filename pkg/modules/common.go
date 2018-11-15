@@ -17,6 +17,8 @@ limitations under the License.
 package modules
 
 import (
+	"fmt"
+	"encoding/json"
 	"github.com/blang/semver"
 	corev1 "k8s.io/api/core/v1"
 	"metagraf/pkg/metagraf"
@@ -94,4 +96,15 @@ func ValueFromEnv(key string) bool {
 		return true
 	}
 	return false
+}
+
+// Marshal kubernetes resource to json if output flag is set
+func MarshalObject(obj interface{}) {
+	if Output {
+		ba, err := json.Marshal(obj)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println(string(ba))
+	}
 }
