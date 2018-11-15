@@ -18,6 +18,7 @@ package cmd
 
 import (
 	"metagraf/pkg/metagraf"
+	"metagraf/pkg/modules"
 	"os"
 	"strings"
 )
@@ -78,4 +79,16 @@ func MergeVars(base metagraf.MGVars, override map[string]string) metagraf.MGVars
 		base[k] = v
 	}
 	return base
+}
+
+func FlagPassingHack() {
+	if Dryrun {
+		Output = true
+	}
+	// Push flags to modules (hack)
+	modules.Version = Version
+	modules.Output = Output
+	modules.Dryrun = Dryrun
+	modules.NameSpace = Namespace
+	modules.Verbose = Verbose
 }

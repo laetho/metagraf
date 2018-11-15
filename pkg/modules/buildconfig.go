@@ -17,6 +17,7 @@ limitations under the License.
 package modules
 
 import (
+	"fmt"
 	"github.com/golang/glog"
 	"metagraf/mg/ocpclient"
 	"metagraf/pkg/helpers"
@@ -131,15 +132,10 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 		},
 	}
 
-	StoreBuildConfig(bc)
+	fmt.Println(Dryrun,Output)
 
-	/*
-	ba, err := json.Marshal(bc)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(string(ba))
-	*/
+	if !Dryrun { StoreBuildConfig(bc) }
+	if Output { MarshalObject(bc) }
 }
 
 func genBinaryBuildSource() buildv1.BuildSource {
@@ -162,7 +158,7 @@ func genGitBuildSource(mg *metagraf.MetaGraf) buildv1.BuildSource {
 	}
 }
 
-func StoreBuildConfig(obj buildv1.BuildConfig ) {
+func StoreBuildConfig(obj buildv1.BuildConfig) {
 
 	glog.Infof("ResourceVersion: %v Length: %v", obj.ResourceVersion, len(obj.ResourceVersion))
 	glog.Infof("Namespace: %v", NameSpace)

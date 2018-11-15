@@ -29,7 +29,6 @@ import (
 )
 
 
-
 func init() {
 	RootCmd.AddCommand(createCmd)
 	createCmd.AddCommand(createConfigMapCmd)
@@ -74,6 +73,7 @@ var createBuildConfigCmd = &cobra.Command{
 				os.Exit(1)
 			}
 		}
+		FlagPassingHack()
 
 		mg := metagraf.Parse(args[0])
 		OverrideVersion(&mg)
@@ -101,6 +101,7 @@ var createConfigMapCmd = &cobra.Command{
 				os.Exit(1)
 			}
 		}
+		FlagPassingHack()
 
 		mg := metagraf.Parse(args[0])
 		OverrideVersion(&mg)
@@ -136,6 +137,7 @@ var createDeploymentConfigCmd = &cobra.Command{
 		}
 
 		mg := metagraf.Parse(args[0])
+		FlagPassingHack()
 		OverrideVersion(&mg)
 
 
@@ -172,6 +174,7 @@ var createImageStreamCmd = &cobra.Command{
 		}
 
 		mg := metagraf.Parse(args[0])
+		FlagPassingHack()
 		OverrideVersion(&mg)
 
 		if len(modules.NameSpace) == 0 { modules.NameSpace = Namespace}
@@ -199,6 +202,7 @@ var createServiceCmd = &cobra.Command{
 		}
 
 		mg := metagraf.Parse(args[0])
+		FlagPassingHack()
 		OverrideVersion(&mg)
 
 		if len(modules.NameSpace) == 0 { modules.NameSpace = Namespace}
@@ -215,6 +219,7 @@ var createDotCmd = &cobra.Command{
 			fmt.Println(StrMissingCollection)
 			return
 		}
+		FlagPassingHack()
 		modules.GenDotFromPath(args[0])
 	},
 }
@@ -229,6 +234,7 @@ var createRefCmd = &cobra.Command{
 			return
 		}
 		mg := metagraf.Parse(args[0])
+		FlagPassingHack()
 		OverrideVersion(&mg)
 
 		modules.GenRef(&mg)
@@ -253,8 +259,7 @@ var createSecretCmd = &cobra.Command{
 				os.Exit(1)
 			}
 		}
-
-		modules.NameSpace = Namespace
+		FlagPassingHack()
 		mg := metagraf.Parse(args[0])
 		OverrideVersion(&mg)
 

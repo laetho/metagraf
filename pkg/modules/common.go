@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"encoding/json"
 	"github.com/blang/semver"
+	"github.com/golang/glog"
 	corev1 "k8s.io/api/core/v1"
 	"metagraf/pkg/metagraf"
 	"strconv"
@@ -98,13 +99,11 @@ func ValueFromEnv(key string) bool {
 	return false
 }
 
-// Marshal kubernetes resource to json if output flag is set
+// Marshal kubernetes resource to json
 func MarshalObject(obj interface{}) {
-	if Output {
-		ba, err := json.Marshal(obj)
-		if err != nil {
-			panic(err)
-		}
-		fmt.Println(string(ba))
+	ba, err := json.Marshal(obj)
+	if err != nil {
+		glog.Error(err)
 	}
+	fmt.Println(string(ba))
 }
