@@ -45,6 +45,5 @@ var createMiddlearthCmd = &cobra.Command{
 
 func createMiddlearth(mgf string) {
 	mg := metagraf.Parse(mgf)
-	OverrideVersion(&mg)
 	modules.MiddlearthApp(&mg)
 }

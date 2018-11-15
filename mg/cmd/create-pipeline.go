@@ -61,7 +61,6 @@ var createPipelineCmd = &cobra.Command{
 
 func pipelineCreate(mgf string, namespace string) {
 	mg := metagraf.Parse(mgf)
-	OverrideVersion(&mg)
 
 	if modules.Variables == nil {
 		vars := MergeVars(

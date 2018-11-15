@@ -19,25 +19,16 @@ package modules
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/blang/semver"
-
 	"metagraf/pkg/metagraf"
 
 	//corev1 "k8s.io/api/core/v1"
 	appsv1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-
-	"strconv"
-	"strings"
 )
 
 func GenDeployment(mg *metagraf.MetaGraf) {
-	sv, err := semver.Parse(mg.Spec.Version)
-	if err != nil {
-		fmt.Println(err)
-	}
 
-	objname := strings.ToLower(mg.Metadata.Name + "v" + strconv.FormatUint(sv.Major, 10))
+	objname := Name(mg)
 	// Resource labels
 	l := make(map[string]string)
 	l["app"] = objname

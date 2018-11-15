@@ -41,6 +41,18 @@ var Variables map[string]string
 // Returns a name for a resource based on convention as follows.
 func Name(mg *metagraf.MetaGraf) string {
 	var objname string
+
+	if len(Version) > 0 {
+		fmt.Println(mg.Spec.Version)
+		sv, err := semver.Parse(mg.Spec.Version)
+		if err != nil {
+			return strings.ToLower(mg.Metadata.Name + "-") + Version
+		} else {
+			objname = strings.ToLower(mg.Metadata.Name + "v" + strconv.FormatUint(sv.Major, 10))
+			return objname + "-" + Version
+		}
+	}
+
 	sv, err := semver.Parse(mg.Spec.Version)
 	if err != nil {
 		objname = strings.ToLower(mg.Metadata.Name)

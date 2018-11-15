@@ -49,13 +49,8 @@ func GenConfigMaps(mg *metagraf.MetaGraf) {
 Generates a configmap for jvm.params file for Liberty java apps
 */
 func genConfigMapsFromConfig(conf *metagraf.Config, mg *metagraf.MetaGraf) {
-	var objname string
-	sv, err := semver.Parse(mg.Spec.Version)
-	if err != nil {
-		objname = strings.ToLower(mg.Metadata.Name)
-	} else {
-		objname = strings.ToLower(mg.Metadata.Name + "v" + strconv.FormatUint(sv.Major, 10))
-	}
+
+	objname := Name(mg)
 
 	l := make(map[string]string)
 	l["app"] = objname
@@ -91,13 +86,8 @@ func genConfigMapsFromConfig(conf *metagraf.Config, mg *metagraf.MetaGraf) {
 }
 
 func genConfigMapsFromResources(mg *metagraf.MetaGraf) {
-	var objname string
-	sv, err := semver.Parse(mg.Spec.Version)
-	if err != nil {
-		objname = strings.ToLower(mg.Metadata.Name)
-	} else {
-		objname = strings.ToLower(mg.Metadata.Name + "v" + strconv.FormatUint(sv.Major, 10))
-	}
+
+	objname := Name(mg)
 
 	for _, r := range mg.Spec.Resources {
 		if strings.Contains(r.Type, "oracle") {

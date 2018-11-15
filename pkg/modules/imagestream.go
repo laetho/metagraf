@@ -17,12 +17,8 @@ limitations under the License.
 package modules
 
 import (
-	"github.com/blang/semver"
 	"github.com/golang/glog"
 	"metagraf/mg/ocpclient"
-	"strconv"
-	"strings"
-
 	"metagraf/pkg/metagraf"
 
 	imagev1 "github.com/openshift/api/image/v1"
@@ -32,13 +28,7 @@ import (
 
 func GenImageStream(mg *metagraf.MetaGraf, namespace string) {
 
-	var objname string
-	sv, err := semver.Parse(mg.Spec.Version)
-	if err != nil {
-		objname = strings.ToLower(mg.Metadata.Name)
-	} else {
-		objname = strings.ToLower(mg.Metadata.Name + "v" + strconv.FormatUint(sv.Major, 10))
-	}
+	objname := Name(mg)
 
 	// Resource labels
 	l := make(map[string]string)

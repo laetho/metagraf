@@ -68,12 +68,6 @@ func OverrideVars(mgv metagraf.MGVars, cvars CmdVars) map[string]string {
 	return ovars
 }
 
-func OverrideVersion(mg *metagraf.MetaGraf) {
-	if len(Version) > 0 {
-		mg.Spec.Version = Version
-	}
-}
-
 func MergeVars(base metagraf.MGVars, override map[string]string) metagraf.MGVars {
 	for k,v := range override {
 		base[k] = v

@@ -36,14 +36,7 @@ import (
 
 func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 
-	var objname string
-
-	sv, err := semver.Parse(mg.Spec.Version)
-	if err != nil {
-		objname = strings.ToLower(mg.Metadata.Name)
-	} else {
-		objname = strings.ToLower(mg.Metadata.Name + "v" + strconv.FormatUint(sv.Major, 10))
-	}
+	objname := Name(mg)
 
 	// Resource labels
 	l := make(map[string]string)

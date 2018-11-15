@@ -22,10 +22,8 @@ import (
 	"metagraf/mg/ocpclient"
 	"metagraf/pkg/helpers"
 	"os"
-	"strconv"
 	"strings"
 
-	"github.com/blang/semver"
 	"metagraf/pkg/imageurl"
 	"metagraf/pkg/metagraf"
 
@@ -35,8 +33,6 @@ import (
 )
 
 func GenBuildConfig(mg *metagraf.MetaGraf) {
-
-	var objname string
 	var buildsource buildv1.BuildSource
 	var imgurl imageurl.ImageURL
 	var EnvVars []corev1.EnvVar
@@ -48,12 +44,7 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 		os.Exit(1)
 	}
 
-	sv, err := semver.Parse(mg.Spec.Version)
-	if err != nil {
-		objname = strings.ToLower(mg.Metadata.Name)
-	} else {
-		objname = strings.ToLower(mg.Metadata.Name + "v" + strconv.FormatUint(sv.Major, 10))
-	}
+	objname := Name(mg)
 
 	if len(mg.Spec.BaseRunImage) > 0 && len(mg.Spec.Repository) > 0 {
 		buildsource = genBinaryBuildSource()

@@ -17,7 +17,6 @@ limitations under the License.
 package modules
 
 import (
-	"github.com/blang/semver"
 	"github.com/golang/glog"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -31,15 +30,9 @@ import (
 )
 
 func GenService(mg *metagraf.MetaGraf) {
-	var objname string
-	var serviceports []corev1.ServicePort
+	objname := Name(mg)
 
-	sv, err := semver.Parse(mg.Spec.Version)
-	if err != nil {
-		objname = strings.ToLower(mg.Metadata.Name)
-	} else {
-		objname = strings.ToLower(mg.Metadata.Name + "v" + strconv.FormatUint(sv.Major, 10))
-	}
+	var serviceports []corev1.ServicePort
 
 	// todo dockerimage should inspected once and return a pointer to the first instance inspection data
 	var DockerImage string
