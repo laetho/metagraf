@@ -45,6 +45,7 @@ var configkeys []string = []string{
 
 // Flags
 var Verbose bool
+var Output bool
 var Version string
 
 var RootCmd = &cobra.Command{
@@ -60,6 +61,7 @@ datastructure and help you generate kubernetes primitives`,
 func init() {
 	RootCmd.PersistentFlags().StringVar(&CfgFile, "config", "", "config file (default is $HOME/.config/mg/mg.yaml)")
 	RootCmd.PersistentFlags().BoolVar(&Verbose, "verbose", false, "verbose output")
+	RootCmd.PersistentFlags().BoolVar(&Output, "output", false, "also output objects in json")
 	RootCmd.PersistentFlags().StringVar(&Version,"version", "", "Override version in metaGraf specification.")
 	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
 }

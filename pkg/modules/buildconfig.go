@@ -132,6 +132,7 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 	}
 
 	StoreBuildConfig(bc)
+
 	/*
 	ba, err := json.Marshal(bc)
 	if err != nil {
