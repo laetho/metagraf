@@ -32,7 +32,7 @@ const Banner string = "mg (metaGraf) - "
 var CfgFile string = ""
 
 var (
-	Namespace 	string
+	Namespace string
 )
 
 // Array of available config keys
@@ -45,9 +45,9 @@ var configkeys []string = []string{
 
 // Flags
 var Verbose bool = false
-var Output 	bool = false
+var Output bool = false
 var Version string
-var Dryrun 	bool = false	// If true do not create
+var Dryrun bool = false // If true do not create
 
 var RootCmd = &cobra.Command{
 	Use:   "mg",
@@ -63,7 +63,7 @@ func init() {
 	RootCmd.PersistentFlags().StringVar(&CfgFile, "config", "", "config file (default is $HOME/.config/mg/mg.yaml)")
 	RootCmd.PersistentFlags().BoolVar(&Verbose, "verbose", false, "verbose output")
 	RootCmd.PersistentFlags().BoolVar(&Output, "output", false, "also output objects in json")
-	RootCmd.PersistentFlags().StringVar(&Version,"version", "", "Override version in metaGraf specification.")
+	RootCmd.PersistentFlags().StringVar(&Version, "version", "", "Override version in metaGraf specification.")
 	RootCmd.PersistentFlags().BoolVar(&Dryrun, "dryrun", false, "do not create objects, only output")
 	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
 }

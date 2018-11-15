@@ -30,6 +30,3 @@ var deleteCmd = &cobra.Command{
 	Short: "delete operations",
 	Long:  Banner + ` delete `,
 }
-
-
-

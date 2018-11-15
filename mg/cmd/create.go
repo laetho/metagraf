@@ -28,7 +28,6 @@ import (
 	"metagraf/pkg/modules"
 )
 
-
 func init() {
 	RootCmd.AddCommand(createCmd)
 	createCmd.AddCommand(createConfigMapCmd)
@@ -77,7 +76,9 @@ var createBuildConfigCmd = &cobra.Command{
 
 		mg := metagraf.Parse(args[0])
 
-		if len(modules.NameSpace) == 0 { modules.NameSpace = Namespace}
+		if len(modules.NameSpace) == 0 {
+			modules.NameSpace = Namespace
+		}
 		modules.GenBuildConfig(&mg)
 	},
 }
@@ -110,7 +111,9 @@ var createConfigMapCmd = &cobra.Command{
 				OverrideVars(mg.GetVars(), CmdCVars(CVars).Parse()))
 			modules.Variables = vars
 		}
-		if len(modules.NameSpace) == 0 { modules.NameSpace = Namespace}
+		if len(modules.NameSpace) == 0 {
+			modules.NameSpace = Namespace
+		}
 
 		modules.GenConfigMaps(&mg)
 	},
@@ -138,14 +141,15 @@ var createDeploymentConfigCmd = &cobra.Command{
 		mg := metagraf.Parse(args[0])
 		FlagPassingHack()
 
-
 		if modules.Variables == nil {
 			vars := MergeVars(
 				mg.GetVars(),
 				OverrideVars(mg.GetVars(), CmdCVars(CVars).Parse()))
 			modules.Variables = vars
 		}
-		if len(modules.NameSpace) == 0 { modules.NameSpace = Namespace}
+		if len(modules.NameSpace) == 0 {
+			modules.NameSpace = Namespace
+		}
 
 		// @todo pass as argument or set exported module variable?
 		modules.GenDeploymentConfig(&mg, Namespace)
@@ -174,7 +178,9 @@ var createImageStreamCmd = &cobra.Command{
 		mg := metagraf.Parse(args[0])
 		FlagPassingHack()
 
-		if len(modules.NameSpace) == 0 { modules.NameSpace = Namespace}
+		if len(modules.NameSpace) == 0 {
+			modules.NameSpace = Namespace
+		}
 		modules.GenImageStream(&mg, Namespace)
 	},
 }
@@ -201,7 +207,9 @@ var createServiceCmd = &cobra.Command{
 		mg := metagraf.Parse(args[0])
 		FlagPassingHack()
 
-		if len(modules.NameSpace) == 0 { modules.NameSpace = Namespace}
+		if len(modules.NameSpace) == 0 {
+			modules.NameSpace = Namespace
+		}
 		modules.GenService(&mg)
 	},
 }

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"metagraf/pkg/modules"
 	"metagraf/pkg/metagraf"
+	"metagraf/pkg/modules"
 	"os"
 )
 
@@ -36,8 +36,8 @@ var InspectCmd = &cobra.Command{
 			modules.Variables = vars
 		}
 		name := modules.Name(&mg)
-		for k,v := range modules.Variables {
-			fmt.Println(name,"Variable:",k,v)
+		for k, v := range modules.Variables {
+			fmt.Println(name, "Variable:", k, v)
 		}
 
 		modules.InspectSecrets(&mg)

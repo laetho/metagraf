@@ -29,7 +29,7 @@ import (
 
 func init() {
 	createPipelineCmd.Flags().StringVar(&Namespace, "namespace", "", "namespace to work on, if not supplied it will use current working namespace")
-	createPipelineCmd.Flags().StringArray("cvars", CVars, "Array of KEY=VALUE pairs.", )
+	createPipelineCmd.Flags().StringArray("cvars", CVars, "Array of KEY=VALUE pairs.")
 	createCmd.AddCommand(createPipelineCmd)
 }
 
@@ -76,5 +76,3 @@ func pipelineCreate(mgf string, namespace string) {
 	modules.GenDeploymentConfig(&mg, namespace)
 	modules.GenService(&mg)
 }
-
-

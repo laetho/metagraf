@@ -27,7 +27,7 @@ import (
 func init() {
 
 	createCmd.AddCommand(createMiddlearthCmd)
-	createMiddlearthCmd.Flags().StringArray("cvars", CVars, "Array of KEY=VALUE pairs.", )
+	createMiddlearthCmd.Flags().StringArray("cvars", CVars, "Array of KEY=VALUE pairs.")
 }
 
 var createMiddlearthCmd = &cobra.Command{

@@ -27,7 +27,7 @@ import (
 // metaGraf specification that can be found in the execution environment.
 func VarsFromEnv(mgv metagraf.MGVars) EnvVars {
 	envs := EnvVars{}
-	for _,v := range os.Environ() {
+	for _, v := range os.Environ() {
 		key, val := keyValueFromEnv(v)
 		if _, ok := mgv[key]; ok {
 			envs[key] = val
@@ -39,7 +39,7 @@ func VarsFromEnv(mgv metagraf.MGVars) EnvVars {
 func VarsFromCmd(mgv metagraf.MGVars, cvars CmdVars) map[string]string {
 	vars := make(map[string]string)
 
-	for k,v := range cvars {
+	for k, v := range cvars {
 		if _, ok := mgv[k]; ok {
 			vars[k] = v
 		}
@@ -47,10 +47,9 @@ func VarsFromCmd(mgv metagraf.MGVars, cvars CmdVars) map[string]string {
 	return vars
 }
 
-func keyValueFromEnv(s string) (string,string) {
-	return strings.Split(s,"=")[0],strings.Split(s,"=")[1]
+func keyValueFromEnv(s string) (string, string) {
+	return strings.Split(s, "=")[0], strings.Split(s, "=")[1]
 }
-
 
 // Returns a list of variables from command line or environment where
 // command line is the most significant.
@@ -58,10 +57,10 @@ func OverrideVars(mgv metagraf.MGVars, cvars CmdVars) map[string]string {
 	ovars := make(map[string]string)
 
 	// Fetch possible variables form metaGraf specification
-	for k,v := range VarsFromEnv(mgv) {
+	for k, v := range VarsFromEnv(mgv) {
 		ovars[k] = v
 	}
-	for k,v := range VarsFromCmd(mgv,cvars) {
+	for k, v := range VarsFromCmd(mgv, cvars) {
 		ovars[k] = v
 	}
 
@@ -69,7 +68,7 @@ func OverrideVars(mgv metagraf.MGVars, cvars CmdVars) map[string]string {
 }
 
 func MergeVars(base metagraf.MGVars, override map[string]string) metagraf.MGVars {
-	for k,v := range override {
+	for k, v := range override {
 		base[k] = v
 	}
 	return base
