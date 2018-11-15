@@ -23,7 +23,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/blang/semver"
 	"metagraf/pkg/helpers"
 	"metagraf/pkg/imageurl"
 	"metagraf/pkg/metagraf"
@@ -103,7 +102,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 	// Adding name and version of component as en environment variable
 	EnvVars = append(EnvVars, corev1.EnvVar{
 		Name: "MG_APP_NAME",
-		Value: mg.Metadata.Name+"v" + strconv.FormatUint(sv.Major, 10),
+		Value: objname,
 	})
 	EnvVars = append(EnvVars, corev1.EnvVar{
 		Name: "MG_APP_VERSION",

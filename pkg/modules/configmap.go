@@ -18,12 +18,10 @@ package modules
 
 import (
 	"bytes"
-	"github.com/blang/semver"
 	"github.com/golang/glog"
 	"metagraf/mg/ocpclient"
 	"metagraf/pkg/metagraf"
 	"os"
-	"strconv"
 	"strings"
 	"text/template"
 
@@ -71,7 +69,7 @@ func genConfigMapsFromConfig(conf *metagraf.Config, mg *metagraf.MetaGraf) {
 	cm.Data = make(map[string]string)
 	cm.ObjectMeta.Labels = l
 
-	cm.Name = strings.ToLower(mg.Metadata.Name + "v" + strconv.FormatUint(sv.Major, 10) + "-" + strings.Replace(conf.Name, ".", "-", -1))
+	cm.Name = objname + "-" + strings.Replace(conf.Name, ".", "-", -1)
 	for _, o := range conf.Options {
 		if ValueFromEnv(o.Name) {
 			cm.Data[o.Name] = Variables[o.Name]
@@ -80,8 +78,12 @@ func genConfigMapsFromConfig(conf *metagraf.Config, mg *metagraf.MetaGraf) {
 		}
 	}
 
-	if !Dryrun { StoreConfigMap(cm) }
-	if Output { MarshalObject(cm) }
+	if !Dryrun {
+		StoreConfigMap(cm)
+	}
+	if Output {
+		MarshalObject(cm)
+	}
 
 }
 
@@ -92,15 +94,18 @@ func genConfigMapsFromResources(mg *metagraf.MetaGraf) {
 	for _, r := range mg.Spec.Resources {
 		if strings.Contains(r.Type, "oracle") {
 			cm := genJDBCOracle(objname, &r)
-			if !Dryrun { StoreConfigMap(cm) }
-			if Output { MarshalObject(cm) }
+			if !Dryrun {
+				StoreConfigMap(cm)
+			}
+			if Output {
+				MarshalObject(cm)
+			}
 		}
 	}
 
 }
 
-
-func genJDBCOracle(objname string, r *metagraf.Resource,) corev1.ConfigMap {
+func genJDBCOracle(objname string, r *metagraf.Resource) corev1.ConfigMap {
 
 	l := make(map[string]string)
 	l["app"] = objname
@@ -112,10 +117,10 @@ func genJDBCOracle(objname string, r *metagraf.Resource,) corev1.ConfigMap {
 <connectionManager maxPoolSize="10" minPoolSize="2" />
 </dataSource>
 `
-	t,_ := template.New("ds").Parse(dstemplate)
+	t, _ := template.New("ds").Parse(dstemplate)
 	var o bytes.Buffer
-	if err := t.Execute(&o,r); err != nil {
-		glog.Errorf("%v",err)
+	if err := t.Execute(&o, r); err != nil {
+		glog.Errorf("%v", err)
 		os.Exit(1)
 	}
 
@@ -125,7 +130,7 @@ func genJDBCOracle(objname string, r *metagraf.Resource,) corev1.ConfigMap {
 			APIVersion: "v1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:   objname+"-"+strings.ToLower(r.User),
+			Name:   objname + "-" + strings.ToLower(r.User),
 			Labels: l,
 		},
 	}
@@ -159,6 +164,6 @@ func StoreConfigMap(m corev1.ConfigMap) {
 			glog.Error(err)
 			//os.Exit(1)
 		}
-		glog.Infof("Created configmap: %v(%v)", result.Name,m.Name)
+		glog.Infof("Created configmap: %v(%v)", result.Name, m.Name)
 	}
 }
