@@ -104,9 +104,16 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 		Name:  "MG_APP_NAME",
 		Value: objname,
 	})
+
+	var oversion string
+	if len(Version) > 0 {
+		oversion = Version
+	} else {
+		oversion = mg.Spec.Version
+	}
 	EnvVars = append(EnvVars, corev1.EnvVar{
 		Name:  "MG_APP_VERSION",
-		Value: mg.Spec.Version,
+		Value: oversion,
 	})
 
 	// Environment Variables from baserunimage
