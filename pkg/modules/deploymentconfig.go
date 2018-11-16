@@ -34,7 +34,6 @@ import (
 )
 
 func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
-
 	objname := Name(mg)
 
 	// Resource labels

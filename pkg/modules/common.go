@@ -76,12 +76,17 @@ func ResourceSecretName(r *metagraf.Resource) string {
 
 // Applies conventions and overridden logic to an environment variable and returns a corev1.EnvVar{}
 func EnvToEnvVar(e *metagraf.EnvironmentVar) corev1.EnvVar {
-	if e.Required == false {
+	//fmt.Printf("Type: %t\n", e.Required)
+	if e.Required {
 		value := ""
 
 		// Handle possible override value for non required fields
 		if v, t := Variables[e.Name]; t {
 			value = v
+		}
+
+		if len(e.Default) > 0 {
+			value = e.Default
 		}
 
 		return corev1.EnvVar{
