@@ -20,11 +20,28 @@ import (
 	"github.com/golang/glog"
 	"metagraf/pkg/metagraf"
 	"os"
+	"strings"
 
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"metagraf/mg/ocpclient"
 )
+
+func FindSecrets(mg *metagraf.MetaGraf) map[string]string {
+	maps := make(map[string]string)
+
+	for _, r := range mg.Spec.Resources {
+		if len(r.User) > 0 {
+			maps[strings.ToLower(r.Name)+"-"+strings.ToLower(r.User)] = "password"
+		}
+		if len(r.Secret) > 0 {
+			maps[strings.ToLower(r.Name)+"-"+strings.ToLower(r.Secret)] = r.SecretType
+		}
+	}
+
+	return maps
+}
+
 
 func GenSecrets(mg *metagraf.MetaGraf) {
 	for _, r := range mg.Spec.Resources {

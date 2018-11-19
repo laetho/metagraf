@@ -29,6 +29,28 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+
+/*
+	This function will inspect the metaGraf specification
+	for which configmaps it will need to create and their
+	type in a map.
+*/
+func FindConfigMaps(mg *metagraf.MetaGraf) map[string]string {
+	objname := Name(mg)
+	maps := make(map[string]string)
+
+	for _, c := range mg.Spec.Config {
+		maps[objname+"-"+strings.ToLower(c.Name)] = "config"
+	}
+
+	for _, r := range mg.Spec.Resources {
+		maps[objname+"-"+strings.ToLower(r.User)] = "resource"
+	}
+
+
+	return maps
+}
+
 /*
 Entry function for creating a slew of configmaps, this will be somewhat
 specific to NT internal workings for now.
