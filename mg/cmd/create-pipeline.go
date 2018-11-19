@@ -29,7 +29,7 @@ import (
 
 func init() {
 	createPipelineCmd.Flags().StringVar(&Namespace, "namespace", "", "namespace to work on, if not supplied it will use current working namespace")
-	createPipelineCmd.Flags().StringArray("cvars", CVars, "Array of KEY=VALUE pairs.")
+	createPipelineCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
 	createCmd.AddCommand(createPipelineCmd)
 }
 
@@ -62,6 +62,7 @@ var createPipelineCmd = &cobra.Command{
 func pipelineCreate(mgf string, namespace string) {
 	mg := metagraf.Parse(mgf)
 
+	glog.Info("modules.Variables: ",modules.Variables)
 	if modules.Variables == nil {
 		vars := MergeVars(
 			mg.GetVars(),

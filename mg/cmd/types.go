@@ -47,5 +47,6 @@ func (v CmdCVars) Parse() CmdVars {
 		}
 		cm[split[0]] = split[1]
 	}
+	glog.Info("CmdCVars: ", cm)
 	return cm
 }
