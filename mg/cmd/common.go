@@ -17,6 +17,7 @@ limitations under the License.
 package cmd
 
 import (
+	"github.com/golang/glog"
 	"metagraf/pkg/metagraf"
 	"metagraf/pkg/modules"
 	"os"
@@ -71,6 +72,7 @@ func MergeVars(base metagraf.MGVars, override map[string]string) metagraf.MGVars
 	for k, v := range override {
 		base[k] = v
 	}
+	glog.Info("Calling MergeVars: ", base)
 	return base
 }
 
