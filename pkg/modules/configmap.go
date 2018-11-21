@@ -135,7 +135,7 @@ func genJDBCOracle(objname string, r *metagraf.Resource) corev1.ConfigMap {
 	l["app"] = objname
 
 	// todo: should this be fetched from EnvironmentVar Template, possibly
-	dstemplate := `<datasSource id="{{ .User }}" jndiName="jdbc/{{ .User }}">
+	dstemplate := `<dataSource id="{{ .User }}" jndiName="jdbc/{{ .User }}">
 <jdbcDriver libraryRef="OracleLib" />
 <properties.oracle URL="jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=$OVIS_HOST)(PORT=$OVIS_PORT))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=OVIS_ACTIVE)))" user="dbadmin" password="$PASSWORD"/>
 <connectionManager maxPoolSize="10" minPoolSize="2" />

@@ -61,6 +61,28 @@ func Name(mg *metagraf.MetaGraf) string {
 	return objname
 }
 
+func MGAppName(mg *metagraf.MetaGraf) string {
+	var objname string
+
+	if len(Version) > 0 {
+		sv, err := semver.Parse(mg.Spec.Version)
+		if err != nil {
+			return mg.Metadata.Name+"-"+ Version
+		} else {
+			objname = mg.Metadata.Name+"v"+strconv.FormatUint(sv.Major, 10)
+			return objname + "-" + Version
+		}
+	}
+
+	sv, err := semver.Parse(mg.Spec.Version)
+	if err != nil {
+		objname = mg.Metadata.Name
+	} else {
+		objname = mg.Metadata.Name+"v"+strconv.FormatUint(sv.Major, 10)
+	}
+	return objname
+}
+
 // Returns a name for a secret for a resource based on convention as follows.
 func ResourceSecretName(r *metagraf.Resource) string {
 	if len(r.User) > 0 && len(r.Secret) == 0 {
