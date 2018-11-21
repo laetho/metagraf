@@ -194,11 +194,11 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 
 		glog.V(2).Infof("Name,Type: %v,%v", n,t)
 		vol := corev1.Volume{
-			Name: objname+"-"+n,
+			Name: objname+"-"+strings.Replace(n,".","-", -1),
 			VolumeSource: corev1.VolumeSource{
 				ConfigMap: &corev1.ConfigMapVolumeSource{
 					LocalObjectReference: corev1.LocalObjectReference{
-						Name: objname+"-"+n,
+						Name: objname+"-"+strings.Replace(n,".","-", -1),
 					},
 					DefaultMode: &mode,
 				},
@@ -206,7 +206,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 		}
 
 		volm := corev1.VolumeMount{}
-		volm.Name = objname+"-"+n
+		volm.Name = objname+"-"+strings.Replace(n,".","-", -1)
 
 		if t == "config" {
 
