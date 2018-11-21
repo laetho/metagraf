@@ -36,15 +36,17 @@ import (
 	type in a map.
 */
 func FindConfigMaps(mg *metagraf.MetaGraf) map[string]string {
-	objname := Name(mg)
 	maps := make(map[string]string)
 
 	for _, c := range mg.Spec.Config {
-		maps[objname+"-"+strings.ToLower(c.Name)] = "config"
+		maps[strings.ToLower(c.Name)] = "config"
 	}
 
 	for _, r := range mg.Spec.Resources {
-		maps[objname+"-"+strings.ToLower(r.User)] = "resource"
+		if r.Type == "http" {
+			continue
+		}
+		maps[strings.ToLower(r.User)] = "resource"
 	}
 
 

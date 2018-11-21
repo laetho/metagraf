@@ -140,6 +140,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 	/* Norsk Tipping Specific Logic regarding
 	   WLP / OpenLiberty Features. Should maybe
 	   look at some plugin approach to this later.
+	   todo: how to handle custom logic based on annotations and labels during resource generation in general
 	*/
 	if len(mg.Metadata.Annotations["norsk-tipping.no/libertyfeatures"]) > 0 {
 		EnvVars = append(EnvVars, corev1.EnvVar{
@@ -169,7 +170,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 		ContainerPorts = append(ContainerPorts, ContainerPort)
 	}
 
-	// Volumes & VolumeMounts in podspec
+	// Volumes & VolumeMounts from base image into podspec
 	for k := range ImageInfo.Config.Volumes {
 		// Volume Definitions
 		Volume := corev1.Volume{
@@ -187,9 +188,39 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 		VolumeMounts = append(VolumeMounts, VolumeMount)
 	}
 
-	// Put ConfigMap mounts into PodSpec
-	// How to identify the ConfigMaps to mount
+	// Put ConfigMap volumes and mounts into PodSpec
+	for n, t := range FindConfigMaps(mg) {
+		var mode int32 = 420
 
+		glog.V(2).Infof("Name,Type: %v,%v", n,t)
+		vol := corev1.Volume{
+			Name: objname+"-"+n,
+			VolumeSource: corev1.VolumeSource{
+				ConfigMap: &corev1.ConfigMapVolumeSource{
+					LocalObjectReference: corev1.LocalObjectReference{
+						Name: objname+"-"+n,
+					},
+					DefaultMode: &mode,
+				},
+			},
+		}
+
+		volm := corev1.VolumeMount{}
+		volm.Name = objname+"-"+n
+
+		if t == "config" {
+
+			volm.MountPath = "/mg/config/"+n
+		}
+		if t == "resource" {
+			volm.MountPath = "/mg/"+n
+		}
+
+		Volumes = append(Volumes, vol)
+		VolumeMounts = append(VolumeMounts, volm)
+	}
+
+	//
 
 	// Tying Container PodSpec together
 	Container := corev1.Container{
