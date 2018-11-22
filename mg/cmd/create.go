@@ -38,6 +38,7 @@ func init() {
 	createCmd.AddCommand(createDotCmd)
 	createCmd.AddCommand(createRefCmd)
 	createCmd.AddCommand(createSecretCmd)
+	createCmd.AddCommand(createRouteCmd)
 	createDeploymentConfigCmd.Flags().StringVar(&Namespace, "namespace", "", "namespace to work on, if not supplied it will use current working namespace")
 	createDeploymentConfigCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
 	createBuildConfigCmd.Flags().StringVar(&Namespace, "namespace", "", "namespace to work on, if not supplied it will use current working namespace")
@@ -46,6 +47,8 @@ func init() {
 	createSecretCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
 	createConfigMapCmd.Flags().StringVar(&Namespace, "namespace", "", "namespace to work on, if not supplied it will use current working namespace")
 	createConfigMapCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
+	createRouteCmd.Flags().StringVar(&Namespace, "namespace", "", "namespace to work on, if not supplied it will use current working namespace")
+	createRouteCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
 }
 
 var createCmd = &cobra.Command{
@@ -267,5 +270,30 @@ var createSecretCmd = &cobra.Command{
 		mg := metagraf.Parse(args[0])
 
 		modules.GenSecrets(&mg)
+	},
+}
+
+var createRouteCmd = &cobra.Command{
+	Use:   "route <metaGraf>",
+	Short: "create Route from metaGraf specification",
+	Long:  Banner + `create route`,
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) < 1 {
+			glog.Info(StrActiveProject, viper.Get("namespace"))
+			glog.Error(StrMissingMetaGraf)
+			os.Exit(1)
+		}
+
+		if len(Namespace) == 0 {
+			Namespace = viper.GetString("namespace")
+			if len(Namespace) == 0 {
+				glog.Error(StrMissingNamespace)
+				os.Exit(1)
+			}
+		}
+		FlagPassingHack()
+		mg := metagraf.Parse(args[0])
+
+		modules.GenRoute(&mg)
 	},
 }
