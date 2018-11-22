@@ -1,0 +1,111 @@
+package modules
+
+import (
+	"github.com/golang/glog"
+	"k8s.io/apimachinery/pkg/util/intstr"
+	"metagraf/pkg/helpers"
+	"reflect"
+	"strings"
+
+	"metagraf/mg/ocpclient"
+	"metagraf/pkg/imageurl"
+	"metagraf/pkg/metagraf"
+
+	routev1 "github.com/openshift/api/route/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+)
+
+func GenRoute(mg *metagraf.MetaGraf) {
+	var weight int32 = 100
+
+	objname := Name(mg)
+
+	var DockerImage string
+	if len(mg.Spec.BaseRunImage) > 0 {
+		DockerImage = mg.Spec.BaseRunImage
+	} else if len(mg.Spec.BuildImage) > 0 {
+		DockerImage = mg.Spec.BuildImage
+	} else {
+		DockerImage = ""
+	}
+
+	client := ocpclient.GetImageClient()
+	var imgurl imageurl.ImageURL
+	imgurl.Parse(DockerImage)
+	ist := helpers.GetImageStreamTags(
+		client,
+		imgurl.Namespace,
+		imgurl.Image+":"+imgurl.Tag)
+
+
+	ImageInfo := helpers.GetDockerImageFromIST(ist)
+	glog.V(2).Infof("Docker image ports: %v", ImageInfo.Config.ExposedPorts)
+
+	port := reflect.ValueOf(ImageInfo.Config.ExposedPorts).MapKeys()[0]
+	glog.V(2).Infof("First port: %v, %t", port, port)
+
+
+	l := make(map[string]string)
+	l["app"] = objname
+	l["deploymentconfig"] = objname
+
+	obj := routev1.Route{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "Route",
+			APIVersion: "v1",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:   objname,
+			Labels: l,
+		},
+		Spec: routev1.RouteSpec{
+			To: routev1.RouteTargetReference{
+				Kind: "Service",
+				Name: objname,
+				Weight: &weight,
+			},
+			Path: "/"+MGAppName(mg),
+			Port: &routev1.RoutePort{
+				TargetPort: intstr.IntOrString{
+					Type: 1,
+					StrVal: strings.Replace(port.String(), "/", "-", -1),
+
+				},
+			},
+		},
+	}
+
+	if !Dryrun {
+		StoreRoute(obj)
+	}
+	if Output {
+		MarshalObject(obj)
+	}
+}
+
+func findPort() {
+
+}
+
+func StoreRoute(obj routev1.Route) {
+
+	glog.Infof("ResourceVersion: %v Length: %v", obj.ResourceVersion, len(obj.ResourceVersion))
+	glog.Infof("Namespace: %v", NameSpace)
+
+	client := ocpclient.GetRouteClient().Routes(NameSpace)
+
+	if len(obj.ResourceVersion) > 0 {
+		// update
+		result, err := client.Update(&obj)
+		if err != nil {
+			glog.Info(err)
+		}
+		glog.Infof("Updated Route: %v(%v)", result.Name, obj.Name)
+	} else {
+		result, err := client.Create(&obj)
+		if err != nil {
+			glog.Info(err)
+		}
+		glog.Infof("Created Route: %v(%v)", result.Name, obj.Name)
+	}
+}
