@@ -294,6 +294,10 @@ var createRouteCmd = &cobra.Command{
 		FlagPassingHack()
 		mg := metagraf.Parse(args[0])
 
+		if len(modules.NameSpace) == 0 {
+			modules.NameSpace = Namespace
+		}
+
 		modules.GenRoute(&mg)
 	},
 }

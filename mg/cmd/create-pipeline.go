@@ -76,4 +76,5 @@ func pipelineCreate(mgf string, namespace string) {
 	modules.GenBuildConfig(&mg)
 	modules.GenDeploymentConfig(&mg, namespace)
 	modules.GenService(&mg)
+	modules.GenRoute(&mg)
 }
