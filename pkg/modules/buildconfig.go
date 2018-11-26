@@ -100,7 +100,7 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 			},
 			RunPolicy: buildv1.BuildRunPolicySerial,
 			CommonSpec: buildv1.CommonSpec{
-				Source: buildsource,
+				Soucre: buildsource,
 				Strategy: buildv1.BuildStrategy{
 					Type: buildv1.SourceBuildStrategyType,
 					SourceStrategy: &buildv1.SourceBuildStrategy{
@@ -148,7 +148,7 @@ func genGitBuildSource(mg *metagraf.MetaGraf) buildv1.BuildSource {
 		Type: "Git",
 		Git: &buildv1.GitBuildSource{
 			URI: mg.Spec.Repository,
-			Ref: mg.Spec.Branch,
+			Ref: branch,
 		},
 		SourceSecret: &corev1.LocalObjectReference{
 			Name: mg.Spec.RepSecRef,
