@@ -44,10 +44,11 @@ var configkeys []string = []string{
 }
 
 // Flags
-var Verbose bool = false
-var Output bool = false
-var Version string
-var Dryrun bool = false // If true do not create
+var Verbose	bool = false
+var Output	bool = false
+var Version	string
+var Dryrun	bool = false // If true do not create
+var Branch	string
 
 var RootCmd = &cobra.Command{
 	Use:   "mg",
