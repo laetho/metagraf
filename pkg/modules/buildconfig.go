@@ -100,7 +100,7 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 			},
 			RunPolicy: buildv1.BuildRunPolicySerial,
 			CommonSpec: buildv1.CommonSpec{
-				Soucre: buildsource,
+				Source: buildsource,
 				Strategy: buildv1.BuildStrategy{
 					Type: buildv1.SourceBuildStrategyType,
 					SourceStrategy: &buildv1.SourceBuildStrategy{
