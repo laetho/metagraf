@@ -5,6 +5,7 @@ import (
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"metagraf/pkg/helpers"
 	"reflect"
+	"sort"
 	"strings"
 
 	"metagraf/mg/ocpclient"
@@ -41,8 +42,14 @@ func GenRoute(mg *metagraf.MetaGraf) {
 	ImageInfo := helpers.GetDockerImageFromIST(ist)
 	glog.V(2).Infof("Docker image ports: %v", ImageInfo.Config.ExposedPorts)
 
-	port := reflect.ValueOf(ImageInfo.Config.ExposedPorts).MapKeys()[0]
-	glog.V(2).Infof("First port: %v, %t", port, port)
+	var ports []string
+
+	for _,v := range reflect.ValueOf(ImageInfo.Config.ExposedPorts).MapKeys() {
+		ports = append(ports, v.String())
+	}
+	sort.Strings(ports)
+
+	glog.V(2).Infof("First port: %v, %t", ports[0], ports[0])
 
 
 	l := make(map[string]string)
@@ -68,7 +75,7 @@ func GenRoute(mg *metagraf.MetaGraf) {
 			Port: &routev1.RoutePort{
 				TargetPort: intstr.IntOrString{
 					Type: 1,
-					StrVal: strings.Replace(port.String(), "/", "-", -1),
+					StrVal: strings.Replace(ports[0], "/", "-", -1),
 
 				},
 			},
