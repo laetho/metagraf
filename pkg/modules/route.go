@@ -32,12 +32,14 @@ func GenRoute(mg *metagraf.MetaGraf) {
 
 	client := ocpclient.GetImageClient()
 	var imgurl imageurl.ImageURL
-	imgurl.Parse(DockerImage)
+	err := imgurl.Parse(DockerImage)
 	ist := helpers.GetImageStreamTags(
 		client,
 		imgurl.Namespace,
 		imgurl.Image+":"+imgurl.Tag)
-
+	if err != nil {
+		glog.Errorf("%v", err)
+	}
 
 	ImageInfo := helpers.GetDockerImageFromIST(ist)
 	glog.V(2).Infof("Docker image ports: %v", ImageInfo.Config.ExposedPorts)
@@ -88,10 +90,6 @@ func GenRoute(mg *metagraf.MetaGraf) {
 	if Output {
 		MarshalObject(obj)
 	}
-}
-
-func findPort() {
-
 }
 
 func StoreRoute(obj routev1.Route) {
