@@ -76,6 +76,7 @@ type Config struct {
 type ConfigParam struct {
 	Name        string			`json:"name"`
 	Required    bool			`json:"required"`
+	Dynamic 	bool			`json:"dynamic,omitempty"`
 	Description string			`json:"description"`
 	Type        string			`json:"type"`
 	Default     string			`json:"default"`
@@ -84,7 +85,6 @@ type ConfigParam struct {
 type EnvironmentVar struct {
 	Name        string			`json:"name"`
 	Required    bool			`json:"required"`
-	Dynamic 	bool			`json:"dynamic,omitempty"`
 	Type        string			`json:"type,omitempty"`
 	EnvFrom		string			`json:"envfrom,omitempty"`
 	Description string			`json:"description"`
