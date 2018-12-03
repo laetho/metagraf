@@ -29,8 +29,6 @@ import (
 
 const Banner string = "mg (metaGraf) - "
 
-// Viper cfg file
-var CfgFile string = ""
 
 var (
 	Namespace string
@@ -45,6 +43,7 @@ var configkeys []string = []string{
 }
 
 // Flags
+var Config	string			// Viper config override
 var Verbose	bool = false
 var Output	bool = false
 var Version	string
@@ -62,12 +61,13 @@ datastructure and help you generate kubernetes primitives`,
 }
 
 func init() {
-	RootCmd.PersistentFlags().StringVar(&CfgFile, "config", "", "config file (default is $HOME/.config/mg/mg.yaml)")
+	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
+	RootCmd.PersistentFlags().StringVar(&Config, "config", "", "config file (default is $HOME/.config/mg/mg.yaml)")
 	RootCmd.PersistentFlags().BoolVar(&Verbose, "verbose", false, "verbose output")
 	RootCmd.PersistentFlags().BoolVar(&Output, "output", false, "also output objects in json")
 	RootCmd.PersistentFlags().StringVar(&Version, "version", "", "Override version in metaGraf specification.")
 	RootCmd.PersistentFlags().BoolVar(&Dryrun, "dryrun", false, "do not create objects, only output")
-	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
+
 }
 
 func initConfig() {
@@ -81,8 +81,8 @@ func initConfig() {
 	viper.AddConfigPath(home + "/.config/mg/")
 	viper.SetConfigName("config")
 
-	if CfgFile != "" {
-		viper.SetConfigFile(CfgFile)
+	if len(Config) > 0 {
+		viper.SetConfigFile(Config)
 	}
 
 	viper.AutomaticEnv()
@@ -93,7 +93,7 @@ func initConfig() {
 
 func Execute() error {
 	initConfig()
-	flag.Parse()
+
 	if err := RootCmd.Execute(); err != nil {
 		return err
 	}
