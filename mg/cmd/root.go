@@ -61,12 +61,14 @@ datastructure and help you generate kubernetes primitives`,
 }
 
 func init() {
-	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
 	RootCmd.PersistentFlags().StringVar(&Config, "config", "", "config file (default is $HOME/.config/mg/mg.yaml)")
 	RootCmd.PersistentFlags().BoolVar(&Verbose, "verbose", false, "verbose output")
 	RootCmd.PersistentFlags().BoolVar(&Output, "output", false, "also output objects in json")
 	RootCmd.PersistentFlags().StringVar(&Version, "version", "", "Override version in metaGraf specification.")
 	RootCmd.PersistentFlags().BoolVar(&Dryrun, "dryrun", false, "do not create objects, only output")
+	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
+	cobra.OnInitialize(initConfig)
+
 
 }
 
@@ -78,11 +80,14 @@ func initConfig() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	viper.AddConfigPath(home + "/.config/mg/")
-	viper.SetConfigName("config")
 
-	if len(Config) > 0 {
+	if Config != "" {
+		fmt.Printf("Using configfile: ", os.Stdout, Config)
 		viper.SetConfigFile(Config)
+	} else {
+		fmt.Println(os.Stderr, "Using default config file: ~/.config/mg/config.yaml")
+		viper.AddConfigPath(home + "/.config/mg/")
+		viper.SetConfigName("config")
 	}
 
 	viper.AutomaticEnv()
@@ -92,8 +97,7 @@ func initConfig() {
 }
 
 func Execute() error {
-	initConfig()
-
+	flag.Parse()
 	if err := RootCmd.Execute(); err != nil {
 		return err
 	}
