@@ -19,6 +19,7 @@ package cmd
 import (
 	"flag"
 	"fmt"
+	"github.com/golang/glog"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -86,7 +87,7 @@ func initConfig() {
 
 	viper.AutomaticEnv()
 	if err := viper.ReadInConfig(); err != nil {
-		fmt.Println("Failed to read:", viper.ConfigFileUsed())
+		glog.Infof("Failed to read config file:", viper.ConfigFileUsed())
 	}
 }
 

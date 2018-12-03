@@ -75,7 +75,7 @@ func genConfigMapsFromConfig(conf *metagraf.Config, mg *metagraf.MetaGraf) {
 	objname := Name(mg)
 
 	l := make(map[string]string)
-	l["app"] = objname
+	l["app"] =  objname
 
 	cm := corev1.ConfigMap{
 		TypeMeta: metav1.TypeMeta{
