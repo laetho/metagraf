@@ -90,4 +90,5 @@ type EnvironmentVar struct {
 	EnvFrom		string			`json:"envfrom,omitempty"`
 	Description string			`json:"description"`
 	Default		string			`json:"default,omitempty"`
+	Example		string			`json:"example,omitempty"`
 }
