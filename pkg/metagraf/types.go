@@ -62,6 +62,7 @@ type Resource struct {
 	Semop		string			`json:"semop,omitempty"`
 	Semver  	string			`json:"semver,omitempty"`
 	Required 	bool			`json:"required"`
+	EnvRef		string			`json:"envref,omitempty"`
 	Template	string  		`json:"template,omitempty"`
 	Description string 			`json:"description,omitempty"`
 }
