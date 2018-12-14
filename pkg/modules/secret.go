@@ -53,7 +53,7 @@ func GenSecrets(mg *metagraf.MetaGraf) {
 
 		// Do not create secret if it already exist!
 		if secretExists(ResourceSecretName(&r)) {
-			glog.Info("Skipping resource: ", r.Name)
+			glog.Info("Skipping resource, already exist: ", r.Name)
 			continue
 		}
 
@@ -62,6 +62,25 @@ func GenSecrets(mg *metagraf.MetaGraf) {
 			StoreSecret(*obj)
 		}
 		if Output {
+			MarshalObject(obj)
+		}
+	}
+
+	for _, c := range mg.Spec.Config{
+		if secretExists(Name(mg)+"-"+strings.ToLower(c.Name)) {
+			glog.Info("Skipping resource: ", Name(mg)+"-"+strings.ToLower(c.Name))
+			continue
+		}
+
+		if c.Type != "cert" {
+			continue
+		}
+
+		obj := genConfigCertSecret(&c, mg)
+		if !Dryrun {
+			StoreSecret(*obj)
+		}
+		if Output{
 			MarshalObject(obj)
 		}
 	}
@@ -117,6 +136,36 @@ func genResourceSecret(res *metagraf.Resource, mg *metagraf.MetaGraf) *corev1.Se
 		},
 		Type:       "opaque",
 		StringData: stringdata,
+		Data:       data,
+	}
+
+	return &sec
+}
+
+func genConfigCertSecret(c *metagraf.Config, mg *metagraf.MetaGraf) *corev1.Secret {
+	objname := Name(mg)
+
+	// Resource labels
+	l := make(map[string]string)
+	l["name"] = Name(mg)+"-"+c.Name
+	l["app"] = objname
+
+	// Populate v1.Secret StringData and Data
+
+	data := make(map[string][]byte)
+
+	data[c.Name] = []byte("Replace this")
+
+	sec := corev1.Secret{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "Secret",
+			APIVersion: "v1",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:   l["name"],
+			Labels: l,
+		},
+		Type:       corev1.SecretTypeOpaque,
 		Data:       data,
 	}
 

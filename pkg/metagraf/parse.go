@@ -18,23 +18,25 @@ package metagraf
 
 import (
 	"encoding/json"
+	"github.com/golang/glog"
 	"io/ioutil"
+	"os"
 )
 
 func Parse(filepath string) MetaGraf {
 	b, err := ioutil.ReadFile(filepath)
 	if err != nil {
-		panic(err)
+		glog.Error(err)
+		os.Exit(1)
 	}
 
+	err = nil
 	var mg MetaGraf
 
-	json.Unmarshal(b, &mg)
+	err = json.Unmarshal(b, &mg)
 	if err != nil {
-		panic(err)
+		glog.Error(err)
+		os.Exit(1)
 	}
-
-	//fmt.Printf("%T", mg)
-	//fmt.Println(mg)
 	return mg
 }

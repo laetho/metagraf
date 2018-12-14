@@ -243,8 +243,10 @@ var createRefCmd = &cobra.Command{
 			fmt.Println(StrMissingCollection)
 			return
 		}
+
 		mg := metagraf.Parse(args[0])
 		FlagPassingHack()
+
 
 		modules.GenRef(&mg)
 	},
