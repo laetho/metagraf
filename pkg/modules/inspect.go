@@ -19,10 +19,14 @@ package modules
 import (
 	"fmt"
 	"metagraf/pkg/metagraf"
+	"strings"
 )
 
 func InspectConfigMaps(mg *metagraf.MetaGraf) {
 	for _, c := range mg.Spec.Config {
+		if c.Type == "cert" {
+			continue
+		}
 		fmt.Println(Name(mg), "ConfigMap", c.Name)
 	}
 }
@@ -37,4 +41,11 @@ func InspectSecrets(mg *metagraf.MetaGraf) {
 			fmt.Println(Name(mg), "needs cert(\""+r.Secret+"\") for", r.Name+".", "Secret name:", ResourceSecretName(&r))
 		}
 	}
+
+	for _, c := range mg.Spec.Config {
+		if c.Type == "cert" {
+			fmt.Println(Name(mg), "needs cert "+strings.ToLower(c.Name)+"")
+		}
+	}
+
 }

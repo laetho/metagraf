@@ -39,6 +39,12 @@ func FindSecrets(mg *metagraf.MetaGraf) map[string]string {
 		}
 	}
 
+	for _, c := range mg.Spec.Config {
+		if c.Type == "cert" {
+			maps[strings.ToLower(c.Name)] = "certificate"
+		}
+	}
+
 	return maps
 }
 
@@ -67,7 +73,7 @@ func GenSecrets(mg *metagraf.MetaGraf) {
 	}
 
 	for _, c := range mg.Spec.Config{
-		if secretExists(Name(mg)+"-"+strings.ToLower(c.Name)) {
+		if secretExists(strings.ToLower(c.Name)) {
 			glog.Info("Skipping resource: ", Name(mg)+"-"+strings.ToLower(c.Name))
 			continue
 		}
@@ -143,12 +149,10 @@ func genResourceSecret(res *metagraf.Resource, mg *metagraf.MetaGraf) *corev1.Se
 }
 
 func genConfigCertSecret(c *metagraf.Config, mg *metagraf.MetaGraf) *corev1.Secret {
-	objname := Name(mg)
-
 	// Resource labels
 	l := make(map[string]string)
-	l["name"] = Name(mg)+"-"+c.Name
-	l["app"] = objname
+	l["name"] = strings.ToLower(c.Name)
+	l["app"] = Name(mg)
 
 	// Populate v1.Secret StringData and Data
 
@@ -162,7 +166,7 @@ func genConfigCertSecret(c *metagraf.Config, mg *metagraf.MetaGraf) *corev1.Secr
 			APIVersion: "v1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:   l["name"],
+			Name:   strings.ToLower(c.Name),
 			Labels: l,
 		},
 		Type:       corev1.SecretTypeOpaque,

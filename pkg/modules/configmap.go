@@ -39,6 +39,9 @@ func FindConfigMaps(mg *metagraf.MetaGraf) map[string]string {
 	maps := make(map[string]string)
 
 	for _, c := range mg.Spec.Config {
+		if c.Type == "cert" {
+			continue
+		}
 		maps[strings.ToLower(c.Name)] = "config"
 	}
 

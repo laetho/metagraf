@@ -98,7 +98,7 @@ func ResourceSecretName(r *metagraf.Resource) string {
 }
 
 func ConfigSecretName(c *metagraf.Config) string {
-	return c.Name
+	return strings.ToLower(c.Name)
 }
 
 // Prepends _ to indicate externally consumed variable.
