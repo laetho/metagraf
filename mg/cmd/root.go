@@ -85,7 +85,7 @@ func initConfig() {
 		fmt.Printf("Using configfile: ", os.Stdout, Config)
 		viper.SetConfigFile(Config)
 	} else {
-		fmt.Println(os.Stderr, "Using default config file: ~/.config/mg/config.yaml")
+		//fmt.Println(os.Stderr, "Using default config file: ~/.config/mg/config.yaml")
 		viper.AddConfigPath(home + "/.config/mg/")
 		viper.SetConfigName("config")
 	}
