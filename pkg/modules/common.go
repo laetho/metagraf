@@ -97,6 +97,10 @@ func ResourceSecretName(r *metagraf.Resource) string {
 	}
 }
 
+func ConfigSecretName(c *metagraf.Config) string {
+	return c.Name
+}
+
 // Prepends _ to indicate externally consumed variable.
 func ExternalEnvToEnvVar(e *metagraf.EnvironmentVar ) corev1.EnvVar {
 	v:= EnvToEnvVar(e)
