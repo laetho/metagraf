@@ -223,9 +223,10 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 	// Secrets as volumes
 	for n, t := range FindSecrets(mg) {
 		glog.V(2).Infof("Secret: %v,%t", n, t)
+		voln := strings.Replace(n,".", "-", -1)
 		var mode int32 = 420
 		vol := corev1.Volume{
-			Name: n,
+			Name: voln,
 			VolumeSource: corev1.VolumeSource{
 				Secret: &corev1.SecretVolumeSource{
 					SecretName: n,
@@ -234,7 +235,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 			},
 		}
 		volm := corev1.VolumeMount{
-			Name: n,
+			Name: voln,
 			MountPath: "/mg/secret/"+n,
 		}
 		Volumes = append(Volumes, vol)
