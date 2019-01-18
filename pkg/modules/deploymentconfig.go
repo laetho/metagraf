@@ -264,7 +264,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 			Labels: l,
 		},
 		Spec: appsv1.DeploymentConfigSpec{
-			Replicas:             1,
+			Replicas:             0,
 			RevisionHistoryLimit: &RevisionHistoryLimit,
 			Selector:             s,
 			Strategy: appsv1.DeploymentStrategy{
