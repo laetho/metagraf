@@ -47,8 +47,9 @@ var Config	string			// Viper config override
 var Verbose	bool = false
 var Output	bool = false
 var Version	string
-var Dryrun	bool = false // If true do not create
+var Dryrun	bool = false 	// If true do not create
 var Branch	string
+var Replicas int = 1		// Default replica value is 0
 
 var RootCmd = &cobra.Command{
 	Use:   "mg",
