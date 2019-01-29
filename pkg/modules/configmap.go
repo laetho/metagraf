@@ -171,6 +171,10 @@ func genJDBCOracle(objname string, r *metagraf.Resource) corev1.ConfigMap {
 	return cm
 }
 
+func genJms() {
+	
+}
+
 func StoreConfigMap(m corev1.ConfigMap) {
 
 	glog.Infof("ResourceVersion: %v Length: %v", m.ResourceVersion, len(m.ResourceVersion))
