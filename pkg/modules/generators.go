@@ -16,8 +16,8 @@ limitations under the License.
 
 package modules
 
-// todo this should be made a configuration option
-var TmplBasePath = "/home/a01595/go/src/metagraf/templates"
+// todo this should be made a configuration option, distribution of templates are also "unsolved"
+var TmplBasePath = "/usr/share/metagraf/templates"
 
 // Slice of strings that we wash labels from baseimage with when
 // creating a deploymentconfig
