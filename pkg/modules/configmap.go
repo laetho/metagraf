@@ -39,7 +39,13 @@ func FindConfigMaps(mg *metagraf.MetaGraf) map[string]string {
 	maps := make(map[string]string)
 
 	for _, c := range mg.Spec.Config {
-		if c.Type == "cert" {
+
+		// Skip envRef configmaps
+		if strings.ToLower(c.Type) == "envref" {
+			continue
+		}
+
+		if strings.ToLower(c.Type) == "cert" {
 			continue
 		}
 		maps[strings.ToLower(c.Name)] = "config"
@@ -54,6 +60,20 @@ func FindConfigMaps(mg *metagraf.MetaGraf) map[string]string {
 
 
 	return maps
+}
+
+/*
+	Returns a slice of metagraf Config structs that match specific ctype string
+ */
+func GetConfigByType(mg *metagraf.MetaGraf, ctype string) []metagraf.Config {
+	configs := []metagraf.Config{}
+
+	for _, c := range mg.Spec.Config {
+		if strings.ToLower(c.Type) == strings.ToLower(ctype) {
+			configs = append(configs,c)
+		}
+	}
+	return configs
 }
 
 /*
