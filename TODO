@@ -1,4 +1,11 @@
+Things to do
+
 * Consider adding readyness og liveliness checks to metaGraf spec.
+* Consider detecting more advanced build modes, or adding structure to accomplish this. s2i base images from Dockerfile and BuildConfig on resulting.
 * Design a way to generate buildconfig's with master->branch+pull request ci pattern.
-* Add an optional "global" boolean to metaGraf config struct. If true this will instruct the mg command to treat it as a globally named config. Defaults to false when not provided.
+* Implement "global" parameter logic for configmap generation
+* Implement "global" parameter logic for deploymentconfig generation
 * Add config type "envFrom". This will instruct the mg utility to map this in as a envFrom configMapRef for deployments.
+
+done lately:
+- Add an optional "global" boolean to metaGraf config struct. If true this will instruct the mg command to treat it as a globally named config. Defaults to false when not provided.
