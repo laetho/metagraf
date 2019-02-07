@@ -1,2 +1,4 @@
 * Consider adding readyness og liveliness checks to metaGraf spec.
 * Design a way to generate buildconfig's with master->branch+pull request ci pattern.
+* Add an optional "global" boolean to metaGraf config struct. If true this will instruct the mg command to treat it as a globally named config. Defaults to false when not provided.
+* Add config type "envFrom". This will instruct the mg utility to map this in as a envFrom configMapRef for deployments.
