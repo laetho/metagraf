@@ -70,6 +70,7 @@ type Resource struct {
 type Config struct {
 	Name    	string			`json:"name"`
 	Type        string			`json:"type"`
+	Global		bool			`json:"global,omitempty"`
 	Description string			`json:"description,omitempty"`
 	Options     []ConfigParam	`json:"options,omitempty"`
 }
