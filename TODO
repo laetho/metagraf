@@ -1,0 +1,2 @@
+* Consider adding readyness og liveliness checks to metaGraf spec.
+* Design a way to generate buildconfig's with master->branch+pull request ci pattern.
