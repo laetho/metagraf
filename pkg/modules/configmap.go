@@ -96,7 +96,13 @@ func genConfigMapsFromConfig(conf *metagraf.Config, mg *metagraf.MetaGraf) {
 	cm.Data = make(map[string]string)
 	cm.ObjectMeta.Labels = l
 
-	cm.Name = objname + "-" + strings.Replace(strings.ToLower(conf.Name), ".", "-", -1)
+	// Check if configmap should be treated as a global name.
+	if conf.Global {
+		cm.Name = conf.Name
+	} else {
+		cm.Name = objname + "-" + strings.Replace(strings.ToLower(conf.Name), ".", "-", -1)
+	}
+
 	for _, o := range conf.Options {
 		if ValueFromEnv(o.Name) {
 			cm.Data[o.Name] = Variables[o.Name]
