@@ -137,6 +137,20 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 		EnvVars = append(EnvVars, ExternalEnvToEnvVar(&e))
 	}
 
+	// Handle EnvFrom
+	var EnvFrom []corev1.EnvFromSource
+
+	// EnvVars from ConfigMaps
+	for _, c := range GetConfigByType(mg ,"envfrom") {
+		EnvFrom = append(EnvFrom, corev1.EnvFromSource{
+			ConfigMapRef: &corev1.ConfigMapEnvSource{
+				LocalObjectReference: corev1.LocalObjectReference{
+					Name: c.Name,
+				},
+			},
+		})
+	}
+
 	/* Norsk Tipping Specific Logic regarding
 	   WLP / OpenLiberty Features. Should maybe
 	   look at some plugin approach to this later.
@@ -250,6 +264,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 		Ports:           ContainerPorts,
 		VolumeMounts:    VolumeMounts,
 		Env:             EnvVars,
+		EnvFrom:		 EnvFrom,
 	}
 	Containers = append(Containers, Container)
 
