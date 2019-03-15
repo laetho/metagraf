@@ -69,7 +69,7 @@ type Resource struct {
 	TemplateFrom string			`json:"envref,omitempty"`		//
 
 	User 		string			`json:"user,omitempty"`
-	UserFrom	string			`json:"userfrom,omitempty"`	// UserEnvRef overrides User, UserEnvRef must be in Environment->Local section.
+	UserFrom	string			`json:"userfrom,omitempty"`		// UserEnvRef overrides User, UserEnvRef must be in Environment->Local section.
 
 	Secret		string			`json:"secret,omitempty"`		// Not Used?
 	SecretType  string			`json:"secrettype,omitempty"`	// Not Used?
@@ -98,7 +98,7 @@ type EnvironmentVar struct {
 	Name        string			`json:"name"`
 	Required    bool			`json:"required"`
 	Type        string			`json:"type,omitempty"`
-	EnvFrom		string			`json:"envfrom,omitempty"`
+	EnvFrom		string			`json:"envfrom,omitempty"`	// Looks for a globally named configmap.
 	Description string			`json:"description"`
 	Default		string			`json:"default,omitempty"`
 	Example		string			`json:"example,omitempty"`
