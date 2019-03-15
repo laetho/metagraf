@@ -39,6 +39,7 @@ type MetaGraf struct {
 		Branch 		 string		`json:"branch,omitempty"`
 		BuildImage   string		`json:"buildimage,omitempty"`
 		BaseRunImage string		`json:"baserunimage,omitempty"`
+		Image		 string		`json:"image,omitempty"`
 		Resources   []Resource	`json:"resources,omitempty"`
 		Environment struct {
 			Build []EnvironmentVar	`json:"build,omitempty"`
