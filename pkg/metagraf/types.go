@@ -52,19 +52,29 @@ type MetaGraf struct {
 	} `json:"spec"`
 }
 
+
+/*
+ * Describes attached resources for a component. Ref, 12 factor app.
+ */
 type Resource struct {
 	Name     	string			`json:"name"`
-	Type     	string			`json:"type"`
-	External 	bool    		`json:"external"`
-	User 		string			`json:"user,omitempty"`
-	Secret		string			`json:"secret,omitempty"`
-	SecretType  string			`json:"secrettype,omitempty"`
-	Semop		string			`json:"semop,omitempty"`
-	Semver  	string			`json:"semver,omitempty"`
-	Required 	bool			`json:"required"`
-	EnvRef		string			`json:"envref,omitempty"`
-	Template	string  		`json:"template,omitempty"`
 	Description string 			`json:"description,omitempty"`
+	Type     	string			`json:"type"`
+	Required 	bool			`json:"required"`
+	External 	bool    		`json:"external"`
+	Semop		string			`json:"semop,omitempty"`		// Semantic operator, how to evaluate version match/requirements.
+	Semver  	string			`json:"semver,omitempty"`		// Semantic version to evaluate for attached resource
+
+	Template	string  		`json:"template,omitempty"`		// Go txt template string for generating resource configuration.
+	TemplateFrom string			`json:"envref,omitempty"`		//
+
+	User 		string			`json:"user,omitempty"`
+	UserFrom	string			`json:"userfrom,omitempty"`	// UserEnvRef overrides User, UserEnvRef must be in Environment->Local section.
+
+	Secret		string			`json:"secret,omitempty"`		// Not Used?
+	SecretType  string			`json:"secrettype,omitempty"`	// Not Used?
+	SecretFrom	string			`json:"secretfrom,omitempty"`	// Secret reference for
+
 }
 
 type Config struct {

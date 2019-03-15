@@ -154,6 +154,18 @@ func genConfigMapsFromResources(mg *metagraf.MetaGraf) {
 				MarshalObject(cm)
 			}
 		}
+
+		if r.Type == "jms" {
+			cm := genJMSResource(objname, &r)
+
+			if !Dryrun {
+				StoreConfigMap(cm)
+			}
+			if Output {
+				MarshalObject(cm)
+			}
+
+		}
 	}
 
 }
@@ -197,8 +209,57 @@ func genJDBCOracle(objname string, r *metagraf.Resource) corev1.ConfigMap {
 	return cm
 }
 
-func genJms() {
-	
+/*
+
+<resourceAdapter id="mqJms" location="${server.config.dir}/drivers/wmq.jmsra.rar"/>
+
+<connectionManager id="ConMgr1" maxPoolSize="6"/>
+
+<jmsTopicConnectionFactory jndiName="jms/CSFTopicConnectionFactory" connectionManagerRef="ConMgr1">
+	<properties.mqJms username="mqm" clientID="RGValidation" transportType="CLIENT" hostName="q1imq001.qa03.norsk-tipping.no" port="1614" channel="CH.JCAPS.CSF" queueManager="QMCSF"/>
+</jmsTopicConnectionFactory>
+
+
+
+
+*/
+
+
+
+
+func genJMSResource(objname string, r *metagraf.Resource) corev1.ConfigMap {
+	l := make(map[string]string)
+	l["app"] = objname
+
+	// todo: should this be fetched from EnvironmentVar Template, possibly
+	dstemplate := `
+
+`
+	t, _ := template.New("ds").Parse(dstemplate)
+	var o bytes.Buffer
+	if err := t.Execute(&o, r); err != nil {
+		glog.Errorf("%v", err)
+		os.Exit(1)
+	}
+
+	cm := corev1.ConfigMap{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "ConfigMap",
+			APIVersion: "v1",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:   objname + "-" + strings.ToLower(r.User),
+			Labels: l,
+		},
+	}
+
+	cm.Data = make(map[string]string)
+	cm.ObjectMeta.Labels = l
+	cm.Data["DS"] = o.String()
+
+	// @todo this should really come from secretRef/vault
+	cm.Data["PASSWORD"] = "$PASSWORD"
+	return cm
 }
 
 func StoreConfigMap(m corev1.ConfigMap) {
