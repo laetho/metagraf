@@ -31,16 +31,16 @@ type MetaGraf struct {
 		Annotations       map[string]string	`json:"annotations,omitempty"`
 	} `json:"metadata"`
 	Spec struct {
-		Type         string		`json:"type"`
-		Version      string		`json:"version"`
-		Description  string		`json:"description"`
-		Repository   string  	`json:"repository,omitempty"`
+		Type		 string		`json:"type"`
+		Version		 string		`json:"version"`
+		Description	 string		`json:"description"`
+		Repository	 string  	`json:"repository,omitempty"`
 		RepSecRef	 string		`json:"repsecref,omitempty"`
-		Branch 		 string		`json:"branch,omitempty"`
-		BuildImage   string		`json:"buildimage,omitempty"`
-		BaseRunImage string		`json:"baserunimage,omitempty"`
-		Image		 string		`json:"image,omitempty"`
-		Resources   []Resource	`json:"resources,omitempty"`
+		Branch		 string		`json:"branch,omitempty"`
+		BuildImage	 string		`json:"buildimage,omitempty"`	// Builder Image for s2i builds.
+		BaseRunImage string		`json:"baserunimage,omitempty"`	// Runtime Container Image for binary build.
+		Image		 string		`json:"image,omitempty"`		// Container Image URL, for wrapping upstream images.
+		Resources	 []Resource	`json:"resources,omitempty"`
 		Environment struct {
 			Build []EnvironmentVar	`json:"build,omitempty"`
 			Local []EnvironmentVar	`json:"local,omitempty"`
@@ -50,6 +50,7 @@ type MetaGraf struct {
 			} `json:"external,omitempty"`
 		} `json:"environment,omitempty"`
 		Config []Config `json:"config,omitempty"`
+		Secret []Secret `json:"secret,omitempty"`
 	} `json:"spec"`
 }
 
@@ -66,15 +67,15 @@ type Resource struct {
 	Semop		string			`json:"semop,omitempty"`		// Semantic operator, how to evaluate version match/requirements.
 	Semver  	string			`json:"semver,omitempty"`		// Semantic version to evaluate for attached resource
 
+	EnvRef		string			`json:"envref,omitempty"`		// Reference an Environment variable
+
+	// Used when we need to generate configuration for connection to the described attached resource.
 	Template	string  		`json:"template,omitempty"`		// Go txt template string for generating resource configuration.
-	TemplateFrom string			`json:"envref,omitempty"`		//
-
+	TemplateRef string			`json:"templateref,omitempty"`	// Configmap Reference
 	User 		string			`json:"user,omitempty"`
-	UserFrom	string			`json:"userfrom,omitempty"`		// UserEnvRef overrides User, UserEnvRef must be in Environment->Local section.
-
-	Secret		string			`json:"secret,omitempty"`		// Not Used?
-	SecretType  string			`json:"secrettype,omitempty"`	// Not Used?
-	SecretFrom	string			`json:"secretfrom,omitempty"`	// Secret reference for
+	UserRef		string			`json:"userref,omitempty"`		// UserEnvRef overrides User, UserEnvRef must be in Environment->Local section.
+	SecretRef	string			`json:"secretref,omitempty"`	// k8s Secret reference
+	SecretType  string			`json:"secrettype,omitempty"`	// username, password, token, cert
 
 }
 
@@ -95,11 +96,20 @@ type ConfigParam struct {
 	Default     string			`json:"default"`
 }
 
+type Secret struct {
+	Name    	string			`json:"name"`
+	Type        string			`json:"type"`
+	Global		bool			`json:"global,omitempty"`
+	Description string			`json:"description,omitempty"`
+	Value		string			`json:"value,omitempty"`
+}
+
 type EnvironmentVar struct {
 	Name        string			`json:"name"`
 	Required    bool			`json:"required"`
 	Type        string			`json:"type,omitempty"`
-	EnvFrom		string			`json:"envfrom,omitempty"`	// Looks for a globally named configmap.
+	EnvFrom		string			`json:"envfrom,omitempty"`		// Looks for a globally named configmap.
+	SecrectRef	string			`json:"secretref,omitempty"`	// References a k8s Secret resource.
 	Description string			`json:"description"`
 	Default		string			`json:"default,omitempty"`
 	Example		string			`json:"example,omitempty"`
