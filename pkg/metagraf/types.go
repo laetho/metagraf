@@ -74,7 +74,7 @@ type Resource struct {
 	TemplateRef string			`json:"templateref,omitempty"`	// Configmap Reference
 	User 		string			`json:"user,omitempty"`
 	UserRef		string			`json:"userref,omitempty"`		// UserEnvRef overrides User, UserEnvRef must be in Environment->Local section.
-	SecretRef	string			`json:"secretref,omitempty"`	// k8s Secret reference
+	Secret		string			`json:"secret,omitempty"`		// k8s Secret reference
 	SecretType  string			`json:"secrettype,omitempty"`	// username, password, token, cert
 
 }
