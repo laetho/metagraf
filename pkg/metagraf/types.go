@@ -66,7 +66,6 @@ type Resource struct {
 	External 	bool    		`json:"external"`
 	Semop		string			`json:"semop,omitempty"`		// Semantic operator, how to evaluate version match/requirements.
 	Semver  	string			`json:"semver,omitempty"`		// Semantic version to evaluate for attached resource
-
 	EnvRef		string			`json:"envref,omitempty"`		// Reference an Environment variable
 
 	// Used when we need to generate configuration for connection to the described attached resource.
@@ -75,8 +74,6 @@ type Resource struct {
 	User 		string			`json:"user,omitempty"`
 	UserRef		string			`json:"userref,omitempty"`		// UserEnvRef overrides User, UserEnvRef must be in Environment->Local section.
 	Secret		string			`json:"secret,omitempty"`		// k8s Secret reference
-	SecretType  string			`json:"secrettype,omitempty"`	// username, password, token, cert
-
 }
 
 type Config struct {
@@ -109,7 +106,7 @@ type EnvironmentVar struct {
 	Required    bool			`json:"required"`
 	Type        string			`json:"type,omitempty"`
 	EnvFrom		string			`json:"envfrom,omitempty"`		// Looks for a globally named configmap.
-	SecrectRef	string			`json:"secretref,omitempty"`	// References a k8s Secret resource.
+	SecretFrom	string			`json:"secretfrom,omitempty"`	// References a k8s Secret resource.
 	Description string			`json:"description"`
 	Default		string			`json:"default,omitempty"`
 	Example		string			`json:"example,omitempty"`

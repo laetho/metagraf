@@ -209,31 +209,19 @@ func genJDBCOracle(objname string, r *metagraf.Resource) corev1.ConfigMap {
 	return cm
 }
 
-/*
-
-<resourceAdapter id="mqJms" location="${server.config.dir}/drivers/wmq.jmsra.rar"/>
-
-<connectionManager id="ConMgr1" maxPoolSize="6"/>
-
-<jmsTopicConnectionFactory jndiName="jms/CSFTopicConnectionFactory" connectionManagerRef="ConMgr1">
-	<properties.mqJms username="mqm" clientID="RGValidation" transportType="CLIENT" hostName="q1imq001.qa03.norsk-tipping.no" port="1614" channel="CH.JCAPS.CSF" queueManager="QMCSF"/>
-</jmsTopicConnectionFactory>
-
-
-
-
-*/
-
-
-
-
 func genJMSResource(objname string, r *metagraf.Resource) corev1.ConfigMap {
 	l := make(map[string]string)
 	l["app"] = objname
 
+
+	// <resourceAdapter id="mqJms" location="${server.config.dir}/drivers/wmq.jmsra.rar"/> <- This should be injected if jms are in liberty features.
+	//
 	// todo: should this be fetched from EnvironmentVar Template, possibly
 	dstemplate := `
-
+<connectionManager id="ConMgr1" maxPoolSize="6"/>
+<jmsQueueConnectionFactory jndiName="jms/QCF_RGPROFILE" connectionManagerRef="ConMgr1">
+        <properties.mqJms username="{.User}" clientID="RGProfile" transportType="CLIENT" hostName="q1imq001.qa01.norsk-tipping.no" port="1514" channel="CH.JCAPS.BATCH" queueManager="QMBATCHESB"/>
+</jmsQueueConnectionFactory>
 `
 	t, _ := template.New("ds").Parse(dstemplate)
 	var o bytes.Buffer
