@@ -87,6 +87,21 @@ func GenSecrets(mg *metagraf.MetaGraf) {
 			MarshalObject(obj)
 		}
 	}
+
+	for _, s := range mg.Spec.Secret{
+		if secretExists(strings.ToLower(s.Name)) {
+			glog.Info("Skipping secret: ", Name(mg)+"-"+strings.ToLower(s.Name))
+			continue
+		}
+
+		obj := genSecret(&s, mg)
+		if !Dryrun {
+			StoreSecret(*obj)
+		}
+		if Output{
+			MarshalObject(obj)
+		}
+	}
 }
 
 // Check if a named secret exsist in the current namespace.
@@ -104,6 +119,56 @@ func secretExists(name string) bool {
 		return true
 	}
 	return false
+}
+
+//
+func GetSecret(name string) *corev1.Secret {
+	cli := ocpclient.GetCoreClient()
+	sec, err := cli.Secrets(NameSpace).Get(name, metav1.GetOptions{})
+	if err != nil {
+		glog.Error(err)
+	}
+	return sec
+}
+
+func genSecret(s *metagraf.Secret, mg *metagraf.MetaGraf) *corev1.Secret {
+	objname := Name(mg)
+
+	// Resource labels
+	l := make(map[string]string)
+
+	if s.Global == true {
+		l["name"] = strings.ToLower(s.Name)
+	} else {
+		l["name"] = objname+"-"+strings.ToLower(s.Name)
+	}
+
+	// Populate v1.Secret StringData and Data
+	stringdata := make(map[string]string)
+	data := make(map[string][]byte)
+
+	switch {
+	case s.Type == "base64":
+		stringdata["type"] = "base64"
+	case s.Type == "string":
+		stringdata["type"] = "string"
+	}
+
+	sec := corev1.Secret{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "Secret",
+			APIVersion: "v1",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:   l["name"],
+			Labels: l,
+		},
+		Type:       "opaque",
+		StringData: stringdata,
+		Data:       data,
+	}
+
+	return &sec
 }
 
 func genResourceSecret(res *metagraf.Resource, mg *metagraf.MetaGraf) *corev1.Secret {

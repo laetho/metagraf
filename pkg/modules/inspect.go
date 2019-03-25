@@ -45,4 +45,12 @@ func InspectSecrets(mg *metagraf.MetaGraf) {
 		}
 	}
 
+	fmt.Println("yo")
+	for _, s := range mg.Spec.Secret {
+		if s.Global == true {
+			fmt.Println(Name(mg), "needs GLOBAL secret "+strings.ToLower(s.Name)+"")
+		} else {
+			fmt.Println(Name(mg), "needs secret "+strings.ToLower(s.Name)+"")
+		}
+	}
 }
