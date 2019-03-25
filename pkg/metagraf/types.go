@@ -72,8 +72,7 @@ type Resource struct {
 	Template	string  		`json:"template,omitempty"`		// Go txt template string for generating resource configuration.
 	TemplateRef string			`json:"templateref,omitempty"`	// Configmap Reference
 	User 		string			`json:"user,omitempty"`
-	UserRef		string			`json:"userref,omitempty"`		// UserEnvRef overrides User, UserEnvRef must be in Environment->Local section.
-	Secret		string			`json:"secret,omitempty"`		// k8s Secret reference
+	Secret	    string			`json:"secret,omitempty"`		// k8s Secret reference
 }
 
 type Config struct {

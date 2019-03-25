@@ -34,9 +34,6 @@ func FindSecrets(mg *metagraf.MetaGraf) map[string]string {
 		if len(r.User) > 0 {
 			maps[strings.ToLower(r.User)] = "password"
 		}
-		if len(r.Secret) > 0 {
-			maps[strings.ToLower(r.Secret)] = r.SecretType
-		}
 	}
 
 	for _, c := range mg.Spec.Config {
@@ -127,9 +124,9 @@ func genResourceSecret(res *metagraf.Resource, mg *metagraf.MetaGraf) *corev1.Se
 		stringdata["password"] = "secretstring"
 	}
 
-	if len(res.Secret) > 0 && res.SecretType == "cert" {
-		data[res.Secret] = []byte("Replace this")
-	}
+	//if len(res.Secret) > 0 && res.SecretType == "cert" {
+	// 	data[res.Secret] = []byte("Replace this")
+	//}
 
 	sec := corev1.Secret{
 		TypeMeta: metav1.TypeMeta{

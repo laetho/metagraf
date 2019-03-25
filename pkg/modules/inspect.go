@@ -37,9 +37,6 @@ func InspectSecrets(mg *metagraf.MetaGraf) {
 			fmt.Println(Name(mg), "needs secret for user", r.User, "for resource", r.Name+".", "Secret name:", ResourceSecretName(&r))
 		}
 
-		if len(r.Secret) > 0 && r.SecretType == "cert" {
-			fmt.Println(Name(mg), "needs cert(\""+r.Secret+"\") for", r.Name+".", "Secret name:", ResourceSecretName(&r))
-		}
 	}
 
 	for _, c := range mg.Spec.Config {
