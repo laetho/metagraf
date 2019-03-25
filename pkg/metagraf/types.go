@@ -91,6 +91,7 @@ type ConfigParam struct {
 	Description string			`json:"description"`
 	Type        string			`json:"type"`
 	Default     string			`json:"default"`
+	SecretFrom  string			`json:"secretfrom,omitempty"`	// References a value from a k8s secret resource
 }
 
 type Secret struct {
@@ -98,7 +99,7 @@ type Secret struct {
 	Type        string			`json:"type"`
 	Global		bool			`json:"global,omitempty"`
 	Description string			`json:"description,omitempty"`
-	Value		string			`json:"value,omitempty"`
+	Value		string			`json:"value,omitempty"`		// Never use this!
 }
 
 type EnvironmentVar struct {
