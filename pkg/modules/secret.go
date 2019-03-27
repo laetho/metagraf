@@ -122,13 +122,13 @@ func secretExists(name string) bool {
 }
 
 //
-func GetSecret(name string) *corev1.Secret {
+func GetSecret(name string) (*corev1.Secret, error) {
 	cli := ocpclient.GetCoreClient()
 	sec, err := cli.Secrets(NameSpace).Get(name, metav1.GetOptions{})
 	if err != nil {
-		glog.Error(err)
+		return sec, err
 	}
-	return sec
+	return sec, nil
 }
 
 func genSecret(s *metagraf.Secret, mg *metagraf.MetaGraf) *corev1.Secret {
@@ -152,6 +152,7 @@ func genSecret(s *metagraf.Secret, mg *metagraf.MetaGraf) *corev1.Secret {
 		stringdata["type"] = "base64"
 	case s.Type == "string":
 		stringdata["type"] = "string"
+		stringdata[s.Name] = ""
 	}
 
 	sec := corev1.Secret{

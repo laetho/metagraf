@@ -39,7 +39,6 @@ func FindConfigMaps(mg *metagraf.MetaGraf) map[string]string {
 	maps := make(map[string]string)
 
 	for _, c := range mg.Spec.Config {
-
 		// Skip envRef configmaps
 		if strings.ToLower(c.Type) == "envref" {
 			continue
@@ -57,8 +56,6 @@ func FindConfigMaps(mg *metagraf.MetaGraf) map[string]string {
 		}
 		maps[strings.ToLower(r.User)] = "resource"
 	}
-
-
 	return maps
 }
 
@@ -77,8 +74,8 @@ func GetConfigByType(mg *metagraf.MetaGraf, ctype string) []metagraf.Config {
 }
 
 /*
-Entry function for creating a slew of configmaps, this will be somewhat
-specific to NT internal workings for now.
+	Entry function for creating a slew of configmaps, this will be somewhat
+	specific to NT internal workings for now.
 */
 func GenConfigMaps(mg *metagraf.MetaGraf) {
 	for _, c := range mg.Spec.Config {
@@ -91,7 +88,7 @@ func GenConfigMaps(mg *metagraf.MetaGraf) {
 }
 
 /*
-Generates a configmap for jvm.params file for Liberty java apps
+	Generates a configmap for jvm.params file for Liberty java apps
 */
 func genConfigMapsFromConfig(conf *metagraf.Config, mg *metagraf.MetaGraf) {
 
@@ -124,7 +121,13 @@ func genConfigMapsFromConfig(conf *metagraf.Config, mg *metagraf.MetaGraf) {
 	}
 
 	for _, o := range conf.Options {
-		if ValueFromEnv(o.Name) {
+		 if len(o.SecretFrom) > 0 {
+			sec, err := GetSecret(o.SecretFrom)
+			if err != nil {
+				glog.Error(err)
+			}
+			cm.Data[o.Name] = sec.StringData[o.SecretFrom]
+		} else if ValueFromEnv(o.Name) { 					// todo: check the ValueFromEnv implementation
 			cm.Data[o.Name] = Variables[o.Name]
 		} else {
 			cm.Data[o.Name] = o.Default
