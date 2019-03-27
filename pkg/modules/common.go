@@ -101,16 +101,24 @@ func ConfigSecretName(c *metagraf.Config) string {
 	return strings.ToLower(c.Name)
 }
 
-// Prepends _ to indicate externally consumed variable.
+/*
+	Prepends _ to indicate environment variable name to indicate a variable that
+    comes from some external configuration repository. How you use this is an
+	implementation detail in the runtime container image.
+*/
 func ExternalEnvToEnvVar(e *metagraf.EnvironmentVar ) corev1.EnvVar {
 	v:= EnvToEnvVar(e)
 	v.Name = "_"+v.Name
 	return v
 }
 
-// Applies conventions and overridden logic to an environment variable and returns a corev1.EnvVar{}
+/*
+	Applies conventions and override logic to an environment variable and returns
+	a corev1.EnvVar{}.
+*/
 func EnvToEnvVar(e *metagraf.EnvironmentVar) corev1.EnvVar {
 	//fmt.Printf("Type: %t\n", e.Required)
+
 	if e.Required {
 		value := ""
 
