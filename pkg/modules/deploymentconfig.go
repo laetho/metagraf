@@ -32,7 +32,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 )
-
+// Todo: Break this up and refactor, total POS...
 func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 	objname := Name(mg)
 
@@ -124,8 +124,16 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 		EnvVars = append(EnvVars, corev1.EnvVar{Name: es[0], Value: es[1]})
 	}
 
+	// Handle EnvFrom
+	var EnvFrom []corev1.EnvFromSource
+
 	// Local variables from metagraf as deployment envvars
 	for _, e := range mg.Spec.Environment.Local {
+
+		// Skip environment variable if SecretFrom
+		if len(e.SecretFrom) == 0 {
+			continue
+		}
 		EnvVars = append(EnvVars, EnvToEnvVar(&e))
 	}
 
@@ -137,9 +145,6 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 		EnvVars = append(EnvVars, ExternalEnvToEnvVar(&e))
 	}
 
-	// Handle EnvFrom
-	var EnvFrom []corev1.EnvFromSource
-
 	// EnvVars from ConfigMaps
 	for _, c := range GetConfigByType(mg ,"envfrom") {
 		EnvFrom = append(EnvFrom, corev1.EnvFromSource{
@@ -150,6 +155,26 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 			},
 		})
 	}
+
+	/*
+		EnvVars from Secrets. Find all environment variables
+		that containers the SecretFrom field and append to the
+		EnvFrom as EnvFromSource->SecretRef.
+	*/
+	for _, e := range mg.Spec.Environment.Local {
+		if len(e.SecretFrom) == 0 {
+			continue
+		}
+		cmref := corev1.EnvFromSource{
+			SecretRef: &corev1.SecretEnvSource{
+				LocalObjectReference: corev1.LocalObjectReference{
+					Name: e.Name,
+				},
+			},
+		}
+		EnvFrom = append(EnvFrom, cmref)
+	}
+
 
 	/* Norsk Tipping Specific Logic regarding
 	   WLP / OpenLiberty Features. Should maybe
