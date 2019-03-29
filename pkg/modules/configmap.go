@@ -44,10 +44,6 @@ func FindConfigMaps(mg *metagraf.MetaGraf) map[string]string {
 			continue
 		}
 
-		if strings.ToLower(c.Type) == "tcp" {
-			continue
-		}
-
 		if strings.ToLower(c.Type) == "cert" {
 			continue
 		}
@@ -56,6 +52,9 @@ func FindConfigMaps(mg *metagraf.MetaGraf) map[string]string {
 
 	for _, r := range mg.Spec.Resources {
 		if r.Type == "http" {
+			continue
+		}
+		if strings.ToLower(r.Type) == "tcp" {
 			continue
 		}
 		maps[strings.ToLower(r.User)] = "resource"
