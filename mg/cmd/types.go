@@ -34,6 +34,7 @@ type EnvVars map[string]string
 type CmdCVars []string
 type CmdVars map[string]string
 
+// Slice of strings to hold overridden values
 var CVars []string
 
 // Returns a map (CmdVars) parsed from --cvars flag
