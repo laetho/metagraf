@@ -210,6 +210,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 	}
 
 	// Volumes & VolumeMounts from base image into podspec
+	glog.Info("ImageInfo: Got ", len(ImageInfo.Config.Volumes), " volumes from base image...")
 	for k := range ImageInfo.Config.Volumes {
 		// Volume Definitions
 		Volume := corev1.Volume{

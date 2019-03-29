@@ -44,6 +44,10 @@ func FindConfigMaps(mg *metagraf.MetaGraf) map[string]string {
 			continue
 		}
 
+		if strings.ToLower(c.Type) == "tcp" {
+			continue
+		}
+
 		if strings.ToLower(c.Type) == "cert" {
 			continue
 		}
@@ -56,6 +60,9 @@ func FindConfigMaps(mg *metagraf.MetaGraf) map[string]string {
 		}
 		maps[strings.ToLower(r.User)] = "resource"
 	}
+
+	glog.Info("FindConfigMaps(): Found", len(maps), " ConfigMaps to mount...")
+
 	return maps
 }
 
@@ -78,6 +85,7 @@ func GetConfigByType(mg *metagraf.MetaGraf, ctype string) []metagraf.Config {
 	specific to NT internal workings for now.
 */
 func GenConfigMaps(mg *metagraf.MetaGraf) {
+	glog.Info("GenConfigMaps: Handle", len(mg.Spec.Config), " configs...")
 	for _, c := range mg.Spec.Config {
 		if c.Type != "parameters" {
 			continue
@@ -143,6 +151,11 @@ func genConfigMapsFromConfig(conf *metagraf.Config, mg *metagraf.MetaGraf) {
 
 }
 
+/*
+	Will generate configuration needed for a component to consume
+	an attached resource. You can reference a go template stored
+	in a configmap or write the timeline inline.
+ */
 func genConfigMapsFromResources(mg *metagraf.MetaGraf) {
 
 	objname := Name(mg)
@@ -167,27 +180,35 @@ func genConfigMapsFromResources(mg *metagraf.MetaGraf) {
 			if Output {
 				MarshalObject(cm)
 			}
-
 		}
 	}
-
 }
 
-func genJDBCOracle(objname string, r *metagraf.Resource) corev1.ConfigMap {
+func genJDBCOracle(objname string, r *metagraf.Resource ) corev1.ConfigMap {
 
 	l := make(map[string]string)
 	l["app"] = objname
 
+	data := struct {
+		Resource *metagraf.Resource
+		Vars map[string]string
+	}{
+		r,
+		Variables,
+	}
+
 	// todo: should this be fetched from EnvironmentVar Template, possibly
-	dstemplate := `<dataSource id="{{ .User }}" jndiName="jdbc/{{ .User }}">
+	dstemplate := `<dataSource id="{{ .Resource.User }}" jndiName="jdbc/{{ .Resource.User }}">
 <jdbcDriver libraryRef="OracleLib" />
-<properties.oracle URL="jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=$OVIS_HOST)(PORT=$OVIS_PORT))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=$OVIS_SID)))" user="dbadmin" password="$PASSWORD"/>
+<properties.oracle URL="jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=$OVIS_HOST)(PORT=$OVIS_PORT))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME={{index .Vars "OVIS_SID"}})))" user="dbadmin" password="$PASSWORD"/>
 <connectionManager maxPoolSize="10" minPoolSize="2" />
 </dataSource>
 `
+
+
 	t, _ := template.New("ds").Parse(dstemplate)
 	var o bytes.Buffer
-	if err := t.Execute(&o, r); err != nil {
+	if err := t.Execute(&o, data); err != nil {
 		glog.Errorf("%v", err)
 		os.Exit(1)
 	}
