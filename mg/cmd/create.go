@@ -41,6 +41,7 @@ func init() {
 	createCmd.AddCommand(createRouteCmd)
 	createDeploymentConfigCmd.Flags().StringVar(&Namespace, "namespace", "", "namespace to work on, if not supplied it will use current working namespace")
 	createDeploymentConfigCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
+	createDeploymentConfigCmd.Flags().BoolVar(&BaseEnvs, "baseenv", false, "Hydrate deploymentconfig with baseimage environment variables")
 	createBuildConfigCmd.Flags().StringVar(&Namespace, "namespace", "", "namespace to work on, if not supplied it will use current working namespace")
 	createBuildConfigCmd.Flags().StringVar(&Branch, "branch","", "Override branch to build from.")
 	createBuildConfigCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
@@ -88,6 +89,11 @@ var createBuildConfigCmd = &cobra.Command{
 		if len(modules.NameSpace) == 0 {
 			modules.NameSpace = Namespace
 		}
+
+		if BaseEnvs {
+			modules.BaseEnvs = BaseEnvs
+		}
+
 		modules.GenBuildConfig(&mg)
 	},
 }
