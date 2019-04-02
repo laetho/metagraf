@@ -50,6 +50,7 @@ var Version	string
 var Dryrun	bool = false 	// If true do not create
 var Branch	string
 var Replicas int = 1		// Default replica value is 0
+var BaseEnvs bool = false
 
 var RootCmd = &cobra.Command{
 	Use:   "mg",
