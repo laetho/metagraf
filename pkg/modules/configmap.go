@@ -35,7 +35,7 @@ import (
 	for which configmaps it will need to create and their
 	type in a map.
 */
-func FindConfigMaps(mg *metagraf.MetaGraf) map[string]string {
+func FindMetagrafConfigMaps(mg *metagraf.MetaGraf) map[string]string {
 	maps := make(map[string]string)
 
 	for _, c := range mg.Spec.Config {
@@ -60,7 +60,7 @@ func FindConfigMaps(mg *metagraf.MetaGraf) map[string]string {
 		maps[strings.ToLower(r.User)] = "resource"
 	}
 
-	glog.Info("FindConfigMaps(): Found", len(maps), " ConfigMaps to mount...")
+	glog.Info("FindMetagrafConfigMaps(): Found", len(maps), " ConfigMaps to mount...")
 
 	return maps
 }
@@ -68,7 +68,7 @@ func FindConfigMaps(mg *metagraf.MetaGraf) map[string]string {
 /*
 	Returns a slice of metagraf Config structs that match specific ctype string
  */
-func GetConfigByType(mg *metagraf.MetaGraf, ctype string) []metagraf.Config {
+func GetMetagrafConfigByType(mg *metagraf.MetaGraf, ctype string) []metagraf.Config {
 	configs := []metagraf.Config{}
 
 	for _, c := range mg.Spec.Config {

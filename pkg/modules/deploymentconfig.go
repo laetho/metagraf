@@ -150,7 +150,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 	}
 
 	// EnvVars from ConfigMaps
-	for _, c := range GetConfigByType(mg ,"envfrom") {
+	for _, c := range GetMetagrafConfigByType(mg ,"envfrom") {
 		EnvFrom = append(EnvFrom, corev1.EnvFromSource{
 			ConfigMapRef: &corev1.ConfigMapEnvSource{
 				LocalObjectReference: corev1.LocalObjectReference{
@@ -233,7 +233,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 	}
 
 	// Put ConfigMap volumes and mounts into PodSpec
-	for n, t := range FindConfigMaps(mg) {
+	for n, t := range FindMetagrafConfigMaps(mg) {
 		var mode int32 = 420
 
 		glog.V(2).Infof("Name,Type: %v,%v", n,t)
