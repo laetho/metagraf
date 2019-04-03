@@ -38,11 +38,14 @@ type CmdVars map[string]string
 var CVars []string
 
 // Returns a map (CmdVars) parsed from --cvars flag
+// todo: fix parsing of , seperated values for a key
 func (v CmdCVars) Parse() CmdVars {
 	cm := make(CmdVars)
 	for _, str := range v {
+		glog.Info("Cmd Var string:", str)
 		split := strings.Split(str, "=")
 		if len(split) <= 1 {
+			glog.Info("Split:", split)
 			glog.Warning(StrMalformedVar)
 			continue
 		}
