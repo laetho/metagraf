@@ -35,6 +35,7 @@ var (
 	Verbose   bool   // Flag passing hack
 	Dryrun    bool   // Flag passing hack
 	Branch	  string // Flag passing hack
+	BaseEnvs   bool = false
 )
 
 var Variables map[string]string
@@ -122,13 +123,16 @@ func EnvToEnvVar(e *metagraf.EnvironmentVar) corev1.EnvVar {
 	if e.Required {
 		value := ""
 
-		// Handle possible override value for non required fields
-		if v, t := Variables[e.Name]; t {
-			value = v
-		}
-
+		// Set default value first if provided
 		if len(e.Default) > 0 {
 			value = e.Default
+		}
+		// Handle possible override value for non required fields
+		if v, t := Variables[e.Name]; t {
+			if len(v) > 0 {
+				value = v
+				glog.Info("Found override value for: ", e.Name, " Override value: ", Variables[e.Name])
+			}
 		}
 
 		return corev1.EnvVar{

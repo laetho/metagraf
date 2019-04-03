@@ -32,6 +32,8 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 )
+
+
 // Todo: Break this up and refactor, total POS...
 func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 	objname := Name(mg)
@@ -116,12 +118,14 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 	})
 
 	// Environment Variables from baserunimage
-	for _, e := range ImageInfo.Config.Env {
-		es := strings.Split(e, "=")
-		if helpers.SliceInString(EnvBlacklistFilter, strings.ToLower(es[0])) {
-			continue
+	if BaseEnvs {
+		for _, e := range ImageInfo.Config.Env {
+			es := strings.Split(e, "=")
+			if helpers.SliceInString(EnvBlacklistFilter, strings.ToLower(es[0])) {
+				continue
+			}
+			EnvVars = append(EnvVars, corev1.EnvVar{Name: es[0], Value: es[1]})
 		}
-		EnvVars = append(EnvVars, corev1.EnvVar{Name: es[0], Value: es[1]})
 	}
 
 	// Handle EnvFrom
@@ -129,11 +133,11 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 
 	// Local variables from metagraf as deployment envvars
 	for _, e := range mg.Spec.Environment.Local {
-
 		// Skip environment variable if SecretFrom
-		if len(e.SecretFrom) == 0 {
+		if len(e.SecretFrom) > 0 {
 			continue
 		}
+		// Use EnvToEnvVar to potentially use override values.
 		EnvVars = append(EnvVars, EnvToEnvVar(&e))
 	}
 

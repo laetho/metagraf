@@ -72,6 +72,7 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 	// Resource labels
 	l := make(map[string]string)
 	l["app"] = objname
+	l["deploymentconfig"] = objname
 
 	for _, e := range mg.Spec.Environment.Build {
 		if e.Required == true {
@@ -88,6 +89,7 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name: objname,
+			Labels: l,
 		},
 		Spec: buildv1.BuildConfigSpec{
 			Triggers: []buildv1.BuildTriggerPolicy{
