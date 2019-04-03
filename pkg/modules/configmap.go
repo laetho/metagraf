@@ -66,6 +66,18 @@ func FindMetagrafConfigMaps(mg *metagraf.MetaGraf) map[string]string {
 }
 
 /*
+	Fetch a ConfigMap resource the connected kubernetes cluster.
+ */
+func GetConfigMap(name string) (*corev1.ConfigMap, error) {
+	cli := ocpclient.GetCoreClient()
+	cm, err := cli.ConfigMaps(NameSpace).Get(name, metav1.GetOptions{})
+	if err != nil {
+		return cm, err
+	}
+	return cm, nil
+}
+
+/*
 	Returns a slice of metagraf Config structs that match specific ctype string
  */
 func GetMetagrafConfigByType(mg *metagraf.MetaGraf, ctype string) []metagraf.Config {
