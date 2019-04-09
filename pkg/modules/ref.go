@@ -18,13 +18,20 @@ package modules
 
 import (
 	"fmt"
+	"github.com/golang/glog"
 	"html/template"
 	"metagraf/pkg/metagraf"
 	"os"
 )
 
 func GenRef(mg *metagraf.MetaGraf) {
-	tmpl := template.Must(template.ParseFiles(TmplBasePath + "/refdoc.html"))
+	cm, err  := GetConfigMap("metagraf-refdoc.html")
+	if err != nil {
+		glog.Error(err)
+		os.Exit(-1)
+	}
+	tmpl, _ := template.New("refdoc").Parse(cm.Data["template"])
+
 	filename := "/tmp/"+Name(mg)+".html"
 
 	f, err := os.OpenFile(filename, os.O_CREATE|os.O_TRUNC|os.O_RDWR, 0777)
