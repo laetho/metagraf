@@ -1,0 +1,44 @@
+digraph G {
+    rank=lrtp
+    /* Entities */
+    Component
+
+    Resources
+    Environment
+    Configs
+    Secrets
+
+    Build
+    Local
+    External
+
+    Consumes
+    Introduces
+
+    //shortName [label="shortName", shape="|square,rectangle,circle,ellipse,triangle,plaintext,point,diamond,pentagon,hexagon,septagon,octagon,egg,trapezium,parallelogram,house,doublecircle,doubleoctagon,tripleoctagon,invtriangle,invtrapezium,invhouse,Mdiamond,Msquare,Mcircle,none,note,tab,folder,box3d|", URL="http://en.wikipedia.org/wiki/John de Fries"]
+    
+    /* Relationships */
+    Component -> Resources
+    Component -> Environment
+    Component -> Configs
+    Component -> Secrets
+    Component -> Volumes
+
+    Environment -> Build
+    Environment -> Local
+    Environment -> External
+
+    External -> Consumes
+    External -> Introduces
+
+    Configs -> "application.properties"
+
+    Secrets -> "public.cert"
+
+    Resources -> Database
+    Resources -> Kafka
+    Resources -> Redis
+
+    /* Ranks */
+    //{ rank=lr|same,min,max,# max is bottom|; shortName; };
+}
