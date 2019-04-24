@@ -28,16 +28,26 @@ digraph G {
     Environment -> Local
     Environment -> External
 
+    Build -> BuildEnvVar1
+    Local -> EnvVar1
+
     External -> Consumes
     External -> Introduces
 
-    Configs -> "application.properties"
+    Consumes -> ExtEnvVar1
+    Introduces -> ExtEnvVar2
 
-    Secrets -> "public.cert"
+    Configs -> ConfigA
+    Configs -> ConfigB
 
-    Resources -> Database
-    Resources -> Kafka
-    Resources -> Redis
+    Secrets -> SecretA
+    Secrets -> SecretB
+
+    Resources -> AttachedResource1
+    Resources -> AttachedResource2 
+
+    Volumes -> Volume1
+
 
     /* Ranks */
     //{ rank=lr|same,min,max,# max is bottom|; shortName; };
