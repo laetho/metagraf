@@ -15,5 +15,7 @@ be presented
 ## /mg
 
 
-
 ### /mg/config
+
+
+### /mg/secret
