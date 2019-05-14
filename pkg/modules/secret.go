@@ -32,7 +32,7 @@ func FindSecrets(mg *metagraf.MetaGraf) map[string]string {
 
 	for _, r := range mg.Spec.Resources {
 		if len(r.User) > 0 {
-			maps[strings.ToLower(r.Name)+"-"-strings.ToLower(r.User)] = "password"
+			maps[strings.ToLower(r.Name)+"-"+strings.ToLower(r.User)] = "password"
 		}
 	}
 
