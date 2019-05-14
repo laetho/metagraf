@@ -42,6 +42,10 @@ func FindSecrets(mg *metagraf.MetaGraf) map[string]string {
 		}
 	}
 
+	for _, s := range mg.Spec.Secret {
+		maps[strings.ToLower(s.Name)] = "Global Secret"
+	}
+
 	return maps
 }
 
