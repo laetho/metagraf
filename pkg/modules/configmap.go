@@ -50,16 +50,6 @@ func FindMetagrafConfigMaps(mg *metagraf.MetaGraf) map[string]string {
 		maps[strings.ToLower(c.Name)] = "config"
 	}
 
-	for _, r := range mg.Spec.Resources {
-		if r.Type == "http" {
-			continue
-		}
-		if strings.ToLower(r.Type) == "tcp" {
-			continue
-		}
-		maps[strings.ToLower(r.User)] = "resource"
-	}
-
 	glog.Info("FindMetagrafConfigMaps(): Found", len(maps), " ConfigMaps to mount...")
 
 	return maps
