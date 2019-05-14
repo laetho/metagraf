@@ -137,6 +137,9 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 		if len(e.SecretFrom) > 0 {
 			continue
 		}
+		if len(e.EnvFrom) > 0 {
+			continue
+		}
 		// Use EnvToEnvVar to potentially use override values.
 		EnvVars = append(EnvVars, EnvToEnvVar(&e))
 	}
