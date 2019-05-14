@@ -152,8 +152,12 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 		EnvVars = append(EnvVars, ExternalEnvToEnvVar(&e))
 	}
 
-	// EnvVars from ConfigMaps
-	for _, c := range GetMetagrafConfigByType(mg ,"envfrom") {
+	// EnvVars from ConfigMaps, fetch Metagraf config resources that is of
+	for _, e := range mg.Spec.Environment.Local {
+		if len(e.EnvFrom) == 0 {
+				continue
+		}
+
 		EnvFrom = append(EnvFrom, corev1.EnvFromSource{
 			ConfigMapRef: &corev1.ConfigMapEnvSource{
 				LocalObjectReference: corev1.LocalObjectReference{
