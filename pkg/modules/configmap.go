@@ -18,6 +18,7 @@ package modules
 
 import (
 	"bytes"
+	"encoding/base64"
 	"github.com/golang/glog"
 	"metagraf/mg/ocpclient"
 	"metagraf/pkg/metagraf"
@@ -135,7 +136,12 @@ func genConfigMapsFromConfig(conf *metagraf.Config, mg *metagraf.MetaGraf) {
 			if err != nil {
 				glog.Error(err)
 			}
-			cm.Data[o.Name] = sec.StringData[o.SecretFrom]
+			if len(sec.Data) > 0 {
+				cm.Data[o.Name] = base64.StdEncoding.EncodeToString(sec.Data[o.SecretFrom])
+			} else if len(sec.StringData) > 0 {
+				cm.Data[o.Name] = sec.StringData[o.SecretFrom]
+			}
+
 		} else if ValueFromEnv(o.Name) { 					// todo: check the ValueFromEnv implementation
 			cm.Data[o.Name] = Variables[o.Name]
 		} else {
