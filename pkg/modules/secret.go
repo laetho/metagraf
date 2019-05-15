@@ -150,9 +150,9 @@ func genSecret(s *metagraf.Secret, mg *metagraf.MetaGraf) *corev1.Secret {
 	// Populate v1.Secret StringData and Data
 	stringdata := make(map[string]string)
 	data := make(map[string][]byte)
-
-		data[s.Name] = []byte("data")
-		stringdata[s.Name] = "data"
+		name := strings.Replace(s.Name, ".", "_", -1)
+		data[name] = []byte("data")
+		stringdata[name] = "data"
 
 	sec := corev1.Secret{
 		TypeMeta: metav1.TypeMeta{
