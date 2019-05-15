@@ -161,7 +161,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 		EnvFrom = append(EnvFrom, corev1.EnvFromSource{
 			ConfigMapRef: &corev1.ConfigMapEnvSource{
 				LocalObjectReference: corev1.LocalObjectReference{
-					Name: e.Name,
+					Name: e.EnvFrom,
 				},
 			},
 		})
@@ -179,7 +179,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 		cmref := corev1.EnvFromSource{
 			SecretRef: &corev1.SecretEnvSource{
 				LocalObjectReference: corev1.LocalObjectReference{
-					Name: e.Name,
+					Name: e.SecretFrom,
 				},
 			},
 		}
