@@ -151,12 +151,8 @@ func genSecret(s *metagraf.Secret, mg *metagraf.MetaGraf) *corev1.Secret {
 	stringdata := make(map[string]string)
 	data := make(map[string][]byte)
 
-	switch {
-	case s.Type == "base64":
-		data[s.Name] = []byte("binarydata")
-	case s.Type == "string":
-		stringdata[s.Name] = "changeme"
-	}
+		data[s.Name] = []byte("data")
+		stringdata[s.Name] = "data"
 
 	sec := corev1.Secret{
 		TypeMeta: metav1.TypeMeta{

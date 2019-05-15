@@ -136,12 +136,9 @@ func genConfigMapsFromConfig(conf *metagraf.Config, mg *metagraf.MetaGraf) {
 			if err != nil {
 				glog.Error(err)
 			}
-			if len(sec.Data) > 0 {
-				cm.Data[o.Name] = base64.StdEncoding.EncodeToString(sec.Data[o.SecretFrom])
-			} else if len(sec.StringData) > 0 {
-				udec, _ := base64.StdEncoding.DecodeString(sec.StringData[o.SecretFrom])
-				cm.Data[o.Name] = string(udec)
-			}
+
+			cm.Data[o.Name] = base64.StdEncoding.EncodeToString(sec.Data[o.SecretFrom])
+
 
 		} else if ValueFromEnv(o.Name) { 					// todo: check the ValueFromEnv implementation
 			cm.Data[o.Name] = Variables[o.Name]
