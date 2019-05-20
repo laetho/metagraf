@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{{ .Metadata.Name }} {{ .Spec.Version }}</title>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      font-size : 12pt;
+
+    }
+
+    table {
+      border : 1px dotted #555555;
+    }
+
+    th {
+      background-color : #c0c0c0;
+    }
+
+    td, th {
+      border-spacing: 1px;
+      padding : 5px;
+
+    }
+
+  </style>
+</head>
+
+<body>
+
+<h1>{{ .Metadata.Name }} {{ .Spec.Version }}</h1>
+<p>{{ .Spec.Description }}</p>
+
+{{ if gt (len .Spec.Resources) 0 }}
+  <h2>Resource Dependencies</h2>
+  <table>
+    <tr>
+      <th>Resource</th>
+      <th>Version</th>
+      <th>Type</th>
+      <th>External</th>
+      <th>Required</th>
+      <th width="200px">Description</th>
+    </tr>
+    {{range .Spec.Resources}}
+      <tr>
+        <td>{{.Name}}</td>
+        <td>{{.Semop}} {{.Semver}}</td>
+        <td>{{.Type}}</td>
+        <td>{{.External}}</td>
+        <td>{{.Required}}</td>
+        <td>{{.Description}}</td>
+      </tr>
+    {{ end }}
+  </table>
+{{ end }}
+
+
+{{ if gt (len .Spec.Environment.Local) 0 }}
+  <h2>Local Enviroment Variables</h2>
+  <table>
+    <tr>
+      <th>Variable</th>
+      <th>Type</th>
+      <th>Required</th>
+      <th>Default Value</th>
+      <th>Description</th>
+    </tr>
+    {{ range .Spec.Environment.Local}}
+      {{ if gt (len .SecretFrom) 0 }}
+        <tr>
+          <td>{{.SecretFrom}}</td>
+          <td>Secret</td>
+          <td>{{.Required}}</td>
+          <td>{{.Default}}</td>
+          <td>A referenced secret. See secret section.</td>
+        </tr>
+      {{ end }}
+      {{ if gt (len .EnvFrom) 0 }}
+        <tr>
+          <td>{{.EnvFrom}}</td>
+          <td>Secret</td>
+          <td>{{.Required}}</td>
+          <td>{{.Default}}</td>
+          <td>Environment variables from file. See config section for details.</td>
+        </tr>
+      {{ end }}
+      {{ if and (eq (len .SecretFrom) 0) (eq (len .EnvFrom) 0) }}
+        <tr>
+          <td>{{.Name}}</td>
+          <td>{{.Type}}</td>
+          <td>{{.Required}}</td>
+          <td>{{.Default}}</td>
+          <td>{{.Description}}</td>
+        </tr>
+      {{end}}
+
+    {{ end }}
+  </table>
+{{ end }}
+
+{{ if gt (len .Spec.Environment.Build) 0 }}
+  <h2>Build Enviroment Variables</h2>
+  <table>
+    <tr>
+      <th>Variable</th>
+      <th>Type</th>
+      <th>Required</th>
+      <th>Default Value</th>
+      <th>Description</th>
+    </tr>
+    {{ range .Spec.Environment.Build}}
+      <tr>
+        <td>{{.Name}}</td>
+        <td>{{.Type}}</td>
+        <td>{{.Required}}</td>
+        <td>{{.Default}}</td>
+        <td>{{.Description}}</td>
+      </tr>
+    {{ end }}
+  </table>
+{{ end }}
+
+
+{{ if or (gt (len .Spec.Environment.External.Introduces) 0) (gt (len .Spec.Environment.External.Consumes) 0)  }}
+  <h2>External Enviroment Variables</h2>
+
+  {{ if gt (len .Spec.Environment.External.Introduces) 0 }}
+    <h3>Introduced by Component</h3>
+    <table>
+      <tr>
+        <th>Variable</th>
+        <th>Type</th>
+        <th>Required</th>
+        <th>Default</th>
+        <th>Description</th>
+      </tr>
+
+      {{ range .Spec.Environment.External.Introduces }}
+        <tr>
+          <td>{{.Name}}</td>
+          <td>{{.Type}}</td>
+          <td>{{.Required}}</td>
+          <td>{{.Default}}</td>
+          <td>{{.Description}}</td>
+        </tr>
+      {{ end }}
+    </table>
+  {{ end }}
+
+  {{ if gt (len .Spec.Environment.External.Consumes) 0 }}
+    <h3>Consumed by Component</h3>
+    <table>
+      <tr>
+        <th>Variable</th>
+        <th>Type</th>
+        <th>Required</th>
+        <th>Default</th>
+        <th>Description</th>
+      </tr>
+      {{ range .Spec.Environment.External.Consumes}}
+        <tr>
+          <td>{{.Name}}</td>
+          <td>{{.Type}}</td>
+          <td>{{.Required}}</td>
+          <td>{{.Default}}</td>
+          <td>{{.Description}}</td>
+        </tr>
+      {{ end }}
+    </table>
+  {{ end }}
+{{ end }}
+
+{{ if .Spec.Config }}
+
+{{ end }}
+
+{{ if .Spec.Secret }}
+  <h3>Secrets</h3>
+  <table>
+    <tr>
+      <th>Name</th>
+      <th>Global</th>
+      <th>Description</th>
+    </tr>
+    {{ range .Spec.Secret}}
+      <tr>
+        <td>{{.Name}}</td>
+        <td>{{.Global}}</td>
+        <td>{{.Description}}</td>
+      </tr>
+    {{end}}
+  </table>
+
+{{ end }}
+
+</body>
+</html>
