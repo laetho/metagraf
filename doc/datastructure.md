@@ -132,13 +132,17 @@ type Resource struct {
 }
 ```
 
+#### Supported resource types
 
-There are currently two types (Type) of resources:
+##### clusterservice
+A reference to a logical service with a consistent address. Services are assigned an IP address and port pair that, when accessed, proxy to an appropriate backing instance.
+These are made available as environment variables `<NAME>_SERVICE_[HOST|PORT]`. So a clusterservice named `kafkabroker` will result in the following environment variables: `KAFKABROKER_SERVICE_HOST`and `KAFKABROKER_SERVICE_PORT`
 
-* *service* generally a http rest service
-* *datasource* a database or similar backend with a connection string
+##### service
+Generally a http rest service
 
-
+##### datasource
+A database or similar backend with a connection string
 
 #### Implicit Secrets
 
