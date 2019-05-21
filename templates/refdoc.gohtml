@@ -3,20 +3,46 @@
 <head>
   <title>{{ .Metadata.Name }} {{ .Spec.Version }}</title>
   <meta charset="UTF-8">
-  <style>
+  <style type="text/css">
+
+    html {
+      margin:    0 auto;
+      max-width: 90%;
+    }
+
+    @font-face {
+      src: url(https://www.norsk-tipping.no/ow/assets/fonts/jubel/Jubel-Regular.eot);
+      src: url(https://www.norsk-tipping.no/ow/assets/fonts/jubel/Jubel-Regular.eot?#iefix) format("embedded-opentype"),
+      url(https://www.norsk-tipping.no/ow/assets/fonts/jubel/Jubel-Regular.woff) format("woff"),
+      url(https://www.norsk-tipping.no/ow/assets/fonts/jubel/Jubel-Regular.woff2) format("woff2"),
+      url(https://www.norsk-tipping.no/ow/assets/fonts/jubel/Jubel-Regular.otf)
+      format("otf"), url(https://www.norsk-tipping.no/ow/assets/fonts/jubel/Jubel-Regular.svg)
+      format("svg"), url(https://www.norsk-tipping.no/ow/assets/fonts/jubel/Jubel-Regular.ttf) format("truetype");
+      font-family: 'Jubel';
+      font-weight: 400;
+    }
+
     body {
+      font-family: 'Jubel';
       font-size : 12pt;
 
     }
 
     table {
+      width : 100%;
       border : 1px dotted #555555;
+      margin-bottom: 20px;
+      background-color: #c0c0c0;
     }
 
     th {
-      background-color : #c0c0c0;
+      background-color : #261440;
+      color : #ffffff;
     }
 
+    td {
+      background-color : #efefef;
+    }
     td, th {
       border-spacing: 1px;
       padding : 5px;
@@ -40,7 +66,7 @@
       <th>Type</th>
       <th>External</th>
       <th>Required</th>
-      <th width="200px">Description</th>
+      <th width="40%">Description</th>
     </tr>
     {{range .Spec.Resources}}
       <tr>
@@ -64,7 +90,7 @@
       <th>Type</th>
       <th>Required</th>
       <th>Default Value</th>
-      <th>Description</th>
+      <th width="40%">Description</th>
     </tr>
     {{ range .Spec.Environment.Local}}
       {{ if gt (len .SecretFrom) 0 }}
@@ -107,7 +133,7 @@
       <th>Type</th>
       <th>Required</th>
       <th>Default Value</th>
-      <th>Description</th>
+      <th width="40%">Description</th>
     </tr>
     {{ range .Spec.Environment.Build}}
       <tr>
@@ -123,7 +149,7 @@
 
 
 {{ if or (gt (len .Spec.Environment.External.Introduces) 0) (gt (len .Spec.Environment.External.Consumes) 0)  }}
-  <h2>External Enviroment Variables</h2>
+  <h3>External Enviroment Variables</h3>
 
   {{ if gt (len .Spec.Environment.External.Introduces) 0 }}
     <h3>Introduced by Component</h3>
@@ -133,7 +159,7 @@
         <th>Type</th>
         <th>Required</th>
         <th>Default</th>
-        <th>Description</th>
+        <th width="40%">Description</th>
       </tr>
 
       {{ range .Spec.Environment.External.Introduces }}
@@ -149,14 +175,14 @@
   {{ end }}
 
   {{ if gt (len .Spec.Environment.External.Consumes) 0 }}
-    <h3>Consumed by Component</h3>
+    <h2>Consumed by Component</h2>
     <table>
       <tr>
         <th>Variable</th>
         <th>Type</th>
         <th>Required</th>
         <th>Default</th>
-        <th>Description</th>
+        <th width="40%">Description</th>
       </tr>
       {{ range .Spec.Environment.External.Consumes}}
         <tr>
@@ -172,16 +198,42 @@
 {{ end }}
 
 {{ if .Spec.Config }}
-
+  <h2>Configuration</h2>
+  {{ range .Spec.Config }}
+    <table>
+      <tr>
+        <td colspan="2">Name: {{.Name}}</td>
+        <td>Type: {{.Type}}</td>
+        <td>Global: {{.Global}}</td>
+        <td width="40%">{{.Description}}</td>
+      </tr>
+      <tr>
+        <th>Key</th>
+        <th>Type</th>
+        <th>Required</th>
+        <th>Default</th>
+        <th>Description</th>
+      </tr>
+      {{ range .Options }}
+        <tr>
+          <td>{{.Name}}</td>
+          <td>{{.Type}}</td>
+          <td>{{.Required}}</td>
+          <td>{{.Default}}</td>
+          <td>{{.Description}}</td>
+        </tr>
+      {{ end }}
+    </table>
+  {{ end }}
 {{ end }}
 
 {{ if .Spec.Secret }}
-  <h3>Secrets</h3>
+  <h2>Secrets</h2>
   <table>
     <tr>
       <th>Name</th>
       <th>Global</th>
-      <th>Description</th>
+      <th width="40%">Description</th>
     </tr>
     {{ range .Spec.Secret}}
       <tr>
