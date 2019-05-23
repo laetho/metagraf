@@ -23,9 +23,8 @@
     }
 
     body {
-      font-family: 'Jubel';
+      font-family: "Jubel", sans-serif !important;
       font-size : 12pt;
-
     }
 
     table {
@@ -33,6 +32,11 @@
       border : 1px dotted #555555;
       margin-bottom: 20px;
       background-color: #c0c0c0;
+    }
+
+    tr.head td{
+      background-color : #261440;
+      color : white;
     }
 
     th {
@@ -56,6 +60,16 @@
 
 <h1>{{ .Metadata.Name }} {{ .Spec.Version }}</h1>
 <p>{{ .Spec.Description }}</p>
+
+<table>
+  <caption>Annotations</caption>
+  {{ range $key, $value := .Metadata.Annotations }}
+  <tr>
+    <td>{{ $key }}</td>
+    <td>{{ $value }}</td>
+  </tr>
+  {{ end }}
+</table>
 
 {{ if gt (len .Spec.Resources) 0 }}
   <h2>Resource Dependencies</h2>
@@ -149,7 +163,7 @@
 
 
 {{ if or (gt (len .Spec.Environment.External.Introduces) 0) (gt (len .Spec.Environment.External.Consumes) 0)  }}
-  <h3>External Enviroment Variables</h3>
+  <h2>External Enviroment Variables</h2>
 
   {{ if gt (len .Spec.Environment.External.Introduces) 0 }}
     <h3>Introduced by Component</h3>
@@ -175,7 +189,7 @@
   {{ end }}
 
   {{ if gt (len .Spec.Environment.External.Consumes) 0 }}
-    <h2>Consumed by Component</h2>
+    <h3>Consumed by Component</h3>
     <table>
       <tr>
         <th>Variable</th>
@@ -201,11 +215,11 @@
   <h2>Configuration</h2>
   {{ range .Spec.Config }}
     <table>
-      <tr>
-        <td colspan="2">Name: {{.Name}}</td>
-        <td>Type: {{.Type}}</td>
-        <td>Global: {{.Global}}</td>
-        <td width="40%">{{.Description}}</td>
+      <tr class="head">
+        <td>Name: <strong>{{.Name}}</strong></td>
+        <td>Type: <strong>{{.Type}}</strong></td>
+        <td>Global: <strong>{{.Global}}</strong></td>
+        <td colspan="2" width="40%"><strong>{{.Description}}</strong></td>
       </tr>
       <tr>
         <th>Key</th>
