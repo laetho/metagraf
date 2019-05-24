@@ -16,6 +16,8 @@ limitations under the License.
 
 package metagraf
 
+import v1 "k8s.io/api/core/v1"
+
 // Map to hold all variables from a specification
 type MGVars			map[string]string
 
@@ -31,15 +33,18 @@ type MetaGraf struct {
 		Annotations       map[string]string	`json:"annotations,omitempty"`
 	} `json:"metadata"`
 	Spec struct {
-		Type		 string		`json:"type"`
-		Version		 string		`json:"version"`
-		Description	 string		`json:"description"`
-		Repository	 string  	`json:"repository,omitempty"`
-		RepSecRef	 string		`json:"repsecref,omitempty"`
-		Branch		 string		`json:"branch,omitempty"`
-		BuildImage	 string		`json:"buildimage,omitempty"`	// Builder Image for s2i builds.
-		BaseRunImage string		`json:"baserunimage,omitempty"`	// Runtime Container Image for binary build.
-		Image		 string		`json:"image,omitempty"`		// Container Image URL, for wrapping upstream images.
+		Type			string		`json:"type"`
+		Version			string		`json:"version"`
+		Description		string		`json:"description"`
+		Repository		string  	`json:"repository,omitempty"`
+		RepSecRef		string		`json:"repsecref,omitempty"`
+		Branch			string		`json:"branch,omitempty"`
+		BuildImage		string		`json:"buildimage,omitempty"`	// Builder Image for s2i builds.
+		BaseRunImage 	string		`json:"baserunimage,omitempty"`	// Runtime Container Image for binary build.
+		Image		 	string		`json:"image,omitempty"`		// Container Image URL, for wrapping upstream images.
+		LivenessProbe	v1.Probe	`json:"livenessprobe,omitempty"`	// Using the k8s Probe type
+		ReadinessProbe	v1.Probe	`json:"readinessprobe,omitempty"`	// Using the k8s Probe type
+
 		Resources	 []Resource	`json:"resources,omitempty"`
 		Environment struct {
 			Build []EnvironmentVar	`json:"build,omitempty"`
