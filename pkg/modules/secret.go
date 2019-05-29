@@ -186,7 +186,7 @@ func genResourceSecret(res *metagraf.Resource, mg *metagraf.MetaGraf) *corev1.Se
 
 	if len(res.User) > 0 {
 		stringdata["user"] = res.User
-		stringdata["password"] = "secretstring"
+		stringdata["password"] = "replaceme"
 	}
 
 	//if len(res.Secret) > 0 && res.SecretType == "cert" {
