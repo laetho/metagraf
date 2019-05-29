@@ -8,7 +8,7 @@ import (
 )
 
 func Store(filepath string, mg *MetaGraf) {
-	b, err := json.Marshal(mg)
+	b, err := json.MarshalIndent(mg, "","\t")
 	if err != nil {
 		glog.Error(err)
 		os.Exit(1)

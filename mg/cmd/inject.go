@@ -20,9 +20,9 @@ import (
 	"github.com/golang/glog"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"metagraf/pkg/modules"
 	"metagraf/pkg/metagraf"
 	"os"
+	"strings"
 )
 
 func init() {
@@ -46,13 +46,22 @@ var injectAnnotationsCmd = &cobra.Command{
 			glog.Error(StrMissingMetaGraf)
 			os.Exit(1)
 		}
+
+		if len(CVars) == 0 {
+			glog.Error("No annotations to process.")
+			os.Exit(1)
+		}
 		FlagPassingHack()
 
 		mg := metagraf.Parse(args[0])
 
+		for _,v := range CVars {
+			key := strings.Split(v,"=")[0]
+			val := strings.Split(v, "=")[1]
+			mg.Metadata.Annotations[key] = val
+		}
 
-		metagraf.Store(args[0], mg)
-
+		metagraf.Store(args[0], &mg)
 	},
 }
 
