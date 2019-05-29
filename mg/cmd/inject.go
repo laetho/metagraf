@@ -21,6 +21,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"metagraf/pkg/modules"
+	"metagraf/pkg/metagraf"
 	"os"
 )
 
@@ -32,41 +33,26 @@ func init() {
 
 var injectCmd = &cobra.Command{
 	Use:   "inject",
-	Short: "inject operations",
+	Short: "Inject operations",
 	Long:  Banner + ` inject `,
 }
 
 var injectAnnotationsCmd = &cobra.Command{
-	Use: "annotations",
-	Short: "inject annotations",
-	Long: "",
+	Use: "annotations <metagraf>",
+	Short: "Injects annotations",
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
 			glog.Info(StrActiveProject, viper.Get("namespace"))
 			glog.Error(StrMissingMetaGraf)
 			os.Exit(1)
 		}
-
-		if len(Namespace) == 0 {
-			Namespace = viper.GetString("namespace")
-			if len(Namespace) == 0 {
-				glog.Error(StrMissingNamespace)
-				os.Exit(1)
-			}
-		}
 		FlagPassingHack()
 
 		mg := metagraf.Parse(args[0])
 
-		if len(modules.NameSpace) == 0 {
-			modules.NameSpace = Namespace
-		}
 
-		if BaseEnvs {
-			modules.BaseEnvs = BaseEnvs
-		}
+		metagraf.Store(args[0], mg)
 
-		modules.GenBuildConfig(&mg)
 	},
 }
 
