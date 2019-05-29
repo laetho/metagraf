@@ -258,9 +258,11 @@ var createRefCmd = &cobra.Command{
 		mg := metagraf.Parse(args[0])
 		FlagPassingHack()
 
-		if len(modules.NameSpace) == 0 {
-			modules.NameSpace = Namespace
-		}
+/*
+	if len(modules.NameSpace) == 0 {
+		modules.NameSpace = Namespace
+}
+*/
 		modules.GenRef(&mg)
 	},
 }
