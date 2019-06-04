@@ -17,18 +17,17 @@ limitations under the License.
 package cmd
 
 import (
+	"fmt"
 	"github.com/golang/glog"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"metagraf/pkg/metagraf"
 	"os"
-	"strings"
 )
 
 func init() {
 	RootCmd.AddCommand(injectCmd)
 	injectCmd.AddCommand(injectAnnotationsCmd)
-	injectAnnotationsCmd.Flags().StringSliceVar(&CVars, "values", []string{}, "Slice of key=value pairs, seperated by ,")
+	//injectAnnotationsCmd.Flags().StringSliceVar(&CVars, "values", []string{}, "Slice of key=value pairs, seperated by ,")
 }
 
 var injectCmd = &cobra.Command{
@@ -38,28 +37,27 @@ var injectCmd = &cobra.Command{
 }
 
 var injectAnnotationsCmd = &cobra.Command{
-	Use: "annotations <metagraf>",
+	Use: "annotations <metagraf> <arg>",
 	Short: "Injects annotations",
 	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) < 1 {
-			glog.Info(StrActiveProject, viper.Get("namespace"))
+		fmt.Println(args[2])
+		if len(args[0]) < 1 {
 			glog.Error(StrMissingMetaGraf)
 			os.Exit(1)
 		}
 
-		if len(CVars) == 0 {
-			glog.Error("No annotations to process.")
+		if len(args[1]) < 1 {
+			glog.Error("Missing key")
 			os.Exit(1)
 		}
-		FlagPassingHack()
+
+		if len(args[2]) < 1 {
+			glog.Error("Missing value for ", args[1] )
+			os.Exit(1)
+		}
 
 		mg := metagraf.Parse(args[0])
-
-		for _,v := range CVars {
-			key := strings.Split(v,"=")[0]
-			val := strings.Split(v, "=")[1]
-			mg.Metadata.Annotations[key] = val
-		}
+		mg.Metadata.Annotations[args[1]] = args[2]
 
 		metagraf.Store(args[0], &mg)
 	},
