@@ -26,7 +26,7 @@ import (
 
 func init() {
 	RootCmd.AddCommand(injectCmd)
-	injectCmd.AddCommand(injectAnnotationsCmd)
+	injectCmd.AddCommand(injectAnnotationCmd)
 	injectCmd.AddCommand(injectVersionCmd)
 	injectCmd.AddCommand(injectSemVerCmd)
 	//injectAnnotationsCmd.Flags().StringSliceVar(&CVars, "values", []string{}, "Slice of key=value pairs, seperated by ,")
@@ -38,25 +38,16 @@ var injectCmd = &cobra.Command{
 	Long:  Banner + ` inject `,
 }
 
-var injectAnnotationsCmd = &cobra.Command{
-	Use: "annotations <metagraf> <arg>",
+var injectAnnotationCmd = &cobra.Command{
+	Use: "annotation <metagraf> <arg>",
 	Short: "Injects annotations",
 	Run: func(cmd *cobra.Command, args []string) {
 
-		if len(args[0]) < 1 {
-			glog.Error(StrMissingMetaGraf)
+		if len(args) < 3 {
+			glog.Error("Missing arguments...")
 			os.Exit(1)
 		}
 
-		if len(args[1]) < 1 {
-			glog.Error("Missing key")
-			os.Exit(1)
-		}
-
-		if len(args[2]) < 1 {
-			glog.Error("Missing value for ", args[1] )
-			os.Exit(1)
-		}
 
 		mg := metagraf.Parse(args[0])
 		mg.Metadata.Annotations[args[1]] = args[2]
@@ -70,13 +61,8 @@ var injectVersionCmd = &cobra.Command{
 	Short: "Injects a custom version for the component.",
 	Run: func(cmd *cobra.Command, args []string) {
 
-		if len(args[0]) < 1 {
-			glog.Error(StrMissingMetaGraf)
-			os.Exit(1)
-		}
-
-		if len(args[1]) < 1 {
-			glog.Error("You have to specify a version.")
+		if len(args) < 2 {
+			glog.Error("Missing arguments...")
 			os.Exit(1)
 		}
 
@@ -92,6 +78,11 @@ var injectSemVerCmd = &cobra.Command{
 	Use: "semver <metagraf> <version>",
 	Short: "Injects a SemVer 2.0 version for the component.",
 	Run: func(cmd *cobra.Command, args []string) {
+
+		if len(args) < 2 {
+			glog.Error("Missing arguments...")
+			os.Exit(1)
+		}
 
 		if len(args[0]) < 1 {
 			glog.Error(StrMissingMetaGraf)
