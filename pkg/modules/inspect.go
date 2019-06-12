@@ -34,9 +34,11 @@ func InspectConfigMaps(mg *metagraf.MetaGraf) {
 func InspectSecrets(mg *metagraf.MetaGraf) {
 	for _, r := range mg.Spec.Resources {
 		if len(r.Secret) == 0 && len(r.User) > 0 {
-			fmt.Println(Name(mg), "needs secret for user", r.User, "for resource", r.Name+".", "Secret name:", ResourceSecretName(&r))
+			fmt.Println(Name(mg), "creates Secret for user", r.User, "for resource", r.Name+".", "Secret name:", ResourceSecretName(&r))
 		}
-
+		if len(r.TemplateRef) > 0 {
+			fmt.Println(Name(mg), "references ConfigMap template for resource", r.Name, "named:", r.TemplateRef)
+		}
 	}
 
 	for _, c := range mg.Spec.Config {
@@ -45,7 +47,6 @@ func InspectSecrets(mg *metagraf.MetaGraf) {
 		}
 	}
 
-	fmt.Println("yo")
 	for _, s := range mg.Spec.Secret {
 		if s.Global == true {
 			fmt.Println(Name(mg), "needs GLOBAL secret "+strings.ToLower(s.Name)+"")

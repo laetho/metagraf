@@ -171,6 +171,9 @@ func genSecret(s *metagraf.Secret, mg *metagraf.MetaGraf) *corev1.Secret {
 	return &sec
 }
 
+/*
+ *	Generates implicit secrets based on fields in the resource section.
+ */
 func genResourceSecret(res *metagraf.Resource, mg *metagraf.MetaGraf) *corev1.Secret {
 
 	objname := Name(mg)
@@ -185,6 +188,8 @@ func genResourceSecret(res *metagraf.Resource, mg *metagraf.MetaGraf) *corev1.Se
 	data := make(map[string][]byte)
 
 	if len(res.User) > 0 {
+		stringdata["type"] = res.Type
+		stringdata["templateref"] = res.TemplateRef
 		stringdata["user"] = res.User
 		stringdata["password"] = "replaceme"
 	}
