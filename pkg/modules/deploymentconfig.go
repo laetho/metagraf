@@ -286,7 +286,6 @@ func volumes(mg *metagraf.MetaGraf, ImageInfo *docker10.DockerImage ) ([]corev1.
 	var Volumes []corev1.Volume
 	var VolumeMounts []corev1.VolumeMount
 
-
 	// Volumes & VolumeMounts from base image into podspec
 	glog.Info("ImageInfo: Got ", len(ImageInfo.Config.Volumes), " volumes from base image...")
 	for k := range ImageInfo.Config.Volumes {
@@ -334,6 +333,27 @@ func volumes(mg *metagraf.MetaGraf, ImageInfo *docker10.DockerImage ) ([]corev1.
 			volm.MountPath = "/mg/"+n
 		}
 
+		Volumes = append(Volumes, vol)
+		VolumeMounts = append(VolumeMounts, volm)
+	}
+
+	for n, t := range FindSecrets(mg) {
+		glog.V(2).Infof("Secret: %v,%t", n, t)
+		voln := strings.Replace(n,".", "-", -1)
+		var mode int32 = 420
+		vol := corev1.Volume{
+			Name: voln,
+			VolumeSource: corev1.VolumeSource{
+				Secret: &corev1.SecretVolumeSource{
+					SecretName: n,
+					DefaultMode: &mode,
+				},
+			},
+		}
+		volm := corev1.VolumeMount{
+			Name: voln,
+			MountPath: "/mg/secret/"+n,
+		}
 		Volumes = append(Volumes, vol)
 		VolumeMounts = append(VolumeMounts, volm)
 	}
