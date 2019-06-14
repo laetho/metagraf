@@ -18,6 +18,7 @@ package modules
 
 import (
 	"github.com/golang/glog"
+	"github.com/openshift/api/image/docker10"
 	"github.com/spf13/viper"
 	"metagraf/mg/ocpclient"
 	"strconv"
@@ -190,7 +191,8 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 	/* Norsk Tipping Specific Logic regarding
 	   WLP / OpenLiberty Features. Should maybe
 	   look at some plugin approach to this later.
-	   todo: how to handle custom logic based on annotations and labels during resource generation in general
+	   todo: Add annotations from metagraf to deployment and expose them to pod using downward api.
+	   info: https://kubernetes.io/docs/tasks/inject-data-application/downward-api-volume-expose-pod-information/#the-downward-api
 	*/
 	if len(mg.Metadata.Annotations["norsk-tipping.no/libertyfeatures"]) > 0 {
 		EnvVars = append(EnvVars, corev1.EnvVar{
@@ -220,78 +222,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 		ContainerPorts = append(ContainerPorts, ContainerPort)
 	}
 
-	// Volumes & VolumeMounts from base image into podspec
-	glog.Info("ImageInfo: Got ", len(ImageInfo.Config.Volumes), " volumes from base image...")
-	for k := range ImageInfo.Config.Volumes {
-		// Volume Definitions
-		Volume := corev1.Volume{
-			Name: objname + helpers.PathToIdentifier(k),
-			VolumeSource: corev1.VolumeSource{
-				EmptyDir: &corev1.EmptyDirVolumeSource{},
-			},
-		}
-		Volumes = append(Volumes, Volume)
-
-		VolumeMount := corev1.VolumeMount{
-			MountPath: k,
-			Name:      objname + helpers.PathToIdentifier(k),
-		}
-		VolumeMounts = append(VolumeMounts, VolumeMount)
-	}
-
-	// Put ConfigMap volumes and mounts into PodSpec
-	for n, t := range FindMetagrafConfigMaps(mg) {
-		var mode int32 = 420
-
-		glog.V(2).Infof("Name,Type: %v,%v", n,t)
-		vol := corev1.Volume{
-			Name: "cm-"+strings.Replace(n,".","-", -1),
-			VolumeSource: corev1.VolumeSource{
-				ConfigMap: &corev1.ConfigMapVolumeSource{
-					LocalObjectReference: corev1.LocalObjectReference{
-						Name: objname+"-"+strings.Replace(n,".","-", -1),
-					},
-					DefaultMode: &mode,
-				},
-			},
-		}
-
-		volm := corev1.VolumeMount{}
-		volm.Name = "cm-"+strings.Replace(n,".","-", -1)
-
-		if t == "config" {
-
-			volm.MountPath = "/mg/config/"+n
-		}
-		if t == "resource" {
-			volm.MountPath = "/mg/"+n
-		}
-
-		Volumes = append(Volumes, vol)
-		VolumeMounts = append(VolumeMounts, volm)
-	}
-
-	// Secrets as volumes
-	for n, t := range FindSecrets(mg) {
-		glog.V(2).Infof("Secret: %v,%t", n, t)
-		voln := strings.Replace(n,".", "-", -1)
-		var mode int32 = 420
-		vol := corev1.Volume{
-			Name: voln,
-			VolumeSource: corev1.VolumeSource{
-				Secret: &corev1.SecretVolumeSource{
-					SecretName: n,
-					DefaultMode: &mode,
-				},
-			},
-		}
-		volm := corev1.VolumeMount{
-			Name: voln,
-			MountPath: "/mg/secret/"+n,
-		}
-		Volumes = append(Volumes, vol)
-		VolumeMounts = append(VolumeMounts, volm)
-	}
+	Volumes, VolumeMounts = volumes(mg, ImageInfo)
 
 	// Tying Container PodSpec together
 	Container := corev1.Container{
@@ -346,6 +277,70 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 	}
 
 }
+
+/**
+	Builds up a slice of corev1.Volume structs and returns them.
+ */
+func volumes(mg *metagraf.MetaGraf, ImageInfo *docker10.DockerImage ) ([]corev1.Volume, []corev1.VolumeMount) {
+	objname := Name(mg)
+	var Volumes []corev1.Volume
+	var VolumeMounts []corev1.VolumeMount
+
+
+	// Volumes & VolumeMounts from base image into podspec
+	glog.Info("ImageInfo: Got ", len(ImageInfo.Config.Volumes), " volumes from base image...")
+	for k := range ImageInfo.Config.Volumes {
+		// Volume Definitions
+		Volume := corev1.Volume{
+			Name: objname + helpers.PathToIdentifier(k),
+			VolumeSource: corev1.VolumeSource{
+				EmptyDir: &corev1.EmptyDirVolumeSource{},
+			},
+		}
+		Volumes = append(Volumes, Volume)
+
+		VolumeMount := corev1.VolumeMount{
+			MountPath: k,
+			Name:      objname + helpers.PathToIdentifier(k),
+		}
+		VolumeMounts = append(VolumeMounts, VolumeMount)
+	}
+
+	// Put ConfigMap volumes and mounts into PodSpec
+	for n, t := range FindMetagrafConfigMaps(mg) {
+		var mode int32 = 420
+
+		glog.V(2).Infof("Name,Type: %v,%v", n,t)
+		vol := corev1.Volume{
+			Name: "cm-"+strings.Replace(n,".","-", -1),
+			VolumeSource: corev1.VolumeSource{
+				ConfigMap: &corev1.ConfigMapVolumeSource{
+					LocalObjectReference: corev1.LocalObjectReference{
+						Name: objname+"-"+strings.Replace(n,".","-", -1),
+					},
+					DefaultMode: &mode,
+				},
+			},
+		}
+
+		volm := corev1.VolumeMount{}
+		volm.Name = "cm-"+strings.Replace(n,".","-", -1)
+
+		if t == "config" {
+
+			volm.MountPath = "/mg/config/"+n
+		}
+		if t == "resource" {
+			volm.MountPath = "/mg/"+n
+		}
+
+		Volumes = append(Volumes, vol)
+		VolumeMounts = append(VolumeMounts, volm)
+	}
+
+	return Volumes, VolumeMounts
+}
+
 
 func StoreDeploymentConfig(obj appsv1.DeploymentConfig) {
 
