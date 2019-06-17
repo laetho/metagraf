@@ -86,4 +86,5 @@ func FlagPassingHack() {
 	modules.Dryrun = Dryrun
 	modules.NameSpace = Namespace
 	modules.Verbose = Verbose
+	modules.Defaults = Defaults
 }

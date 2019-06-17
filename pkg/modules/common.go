@@ -35,7 +35,8 @@ var (
 	Verbose   bool   // Flag passing hack
 	Dryrun    bool   // Flag passing hack
 	Branch	  string // Flag passing hack
-	BaseEnvs   bool = false
+	BaseEnvs  bool 		//Flag passing hack
+	Defaults  bool 		//Flag passing hack
 )
 
 var Variables map[string]string
