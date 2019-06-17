@@ -120,24 +120,28 @@ func ExternalEnvToEnvVar(e *metagraf.EnvironmentVar ) corev1.EnvVar {
 	a corev1.EnvVar{}.
 */
 func EnvToEnvVar(e *metagraf.EnvironmentVar, ext bool) corev1.EnvVar {
-	//fmt.Printf("Type: %t\n", e.Required)
+	name := ""		// Var for holding potentially modified name.
+	value := ""		// Var for holding potentially modified or overridden value.
+
+	// Handle external vs local variable notation
+	if ext {
+		name = "_"+e.Name
+	} else {
+		name = e.Name
+	}
+
 	if e.Required {
-		value := ""
-		name := ""
 
-		if ext {
-			name = "_"+e.Name
-		} else {
-			name = e.Name
-		}
-
-		// Set default value first if provided
+		// Set default value first if the Environment variable is not external
+		// If Defaults flag is set, always populate default values, might get overridden by eksplicitly set values.
 		if len(e.Default)> 0 && !ext {
+			value = e.Default
+		} else if Defaults {
 			value = e.Default
 		}
 
 		// Handle possible override value for non required fields
-		if v, t := Variables[name]; t {
+		if v, t := Variables[e.Name]; t {
 			if len(v) > 0 {
 				value = v
 				glog.Info("Found override value for: ", name, " Override value: ", Variables[name])
@@ -148,19 +152,20 @@ func EnvToEnvVar(e *metagraf.EnvironmentVar, ext bool) corev1.EnvVar {
 			Name:  name,
 			Value: value,
 		}
-	}
+	} else {
+		// Optional EnvironmentVariables should be populated but empty. Unless we choose to populate defaults.
+		if Defaults {
+			value = e.Default
+		}
+		// Handle override values for optional fields
+		if v, t := Variables[e.Name]; t {
+			value = v
+		}
 
-	if len(e.Default) == 0 {
-		e.Default = "$" + e.Name
-	}
-	// Handle possible overridden values for required fields
-	if v, t := Variables[e.Name]; t {
-		e.Default = v
-	}
-
-	return corev1.EnvVar{
-		Name:  e.Name,
-		Value: e.Default,
+		return corev1.EnvVar{
+			Name:  name,
+			Value: value,
+		}
 	}
 }
 
