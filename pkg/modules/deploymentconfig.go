@@ -107,12 +107,14 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 		Value: MGAppName(mg),
 	})
 
+	// todo: can be removed?
 	var oversion string
 	if len(Version) > 0 {
 		oversion = Version
 	} else {
 		oversion = mg.Spec.Version
 	}
+
 	EnvVars = append(EnvVars, corev1.EnvVar{
 		Name:  "MG_APP_VERSION",
 		Value: oversion,
@@ -278,8 +280,13 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 
 }
 
+func envs(mg *metagraf.MetaGraf)  {
+
+}
+
 /**
-	Builds up a slice of corev1.Volume structs and returns them.
+	Builds up slices of corev1.Volume and corev1.VolumeMount structs and returns them.
+	Should maybe consider splitting this up even further.
  */
 func volumes(mg *metagraf.MetaGraf, ImageInfo *docker10.DockerImage ) ([]corev1.Volume, []corev1.VolumeMount) {
 	objname := Name(mg)
@@ -325,12 +332,10 @@ func volumes(mg *metagraf.MetaGraf, ImageInfo *docker10.DockerImage ) ([]corev1.
 		volm := corev1.VolumeMount{}
 		volm.Name = "cm-"+strings.Replace(n,".","-", -1)
 
-		if t == "config" {
-
-			volm.MountPath = "/mg/config/"+n
-		}
 		if t == "resource" {
 			volm.MountPath = "/mg/"+n
+		} else {
+			volm.MountPath = "/mg/"+t+"/"+n
 		}
 
 		Volumes = append(Volumes, vol)
