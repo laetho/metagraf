@@ -6,6 +6,9 @@ strucutre exist inside a metaGraf powered container or buildImage.
 ```text
 /mg
 /mg/config
+/mg/secret
+/mg/template
+
 ```
 
 It's up to the container image implementation to use the following information
@@ -19,3 +22,7 @@ be presented
 
 
 ### /mg/secret
+
+### /mg/template
+
+If a resource uses a template ref it will end up under in this directory.
