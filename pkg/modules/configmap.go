@@ -52,10 +52,18 @@ func FindMetagrafConfigMaps(mg *metagraf.MetaGraf) map[string]string {
 	}
 
 	for _, r := range mg.Spec.Resources {
-		if r.Type != "jdbc:oracle:thin" {
-			continue
+		if r.Type == "jdbc:oracle:thin" {
+			maps[strings.ToLower(r.User)] = "resource"
 		}
-		maps[strings.ToLower(r.User)] = "resource"
+
+		if len(r.TemplateRef) > 0 {
+			cm, err := GetConfigMap(r.TemplateRef)
+			if err != nil {
+				glog.Error(err)
+				continue
+			}
+			maps[cm.Name] = "template"
+		}
 	}
 
 
