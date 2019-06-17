@@ -144,15 +144,15 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 			continue
 		}
 		// Use EnvToEnvVar to potentially use override values.
-		EnvVars = append(EnvVars, EnvToEnvVar(&e))
+		EnvVars = append(EnvVars, EnvToEnvVar(&e, false))
 	}
 
 	// External variables from metagraf as deployment envvars
 	for _, e := range mg.Spec.Environment.External.Consumes {
-		EnvVars = append(EnvVars, ExternalEnvToEnvVar(&e))
+		EnvVars = append(EnvVars, EnvToEnvVar(&e, true))
 	}
 	for _, e := range mg.Spec.Environment.External.Introduces {
-		EnvVars = append(EnvVars, ExternalEnvToEnvVar(&e))
+		EnvVars = append(EnvVars, EnvToEnvVar(&e, true))
 	}
 
 	// EnvVars from ConfigMaps, fetch Metagraf config resources that is of
