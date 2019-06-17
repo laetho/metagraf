@@ -315,14 +315,25 @@ func volumes(mg *metagraf.MetaGraf, ImageInfo *docker10.DockerImage ) ([]corev1.
 	// Put ConfigMap volumes and mounts into PodSpec
 	for n, t := range FindMetagrafConfigMaps(mg) {
 		var mode int32 = 420
+		var vname string
+		var oname string
+
+		vname = "cm-"+strings.Replace(n,".","-", -1)
 
 		glog.V(2).Infof("Name,Type: %v,%v", n,t)
+
+		if t == "template" {
+			oname =  strings.Replace(n,".","-", -1)
+		} else {
+			oname = objname+"-"+strings.Replace(vname,".","-", -1)
+		}
+
 		vol := corev1.Volume{
-			Name: "cm-"+strings.Replace(n,".","-", -1),
+			Name: vname,
 			VolumeSource: corev1.VolumeSource{
 				ConfigMap: &corev1.ConfigMapVolumeSource{
 					LocalObjectReference: corev1.LocalObjectReference{
-						Name: objname+"-"+strings.Replace(n,".","-", -1),
+						Name: oname,
 					},
 					DefaultMode: &mode,
 				},
@@ -330,10 +341,11 @@ func volumes(mg *metagraf.MetaGraf, ImageInfo *docker10.DockerImage ) ([]corev1.
 		}
 
 		volm := corev1.VolumeMount{}
-		volm.Name = "cm-"+strings.Replace(n,".","-", -1)
+		volm.Name = vname
 
+		// Special handling of resource because of old hackish handling of oracle jdbc connections
 		if t == "resource" {
-			volm.MountPath = "/mg/"+n
+			volm.MountPath = "/mg/" + n
 		} else {
 			volm.MountPath = "/mg/"+t+"/"+n
 		}
