@@ -109,7 +109,7 @@ func ConfigSecretName(c *metagraf.Config) string {
 	implementation detail in the runtime container image.
 */
 func ExternalEnvToEnvVar(e *metagraf.EnvironmentVar ) corev1.EnvVar {
-	v:= EnvToEnvVar(e)
+	v:= EnvToEnvVar(e, true)
 	v.Name = "_"+v.Name
 	return v
 }
@@ -118,26 +118,33 @@ func ExternalEnvToEnvVar(e *metagraf.EnvironmentVar ) corev1.EnvVar {
 	Applies conventions and override logic to an environment variable and returns
 	a corev1.EnvVar{}.
 */
-func EnvToEnvVar(e *metagraf.EnvironmentVar) corev1.EnvVar {
+func EnvToEnvVar(e *metagraf.EnvironmentVar, ext bool) corev1.EnvVar {
 	//fmt.Printf("Type: %t\n", e.Required)
-
 	if e.Required {
 		value := ""
+		name := ""
+
+		if ext {
+			name = "_"+e.Name
+		} else {
+			name = e.Name
+		}
 
 		// Set default value first if provided
-		if len(e.Default) > 0 {
+		if len(e.Default)> 0 && !ext {
 			value = e.Default
 		}
+
 		// Handle possible override value for non required fields
-		if v, t := Variables[e.Name]; t {
+		if v, t := Variables[name]; t {
 			if len(v) > 0 {
 				value = v
-				glog.Info("Found override value for: ", e.Name, " Override value: ", Variables[e.Name])
+				glog.Info("Found override value for: ", name, " Override value: ", Variables[name])
 			}
 		}
 
 		return corev1.EnvVar{
-			Name:  e.Name,
+			Name:  name,
 			Value: value,
 		}
 	}
