@@ -16,6 +16,8 @@ limitations under the License.
 
 package metagraf
 
+import "github.com/pkg/errors"
+
 // Returns a map of all parameterized fields in a metaGraf
 // specification.
 // @todo need to look for parameterized fields in more places
@@ -43,4 +45,33 @@ func (mg *MetaGraf) GetVars() MGVars {
 	}
 
 	return vars
+}
+
+func (mg *MetaGraf) GetResourceByName(name string) (Resource, error) {
+	for _,r := range mg.Spec.Resources{
+		if r.Name == name {
+			return r, nil
+		}
+	}
+	return Resource{}, errors.New("Resource{} not found, name: "+name)
+}
+
+//
+func (mg *MetaGraf) GetSecretByName(name string) (Secret, error) {
+	for _,s := range mg.Spec.Secret{
+		if s.Name == name {
+			return s, nil
+		}
+	}
+	return Secret{}, errors.New("Secret{} not found, name: "+name)
+}
+
+//
+func (mg *MetaGraf) GetConfigByName(name string) (Config, error) {
+	for _,c := range mg.Spec.Config{
+		if c.Name == name {
+			return c, nil
+		}
+	}
+	return Config{}, errors.New("Config{} not found, name: "+name)
 }
