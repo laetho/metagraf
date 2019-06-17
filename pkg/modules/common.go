@@ -36,6 +36,7 @@ var (
 	Dryrun    bool   // Flag passing hack
 	Branch	  string // Flag passing hack
 	BaseEnvs  bool 		//Flag passing hack
+	CVfile	  string	//Flag passing hack
 	Defaults  bool 		//Flag passing hack
 )
 
