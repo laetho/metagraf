@@ -35,7 +35,7 @@ import (
 )
 
 
-// Todo: Break this up and refactor, total POS...
+// Todo: Still needs to be split up, but some refactoring has been done.
 func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 	objname := Name(mg)
 

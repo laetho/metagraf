@@ -28,6 +28,7 @@ import (
 func init() {
 	RootCmd.AddCommand(generateCmd)
 	generateCmd.AddCommand(generateKeysCmd)
+	generateKeysCmd.Flags().BoolVar(&Defaults, "defaults", false, "Populate Environment variables with default values from metaGraf")
 }
 
 var generateCmd = &cobra.Command{
@@ -51,7 +52,7 @@ var generateKeysCmd = &cobra.Command{
 		mg := metagraf.Parse(args[0])
 		if modules.Variables == nil {
 			vars := MergeSourceVars(
-				mg.GetVarsFromSource(),
+				mg.GetVarsFromSource(Defaults),
 				OverrideVars(mg.GetVars(), CmdCVars(CVars).Parse()))
 			modules.Variables = vars
 		}

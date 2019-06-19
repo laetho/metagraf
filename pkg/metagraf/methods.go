@@ -47,18 +47,30 @@ func (mg *MetaGraf) GetVars() MGVars {
 	return vars
 }
 
-func (mg *MetaGraf) GetVarsFromSource() MGVars {
+func (mg *MetaGraf) GetVarsFromSource(defaults bool) MGVars {
 	vars := MGVars{}
 
 	// Environment Section
 	for _,env := range mg.Spec.Environment.Local {
-		vars["local="+env.Name] = ""
+		if defaults {
+			vars["local="+env.Name] = env.Default
+		} else {
+			vars["local="+env.Name] = ""
+		}
 	}
 	for _,env := range mg.Spec.Environment.External.Introduces {
-		vars["external="+env.Name] = ""
+		if defaults {
+			vars["local="+env.Name] = env.Default
+		} else {
+			vars["local="+env.Name] = ""
+		}
 	}
 	for _,env := range mg.Spec.Environment.External.Consumes {
-		vars["external="+env.Name] = ""
+		if defaults {
+			vars["local="+env.Name] = env.Default
+		} else {
+			vars["local="+env.Name] = ""
+		}
 	}
 
 	// Config section, find parameters from
