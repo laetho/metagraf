@@ -20,7 +20,7 @@ import "github.com/pkg/errors"
 
 // Returns a map of all parameterized fields in a metaGraf
 // specification.
-// @todo need to look for parameterized fields in more places
+// @todo need to look for parameterized fields in more places?
 func (mg *MetaGraf) GetVars() MGVars {
 	vars := MGVars{}
 
@@ -41,6 +41,32 @@ func (mg *MetaGraf) GetVars() MGVars {
 
 		for _,opts := range conf.Options {
 			vars[opts.Name] = opts.Default
+		}
+	}
+
+	return vars
+}
+
+func (mg *MetaGraf) GetVarsFromSource() MGVars {
+	vars := MGVars{}
+
+	// Environment Section
+	for _,env := range mg.Spec.Environment.Local {
+		vars["local="+env.Name] = ""
+	}
+	for _,env := range mg.Spec.Environment.External.Introduces {
+		vars["external="+env.Name] = ""
+	}
+	for _,env := range mg.Spec.Environment.External.Consumes {
+		vars["external="+env.Name] = ""
+	}
+
+	// Config section, find parameters from
+	for _,conf := range mg.Spec.Config {
+		if len(conf.Options) == 0 || conf.Type != "parameters" {continue}
+
+		for _,opts := range conf.Options {
+			vars[conf.Name+"="+opts.Name] = opts.Default
 		}
 	}
 
