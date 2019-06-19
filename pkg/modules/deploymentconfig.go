@@ -325,7 +325,7 @@ func volumes(mg *metagraf.MetaGraf, ImageInfo *docker10.DockerImage ) ([]corev1.
 		if t == "template" {
 			oname =  strings.Replace(n,".","-", -1)
 		} else {
-			oname = objname+"-"+strings.Replace(vname,".","-", -1)
+			oname = objname+"-"+strings.Replace(n,".","-", -1)
 		}
 
 		vol := corev1.Volume{
