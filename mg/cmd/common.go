@@ -76,6 +76,25 @@ func MergeVars(base metagraf.MGVars, override map[string]string) metagraf.MGVars
 	return base
 }
 
+func MergeSourceVars(base metagraf.MGVars, override map[string]string) metagraf.MGVars {
+	glog.Info("MergeSourcevars(): base mg vars", base)
+	glog.Info("MergeSourceVars(): with override values: ", override)
+
+	// Translation map, key = untyped key, value typed key name
+	keys := make(map[string]string)
+
+	// Strip Source Label from base
+	for k,_ := range base {
+		key := strings.Split(k, "=")[1]
+		keys[key] = k
+	}
+
+	for k, v := range override {
+		base[keys[k]] = v
+	}
+	return base
+}
+
 func FlagPassingHack() {
 	if Dryrun {
 		Output = true
@@ -89,3 +108,5 @@ func FlagPassingHack() {
 	modules.CVfile = CVfile
 	modules.Defaults = Defaults
 }
+
+
