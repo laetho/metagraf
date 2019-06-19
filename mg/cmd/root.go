@@ -52,7 +52,7 @@ var Branch	string
 var Replicas int = 1		// Default replica value is 0
 var BaseEnvs bool = false
 var CVfile   string
-var Defaults bool = false
+var Defaults bool = false	// Should we hydrate default values in declarative state.
 
 var RootCmd = &cobra.Command{
 	Use:   "mg",
@@ -72,8 +72,6 @@ func init() {
 	RootCmd.PersistentFlags().BoolVar(&Dryrun, "dryrun", false, "do not create objects, only output")
 	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
 	cobra.OnInitialize(initConfig)
-
-
 }
 
 func initConfig() {
