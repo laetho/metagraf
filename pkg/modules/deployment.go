@@ -19,6 +19,7 @@ package modules
 import (
 	"encoding/json"
 	"fmt"
+	"metagraf/mg/cmd"
 	"metagraf/pkg/metagraf"
 
 	//corev1 "k8s.io/api/core/v1"
@@ -51,4 +52,31 @@ func GenDeployment(mg *metagraf.MetaGraf) {
 	}
 	fmt.Println(string(ba))
 
+	cmd.Defaults = true
 }
+
+/*
+Problaby needs a k8s apps client
+func StoreDeployment(obj appsv1.Deployment) {
+
+	glog.Infof("ResourceVersion: %v Length: %v", obj.ResourceVersion, len(obj.ResourceVersion))
+	glog.Infof("Namespace: %v", NameSpace)
+
+	client := ocpclient.GetAppsClient().Deployment(NameSpace)
+
+	if len(obj.ResourceVersion) > 0 {
+		// update
+		result, err := client.Update(&obj)
+		if err != nil {
+			glog.Info(err)
+		}
+		glog.Infof("Updated DeploymentConfig: %v(%v)", result.Name, obj.Name)
+	} else {
+		result, err := client.Create(&obj)
+		if err != nil {
+			glog.Info(err)
+		}
+		glog.Infof("Created DeploymentConfig: %v(%v)", result.Name, obj.Name)
+	}
+}
+*/
