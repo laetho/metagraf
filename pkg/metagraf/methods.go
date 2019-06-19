@@ -60,16 +60,16 @@ func (mg *MetaGraf) GetVarsFromSource(defaults bool) MGVars {
 	}
 	for _,env := range mg.Spec.Environment.External.Introduces {
 		if defaults {
-			vars["local="+env.Name] = env.Default
+			vars["external="+env.Name] = env.Default
 		} else {
-			vars["local="+env.Name] = ""
+			vars["external="+env.Name] = ""
 		}
 	}
 	for _,env := range mg.Spec.Environment.External.Consumes {
 		if defaults {
-			vars["local="+env.Name] = env.Default
+			vars["external="+env.Name] = env.Default
 		} else {
-			vars["local="+env.Name] = ""
+			vars["external="+env.Name] = ""
 		}
 	}
 
