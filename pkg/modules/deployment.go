@@ -19,7 +19,6 @@ package modules
 import (
 	"encoding/json"
 	"fmt"
-	"metagraf/mg/cmd"
 	"metagraf/pkg/metagraf"
 
 	//corev1 "k8s.io/api/core/v1"
@@ -52,7 +51,6 @@ func GenDeployment(mg *metagraf.MetaGraf) {
 	}
 	fmt.Println(string(ba))
 
-	cmd.Defaults = true
 }
 
 /*
