@@ -66,7 +66,6 @@ func FindMetagrafConfigMaps(mg *metagraf.MetaGraf) map[string]string {
 		}
 	}
 
-
 	glog.Info("FindMetagrafConfigMaps(): Found", len(maps), " ConfigMaps to mount...")
 
 	return maps
@@ -184,17 +183,6 @@ func genConfigMapsFromResources(mg *metagraf.MetaGraf) {
 	for _, r := range mg.Spec.Resources {
 		if strings.Contains(r.Type, "oracle") {
 			cm := genJDBCOracle(objname, &r)
-			if !Dryrun {
-				StoreConfigMap(cm)
-			}
-			if Output {
-				MarshalObject(cm)
-			}
-		}
-
-		if r.Type == "jms" {
-			cm := genJMSResource(objname, &r)
-
 			if !Dryrun {
 				StoreConfigMap(cm)
 			}
