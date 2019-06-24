@@ -60,7 +60,7 @@ func FindMetagrafConfigMaps(mg *metagraf.MetaGraf) map[string]string {
 			cm, err := GetConfigMap(r.TemplateRef)
 			if err != nil {
 				glog.Error(err)
-				continue
+				os.Exit(-1)
 			}
 			maps[cm.Name] = "template"
 		}
