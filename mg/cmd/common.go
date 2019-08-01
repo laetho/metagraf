@@ -66,14 +66,18 @@ func VarsFromFile(mgv metagraf.MGVars) map[string]string {
 	var line string
 	for {
 		line,err = reader.ReadString('\n')
+		if err != nil {
+			break
+		}
 		vl := strings.Split(line,"=")
-		if len(vl) < 3 {
+		if len(vl) < 2 {
 			glog.Errorf("Properties are formatted improperly in: %v", CVfile)
 			break
 		}
-		vars[vl[1]]=strings.ReplaceAll(vl[2],"\n","")
-		if err != nil {
-			break
+		if len(vl) == 2 {
+			vars[vl[1]] = ""
+		} else {
+			vars[vl[1]] = strings.ReplaceAll(vl[2], "\n", "")
 		}
 	}
 	return vars
