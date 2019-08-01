@@ -43,7 +43,6 @@ func (mg *MetaGraf) GetVars() MGVars {
 			vars[opts.Name] = opts.Default
 		}
 	}
-
 	return vars
 }
 

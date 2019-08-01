@@ -51,6 +51,7 @@ func init() {
 	createSecretCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
 	createConfigMapCmd.Flags().StringVarP(&Namespace, "namespace", "n", "","namespace to work on, if not supplied it will use current working namespace")
 	createConfigMapCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
+	createConfigMapCmd.Flags().StringVar(&CVfile, "cvfile","", "File with component configuration values. (key=value pairs)")
 	createRouteCmd.Flags().StringVarP(&Namespace, "namespace", "n", "","namespace to work on, if not supplied it will use current working namespace")
 	createRouteCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
 	createImageStreamCmd.Flags().StringVarP(&Namespace, "namespace", "n","", "namespace to work on, if not supplied it will use current working namespace")
@@ -130,6 +131,7 @@ var createConfigMapCmd = &cobra.Command{
 				OverrideVars(mg.GetVars(), CmdCVars(CVars).Parse()))
 			modules.Variables = vars
 		}
+
 		if len(modules.NameSpace) == 0 {
 			modules.NameSpace = Namespace
 		}

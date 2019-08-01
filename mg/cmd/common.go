@@ -17,6 +17,7 @@ limitations under the License.
 package cmd
 
 import (
+	"bufio"
 	"github.com/golang/glog"
 	"metagraf/pkg/metagraf"
 	"metagraf/pkg/modules"
@@ -48,12 +49,40 @@ func VarsFromCmd(mgv metagraf.MGVars, cvars CmdVars) map[string]string {
 	return vars
 }
 
+func VarsFromFile(mgv metagraf.MGVars) map[string]string {
+	vars := make(map[string]string)
+	if len(CVfile) == 0 {
+		return vars
+	}
+
+	file, err := os.Open( CVfile )
+	if err != nil {
+		glog.Error(err)
+		return vars
+	}
+	defer file.Close()
+	reader := bufio.NewReader(file)
+
+	var line string
+	for {
+		line,err = reader.ReadString('\n')
+		vl := strings.Split(line,"=")
+		vars[vl[1]]=vl[2]
+		if err != nil {
+			break
+		}
+	}
+	return vars
+}
+
+
 func keyValueFromEnv(s string) (string, string) {
 	return strings.Split(s, "=")[0], strings.Split(s, "=")[1]
 }
 
 // Returns a list of variables from command line or environment where
 // command line is the most significant.
+// Precedence is Environment, File and Command
 func OverrideVars(mgv metagraf.MGVars, cvars CmdVars) map[string]string {
 	ovars := make(map[string]string)
 
@@ -61,6 +90,13 @@ func OverrideVars(mgv metagraf.MGVars, cvars CmdVars) map[string]string {
 	for k, v := range VarsFromEnv(mgv) {
 		ovars[k] = v
 	}
+
+	// Fetch variable overrides from file if specified with --cvfile
+	for k,v := range VarsFromFile(mgv) {
+		ovars[k] = v
+	}
+
+	// Fetch from commandline
 	for k, v := range VarsFromCmd(mgv, cvars) {
 		ovars[k] = v
 	}
