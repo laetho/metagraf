@@ -67,6 +67,10 @@ func VarsFromFile(mgv metagraf.MGVars) map[string]string {
 	for {
 		line,err = reader.ReadString('\n')
 		vl := strings.Split(line,"=")
+		if len(vl) < 3 {
+			glog.Errorf("Properties are formatted improperly in: %v", CVfile)
+			break
+		}
 		vars[vl[1]]=vl[2]
 		if err != nil {
 			break
