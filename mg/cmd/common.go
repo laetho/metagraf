@@ -151,6 +151,7 @@ func FlagPassingHack() {
 	modules.Verbose = Verbose
 	modules.CVfile = CVfile
 	modules.Defaults = Defaults
+	modules.Format = Format
 }
 
 

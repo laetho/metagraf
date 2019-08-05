@@ -53,6 +53,7 @@ var Replicas int = 1		// Default replica value is 0
 var BaseEnvs bool = false
 var CVfile   string
 var Defaults bool = false	// Should we hydrate default values in declarative state.
+var Format string
 
 var RootCmd = &cobra.Command{
 	Use:   "mg",
@@ -67,7 +68,8 @@ datastructure and help you generate kubernetes primitives`,
 func init() {
 	RootCmd.PersistentFlags().StringVar(&Config, "config", "", "config file (default is $HOME/.config/mg/mg.yaml)")
 	RootCmd.PersistentFlags().BoolVar(&Verbose, "verbose", false, "verbose output")
-	RootCmd.PersistentFlags().BoolVar(&Output, "output", false, "also output objects in json")
+	RootCmd.PersistentFlags().BoolVar(&Output, "output", false, "also output objects")
+	RootCmd.PersistentFlags().StringVarP(&Format, "format","o","json", "specify json or yaml, json id default")
 	RootCmd.PersistentFlags().StringVar(&Version, "version", "", "Override version in metaGraf specification.")
 	RootCmd.PersistentFlags().BoolVar(&Dryrun, "dryrun", false, "do not create objects, only output")
 	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)

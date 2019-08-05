@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"github.com/blang/semver"
 	"github.com/golang/glog"
+	"gopkg.in/yaml.v2"
 	corev1 "k8s.io/api/core/v1"
 	"metagraf/pkg/metagraf"
 	"strconv"
@@ -38,6 +39,7 @@ var (
 	BaseEnvs  bool 		//Flag passing hack
 	CVfile	  string	//Flag passing hack
 	Defaults  bool 		//Flag passing hack
+	Format	  string	// Flag pasisng hack
 )
 
 var Variables map[string]string
@@ -177,9 +179,18 @@ func ValueFromEnv(key string) bool {
 
 // Marshal kubernetes resource to json
 func MarshalObject(obj interface{}) {
-	ba, err := json.Marshal(obj)
-	if err != nil {
-		glog.Error(err)
+	switch Format {
+		case "json":
+			ba, err := json.Marshal(obj)
+			if err != nil {
+				glog.Error(err)
+			}
+			fmt.Println(string(ba))
+		case "yaml":
+			ba, err := yaml.Marshal(obj)
+			if err != nil {
+				glog.Error(err)
+			}
+			fmt.Println(string(ba))
 	}
-	fmt.Println(string(ba))
 }
