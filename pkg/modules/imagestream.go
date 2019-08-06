@@ -65,7 +65,7 @@ func GenImageStream(mg *metagraf.MetaGraf, namespace string) {
 		StoreImageStream(is)
 	}
 	if Output {
-		MarshalObject(is)
+		MarshalObject(is.DeepCopyObject())
 	}
 
 }

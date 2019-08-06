@@ -128,7 +128,7 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 		StoreBuildConfig(bc)
 	}
 	if Output {
-		MarshalObject(bc)
+		MarshalObject(bc.DeepCopyObject())
 	}
 }
 

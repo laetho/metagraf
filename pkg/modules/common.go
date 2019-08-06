@@ -17,15 +17,32 @@ limitations under the License.
 package modules
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/blang/semver"
 	"github.com/golang/glog"
-	"gopkg.in/yaml.v2"
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/runtime"
 	"metagraf/pkg/metagraf"
+	"os"
 	"strconv"
 	"strings"
+
+
+	appsv1 "github.com/openshift/api/apps/v1"
+	authorizationv1 "github.com/openshift/api/authorization/v1"
+	buildv1 "github.com/openshift/api/build/v1"
+	imagev1 "github.com/openshift/api/image/v1"
+	networkv1 "github.com/openshift/api/network/v1"
+	oauthv1 "github.com/openshift/api/oauth/v1"
+	projectv1 "github.com/openshift/api/project/v1"
+	quotav1 "github.com/openshift/api/quota/v1"
+	routev1 "github.com/openshift/api/route/v1"
+	securityv1 "github.com/openshift/api/security/v1"
+	templatev1 "github.com/openshift/api/template/v1"
+	userv1 "github.com/openshift/api/user/v1"
+
+	"k8s.io/apimachinery/pkg/runtime/serializer/json"
+	"k8s.io/client-go/kubernetes/scheme"
 )
 
 // This is a complete hack. todo: fix this shit, restructure packages
@@ -178,19 +195,34 @@ func ValueFromEnv(key string) bool {
 }
 
 // Marshal kubernetes resource to json
-func MarshalObject(obj interface{}) {
+func MarshalObject(obj runtime.Object) {
+	_ = appsv1.AddToScheme(scheme.Scheme)
+	_ = authorizationv1.AddToScheme(scheme.Scheme)
+	_ = buildv1.AddToScheme(scheme.Scheme)
+	_ = imagev1.AddToScheme(scheme.Scheme)
+	_ = networkv1.AddToScheme(scheme.Scheme)
+	_ = oauthv1.AddToScheme(scheme.Scheme)
+	_ = projectv1.AddToScheme(scheme.Scheme)
+	_ = quotav1.AddToScheme(scheme.Scheme)
+	_ = routev1.AddToScheme(scheme.Scheme)
+	_ = securityv1.AddToScheme(scheme.Scheme)
+	_ = templatev1.AddToScheme(scheme.Scheme)
+	_ = userv1.AddToScheme(scheme.Scheme)
+
 	switch Format {
 		case "json":
-			ba, err := json.Marshal(obj)
+			s := json.NewSerializer(json.DefaultMetaFactory, scheme.Scheme, scheme.Scheme, true)
+			err := s.Encode(obj,os.Stdout)
 			if err != nil {
 				glog.Error(err)
+				os.Exit(1)
 			}
-			fmt.Println(string(ba))
 		case "yaml":
-			ba, err := yaml.Marshal(obj)
+			s := json.NewYAMLSerializer(json.DefaultMetaFactory, scheme.Scheme, scheme.Scheme)
+			err := s.Encode(obj, os.Stdout)
 			if err != nil {
 				glog.Error(err)
+				os.Exit(1)
 			}
-			fmt.Println(string(ba))
 	}
 }

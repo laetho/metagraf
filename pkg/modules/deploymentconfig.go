@@ -275,7 +275,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 		StoreDeploymentConfig(obj)
 	}
 	if Output {
-		MarshalObject(obj)
+		MarshalObject(obj.DeepCopyObject())
 	}
 
 }

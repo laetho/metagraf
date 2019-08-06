@@ -166,7 +166,7 @@ func genConfigMapsFromConfig(conf *metagraf.Config, mg *metagraf.MetaGraf) {
 		StoreConfigMap(cm)
 	}
 	if Output {
-		MarshalObject(cm)
+		MarshalObject(cm.DeepCopyObject())
 	}
 
 }
@@ -187,7 +187,7 @@ func genConfigMapsFromResources(mg *metagraf.MetaGraf) {
 				StoreConfigMap(cm)
 			}
 			if Output {
-				MarshalObject(cm)
+				MarshalObject(cm.DeepCopyObject())
 			}
 		}
 	}

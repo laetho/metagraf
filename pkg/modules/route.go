@@ -88,7 +88,7 @@ func GenRoute(mg *metagraf.MetaGraf) {
 		StoreRoute(obj)
 	}
 	if Output {
-		MarshalObject(obj)
+		MarshalObject(obj.DeepCopyObject())
 	}
 }
 

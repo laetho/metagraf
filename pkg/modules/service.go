@@ -99,7 +99,7 @@ func GenService(mg *metagraf.MetaGraf) {
 		StoreService(obj)
 	}
 	if Output {
-		MarshalObject(obj)
+		MarshalObject(obj.DeepCopyObject())
 	}
 
 }

@@ -69,7 +69,7 @@ func GenSecrets(mg *metagraf.MetaGraf) {
 			StoreSecret(*obj)
 		}
 		if Output {
-			MarshalObject(obj)
+			MarshalObject(obj.DeepCopyObject())
 		}
 	}
 
@@ -88,7 +88,7 @@ func GenSecrets(mg *metagraf.MetaGraf) {
 			StoreSecret(*obj)
 		}
 		if Output{
-			MarshalObject(obj)
+			MarshalObject(obj.DeepCopyObject())
 		}
 	}
 
@@ -103,7 +103,7 @@ func GenSecrets(mg *metagraf.MetaGraf) {
 			StoreSecret(*obj)
 		}
 		if Output{
-			MarshalObject(obj)
+			MarshalObject(obj.DeepCopyObject())
 		}
 	}
 }
