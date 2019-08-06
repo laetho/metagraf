@@ -17,7 +17,6 @@ limitations under the License.
 package modules
 
 import (
-	"fmt"
 	"github.com/blang/semver"
 	"github.com/golang/glog"
 	corev1 "k8s.io/api/core/v1"
