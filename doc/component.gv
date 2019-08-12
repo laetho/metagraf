@@ -1,36 +1,37 @@
 digraph G {
     rankdir="lr"
+		node [colorscheme=piyg5,style="filled",color=black]
+		splines="true";
     /* Entities */
-    Component [shape=component,colorscheme=pastel19,fillcolor=1]
+    Component [shape=component,color=1]
 
-    Resources [shape=tab]
-    AttachedResource1 [shape=component]
-    AttachedResource2 [shape=component]
+    Resources [shape=tab,color=2]
+    "AttachedResource n" [shape=component,color=1]
 
-    Environment [shape=tab]
-    Build [shape=tab]
-    Local [shape=tab]
-    External [shape=tab]
-    Consumes [shape=tab]
-    Introduces [shape=tab]
-    EnvVar1 [shape=cds]
-    BuildEnvVar1 [shape=cds]
-    ExtEnvVar1 [shape=cds]
-    ExtEnvVar2 [shape=cds]
+    Environment [shape=tab,color=2]
+    Build [shape=tab,color=3]
+    Local [shape=tab,color=3]
+    External [shape=tab,color=3]
+    Consumes [shape=tab,color=4]
+    Introduces [shape=tab,color=4]
+    "EnvVar n" [shape=cds,color=5]
+    "BuildEnvVar n" [shape=cds,color=5]
+    "CExtEnvVar n" [shape=cds,color=5]
+    "IExtEnvVar n" [shape=cds,color=5]
 
-    Configs [shape=tab]
-    ConfigA [shape=note]
-    ConfigB [shape=note]
+    Configs [shape=tab,color=2]
+    "Config n" [shape=note,color=5]
 
-    Secrets [shape=tab]
-    SecretA [shape=Msquare]
-    SecretB [shape=Msquare]
+    Secrets [shape=tab,color=2]
+    "Secret n" [shape=Msquare,color=5]
 
-    Volumes [shape=tab]
-    Volume1 [shape=cylinder]
+    Storage [shape=tab,color=2]
+    "Volume n" [shape=cylinder,color=5]
 
-    { rank=same; Resources Environment Configs Secrets Volumes }
+    { rank=same; Resources Environment Configs Secrets Storage }
     { rank=same; Local External Build }
+		{ rank=same; Consumes Introduces }
+		{ rank=same; "EnvVar n" "BuildEnvVar n" "IExtEnvVar n" "CExtEnvVar n" "Config n" "Secret n" "Volume n" }
 
 
 
@@ -41,31 +42,28 @@ digraph G {
     Component -> Environment
     Component -> Configs
     Component -> Secrets
-    Component -> Volumes
+    Component -> Storage 
 
     Environment -> Build
     Environment -> Local
     Environment -> External
 
-    Build -> BuildEnvVar1
-    Local -> EnvVar1
+    Build -> "BuildEnvVar n"
+    Local -> "EnvVar n"
 
     External -> Consumes
     External -> Introduces
 
-    Consumes -> ExtEnvVar1
-    Introduces -> ExtEnvVar2
+    Consumes -> "CExtEnvVar n"
+    Introduces -> "IExtEnvVar n"
 
-    Configs -> ConfigA
-    Configs -> ConfigB
+    Configs -> "Config n"
 
-    Secrets -> SecretA
-    Secrets -> SecretB
+    Secrets -> "Secret n"
 
-    Resources -> AttachedResource1
-    Resources -> AttachedResource2
+    Resources -> "AttachedResource n"
 
-    Volumes -> Volume1
+    Storage -> "Volume n"
 
 
     /* Ranks */
