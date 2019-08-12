@@ -5,6 +5,8 @@
 It is inspired by the <a href="https://12factor.net">twelve-factor app</a> 
 methodology to aid automation tasks or decisions about a component or collection of compoenents.  
 
+<img src="https://github.com/laetho/metagraf/raw/master/doc/component.svg" alt="A graph of a software component.">
+
 # mg
 
 **mg** is a tool that operates on *metaGraf* specifications or a collection of specifications.
