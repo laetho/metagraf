@@ -1,6 +1,6 @@
 # metaGraf
 
-**metaGraf** is a specification describing the necessary metadata and information about a software component for building it or running it or both. It's intended to be used as a source of truth for CI/CD or GitOps scenarios.
+**metaGraf** is a specification describing the necessary metadata and information about a software component for building it, running it or both. It's intended to be used as a source of truth for CI/CD or GitOps scenarios.
  
 It is inspired by the <a href="https://12factor.net">twelve-factor app</a> 
 methodology to aid automation tasks or decisions about a component or collection of compoenents.  
