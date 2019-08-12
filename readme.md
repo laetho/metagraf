@@ -1,36 +1,18 @@
 # metaGraf
 
-**metaGraf** provides a generic datastructure specification of information and metadata about a software component.
+**metaGraf** is a specification describing the necessary metadata and information about a software component for building it or running it or both. It's intended to be used as a source of truth for CI/CD or GitOps scenarios.
  
 It is inspired by the <a href="https://12factor.net">twelve-factor app</a> 
 methodology to aid automation tasks or decisions about a component or collection of compoenents.  
 
-**metaGraf** operates on a individual or collections of metagraf specifications (software components) 
-to produce metadata or aggregated metadata to support  your toolchain or pipelines with information that can be acted upon.
-
-## Status
-
-Current focus is experimentation with the model and trying out some use cases
-that might help communicate what this structure and tooling can accomplish.
-
-This repository contains the WIP specification and a tool called **mg** 
-that consumes the specification or specifications and turns that into 
-actionable items or kubernets resources.
-
-The repository will split in two in the future. One for the datastructure specification
-and one for the **mg** utility.
-
-
-# Direction
-
-Since cloud-native now eats the world, the goal is to enable building 
-Kubernetes Operators/Controllers that act on the metadata and 
-collections of metadata. The structure so far is also inspired by a 
-Kubernetes resource so a metaGraf could be a CRD. 
-
 # mg
 
-A tool that understands metaGraf specifications.
+**mg** is a tool that operates on *metaGraf* specifications or a collection of specifications.
+
+**mg** can turn a metaGraf specification into Kubernetes resources, inspect the environment to 
+determine if the software components requirements are covered, generate documentation, aid configuration
+management for CD or GitOps flows and provide graphs of the environment from a collection of
+specifications.
 
 TODO: Update this section with actual examples and a video of usage.
 
@@ -38,6 +20,19 @@ You can use the example collection provided to experiment. It produces output li
 this if the resulting file is used with the **dot** utility from graphviz.
 
 <img src="https://github.com/laetho/metagraf/raw/master/example.png" alt="Example graph">
+
+## Status
+
+Current focus is experimentation with the model and trying out some use cases
+that might help communicate what this structure and tooling can accomplish.
+
+This repository contains the WIP specification and a tool called **mg**
+that consumes the specification or specifications and turns that into
+actionable items or kubernets resources.
+
+The repository will split in two in the future. One for the datastructure specification
+and one for the **mg** utility.
+
 
 ## Building
 
@@ -59,5 +54,5 @@ To build the mg utility go into the mg catalog and build it:
 
 # Acknowledgement
 
-A thank you to my current employer <a href="https://www.norsk-tipping.no">Norsk Tipping AS</a>,
-for letting me share this work under an open source license.
+Kudos goes to my current employer <a href="https://www.norsk-tipping.no">Norsk Tipping AS</a>,
+for letting me work on this in the open. 
