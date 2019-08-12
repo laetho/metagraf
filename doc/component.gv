@@ -1,6 +1,6 @@
 digraph G {
     rankdir="lr"
-		node [colorscheme=piyg5,style="filled",color=black]
+		node [colorscheme=pastel25,style="filled",color=black]
 		splines="true";
     /* Entities */
     Component [shape=component,color=1]
