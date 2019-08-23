@@ -42,8 +42,8 @@ type MetaGraf struct {
 		BuildImage		string		`json:"buildimage,omitempty"`	// Builder Image for s2i builds.
 		BaseRunImage 	string		`json:"baserunimage,omitempty"`	// Runtime Container Image for binary build.
 		Image		 	string		`json:"image,omitempty"`		// Container Image URL, for wrapping upstream images.
-		LivenessProbe	v1.Probe	`json:"livenessprobe,omitempty"`	// Using the k8s Probe type
-		ReadinessProbe	v1.Probe	`json:"readinessprobe,omitempty"`	// Using the k8s Probe type
+		LivenessProbe	v1.Probe	`json:"livenessProbe,omitempty"`	// Using the k8s Probe type
+		ReadinessProbe	v1.Probe	`json:"readinessProbe,omitempty"`	// Using the k8s Probe type
 
 		Resources	 []Resource	`json:"resources,omitempty"`
 		Environment struct {
