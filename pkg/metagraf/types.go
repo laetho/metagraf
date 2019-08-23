@@ -75,7 +75,8 @@ type Resource struct {
 
 	// Used when we need to generate configuration for connection to the described attached resource.
 	Template	string  		`json:"template,omitempty"`		// Go txt template string for generating resource configuration.
-	TemplateRef string			`json:"templateref,omitempty"`	// Configmap Reference
+	TemplateRef string			`json:"templateref,omitempty"`	// ConfigMap Reference, OUTDATED Use ConfigRef
+	ConfigRef	string			`json:"configref,omitempty"`	// ConfigMap Reference, Replaces TemplateRef which was not a good name.
 	User 		string			`json:"user,omitempty"`
 	Secret	    string			`json:"secret,omitempty"`		// k8s Secret reference
 }
