@@ -152,6 +152,8 @@ func FlagPassingHack() {
 	modules.CVfile = CVfile
 	modules.Defaults = Defaults
 	modules.Format = Format
+	modules.Suffix = Suffix
+	modules.Template = Template
 }
 
 
