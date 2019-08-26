@@ -25,7 +25,7 @@ import (
 )
 
 func GenRef(mg *metagraf.MetaGraf) {
-	cm, err  := GetConfigMap("metagraf-refdoc.html")
+	cm, err  := GetConfigMap(Template)
 	if err != nil {
 		glog.Error(err)
 		os.Exit(-1)

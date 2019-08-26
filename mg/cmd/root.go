@@ -54,6 +54,8 @@ var BaseEnvs bool = false
 var CVfile   string
 var Defaults bool = false	// Should we hydrate default values in declarative state.
 var Format string
+var Template string			// Command line flag for setting template name
+var Suffix	string			// Command line flag for setting mg create ref output file suffix
 
 var RootCmd = &cobra.Command{
 	Use:   "mg",

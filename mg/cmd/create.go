@@ -59,6 +59,8 @@ func init() {
 	createServiceCmd.Flags().StringVarP(&Namespace, "namespace", "n","", "namespace to work on, if not supplied it will use current working namespace")
 	createServiceCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
 	createRefCmd.Flags().StringVarP(&Namespace, "namespace", "n","","namespace to fetch template form")
+	createRefCmd.Flags().StringVarP(&Template, "template", "t", "metagraf-refdoc.md", "name of ConfigMap for go template")
+	createRefCmd.Flags().StringVarP(&Suffix, "suffix", "s", ".html", "file suffix of the generated content (.html)")
 
 }
 

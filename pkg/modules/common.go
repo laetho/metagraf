@@ -55,7 +55,9 @@ var (
 	BaseEnvs  bool 		//Flag passing hack
 	CVfile	  string	//Flag passing hack
 	Defaults  bool 		//Flag passing hack
-	Format	  string	// Flag pasisng hack
+	Format	  string	// Flag passing hack
+	Template  string	// Flag passing hack
+	Suffix	  string	// Flag passing hack
 )
 
 var Variables map[string]string
