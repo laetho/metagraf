@@ -3,47 +3,35 @@
 {{ .Spec.Description }}
 
 ## Annotations
-{{ range $key, $value := .Metadata.Annotations }}
-* {{ $key }} {{ $value }}
-{{ end }}
+{{ range $key, $value := .Metadata.Annotations -}}
+* {{ $key }} : **{{ $value }}**
+{{- end }}
 
 
 {{ if gt (len .Spec.Resources) 0 }}
 ## Resource Dependencies
 | Resource | Version | Type | External | Required | Description |
 |----------|---------|------|----------|----------|-------------|
-{{range .Spec.Resources}}
+{{range .Spec.Resources }}
 | {{.Name}} | {{.Type}} | {{.Semop}}  | {{.External}} | |{{.Required}} | {{.Description}} |
-{{ end }}
-{{ end }}
+{{- end }}{{- end }}
 
 ## Environment Variables
 {{ if gt (len .Spec.Environment.Local) 0 }}
 ### Local Enviroment Variables
 | Variable | Type | Required | Default Value | Description |
 |----------|------|----------|---------------|-------------|
-{{ range .Spec.Environment.Local}}
-{{ if gt (len .SecretFrom) 0 }}
-| {{.SecretFrom}} | **Secret** | {{.Required}} | {{.Default}} | *A referenced secret. See secret section.* |
-{{ end }}
-{{ if gt (len .EnvFrom) 0 }}
-| {{.EnvFrom}} | **EnvFrom** | {{.Required}} | {{.Default}} | *Environment variables from file. See config section for details.* |
-{{ end }}
-{{ if and (eq (len .SecretFrom) 0) (eq (len .EnvFrom) 0) }}
-| {{.Name}} | {{.Type}} | {{.Required}} | {{.Default}} | {{.Description}} |
-{{end}}
-{{end}}
-{{end}}
+{{ range .Spec.Environment.Local -}}
+{{ if gt (len .SecretFrom) 0 }}| {{.SecretFrom}} | **Secret** | {{.Required}} | {{.Default}} | *A referenced secret. See secret section.* |{{end}}{{ if gt (len .EnvFrom) 0 }}| {{.EnvFrom}} | **EnvFrom** | {{.Required}} | {{.Default}} | *Environment variables from file. See config section for details.* |{{end }}{{ if and (eq (len .SecretFrom) 0) (eq (len .EnvFrom) 0) }}| {{.Name}} | {{.Type}} | {{.Required}} | {{.Default}} | {{.Description}} |{{end}}
+{{end}}{{- end}}
 
 {{ if gt (len .Spec.Environment.Build) 0 }}
 ### Build Enviroment Variables
 | Variable | Type | Required | Default Value | Description |
 |----------|------|----------|---------------|-------------|
-{{ range .Spec.Environment.Build}}
+{{ range .Spec.Environment.Build -}}
 | {{.Name}} | {{.Type}} | {{.Required}} | {{.Default}} | {{.Description}} |
-{{ end }}
-{{ end }}
-
+{{ end }}{{- end }}
 
 {{ if or (gt (len .Spec.Environment.External.Introduces) 0) (gt (len .Spec.Environment.External.Consumes) 0)  }}
 ### External Enviroment Variables (RPS_BUSINESS_PROPERTY, Other external configuration management)
@@ -51,20 +39,15 @@
 #### Introduced by Component
 | Variable | Type | Required | Default Value | Description |
 |----------|------|----------|---------------|-------------|
-{{ range .Spec.Environment.External.Introduces }}
-| {{.Name}} | {{.Type}} | {{.Required}} | {{.Default}} | {{.Description}} |
-{{ end }}
-{{ end }}
+{{ range .Spec.Environment.External.Introduces }}| {{.Name}} | {{.Type}} | {{.Required}} | {{.Default}} | {{.Description}} |
+{{ end }}{{ end }}
 
 {{ if gt (len .Spec.Environment.External.Consumes) 0 }}
 #### Consumed by Component
 | Variable | Type | Required | Default Value | Description |
 |----------|------|----------|---------------|-------------|
-{{ range .Spec.Environment.External.Consumes}}
-| {{.Name}} | {{.Type}} | {{.Required}} | {{.Default}} | {{.Description}} |
-{{ end }}
-{{ end }}
-{{ end }}
+{{ range .Spec.Environment.External.Consumes}}| {{.Name}} | {{.Type}} | {{.Required}} | {{.Default}} | {{.Description}} |
+{{ end }}{{ end }}{{ end }}
 
 {{ if .Spec.Config }}
 ## Configuration Files [kind: ConfigMap]
@@ -73,10 +56,9 @@
 |------|------|--------|-------------|
 | {{.Name}} | {{.Type}}| {{.Global}} |{{.Description}} |
 
-| Parameter | Type | Required | Default | Example | Description |
-|-----------|------|----------|---------|---------|-------------|
-{{ range .Options }}
-| {{.Name}} | {{.Type}} | {{.Required}} | {{.Default}} | {{.Example}} | {{.Description}} |
+| Parameter | Type | Required | Default |  Description |
+|-----------|------|----------|---------|--------------|
+{{ range .Options }}| {{.Name}} | {{.Type}} | {{.Required}} | {{.Default}} | {{.Description}} |
 {{ end }}
 {{ end }}
 {{ end }}
@@ -85,7 +67,6 @@
 ## Secrets [kind: Secret]
 | Name | Global | Description |
 |------|--------|-------------|
-{{ range .Spec.Secret}}
-| {{.Name}} | {{.Global}} | {{.Description}} |
+{{ range .Spec.Secret}}| {{.Name}} | {{.Global}} | {{.Description}} |
 {{end}}
 {{end}}
