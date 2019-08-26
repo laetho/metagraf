@@ -25,6 +25,7 @@ import (
 )
 
 func GenRef(mg *metagraf.MetaGraf) {
+	glog.Info("Fetching template: %v", Template)
 	cm, err  := GetConfigMap(Template)
 	if err != nil {
 		glog.Error(err)
