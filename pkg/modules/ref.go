@@ -32,7 +32,7 @@ func GenRef(mg *metagraf.MetaGraf) {
 	}
 	tmpl, _ := template.New("refdoc").Parse(cm.Data["template"])
 
-	filename := "/tmp/"+Name(mg)+".html"
+	filename := "/tmp/"+Name(mg)+Suffix
 
 	f, err := os.OpenFile(filename, os.O_CREATE|os.O_TRUNC|os.O_RDWR, 0777)
 	if err != nil {
