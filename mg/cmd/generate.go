@@ -28,8 +28,8 @@ import (
 func init() {
 	RootCmd.AddCommand(generateCmd)
 	generateCmd.AddCommand(generateKeysCmd)
-	generateKeysCmd.Flags().BoolVar(&Defaults, "defaults", false, "Populate Environment variables with default values from metaGraf")
-	generateKeysCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
+	generatePropertiesCmd.Flags().BoolVar(&Defaults, "defaults", false, "Populate Environment variables with default values from metaGraf")
+	generatePropertiesCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
 }
 
 var generateCmd = &cobra.Command{
@@ -38,9 +38,9 @@ var generateCmd = &cobra.Command{
 	Long:  Banner + ` create `,
 }
 
-var generateKeysCmd = &cobra.Command{
-	Use:   "keys <metagraf>",
-	Short: "create configuration keys from metaGraf file",
+var generatePropertiesCmd = &cobra.Command{
+	Use:   "properties <metagraf>",
+	Short: "create configuration properties from metaGraf file",
 	Long:  Banner + `generate keys`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
