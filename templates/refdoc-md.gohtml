@@ -12,9 +12,9 @@
 ## Resource Dependencies
 | Resource | Version | Type | External | Required | Description |
 |----------|---------|------|----------|----------|-------------|
-{{range .Spec.Resources }}
+{{range .Spec.Resources -}}
 | {{.Name}} | {{.Type}} | {{.Semop}}  | {{.External}} | |{{.Required}} | {{.Description}} |
-{{- end }}{{- end }}
+{{end }}{{- end }}
 
 ## Environment Variables
 {{ if gt (len .Spec.Environment.Local) 0 }}
@@ -29,7 +29,7 @@
 ### Build Enviroment Variables
 | Variable | Type | Required | Default Value | Description |
 |----------|------|----------|---------------|-------------|
-{{ range .Spec.Environment.Build -}}
+{{ range .Spec.Environment.Build -}}git add
 | {{.Name}} | {{.Type}} | {{.Required}} | {{.Default}} | {{.Description}} |
 {{ end }}{{- end }}
 
