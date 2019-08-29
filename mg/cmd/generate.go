@@ -27,7 +27,7 @@ import (
 
 func init() {
 	RootCmd.AddCommand(generateCmd)
-	generateCmd.AddCommand(generateKeysCmd)
+	generateCmd.AddCommand(generatePropertiesCmd)
 	generatePropertiesCmd.Flags().BoolVar(&Defaults, "defaults", false, "Populate Environment variables with default values from metaGraf")
 	generatePropertiesCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
 }
