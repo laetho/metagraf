@@ -41,7 +41,7 @@ var generateCmd = &cobra.Command{
 var generatePropertiesCmd = &cobra.Command{
 	Use:   "properties <metagraf>",
 	Short: "create configuration properties from metaGraf file",
-	Long:  Banner + `generate keys`,
+	Long:  Banner + `generate properties`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
 			glog.Error(StrMissingMetaGraf)
