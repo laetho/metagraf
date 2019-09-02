@@ -12,7 +12,9 @@ import (
 
 func init() {
 	RootCmd.AddCommand(InspectCmd)
+	InspectCmd.Flags().BoolVar(&Enforce, "enforce",false, "Enforce findings, defaults to false and informs only.")
 	InspectCmd.AddCommand(InspectPropertiesCmd)
+	InspectPropertiesCmd.Flags().StringVar(&CVfile, "cvfile","", "File with component configuration values. (key=value pairs)")
 }
 
 var InspectCmd = &cobra.Command{
@@ -52,7 +54,7 @@ var InspectCmd = &cobra.Command{
 }
 
 var InspectPropertiesCmd = &cobra.Command{
-	Use:   "properties <metaGraf> <properties>",
+	Use:   "properties <metaGraf>",
 	Short: "inspect a metaGraf specification against a properties file",
 	Long:  `inspect a metaGraf specification against a properties file.`,
 	Run: func(cmd *cobra.Command, args []string) {
