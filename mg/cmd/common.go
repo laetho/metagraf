@@ -154,6 +154,8 @@ func FlagPassingHack() {
 	modules.Format = Format
 	modules.Suffix = Suffix
 	modules.Template = Template
+	modules.ImageNS = ImageNS
+	modules.Enforce = Enforce
 }
 
 

@@ -39,6 +39,10 @@ import (
 func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 	objname := Name(mg)
 
+	if len(ImageNS) > 0 {
+		namespace = ImageNS
+	}
+
 	// Resource labels
 	l := make(map[string]string)
 	l["app"] = objname

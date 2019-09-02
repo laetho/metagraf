@@ -58,6 +58,8 @@ var (
 	Format	  string	// Flag passing hack
 	Template  string	// Flag passing hack
 	Suffix	  string	// Flag passing hack
+	Enforce	  bool
+	ImageNS	  string
 )
 
 var Variables map[string]string
