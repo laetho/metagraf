@@ -46,6 +46,7 @@ func init() {
 	createDeploymentConfigCmd.Flags().BoolVar(&Defaults, "defaults", false, "Populate Environment variables with default values from metaGraf")
 	createDeploymentConfigCmd.Flags().StringVarP(&ImageNS,"imagens", "i", "", "Image Namespace, used to override default namespace")
 	createDeploymentConfigCmd.Flags().StringVarP(&Registry,"registry", "r","", "Specify container registry host")
+	createDeploymentConfigCmd.Flags().StringVarP(&Tag,"tag", "t", "latest", "specify custom tag")
 	createBuildConfigCmd.Flags().StringVarP(&Namespace, "namespace", "n","", "namespace to work on, if not supplied it will use current working namespace")
 	createBuildConfigCmd.Flags().StringVar(&Branch, "branch","", "Override branch to build from.")
 	createBuildConfigCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")

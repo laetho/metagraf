@@ -38,9 +38,15 @@ import (
 // Todo: Still needs to be split up, but some refactoring has been done.
 func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 	objname := Name(mg)
+	registry := viper.GetString("registry")
 
 	if len(ImageNS) > 0 {
 		namespace = ImageNS
+	}
+
+	// If container registry host is set and it differs from default, use value from -r (--registry) flag.
+	if len(Registry) > 0 && registry != Registry {
+		registry = Registry
 	}
 
 	// Resource labels
@@ -233,7 +239,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 	// Tying Container PodSpec together
 	Container := corev1.Container{
 		Name:            objname,
-		Image:           viper.GetString("registry") + "/" + namespace + "/" + objname + ":latest",
+		Image:           registry + "/" + namespace + "/" + objname + ":" + Tag,
 		ImagePullPolicy: corev1.PullAlways,
 		Ports:           ContainerPorts,
 		VolumeMounts:    VolumeMounts,

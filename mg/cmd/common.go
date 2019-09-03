@@ -157,6 +157,7 @@ func FlagPassingHack() {
 	modules.ImageNS = ImageNS
 	modules.Enforce = Enforce
 	modules.Registry = Registry
+	modules.Tag = Tag
 
 }
 

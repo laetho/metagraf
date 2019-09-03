@@ -61,6 +61,7 @@ var (
 	Enforce	  bool
 	ImageNS	  string
 	Registry  string
+	Tag		  string
 )
 
 var Variables map[string]string

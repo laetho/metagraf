@@ -59,6 +59,7 @@ var Suffix	string			// Command line flag for setting mg create ref output file s
 var Enforce	bool = false	// Boolean flag for articulating enforcement mode instead of inform
 var ImageNS string 			// Image Namespace, used in overriding namespace in container image references
 var Registry string			// Flag for holding a custom container registry
+var Tag		 string			//
 
 var RootCmd = &cobra.Command{
 	Use:   "mg",
