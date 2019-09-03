@@ -60,6 +60,7 @@ var (
 	Suffix	  string	// Flag passing hack
 	Enforce	  bool
 	ImageNS	  string
+	Registry  string
 )
 
 var Variables map[string]string
