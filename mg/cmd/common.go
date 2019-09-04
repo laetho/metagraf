@@ -49,6 +49,7 @@ func VarsFromCmd(mgv metagraf.MGVars, cvars CmdVars) map[string]string {
 	return vars
 }
 
+// Reads input from properties file.
 func VarsFromFile(mgv metagraf.MGVars) map[string]string {
 	vars := make(map[string]string)
 	if len(CVfile) == 0 {
@@ -76,6 +77,8 @@ func VarsFromFile(mgv metagraf.MGVars) map[string]string {
 		}
 		if len(vl) == 2 {
 			vars[vl[1]] = ""
+		} else if len(vl) == 4 {
+			vars[vl[1]] = strings.ReplaceAll(vl[2], "\n", "") + "=" + strings.ReplaceAll(vl[3], "\n", "")
 		} else {
 			vars[vl[1]] = strings.ReplaceAll(vl[2], "\n", "")
 		}
