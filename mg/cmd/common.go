@@ -161,7 +161,6 @@ func FlagPassingHack() {
 	modules.Enforce = Enforce
 	modules.Registry = Registry
 	modules.Tag = Tag
-
 }
 
 
