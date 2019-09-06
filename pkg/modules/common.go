@@ -71,6 +71,10 @@ var Variables map[string]string
 func Name(mg *metagraf.MetaGraf) string {
 	var objname string
 
+	if len(OName) > 0 {
+		return OName
+	}
+
 	if len(Version) > 0 {
 		sv, err := semver.Parse(mg.Spec.Version)
 		if err != nil {
