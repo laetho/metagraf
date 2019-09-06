@@ -161,7 +161,7 @@ func FlagPassingHack() {
 	modules.Enforce = Enforce
 	modules.Registry = Registry
 	modules.Tag = Tag
-	modules.DName = DName
+	modules.OName = OName
 }
 
 

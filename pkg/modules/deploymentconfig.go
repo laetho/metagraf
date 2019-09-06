@@ -40,16 +40,9 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 	objname := Name(mg)
 	registry := viper.GetString("registry")
 
-	/*
 	// DeploymentConfig name override logic, defaults to name from metaGraf specification.
-	if len(DName) > 0 {
-		deploymentname = DName
-	} else {
-		deploymentname = objname
-	}
-	*/
-	if len(DName) > 0 {
-		objname = DName
+	if len(OName) > 0 {
+		objname = OName
 	}
 
 	if len(ImageNS) > 0 {

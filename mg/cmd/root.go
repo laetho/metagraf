@@ -31,21 +31,21 @@ const Banner string = "mg (metaGraf) - "
 
 
 var (
-	Namespace 	string
-	DName		string			// Flag for overriding Deployment or Deploymentconfig name.
-	Config		string			// Viper config override
-	Verbose		bool = false
-	Output		bool = false
-	Version		string
-	Dryrun		bool = false 	// If true do not create
-	Branch		string
-	Replicas	int = 1			// Flag for adjusting number of replicas.
-	BaseEnvs	bool = false
-	CVfile		string
-	Defaults	bool = false	// Should we hydrate default values in declarative state.
-	Format		string
-	Template	string			// Command line flag for setting template name
-	Suffix		string			// Command line flag for setting mg create ref output file suffix
+	Namespace string
+	OName     string // Flag for overriding application name.
+	Config    string // Viper config override
+	Verbose   bool = false
+	Output    bool = false
+	Version   string
+	Dryrun    bool = false 	// If true do not create
+	Branch    string
+	Replicas  int = 1			// Flag for adjusting number of replicas.
+	BaseEnvs  bool = false
+	CVfile    string
+	Defaults  bool = false	// Should we hydrate default values in declarative state.
+	Format    string
+	Template  string			// Command line flag for setting template name
+	Suffix    string			// Command line flag for setting mg create ref output file suffix
 	Enforce		bool = false	// Boolean flag for articulating enforcement mode instead of inform
 	ImageNS		string 			// Image Namespace, used in overriding namespace in container image references
 	Registry	string			// Flag for holding a custom container registry
