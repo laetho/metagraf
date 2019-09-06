@@ -31,7 +31,25 @@ const Banner string = "mg (metaGraf) - "
 
 
 var (
-	Namespace string
+	Namespace 	string
+	DName		string			// Flag for overriding Deployment or Deploymentconfig name.
+	Config		string			// Viper config override
+	Verbose		bool = false
+	Output		bool = false
+	Version		string
+	Dryrun		bool = false 	// If true do not create
+	Branch		string
+	Replicas	int = 1			// Flag for adjusting number of replicas.
+	BaseEnvs	bool = false
+	CVfile		string
+	Defaults	bool = false	// Should we hydrate default values in declarative state.
+	Format		string
+	Template	string			// Command line flag for setting template name
+	Suffix		string			// Command line flag for setting mg create ref output file suffix
+	Enforce		bool = false	// Boolean flag for articulating enforcement mode instead of inform
+	ImageNS		string 			// Image Namespace, used in overriding namespace in container image references
+	Registry	string			// Flag for holding a custom container registry
+	Tag			string			//
 )
 
 // Array of available config keys
@@ -41,25 +59,6 @@ var configkeys []string = []string{
 	"password",
 	"registry",
 }
-
-// Flags
-var Config	string			// Viper config override
-var Verbose	bool = false
-var Output	bool = false
-var Version	string
-var Dryrun	bool = false 	// If true do not create
-var Branch	string
-var Replicas int = 1		// Default replica value is 0
-var BaseEnvs bool = false
-var CVfile   string
-var Defaults bool = false	// Should we hydrate default values in declarative state.
-var Format string
-var Template string			// Command line flag for setting template name
-var Suffix	string			// Command line flag for setting mg create ref output file suffix
-var Enforce	bool = false	// Boolean flag for articulating enforcement mode instead of inform
-var ImageNS string 			// Image Namespace, used in overriding namespace in container image references
-var Registry string			// Flag for holding a custom container registry
-var Tag		 string			//
 
 var RootCmd = &cobra.Command{
 	Use:   "mg",

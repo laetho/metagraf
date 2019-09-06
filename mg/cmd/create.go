@@ -40,6 +40,7 @@ func init() {
 	createCmd.AddCommand(createSecretCmd)
 	createCmd.AddCommand(createRouteCmd)
 	createDeploymentConfigCmd.Flags().StringVarP(&Namespace, "namespace", "n","", "namespace to work on, if not supplied it will use current working namespace")
+	createDeploymentConfigCmd.Flags().StringVar(&DName, "name", "", "Override name of deployment, only applies to DeploymentConfig name, labels are untouched")
 	createDeploymentConfigCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
 	createDeploymentConfigCmd.Flags().StringVar(&CVfile, "cvfile","", "File with component configuration values. (key=value pairs)")
 	createDeploymentConfigCmd.Flags().BoolVar(&BaseEnvs, "baseenv", false, "Hydrate deploymentconfig with baseimage environment variables")

@@ -62,6 +62,7 @@ var (
 	ImageNS	  string
 	Registry  string
 	Tag		  string
+	DName		string
 )
 
 var Variables map[string]string
