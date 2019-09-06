@@ -118,6 +118,9 @@ func GenConfigMaps(mg *metagraf.MetaGraf) {
 func genConfigMapsFromConfig(conf *metagraf.Config, mg *metagraf.MetaGraf) {
 
 	objname := Name(mg)
+	if len(OName) > 0 {
+		objname := OName
+	}
 
 	l := make(map[string]string)
 	l["app"] =  objname

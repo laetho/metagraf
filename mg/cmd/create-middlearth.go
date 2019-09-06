@@ -25,7 +25,6 @@ import (
 )
 
 func init() {
-
 	createCmd.AddCommand(createMiddlearthCmd)
 	createMiddlearthCmd.Flags().StringArray("cvars", CVars, "Array of KEY=VALUE pairs.")
 }
