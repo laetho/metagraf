@@ -119,7 +119,7 @@ func genConfigMapsFromConfig(conf *metagraf.Config, mg *metagraf.MetaGraf) {
 
 	objname := Name(mg)
 	if len(OName) > 0 {
-		objname := OName
+		objname = OName
 	}
 
 	l := make(map[string]string)
