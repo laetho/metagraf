@@ -32,7 +32,6 @@ digraph G {
     "Volume n" [shape=cylinder,color=5]
 
     { rank=same; Component "AttachedResource n"}
-    { rank=same; Annotations Resources }
     { rank=same; Resources Environment Configs Secrets Storage }
     { rank=same; Local External Build }
     { rank=same; Consumes Introduces }
