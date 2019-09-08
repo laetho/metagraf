@@ -1,10 +1,12 @@
 digraph G {
     rankdir="lr"
-		node [colorscheme=pastel25,style="filled"]
-		edge [color=gray2]
-		splines="true";
+    node [colorscheme=pastel25,style="filled"]
+    edge [color=gray2]
     /* Entities */
     Component [shape=component,color=1]
+
+    Annotations [shape=note]
+    Labels [shape=note]
 
     Resources [shape=tab,color=2]
     "AttachedResource n" [shape=component,color=1]
@@ -29,16 +31,20 @@ digraph G {
     Storage [shape=tab,color=2]
     "Volume n" [shape=cylinder,color=5]
 
+    { rank=same; Component "AttachedResource n"}
+    { rank=same; Annotations Resources }
     { rank=same; Resources Environment Configs Secrets Storage }
     { rank=same; Local External Build }
-		{ rank=same; Consumes Introduces }
-		{ rank=same; "EnvVar n" "BuildEnvVar n" "IExtEnvVar n" "CExtEnvVar n" "Config n" "Secret n" "Volume n" }
+    { rank=same; Consumes Introduces }
+    { rank=same; "EnvVar n" "BuildEnvVar n" "IExtEnvVar n" "CExtEnvVar n" "Config n" "Secret n" "Volume n" }
 
 
 
     //shortName [label="shortName", shape="|square,rectangle,circle,ellipse,triangle,plaintext,point,diamond,pentagon,hexagon,septagon,octagon,egg,trapezium,parallelogram,house,doublecircle,doubleoctagon,tripleoctagon,invtriangle,invtrapezium,invhouse,Mdiamond,Msquare,Mcircle,none,note,tab,folder,box3d|", URL="http://en.wikipedia.org/wiki/John de Fries"]
     
     /* Relationships */
+    Component -> Annotations
+    Component -> Labels
     Component -> Resources
     Component -> Environment
     Component -> Configs
