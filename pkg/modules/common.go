@@ -94,6 +94,18 @@ func Name(mg *metagraf.MetaGraf) string {
 	return objname
 }
 
+// Return a specification name for a resource base on convention. Does not adhere to override flags.
+func SpecName(mg *metagraf.MetaGraf) string {
+	var objname string
+	sv, err := semver.Parse(mg.Spec.Version)
+	if err != nil {
+		objname = strings.ToLower(mg.Metadata.Name)
+	} else {
+		objname = strings.ToLower(mg.Metadata.Name + "v" + strconv.FormatUint(sv.Major, 10))
+	}
+	return objname
+}
+
 func MGAppName(mg *metagraf.MetaGraf) string {
 	var objname string
 
