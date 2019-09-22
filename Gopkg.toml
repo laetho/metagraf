@@ -12,10 +12,6 @@ branch = "release-3.10"
   version = "3.5.1"
 
 [[constraint]]
-  branch = "master"
-  name = "github.com/dgraph-io/dgo"
-
-[[constraint]]
   name = "github.com/openshift/api"
   version = "3.9.0"
 
