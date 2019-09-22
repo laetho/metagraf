@@ -39,6 +39,15 @@ func init() {
 	createCmd.AddCommand(createRefCmd)
 	createCmd.AddCommand(createSecretCmd)
 	createCmd.AddCommand(createRouteCmd)
+	createDeploymentCmd.Flags().StringVarP(&Namespace, "namespace", "n","", "namespace to work on, if not supplied it will use current working namespace")
+	createDeploymentCmd.Flags().StringVar(&OName, "name", "", "Overrides name of deployment.")
+	createDeploymentCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
+	createDeploymentCmd.Flags().StringVar(&CVfile, "cvfile","", "File with component configuration values. (key=value pairs)")
+	createDeploymentCmd.Flags().BoolVar(&BaseEnvs, "baseenv", false, "Hydrate deploymentconfig with baseimage environment variables")
+	createDeploymentCmd.Flags().BoolVar(&Defaults, "defaults", false, "Populate Environment variables with default values from metaGraf")
+	createDeploymentCmd.Flags().StringVarP(&ImageNS,"imagens", "i", "", "Image Namespace, used to override default namespace")
+	createDeploymentCmd.Flags().StringVarP(&Registry,"registry", "r","docker-registry.default.svc:5000", "Specify container registry host")
+	createDeploymentCmd.Flags().StringVarP(&Tag,"tag", "t", "latest", "specify custom tag")
 	createDeploymentConfigCmd.Flags().StringVarP(&Namespace, "namespace", "n","", "namespace to work on, if not supplied it will use current working namespace")
 	createDeploymentConfigCmd.Flags().StringVar(&OName, "name", "", "Overrides name of deployment.")
 	createDeploymentConfigCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
@@ -145,6 +154,44 @@ var createConfigMapCmd = &cobra.Command{
 		}
 
 		modules.GenConfigMaps(&mg)
+	},
+}
+
+var createDeploymentCmd = &cobra.Command{
+	Use:   "deployment <metagraf>",
+	Short: "create Deployment from metaGraf file",
+	Long:  Banner + `create Deployment`,
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) < 1 {
+			glog.Info(StrActiveProject, viper.Get("namespace"))
+			glog.Error(StrMissingMetaGraf)
+			os.Exit(1)
+		}
+
+		if len(Namespace) == 0 {
+			Namespace = viper.GetString("namespace")
+			if len(Namespace) == 0 {
+				glog.Error(StrMissingNamespace)
+				os.Exit(1)
+			}
+		}
+
+		mg := metagraf.Parse(args[0])
+		FlagPassingHack()
+
+		if modules.Variables == nil {
+			vars := MergeVars(
+				mg.GetVars(),
+				OverrideVars(mg.GetVars(), CmdCVars(CVars).Parse()))
+			modules.Variables = vars
+		}
+
+		if len(modules.NameSpace) == 0 {
+			modules.NameSpace = Namespace
+		}
+
+		// @todo pass as argument or set exported module variable?
+		modules.GenDeployment(&mg, Namespace)
 	},
 }
 
