@@ -30,6 +30,7 @@ import (
 
 	//corev1 "k8s.io/api/core/v1"
 	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -49,12 +50,12 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 	// Resource labels
 	l := make(map[string]string)
 	l["app"] = objname
-	l["deploymentconfig"] = objname
+	l["deployment"] = objname
 
 	// Selector
 	s := make(map[string]string)
 	s["app"] = objname
-	s["deploymentconfig"] = objname
+	s["deployment"] = objname
 
 	var RevisionHistoryLimit int32 = 5
 	var ActiveDeadlineSeconds int64 = 21600
@@ -245,16 +246,16 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 	Containers = append(Containers, Container)
 
 	// Tying the DeploymentObject together, literally :)
-	obj := appsv1.DeploymentConfig{
+	obj := appsv1.Deployment{
 		TypeMeta: metav1.TypeMeta{
-			Kind:       "DeploymentConfig",
+			Kind:       "Deployment",
 			APIVersion: "v1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:   objname,
 			Labels: l,
 		},
-		Spec: appsv1.DeploymentConfigSpec{
+		Spec: appsv1.DeploymentSpec{
 			Replicas:             1,
 			RevisionHistoryLimit: &RevisionHistoryLimit,
 			Selector:             s,
