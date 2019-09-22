@@ -31,6 +31,7 @@ import (
 func init() {
 	RootCmd.AddCommand(createCmd)
 	createCmd.AddCommand(createConfigMapCmd)
+	createCmd.AddCommand(createDeploymentCmd)
 	createCmd.AddCommand(createDeploymentConfigCmd)
 	createCmd.AddCommand(createBuildConfigCmd)
 	createCmd.AddCommand(createImageStreamCmd)
