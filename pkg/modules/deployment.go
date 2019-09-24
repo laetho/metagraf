@@ -19,6 +19,7 @@ package modules
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/golang/glog"
 	"github.com/spf13/viper"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"metagraf/mg/ocpclient"
@@ -58,10 +59,6 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 	s["deployment"] = objname
 
 	var RevisionHistoryLimit int32 = 5
-	var ActiveDeadlineSeconds int64 = 21600
-	var TimeoutSeconds int64 = 600
-	var UpdatePeriodSeconds int64 = 1
-	var IntervalSeconds int64 = 1
 
 	var MaxSurge intstr.IntOrString
 	MaxSurge.StrVal = "25%"
@@ -71,12 +68,9 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 	MaxUnavailable.Type = 1
 
 	// Instance of RollingDeploymentStrategyParams
-	rollingParams := appsv1.RollingDeploymentStrategyParams{
+	rollingParams := appsv1.RollingUpdateDeployment{
 		MaxSurge:            &MaxSurge,
 		MaxUnavailable:      &MaxUnavailable,
-		TimeoutSeconds:      &TimeoutSeconds,
-		IntervalSeconds:     &IntervalSeconds,
-		UpdatePeriodSeconds: &UpdatePeriodSeconds,
 	}
 
 	// Containers
@@ -260,11 +254,10 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 			RevisionHistoryLimit: &RevisionHistoryLimit,
 			Selector:             s,
 			Strategy: appsv1.DeploymentStrategy{
-				ActiveDeadlineSeconds: &ActiveDeadlineSeconds,
-				Type:                  appsv1.DeploymentStrategyTypeRolling,
-				RollingParams:         &rollingParams,
+				Type:                  appsv1.RollingUpdateDeploymentStrategyType,
+				RollingUpdate:         &rollingParams,
 			},
-			Template: &corev1.PodTemplateSpec{
+			Template: corev1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:   objname,
 					Labels: l,
@@ -275,11 +268,11 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 				},
 			},
 		},
-		Status: appsv1.DeploymentConfigStatus{},
+		Status: appsv1.DeploymentStatus{},
 	}
 
 	if !Dryrun {
-		StoreDeploymentConfig(obj)
+		StoreDeployment(obj)
 	}
 	if Output {
 		MarshalObject(obj.DeepCopyObject())
@@ -287,8 +280,6 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 }
 
 
-/*
-Problaby needs a k8s apps client
 func StoreDeployment(obj appsv1.Deployment) {
 
 	glog.Infof("ResourceVersion: %v Length: %v", obj.ResourceVersion, len(obj.ResourceVersion))
@@ -302,13 +293,12 @@ func StoreDeployment(obj appsv1.Deployment) {
 		if err != nil {
 			glog.Info(err)
 		}
-		glog.Infof("Updated DeploymentConfig: %v(%v)", result.Name, obj.Name)
+		glog.Infof("Updated Deployment: %v(%v)", result.Name, obj.Name)
 	} else {
 		result, err := client.Create(&obj)
 		if err != nil {
 			glog.Info(err)
 		}
-		glog.Infof("Created DeploymentConfig: %v(%v)", result.Name, obj.Name)
+		glog.Infof("Created Deployment: %v(%v)", result.Name, obj.Name)
 	}
 }
-*/
