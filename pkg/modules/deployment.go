@@ -17,8 +17,6 @@ limitations under the License.
 package modules
 
 import (
-	"encoding/json"
-	"fmt"
 	"github.com/golang/glog"
 	"github.com/spf13/viper"
 	"k8s.io/apimachinery/pkg/util/intstr"
@@ -54,9 +52,13 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 	l["deployment"] = objname
 
 	// Selector
-	s := make(map[string]string)
-	s["app"] = objname
-	s["deployment"] = objname
+	sm := make(map[string]string)
+	sm["app"] = objname
+	sm["deployment"] = objname
+
+	s := metav1.LabelSelector{
+		MatchLabels: sm,
+	}
 
 	var RevisionHistoryLimit int32 = 5
 
@@ -72,6 +74,8 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 		MaxSurge:            &MaxSurge,
 		MaxUnavailable:      &MaxUnavailable,
 	}
+
+	var replicas int32 = 1
 
 	// Containers
 	var Containers []corev1.Container
@@ -250,9 +254,9 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 			Labels: l,
 		},
 		Spec: appsv1.DeploymentSpec{
-			Replicas:             1,
+			Replicas:             &replicas,
 			RevisionHistoryLimit: &RevisionHistoryLimit,
-			Selector:             s,
+			Selector:             &s,
 			Strategy: appsv1.DeploymentStrategy{
 				Type:                  appsv1.RollingUpdateDeploymentStrategyType,
 				RollingUpdate:         &rollingParams,
@@ -285,8 +289,7 @@ func StoreDeployment(obj appsv1.Deployment) {
 	glog.Infof("ResourceVersion: %v Length: %v", obj.ResourceVersion, len(obj.ResourceVersion))
 	glog.Infof("Namespace: %v", NameSpace)
 
-	client := ocpclient.GetAppsClient().Deployment(NameSpace)
-
+	client := ocpclient.GetKubernetesClient().AppsV1().Deployments(NameSpace)
 	if len(obj.ResourceVersion) > 0 {
 		// update
 		result, err := client.Update(&obj)
