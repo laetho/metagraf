@@ -19,11 +19,16 @@ package ocpclient
 import (
 	"flag"
 	"github.com/golang/glog"
+
+	appsv1 "k8s.io/api/apps/v1"
 	appsv1client "github.com/openshift/client-go/apps/clientset/versioned/typed/apps/v1"
 	buildv1client "github.com/openshift/client-go/build/clientset/versioned/typed/build/v1"
 	imagev1client "github.com/openshift/client-go/image/clientset/versioned/typed/image/v1"
 	routev1client "github.com/openshift/client-go/route/clientset/versioned/typed/route/v1"
 	corev1client "k8s.io/client-go/kubernetes/typed/core/v1"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/util/homedir"
+	"k8s.io/client-go/util/retry"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	"os"
@@ -116,6 +121,20 @@ func GetAppsClient() *appsv1client.AppsV1Client {
 	}
 
 	client, err := appsv1client.NewForConfig(RestConfig)
+	if err != nil {
+		panic(err)
+	}
+
+	return client
+}
+
+// Returns a K8S Apps client
+func GetKubernetesClient() *kubernetes.Clientset {
+	if RestConfig == nil {
+		RestConfig = getRestConfig(getKubeConfig())
+	}
+
+	client, err := kubernetes.NewForConfig(RestConfig)
 	if err != nil {
 		panic(err)
 	}
