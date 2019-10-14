@@ -3,7 +3,7 @@
 {{ .Spec.Description }}
 
 ## Annotations
-{{ range $key, $value := .Metadata.Annotations -}}
+{{ range $key, $value := .Metadata.Annotations }}
 * {{ $key }} : **{{ $value }}**
 {{- end }}
 
