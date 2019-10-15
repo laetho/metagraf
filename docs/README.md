@@ -23,5 +23,5 @@ and one for the **[mg](/mg.md)** utility.
 
 # Acknowledgement
 
-Kudos goes to my current employer <a href="https://www.norsk-tipping.no">Norsk Tipping AS</a>,
+Appreciation goes out to my current employer <a href="https://www.norsk-tipping.no">Norsk Tipping AS</a>,
 for letting me work on this in the open. 
