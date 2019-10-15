@@ -5,7 +5,7 @@
 It is inspired by the <a href="https://12factor.net">twelve-factor app</a> 
 methodology to aid automation tasks or decisions about a component or collection of compoenents.  
 
-<img src="https://github.com/laetho/metagraf/raw/master/doc/component.png" alt="A graph of a software component.">
+<img src="https://github.com/laetho/metagraf/raw/master/docs/component.png" alt="A graph of a software component.">
 
 # Status
 
