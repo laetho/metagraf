@@ -1,0 +1,2 @@
+* [metaGraf](/)
+* [Datastructure](datastructure.md)
