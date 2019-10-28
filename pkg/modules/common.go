@@ -144,7 +144,7 @@ func ResourceSecretName(r *metagraf.Resource) string {
 	if len(r.User) > 0 && len(r.Secret) == 0 {
 		// When an implicit secret is created it's resource name will
 		// prepended to the user. They resourcename + user will get treated as a global secret.
-		return strings.ToLower(r.Name)+"-"+strings.ToLower(r.User)
+		return strings.ToLower(strings.Replace(r.Name,"_","-", -1))+"-"+strings.ToLower(r.User)
 	} else if len(r.User) == 0 && len(r.Secret) > 0 {
 		// Explicit secret name generation
 		return strings.ToLower(r.Secret)
