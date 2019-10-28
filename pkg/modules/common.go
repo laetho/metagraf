@@ -100,7 +100,7 @@ func SpecName(mg *metagraf.MetaGraf) string {
 	var objname string
 
 	if len(Version) > 0 {
-		sv, err := semver.Parse(mg.Spec.Version)
+		sv, err := semver.Parse(Version)
 		if err != nil {
 			return strings.ToLower(mg.Metadata.Name+"-") + Version
 		} else {
