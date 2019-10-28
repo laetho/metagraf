@@ -62,7 +62,7 @@ var (
 	ImageNS	  string
 	Registry  string
 	Tag		  string
-	OName		string
+	OName	  string
 )
 
 var Variables map[string]string
@@ -72,13 +72,14 @@ func Name(mg *metagraf.MetaGraf) string {
 	var objname string
 
 	if len(OName) > 0 {
+		glog.Infof("ObjectName overridden with: %v",OName)
 		return OName
 	}
 
 	if len(Version) > 0 {
-		sv, err := semver.Parse(mg.Spec.Version)
+		sv, err := semver.Parse(Version)
 		if err != nil {
-			return strings.ToLower(mg.Metadata.Name+"-") + Version
+			return strings.ToLower(mg.Metadata.Name)+"-"+Version
 		} else {
 			objname = strings.ToLower(mg.Metadata.Name + "v" + strconv.FormatUint(sv.Major, 10))
 			return objname + "-" + Version
