@@ -63,6 +63,7 @@ var (
 	Registry  string
 	Tag		  string
 	OName	  string
+	Context   string	// Application context root from FlagPassingHack.
 )
 
 var Variables map[string]string

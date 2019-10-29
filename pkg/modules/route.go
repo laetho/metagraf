@@ -73,7 +73,7 @@ func GenRoute(mg *metagraf.MetaGraf) {
 				Name: objname,
 				Weight: &weight,
 			},
-			Path: "/"+MGAppName(mg),
+			Path: Context,
 			Port: &routev1.RoutePort{
 				TargetPort: intstr.IntOrString{
 					Type: 1,

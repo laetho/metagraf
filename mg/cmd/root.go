@@ -50,6 +50,7 @@ var (
 	ImageNS		string 			// Image Namespace, used in overriding namespace in container image references
 	Registry	string			// Flag for holding a custom container registry
 	Tag			string			//
+	Context		string			// Flag for setting application context root.
 )
 
 // Array of available config keys

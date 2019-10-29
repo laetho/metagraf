@@ -162,6 +162,7 @@ func FlagPassingHack() {
 	modules.Registry = Registry
 	modules.Tag = Tag
 	modules.OName = OName
+	modules.Context = Context
 }
 
 
