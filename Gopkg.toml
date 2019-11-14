@@ -3,6 +3,10 @@
 name = "github.com/openshift/client-go"
 branch = "release-3.10"
 
+[[override]]
+  name = "github.com/russross/blackfriday"
+  version = "1.5.2"
+
 [[constraint]]
   name = "k8s.io/client-go"
   version = "8.0"
@@ -10,10 +14,6 @@ branch = "release-3.10"
 [[constraint]]
   name = "github.com/blang/semver"
   version = "3.5.1"
-
-[[constraint]]
-  branch = "master"
-  name = "github.com/dgraph-io/dgo"
 
 [[constraint]]
   name = "github.com/openshift/api"
