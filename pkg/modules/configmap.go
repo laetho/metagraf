@@ -109,7 +109,7 @@ func GenConfigMaps(mg *metagraf.MetaGraf) {
 		}
 		genConfigMapsFromConfig(&c, mg)
 	}
-	genConfigMapsFromResources(mg)
+	//genConfigMapsFromResources(mg)
 }
 
 /*
@@ -177,7 +177,6 @@ func genConfigMapsFromConfig(conf *metagraf.Config, mg *metagraf.MetaGraf) {
 	in a configmap or write the timeline inline.
  */
 func genConfigMapsFromResources(mg *metagraf.MetaGraf) {
-
 	objname := Name(mg)
 
 	for _, r := range mg.Spec.Resources {
@@ -193,7 +192,7 @@ func genConfigMapsFromResources(mg *metagraf.MetaGraf) {
 	}
 }
 
-func genJDBCOracle(objname string, r *metagraf.Resource ) corev1.ConfigMap {
+func genJDBCOracle(objname string, r *metagraf.Resource ) corev1.ConfigMap{
 
 	l := make(map[string]string)
 	l["app"] = objname
