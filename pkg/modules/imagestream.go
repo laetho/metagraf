@@ -17,9 +17,11 @@ limitations under the License.
 package modules
 
 import (
+	"fmt"
 	"github.com/golang/glog"
 	"metagraf/mg/ocpclient"
 	"metagraf/pkg/metagraf"
+	"os"
 
 	imagev1 "github.com/openshift/api/image/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -81,13 +83,17 @@ func StoreImageStream(obj imagev1.ImageStream) {
 		// update
 		result, err := client.Update(&obj)
 		if err != nil {
-			glog.Info(err)
+			glog.Error(err)
+			fmt.Println(err)
+			os.Exit(1)
 		}
 		glog.Infof("Updated ImageStream: %v(%v)", result.Name, obj.Name)
 	} else {
 		result, err := client.Create(&obj)
 		if err != nil {
-			glog.Info(err)
+			glog.Error(err)
+			fmt.Println(err)
+			os.Exit(1)
 		}
 		glog.Infof("Created ImageStream: %v(%v)", result.Name, obj.Name)
 	}

@@ -17,6 +17,7 @@ limitations under the License.
 package modules
 
 import (
+	"fmt"
 	"github.com/golang/glog"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -25,6 +26,7 @@ import (
 	"metagraf/pkg/helpers"
 	"metagraf/pkg/imageurl"
 	"metagraf/pkg/metagraf"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -115,13 +117,17 @@ func StoreService(obj corev1.Service) {
 		// update
 		result, err := client.Update(&obj)
 		if err != nil {
-			glog.Info(err)
+			glog.Error(err)
+			fmt.Println(err)
+			os.Exit(1)
 		}
 		glog.Infof("Updated Service: %v(%v)", result.Name, obj.Name)
 	} else {
 		result, err := client.Create(&obj)
 		if err != nil {
-			glog.Info(err)
+			glog.Error(err)
+			fmt.Println(err)
+			os.Exit(1)
 		}
 		glog.Infof("Created Service: %v(%v)", result.Name, obj.Name)
 	}

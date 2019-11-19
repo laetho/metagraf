@@ -17,6 +17,7 @@ limitations under the License.
 package modules
 
 import (
+	"fmt"
 	"github.com/golang/glog"
 	"metagraf/pkg/metagraf"
 	"os"
@@ -254,13 +255,17 @@ func StoreSecret(obj corev1.Secret) {
 		// update
 		result, err := client.Update(&obj)
 		if err != nil {
-			glog.Info(err)
+			glog.Error(err)
+			fmt.Println(err)
+			os.Exit(1)
 		}
 		glog.Infof("Updated Secret: %v(%v)", result.Name, obj.Name)
 	} else {
 		result, err := client.Create(&obj)
 		if err != nil {
-			glog.Info(err)
+			glog.Error(err)
+			fmt.Println(err)
+			os.Exit(1)
 		}
 		glog.Infof("Created Secret: %v(%v)", result.Name, obj.Name)
 	}

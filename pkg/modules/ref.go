@@ -45,6 +45,7 @@ func GenRef(mg *metagraf.MetaGraf) {
 	err = tmpl.Execute(f, mg)
 	if err != nil {
 		fmt.Println(err)
+		os.Exit(1)
 	}
 	fmt.Println("Wrote ref file to: ", filename)
 }

@@ -19,6 +19,7 @@ package modules
 import (
 	"bytes"
 	"encoding/base64"
+	"fmt"
 	"github.com/golang/glog"
 	"metagraf/mg/ocpclient"
 	"metagraf/pkg/metagraf"
@@ -293,14 +294,16 @@ func StoreConfigMap(m corev1.ConfigMap) {
 		result, err := cmclient.Update(&m)
 		if err != nil {
 			glog.Error(err)
-			//os.Exit(1)
+			fmt.Println(err)
+			os.Exit(1)
 		}
 		glog.Infof("Updated configmap: %v(%v)", result.Name, m.Name)
 	} else {
 		result, err := cmclient.Create(&m)
 		if err != nil {
 			glog.Error(err)
-			//os.Exit(1)
+			fmt.Println(err)
+			os.Exit(1)
 		}
 		glog.Infof("Created configmap: %v(%v)", result.Name, m.Name)
 	}

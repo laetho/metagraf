@@ -1,9 +1,11 @@
 package modules
 
 import (
+	"fmt"
 	"github.com/golang/glog"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"metagraf/pkg/helpers"
+	"os"
 	"reflect"
 	"sort"
 	"strings"
@@ -103,13 +105,17 @@ func StoreRoute(obj routev1.Route) {
 		// update
 		result, err := client.Update(&obj)
 		if err != nil {
-			glog.Info(err)
+			glog.Error(err)
+			fmt.Println(err)
+			os.Exit(1)
 		}
 		glog.Infof("Updated Route: %v(%v)", result.Name, obj.Name)
 	} else {
 		result, err := client.Create(&obj)
 		if err != nil {
-			glog.Info(err)
+			glog.Error(err)
+			fmt.Println(err)
+			os.Exit(1)
 		}
 		glog.Infof("Created Route: %v(%v)", result.Name, obj.Name)
 	}

@@ -17,6 +17,7 @@ limitations under the License.
 package modules
 
 import (
+	"fmt"
 	"github.com/golang/glog"
 	"metagraf/mg/ocpclient"
 	"metagraf/pkg/helpers"
@@ -169,13 +170,17 @@ func StoreBuildConfig(obj buildv1.BuildConfig) {
 		// update
 		result, err := client.Update(&obj)
 		if err != nil {
-			glog.Info(err)
+			glog.Error(err)
+			fmt.Println(err)
+			os.Exit(1)
 		}
 		glog.Infof("Updated BuildConfig: %v(%v)", result.Name, obj.Name)
 	} else {
 		result, err := client.Create(&obj)
 		if err != nil {
-			glog.Info(err)
+			glog.Error(err)
+			fmt.Println(err)
+			os.Exit(1)
 		}
 		glog.Infof("Created BuildConfig: %v(%v)", result.Name, obj.Name)
 	}

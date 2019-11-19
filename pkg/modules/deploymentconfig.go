@@ -17,10 +17,12 @@ limitations under the License.
 package modules
 
 import (
+	"fmt"
 	"github.com/golang/glog"
 	"github.com/openshift/api/image/docker10"
 	"github.com/spf13/viper"
 	"metagraf/mg/ocpclient"
+	"os"
 	"strconv"
 	"strings"
 
@@ -400,13 +402,17 @@ func StoreDeploymentConfig(obj appsv1.DeploymentConfig) {
 		// update
 		result, err := client.Update(&obj)
 		if err != nil {
-			glog.Info(err)
+			glog.Error(err)
+			fmt.Println(err)
+			os.Exit(1)
 		}
 		glog.Infof("Updated DeploymentConfig: %v(%v)", result.Name, obj.Name)
 	} else {
 		result, err := client.Create(&obj)
 		if err != nil {
-			glog.Info(err)
+			glog.Error(err)
+			fmt.Println(err)
+			os.Exit(1)
 		}
 		glog.Infof("Created DeploymentConfig: %v(%v)", result.Name, obj.Name)
 	}
