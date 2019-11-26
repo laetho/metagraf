@@ -17,13 +17,15 @@ limitations under the License.
 package cmd
 
 import (
+	"bufio"
+	"fmt"
 	"github.com/spf13/cobra"
 	"metagraf/pkg/metagraf"
+	"os"
+	"strings"
 )
 
 func init() {
-	initCmd.AddCommand(configCmdList)
-	initCmd.AddCommand(configCmdSet)
 	RootCmd.AddCommand(initCmd)
 }
 
@@ -34,6 +36,7 @@ var initCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		newmg := metagraf.MetaGraf{}
+		initInput( &newmg )
 
 		// Populate default annotations and labels
 		var annotations = map[string]string{
@@ -45,12 +48,49 @@ var initCmd = &cobra.Command{
 		newmg.Metadata.Annotations = annotations
 		newmg.Metadata.Labels = labels
 
-
-
-
 		metagraf.Store("./metagraf.json", &newmg)
 
 	},
 }
 
+func initInput(mg *metagraf.MetaGraf) {
 
+	reader := bufio.NewReader(os.Stdin)
+	text := ""
+
+	fmt.Println("Initialize a metaGraf specification:")
+
+	fmt.Print(" Name of component -> ")
+	text, _ = reader.ReadString( '\n')
+	text = strings.Replace(text, "\r", "", -1)
+	if ( len(text) > 0 ) {
+		mg.Metadata.Name = text
+	}
+
+	fmt.Print(" Description of component -> ")
+	text, _ = reader.ReadString( '\n')
+	text = strings.Replace(text, "\r", "", -1)
+	if ( len(text) > 0 ) {
+		mg.Spec.Description = text
+	}
+
+	fmt.Print("GIT Repository url -> ")
+	text, _ = reader.ReadString( '\n')
+	text = strings.Replace(text, "\r", "", -1)
+	text = strings.Replace(text, "\n", "", -1)
+	if ( len(text) > 0 ) {
+		mg.Spec.Repository = text
+	}
+
+	fmt.Print("GIT Repository branch -> ")
+	text, _ = reader.ReadString( '\n')
+	text = strings.Replace(text, "\r", "", -1)
+	text = strings.Replace(text, "\n", "", -1)
+	if ( len(text) > 0 ) {
+		mg.Spec.Branch = text
+	}
+
+
+
+
+}
