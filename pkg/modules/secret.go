@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The metaGraf Authors
+Copyright 2019 The metaGraf Authors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -75,7 +75,6 @@ func GenSecrets(mg *metagraf.MetaGraf) {
 	}
 
 	for _, c := range mg.Spec.Config{
-
 		if c.Type != "cert" {
 			continue
 		}
@@ -90,7 +89,7 @@ func GenSecrets(mg *metagraf.MetaGraf) {
 	}
 
 	for _, s := range mg.Spec.Secret{
-		if ( s.Global == true && !CreateGlobals ) {
+		if s.Global == true && !CreateGlobals {
 			glog.Info("Skipping creation of global secret named: "+ strings.ToLower(s.Name))
 			continue
 		}
@@ -119,7 +118,7 @@ func secretExists(name string) bool {
 		os.Exit(1)
 	}
 
-	if (obj.Name == name ) {
+	if obj.Name == name {
 		glog.Info("Secret ", obj.Name, " exists in namespace: ", NameSpace)
 		return true
 	}
