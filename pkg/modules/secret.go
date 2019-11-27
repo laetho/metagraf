@@ -75,10 +75,6 @@ func GenSecrets(mg *metagraf.MetaGraf) {
 	}
 
 	for _, c := range mg.Spec.Config{
-		if secretExists(strings.ToLower(c.Name)) {
-			glog.Info("Skipping resource: ", Name(mg)+"-"+strings.ToLower(c.Name))
-			continue
-		}
 
 		if c.Type != "cert" {
 			continue
@@ -94,6 +90,12 @@ func GenSecrets(mg *metagraf.MetaGraf) {
 	}
 
 	for _, s := range mg.Spec.Secret{
+		// todo: Create a flag to force creation of global secrets.
+		if ( s.Global == true ) {
+			glog.Info("Skipping creation of global secret named: "+ strings.ToLower(s.Name))
+			continue
+		}
+
 		if secretExists(strings.ToLower(s.Name)) {
 			glog.Info("Skipping secret: ", Name(mg)+"-"+strings.ToLower(s.Name))
 			continue
@@ -112,15 +114,14 @@ func GenSecrets(mg *metagraf.MetaGraf) {
 // Check if a named secret exsist in the current namespace.
 func secretExists(name string) bool {
 	cli := ocpclient.GetCoreClient()
-	l, err := cli.Secrets(NameSpace).List(metav1.ListOptions{LabelSelector: "name = " + name})
-
+	obj, err := cli.Secrets(NameSpace).Get(name,metav1.GetOptions{})
 	if err != nil {
 		glog.Error(err)
 		os.Exit(1)
 	}
 
-	if len(l.Items) > 0 {
-		glog.Info("Secret ", name, " exists in namespace: ", NameSpace)
+	if (obj.Name == name ) {
+		glog.Info("Secret ", obj.Name, " exists in namespace: ", NameSpace)
 		return true
 	}
 	return false
