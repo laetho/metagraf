@@ -53,6 +53,7 @@ func init() {
 	createBuildConfigCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
 	createSecretCmd.Flags().StringVarP(&Namespace, "namespace", "n", "","namespace to work on, if not supplied it will use current working namespace")
 	createSecretCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
+	createSecretCmd.Flags().BoolVarP(&CreateGlobals, "globals", "g", false, "Override default behavior and force creation of global secrets. Will not overwrite existing ones.")
 	createConfigMapCmd.Flags().StringVarP(&Namespace, "namespace", "n", "","namespace to work on, if not supplied it will use current working namespace")
 	createConfigMapCmd.Flags().StringVar(&OName, "name", "", "Overrides name of application used to prefix configmaps.")
 	createConfigMapCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")

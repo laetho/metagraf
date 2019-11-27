@@ -64,6 +64,7 @@ var (
 	Tag		  string
 	OName	  string
 	Context   string	// Application context root from FlagPassingHack.
+	CreateGlobals bool
 )
 
 var Variables map[string]string

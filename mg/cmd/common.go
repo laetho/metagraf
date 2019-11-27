@@ -163,6 +163,7 @@ func FlagPassingHack() {
 	modules.Tag = Tag
 	modules.OName = OName
 	modules.Context = Context
+	modules.CreateGlobals = CreateGlobals
 }
 
 

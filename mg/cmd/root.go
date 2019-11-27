@@ -51,6 +51,7 @@ var (
 	Registry	string			// Flag for holding a custom container registry
 	Tag			string			//
 	Context		string			// Flag for setting application context root.
+	CreateGlobals bool = false	// Flag for overriding default behaviour of skipping creation of global secrets.
 )
 
 // Array of available config keys

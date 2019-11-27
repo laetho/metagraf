@@ -91,7 +91,7 @@ func GenSecrets(mg *metagraf.MetaGraf) {
 
 	for _, s := range mg.Spec.Secret{
 		// todo: Create a flag to force creation of global secrets.
-		if ( s.Global == true ) {
+		if ( s.Global == true && !CreateGlobals ) {
 			glog.Info("Skipping creation of global secret named: "+ strings.ToLower(s.Name))
 			continue
 		}
