@@ -132,3 +132,19 @@ func StoreService(obj corev1.Service) {
 		glog.Infof("Created Service: %v(%v)", result.Name, obj.Name)
 	}
 }
+
+func DeleteService(name string) {
+	client := ocpclient.GetCoreClient().Services(NameSpace)
+
+	_, err := client.Get(name, metav1.GetOptions{})
+	if err != nil {
+		fmt.Println("Service: ", name, "does not exist in namespace: ", NameSpace,", skipping...")
+		return
+	}
+
+	err = client.Delete(name, &metav1.DeleteOptions{})
+	if err != nil {
+		fmt.Println( "Service to delete Route: ", name, " in namespace: ", NameSpace)
+	}
+	fmt.Println("Deleted Service: ", name, ", in namespace: ", NameSpace)
+}
