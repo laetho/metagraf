@@ -46,6 +46,7 @@ import (
 
 // This is a complete hack. todo: fix this shit, restructure packages
 var (
+	All		  bool
 	NameSpace string // Used to pass namespace from cmd to module to avoid import cycle.
 	Output    bool   // Flag passing hack
 	Version   string // Flag passing hack

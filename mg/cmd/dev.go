@@ -35,6 +35,7 @@ func init() {
 	devCmdUp.Flags().StringVar(&CVfile, "cvfile","", "Property file with component configuration values. Can be generated with \"mg generate properties\" command.)")
 	devCmdUp.Flags().StringVar(&OName, "name", "", "Overrides name of application.")
 	devCmdUp.Flags().StringVarP(&Context,"context", "c","/","Application contextroot. (\"/<context>\"). Used when creating Route object.")
+	devCmdDown.Flags().BoolP(&All, "all", false, "Delete all component resources including images.")
 }
 
 var devCmd = &cobra.Command{

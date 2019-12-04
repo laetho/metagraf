@@ -31,6 +31,7 @@ const Banner string = "mg (metaGraf) - "
 
 
 var (
+	All		  bool = false		// Flag for indicating all resources, example delete all resources associated with a application.
 	Namespace string
 	OName     string // Flag for overriding application name.
 	Config    string // Viper config override
