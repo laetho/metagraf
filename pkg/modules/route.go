@@ -126,7 +126,7 @@ func DeleteRoute(name string) {
 
 	_, err := client.Get(name, metav1.GetOptions{})
 	if err != nil {
-		fmt.Println("The Route: ", name, "does not exist in namespace: ", NameSpace,", skipping...")
+		fmt.Println("Route: ", name, "does not exist in namespace: ", NameSpace,", skipping...")
 		return
 	}
 
