@@ -174,7 +174,7 @@ func StoreBuildConfig(obj buildv1.BuildConfig) {
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		glog.Infof("Updated BuildConfig: %v(%v)", result.Name, obj.Name)
+		fmt.Printf("Updated BuildConfig: %v(%v)", result.Name, obj.Name)
 	} else {
 		result, err := client.Create(&obj)
 		if err != nil {
@@ -182,6 +182,22 @@ func StoreBuildConfig(obj buildv1.BuildConfig) {
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		glog.Infof("Created BuildConfig: %v(%v)", result.Name, obj.Name)
+		fmt.Printf("Created BuildConfig: %v(%v)", result.Name, obj.Name)
 	}
+}
+
+func DeleteBuildConfig(name string) {
+	client := ocpclient.GetBuildClient().BuildConfigs(NameSpace)
+
+	_, err := client.Get(name, metav1.GetOptions{})
+	if err != nil {
+		fmt.Println("The BuildConfig: ", name, "does not exist in namespace: ", NameSpace,", skipping...")
+		return
+	}
+
+	err = client.Delete(name, &metav1.DeleteOptions{})
+	if err != nil {
+		fmt.Println( "Unable to delete BuildConfig: ", name, " in namespace: ", NameSpace)
+	}
+	fmt.Println("Deleted BuildConfig: ", name, ", in namespace: ", NameSpace)
 }
