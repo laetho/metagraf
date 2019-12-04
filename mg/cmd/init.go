@@ -36,18 +36,52 @@ var initCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		newmg := metagraf.MetaGraf{}
+		newmg.Kind = "metagraf"
 		initInput( &newmg )
 
 		// Populate default annotations and labels
 		var annotations = map[string]string{
-			"myannotation": "myvalue",
+			"app": newmg.Metadata.Name,
 		}
 		var labels = map[string]string{
-			"mylabel": "labelvalue",
+			"metagraf": "true",
 		}
 		newmg.Metadata.Annotations = annotations
 		newmg.Metadata.Labels = labels
-
+		newmg.Spec.Environment.Local = append( newmg.Spec.Environment.Local, metagraf.EnvironmentVar{
+			Name:        "LOCAL_EXAMPLE_ENV",
+			Required:    false,
+			Type:        "string",
+			Description: "An example local environment variable.",
+			Default:     "default",
+		})
+		newmg.Spec.Environment.Build = append( newmg.Spec.Environment.Build, metagraf.EnvironmentVar{
+			Name:        "BUILD_EXAMPLE_ENV",
+			Required:    false,
+			Type:        "string",
+			Description: "An example build environment variable.",
+			Default:     "default",
+		})
+		newmg.Spec.Config = append( newmg.Spec.Config,metagraf.Config{
+			Name:        "example.properties",
+			Type:        "parameters",
+			Global:      false,
+			Description: "An example file",
+			Options:     append([]metagraf.ConfigParam{}, metagraf.ConfigParam{
+				Name:        "key",
+				Required:    true,
+				Dynamic:     false,
+				Description: "A key",
+				Type:        "string",
+				Default:     "value",
+			}),
+		})
+		newmg.Spec.Secret = append(newmg.Spec.Secret, metagraf.Secret{
+			Name:        "ca.cert",
+			Global:      true,
+			Description: "Certificate Authority",
+		})
+		
 		metagraf.Store("./metagraf.json", &newmg)
 
 	},
@@ -62,35 +96,30 @@ func initInput(mg *metagraf.MetaGraf) {
 
 	fmt.Print(" Name of component -> ")
 	text, _ = reader.ReadString( '\n')
-	text = strings.Replace(text, "\r", "", -1)
+	text = strings.Trim(text, "\n\r")
 	if ( len(text) > 0 ) {
 		mg.Metadata.Name = text
 	}
 
 	fmt.Print(" Description of component -> ")
 	text, _ = reader.ReadString( '\n')
-	text = strings.Replace(text, "\r", "", -1)
+	text = strings.Trim(text, "\n\r")
 	if ( len(text) > 0 ) {
 		mg.Spec.Description = text
 	}
 
 	fmt.Print("GIT Repository url -> ")
 	text, _ = reader.ReadString( '\n')
-	text = strings.Replace(text, "\r", "", -1)
-	text = strings.Replace(text, "\n", "", -1)
+	text = strings.Trim(text, "\n\r")
 	if ( len(text) > 0 ) {
 		mg.Spec.Repository = text
 	}
 
 	fmt.Print("GIT Repository branch -> ")
 	text, _ = reader.ReadString( '\n')
-	text = strings.Replace(text, "\r", "", -1)
-	text = strings.Replace(text, "\n", "", -1)
+	text = strings.Trim(text, "\n\r")
 	if ( len(text) > 0 ) {
 		mg.Spec.Branch = text
 	}
-
-
-
 
 }
