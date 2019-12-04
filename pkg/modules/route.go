@@ -120,3 +120,19 @@ func StoreRoute(obj routev1.Route) {
 		glog.Infof("Created Route: %v(%v)", result.Name, obj.Name)
 	}
 }
+
+func DeleteRoute(name string) {
+	client := ocpclient.GetRouteClient().Routes(NameSpace)
+
+	_, err := client.Get(name, metav1.GetOptions{})
+	if err != nil {
+		fmt.Println("The Route: ", name, "does not exist in namespace: ", NameSpace,", skipping...")
+		return
+	}
+
+	err = client.Delete(name, &metav1.DeleteOptions{})
+	if err != nil {
+		fmt.Println( "Unable to delete Route: ", name, " in namespace: ", NameSpace)
+	}
+	fmt.Println("Deleted Route: ", name, ", in namespace: ", NameSpace)
+}
