@@ -17,6 +17,7 @@ limitations under the License.
 package cmd
 
 import (
+	"fmt"
 	"github.com/golang/glog"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -29,12 +30,13 @@ func init() {
 	RootCmd.AddCommand(devCmd)
 	devCmd.AddCommand(devCmdUp)
 	devCmd.AddCommand(devCmdDown)
-	devCmdUp.Flags().StringVar(&Namespace, "namespace", "", "namespace to work on, if not supplied it will use current active namespace.")
+	devCmdUp.Flags().StringVarP(&Namespace, "namespace", "n","","namespace to work on, if not supplied it will use current active namespace.")
 	devCmdUp.Flags().StringVar(&Branch, "branch","", "Override branch to build from. Used when generating BuildConfig object.")
 	devCmdUp.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
 	devCmdUp.Flags().StringVar(&CVfile, "cvfile","", "Property file with component configuration values. Can be generated with \"mg generate properties\" command.)")
 	devCmdUp.Flags().StringVar(&OName, "name", "", "Overrides name of application.")
 	devCmdUp.Flags().StringVarP(&Context,"context", "c","/","Application contextroot. (\"/<context>\"). Used when creating Route object.")
+	devCmdDown.Flags().StringVarP(&Namespace, "namespace", "n","","namespace to work on, if not supplied it will use current active namespace.")
 	devCmdDown.Flags().BoolVarP(&All, "all", "a", false,"Delete all component resources including images.")
 }
 
@@ -114,5 +116,21 @@ func devUp(mgf string) {
 }
 
 func devDown(mgf string) {
+	mg := metagraf.Parse(mgf)
+	basename := modules.Name(&mg)
+	fmt.Println(basename)
 
+
+	if All {
+		modules.DeleteImageStream(basename)
+	}
+	modules.DeleteBuildConfig(basename)
+
+/*
+	client := ocpclient.GetCoreClient()
+
+
+
+	modules.DeleteBuildConfig()
+*/
 }
