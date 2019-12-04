@@ -417,3 +417,19 @@ func StoreDeploymentConfig(obj appsv1.DeploymentConfig) {
 		glog.Infof("Created DeploymentConfig: %v(%v)", result.Name, obj.Name)
 	}
 }
+
+func DeleteDeploymentConfig(name string) {
+	client := ocpclient.GetAppsClient().DeploymentConfigs(NameSpace)
+
+	_, err := client.Get(name, metav1.GetOptions{})
+	if err != nil {
+		fmt.Println("DeploymentConfig: ", name, "does not exist in namespace: ", NameSpace,", skipping...")
+		return
+	}
+
+	err = client.Delete(name, &metav1.DeleteOptions{})
+	if err != nil {
+		fmt.Println( "Service to delete DeploymentConfig: ", name, " in namespace: ", NameSpace)
+	}
+	fmt.Println("Deleted DeploymentConfig: ", name, ", in namespace: ", NameSpace)
+}
