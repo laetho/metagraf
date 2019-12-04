@@ -98,3 +98,19 @@ func StoreImageStream(obj imagev1.ImageStream) {
 		glog.Infof("Created ImageStream: %v(%v)", result.Name, obj.Name)
 	}
 }
+
+func DeleteImageStream(name string) {
+	client := ocpclient.GetImageClient().ImageStreams(NameSpace)
+
+	_, err := client.Get(name, metav1.GetOptions{})
+	if err != nil {
+		fmt.Println("ImageStream: ", name, "does not exist in namespace: ", NameSpace,", skipping...")
+		return
+	}
+
+	err = client.Delete(name, &metav1.DeleteOptions{})
+	if err != nil {
+		fmt.Println( "Unable to delete ImageStream: ", name, " in namespace: ", NameSpace)
+	}
+	fmt.Println("Deleted ImageStream: ", name, ", in namespace: ", NameSpace)
+}
