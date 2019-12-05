@@ -242,47 +242,6 @@ func genJDBCOracle(objname string, r *metagraf.Resource ) corev1.ConfigMap{
 	return cm
 }
 
-func genJMSResource(objname string, r *metagraf.Resource) corev1.ConfigMap {
-	l := make(map[string]string)
-	l["app"] = objname
-
-
-	// <resourceAdapter id="mqJms" location="${server.config.dir}/drivers/wmq.jmsra.rar"/> <- This should be injected if jms are in liberty features.
-	//
-	// todo: should this be fetched from EnvironmentVar Template, possibly
-	dstemplate := `
-<connectionManager id="ConMgr1" maxPoolSize="6"/>
-<jmsQueueConnectionFactory jndiName="jms/QCF_RGPROFILE" connectionManagerRef="ConMgr1">
-        <properties.mqJms username="{.User}" clientID="RGProfile" transportType="CLIENT" hostName="q1imq001.qa01.norsk-tipping.no" port="1514" channel="CH.JCAPS.BATCH" queueManager="QMBATCHESB"/>
-</jmsQueueConnectionFactory>
-`
-	t, _ := template.New("ds").Parse(dstemplate)
-	var o bytes.Buffer
-	if err := t.Execute(&o, r); err != nil {
-		glog.Errorf("%v", err)
-		os.Exit(1)
-	}
-
-	cm := corev1.ConfigMap{
-		TypeMeta: metav1.TypeMeta{
-			Kind:       "ConfigMap",
-			APIVersion: "v1",
-		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name:   objname + "-" + strings.ToLower(r.User),
-			Labels: l,
-		},
-	}
-
-	cm.Data = make(map[string]string)
-	cm.ObjectMeta.Labels = l
-	cm.Data["DS"] = o.String()
-
-	// @todo this should really come from secretRef/vault
-	cm.Data["PASSWORD"] = "$PASSWORD"
-	return cm
-}
-
 func StoreConfigMap(m corev1.ConfigMap) {
 
 	glog.Infof("ResourceVersion: %v Length: %v", m.ResourceVersion, len(m.ResourceVersion))
