@@ -193,19 +193,17 @@ func genConfigMapsFromResources(mg *metagraf.MetaGraf) {
 }
 
 func StoreConfigMap(m corev1.ConfigMap) {
-
-	glog.Infof("ResourceVersion: %v Length: %v", m.ResourceVersion, len(m.ResourceVersion))
-
 	cmclient := ocpclient.GetCoreClient().ConfigMaps(NameSpace)
 
-	if len(m.Data) > 0 {
+	cm, _ := cmclient.Get(m.Name, metav1.GetOptions{})
+	if len(cm.ResourceVersion) > 0 {
 		result, err := cmclient.Update(&m)
 		if err != nil {
 			glog.Error(err)
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		glog.Infof("Updated configmap: %v(%v)", result.Name, m.Name)
+		fmt.Println("Updated ConfigMap: %v(%v)", result.Name, m.Name)
 	} else {
 		result, err := cmclient.Create(&m)
 		if len(result.Data) == 0 && err != nil {
