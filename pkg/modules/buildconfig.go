@@ -165,9 +165,9 @@ func StoreBuildConfig(obj buildv1.BuildConfig) {
 	glog.Infof("Namespace: %v", NameSpace)
 
 	client := ocpclient.GetBuildClient().BuildConfigs(NameSpace)
-
-	if len(obj.ResourceVersion) > 0 {
-		// update
+	bc, _ := client.Get(obj.Name, metav1.GetOptions{})
+	if len(bc.ResourceVersion) > 0 {
+		obj.ResourceVersion = bc.ResourceVersion
 		result, err := client.Update(&obj)
 		if err != nil {
 			glog.Error(err)
@@ -198,6 +198,8 @@ func DeleteBuildConfig(name string) {
 	err = client.Delete(name, &metav1.DeleteOptions{})
 	if err != nil {
 		fmt.Println( "Unable to delete BuildConfig: ", name, " in namespace: ", NameSpace)
+		glog.Error(err)
+		return
 	}
 	fmt.Println("Deleted BuildConfig: ", name, ", in namespace: ", NameSpace)
 }
