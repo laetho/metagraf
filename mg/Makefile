@@ -15,6 +15,8 @@ build:
 #	go build -ldflags "-X main.GitCommit=${GIT_COMMIT}" 
 
 build-osx:
+	@echo "Building Mac OSX version..."
+	GOOS=darwin ARCH=amd64 go build
 
 build-win:
 
