@@ -308,3 +308,20 @@ func StoreConfigMap(m corev1.ConfigMap) {
 		glog.Infof("Created configmap: %v(%v)", result.Name, m.Name)
 	}
 }
+
+func DeleteConfigMaps(mg *metagraf.MetaGraf) {
+	client := ocpclient.GetCoreClient().ConfigMaps()
+
+
+	_, err := client.Get(name, metav1.GetOptions{})
+	if err != nil {
+		fmt.Println("Service: ", name, "does not exist in namespace: ", NameSpace,", skipping...")
+		return
+	}
+
+	err = client.Delete(name, &metav1.DeleteOptions{})
+	if err != nil {
+		fmt.Println( "Service to delete Route: ", name, " in namespace: ", NameSpace)
+	}
+	fmt.Println("Deleted Service: ", name, ", in namespace: ", NameSpace)
+}
