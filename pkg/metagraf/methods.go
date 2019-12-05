@@ -51,6 +51,7 @@ func (mg *MetaGraf) GetVarsFromSource(defaults bool) MGVars {
 
 	// Environment Section
 	for _,env := range mg.Spec.Environment.Local {
+		if env.Required == false {continue}
 		if defaults {
 			vars["local="+env.Name] = env.Default
 		} else {
@@ -58,6 +59,7 @@ func (mg *MetaGraf) GetVarsFromSource(defaults bool) MGVars {
 		}
 	}
 	for _,env := range mg.Spec.Environment.External.Introduces {
+		if env.Required == false {continue}
 		if defaults {
 			vars["external="+env.Name] = env.Default
 		} else {
@@ -65,6 +67,7 @@ func (mg *MetaGraf) GetVarsFromSource(defaults bool) MGVars {
 		}
 	}
 	for _,env := range mg.Spec.Environment.External.Consumes {
+		if env.Required == false {continue}
 		if defaults {
 			vars["external="+env.Name] = env.Default
 		} else {
@@ -77,6 +80,7 @@ func (mg *MetaGraf) GetVarsFromSource(defaults bool) MGVars {
 		if len(conf.Options) == 0 || conf.Type != "parameters" {continue}
 
 		for _,opts := range conf.Options {
+			if opts.Required == false {continue}
 			vars[conf.Name+"="+opts.Name] = opts.Default
 		}
 	}
