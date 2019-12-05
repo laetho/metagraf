@@ -17,18 +17,15 @@ limitations under the License.
 package modules
 
 import (
-	"bytes"
 	"encoding/base64"
 	"fmt"
 	"github.com/golang/glog"
+	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"metagraf/mg/ocpclient"
 	"metagraf/pkg/metagraf"
 	"os"
 	"strings"
-	"text/template"
-
-	corev1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 
@@ -201,8 +198,7 @@ func StoreConfigMap(m corev1.ConfigMap) {
 
 	cmclient := ocpclient.GetCoreClient().ConfigMaps(NameSpace)
 
-	if len(m.ResourceVersion) > 0 {
-		// update
+	if len(m.Data) > 0 {
 		result, err := cmclient.Update(&m)
 		if err != nil {
 			glog.Error(err)
@@ -212,28 +208,47 @@ func StoreConfigMap(m corev1.ConfigMap) {
 		glog.Infof("Updated configmap: %v(%v)", result.Name, m.Name)
 	} else {
 		result, err := cmclient.Create(&m)
-		if err != nil {
+		if len(result.Data) == 0 && err != nil {
 			glog.Error(err)
 			fmt.Println(err)
 			os.Exit(1)
+		} else {
+			fmt.Println("ConfigMap: ", m.Name, " exsist in the namespace: ", NameSpace, ", skipping ...")
 		}
 		glog.Infof("Created configmap: %v(%v)", result.Name, m.Name)
 	}
 }
 
 func DeleteConfigMaps(mg *metagraf.MetaGraf) {
-	client := ocpclient.GetCoreClient().ConfigMaps()
+	obname := Name(mg)
 
+	for _, c := range mg.Spec.Config {
+		// Do not delete global configuration maps.
+		if c.Global == true {
+			continue
+		}
+
+		name := strings.ToLower(obname+"-"+c.Name)
+		name = strings.Replace(name, "_", "-", -1)
+		name = strings.Replace(name, ".", "-", -1)
+		DeleteConfigMap(name)
+	}
+}
+
+func DeleteConfigMap(name string) {
+	client := ocpclient.GetCoreClient().ConfigMaps(NameSpace)
 
 	_, err := client.Get(name, metav1.GetOptions{})
 	if err != nil {
-		fmt.Println("Service: ", name, "does not exist in namespace: ", NameSpace,", skipping...")
+		fmt.Println("ConfigMap: ", name, "does not exist in namespace: ", NameSpace,", skipping...")
 		return
 	}
 
 	err = client.Delete(name, &metav1.DeleteOptions{})
 	if err != nil {
-		fmt.Println( "Service to delete Route: ", name, " in namespace: ", NameSpace)
+		fmt.Println("Unable to delete ConfigMap: ", name, " in namespace: ", NameSpace)
+		glog.Error(err)
+		return
 	}
-	fmt.Println("Deleted Service: ", name, ", in namespace: ", NameSpace)
+	fmt.Println("Deleted Configmap: ", name, ", in namespace: ", NameSpace)
 }
