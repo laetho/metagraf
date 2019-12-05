@@ -47,7 +47,8 @@ func FindMetagrafConfigMaps(mg *metagraf.MetaGraf) map[string]string {
 		}
 
 		if strings.ToLower(c.Type) == "cert" {
-			continue
+			fmt.Println("The Config type \"cert\" is deprected")
+			os.Exit(1)
 		}
 		maps[strings.ToLower(c.Name)] = "config"
 	}
