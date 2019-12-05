@@ -79,15 +79,14 @@ func StoreImageStream(obj imagev1.ImageStream) {
 
 	client := ocpclient.GetImageClient().ImageStreams(NameSpace)
 
-	if len(obj.ResourceVersion) > 0 {
-		// update
-		result, err := client.Update(&obj)
+	im, err := client.Get(obj.Name, metav1.GetOptions{})
+	if len(im.ResourceVersion) > 0 {
 		if err != nil {
 			glog.Error(err)
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		glog.Infof("Updated ImageStream: %v(%v)", result.Name, obj.Name)
+		glog.Infof("ImageStream: %v", obj.Name, " exist, skipping...")
 	} else {
 		result, err := client.Create(&obj)
 		if err != nil {
@@ -111,6 +110,8 @@ func DeleteImageStream(name string) {
 	err = client.Delete(name, &metav1.DeleteOptions{})
 	if err != nil {
 		fmt.Println( "Unable to delete ImageStream: ", name, " in namespace: ", NameSpace)
+		glog.Error(err)
+		return
 	}
 	fmt.Println("Deleted ImageStream: ", name, ", in namespace: ", NameSpace)
 }

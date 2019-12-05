@@ -133,6 +133,7 @@ func DeleteRoute(name string) {
 	err = client.Delete(name, &metav1.DeleteOptions{})
 	if err != nil {
 		fmt.Println( "Unable to delete Route: ", name, " in namespace: ", NameSpace)
+		return
 	}
 	fmt.Println("Deleted Route: ", name, ", in namespace: ", NameSpace)
 }

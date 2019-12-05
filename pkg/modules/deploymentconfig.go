@@ -430,6 +430,8 @@ func DeleteDeploymentConfig(name string) {
 	err = client.Delete(name, &metav1.DeleteOptions{})
 	if err != nil {
 		fmt.Println( "Service to delete DeploymentConfig: ", name, " in namespace: ", NameSpace)
+		glog.Error(err)
+		return
 	}
 	fmt.Println("Deleted DeploymentConfig: ", name, ", in namespace: ", NameSpace)
 }
