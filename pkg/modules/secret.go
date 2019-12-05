@@ -250,7 +250,7 @@ func StoreSecret(obj corev1.Secret) {
 
 	client := ocpclient.GetCoreClient().Secrets(NameSpace)
 
-	if len(obj.ResourceVersion) > 0 {
+	if len(obj.Data) > 0 {
 		// update
 		result, err := client.Update(&obj)
 		if err != nil {
@@ -268,4 +268,38 @@ func StoreSecret(obj corev1.Secret) {
 		}
 		glog.Infof("Created Secret: %v(%v)", result.Name, obj.Name)
 	}
+}
+
+func DeleteSecrets(mg *metagraf.MetaGraf) {
+	obname := Name(mg)
+
+	for _, s := range mg.Spec.Secret {
+		// Do not delete global configuration maps.
+		if s.Global == true {
+			continue
+		}
+
+		name := strings.ToLower(obname+"-"+s.Name)
+		name = strings.Replace(name, "_", "-", -1)
+		name = strings.Replace(name, ".", "-", -1)
+		DeleteSecret(name)
+	}
+}
+
+func DeleteSecret(name string) {
+	client := ocpclient.GetCoreClient().Secrets(NameSpace)
+
+	_, err := client.Get(name, metav1.GetOptions{})
+	if err != nil {
+		fmt.Println("Secret: ", name, "does not exist in namespace: ", NameSpace,", skipping...")
+		return
+	}
+
+	err = client.Delete(name, &metav1.DeleteOptions{})
+	if err != nil {
+		fmt.Println("Unable to delete Secret: ", name, " in namespace: ", NameSpace)
+		glog.Error(err)
+		return
+	}
+	fmt.Println("Deleted Secret: ", name, ", in namespace: ", NameSpace)
 }
