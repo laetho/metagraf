@@ -120,12 +120,16 @@ func devDown(mgf string) {
 	basename := modules.Name(&mg)
 	fmt.Println(basename)
 
-
-	if All {
-		modules.DeleteImageStream(basename)
-	}
+	modules.DeleteRoute(basename)
+	modules.DeleteService(basename)
+	modules.DeleteDeploymentConfig(basename)
 	modules.DeleteBuildConfig(basename)
 
+	if All {
+		modules.DeleteConfigMaps(&mg)
+		modules.DeleteSecrets(&mg)
+		modules.DeleteImageStream(basename)
+	}
 /*
 	client := ocpclient.GetCoreClient()
 

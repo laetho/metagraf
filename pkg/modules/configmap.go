@@ -176,7 +176,8 @@ func genConfigMapsFromConfig(conf *metagraf.Config, mg *metagraf.MetaGraf) {
 	todo: redo this to use template in spec to do this.
  */
 func genConfigMapsFromResources(mg *metagraf.MetaGraf) {
-	objname := Name(mg)
+	return
+	// objname := Name(mg)
 
 	/*
 	for _, r := range mg.Spec.Resources {
