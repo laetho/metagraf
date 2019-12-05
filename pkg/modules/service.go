@@ -144,7 +144,9 @@ func DeleteService(name string) {
 
 	err = client.Delete(name, &metav1.DeleteOptions{})
 	if err != nil {
-		fmt.Println( "Service to delete Route: ", name, " in namespace: ", NameSpace)
+		fmt.Println( "Unable to delete Service: ", name, " in namespace: ", NameSpace)
+		glog.Error(err)
+		return
 	}
 	fmt.Println("Deleted Service: ", name, ", in namespace: ", NameSpace)
 }
