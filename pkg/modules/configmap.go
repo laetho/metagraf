@@ -173,13 +173,12 @@ func genConfigMapsFromConfig(conf *metagraf.Config, mg *metagraf.MetaGraf) {
 }
 
 /*
-	Will generate configuration needed for a component to consume
-	an attached resource. You can reference a go template stored
-	in a configmap or write the timeline inline.
+	todo: redo this to use template in spec to do this.
  */
 func genConfigMapsFromResources(mg *metagraf.MetaGraf) {
 	objname := Name(mg)
 
+	/*
 	for _, r := range mg.Spec.Resources {
 		if strings.Contains(r.Type, "oracle") {
 			cm := genJDBCOracle(objname, &r)
@@ -191,55 +190,7 @@ func genConfigMapsFromResources(mg *metagraf.MetaGraf) {
 			}
 		}
 	}
-}
-
-func genJDBCOracle(objname string, r *metagraf.Resource ) corev1.ConfigMap{
-
-	l := make(map[string]string)
-	l["app"] = objname
-
-	data := struct {
-		Resource *metagraf.Resource
-		Vars map[string]string
-	}{
-		r,
-		Variables,
-	}
-
-	// todo: should this be fetched from EnvironmentVar Template, possibly
-	dstemplate := `<dataSource id="{{ .Resource.User }}" jndiName="jdbc/{{ .Resource.User }}">
-<jdbcDriver libraryRef="OracleLib" />
-<properties.oracle URL="jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=$OVIS_HOST)(PORT=$OVIS_PORT))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME={{index .Vars "OVIS_SID"}})))" user="dbadmin" password="$PASSWORD"/>
-<connectionManager maxPoolSize="10" minPoolSize="2" />
-</dataSource>
-`
-
-
-	t, _ := template.New("ds").Parse(dstemplate)
-	var o bytes.Buffer
-	if err := t.Execute(&o, data); err != nil {
-		glog.Errorf("%v", err)
-		os.Exit(1)
-	}
-
-	cm := corev1.ConfigMap{
-		TypeMeta: metav1.TypeMeta{
-			Kind:       "ConfigMap",
-			APIVersion: "v1",
-		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name:   objname + "-" + strings.ToLower(r.User),
-			Labels: l,
-		},
-	}
-
-	cm.Data = make(map[string]string)
-	cm.ObjectMeta.Labels = l
-	cm.Data["DS"] = o.String()
-
-	// @todo this should really come from secretRef/vault
-	cm.Data["PASSWORD"] = "$PASSWORD"
-	return cm
+	*/
 }
 
 func StoreConfigMap(m corev1.ConfigMap) {
