@@ -160,29 +160,25 @@ func genGitBuildSource(mg *metagraf.MetaGraf) buildv1.BuildSource {
 }
 
 func StoreBuildConfig(obj buildv1.BuildConfig) {
-
-	glog.Infof("ResourceVersion: %v Length: %v", obj.ResourceVersion, len(obj.ResourceVersion))
-	glog.Infof("Namespace: %v", NameSpace)
-
 	client := ocpclient.GetBuildClient().BuildConfigs(NameSpace)
 	bc, _ := client.Get(obj.Name, metav1.GetOptions{})
 	if len(bc.ResourceVersion) > 0 {
 		obj.ResourceVersion = bc.ResourceVersion
-		result, err := client.Update(&obj)
+		_, err := client.Update(&obj)
 		if err != nil {
 			glog.Error(err)
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		fmt.Printf("Updated BuildConfig: %v(%v)", result.Name, obj.Name)
+		fmt.Println("Updated BuildConfig: ", obj.Name, " in Namespace: ", NameSpace)
 	} else {
-		result, err := client.Create(&obj)
+		_, err := client.Create(&obj)
 		if err != nil {
 			glog.Error(err)
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		fmt.Printf("Created BuildConfig: %v(%v)", result.Name, obj.Name)
+		fmt.Println("Created BuildConfig: ", obj.Name, " in Namespace: ", NameSpace)
 	}
 }
 
