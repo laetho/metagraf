@@ -392,21 +392,18 @@ func volumes(mg *metagraf.MetaGraf, ImageInfo *docker10.DockerImage ) ([]corev1.
 
 
 func StoreDeploymentConfig(obj appsv1.DeploymentConfig) {
-
-	glog.Infof("ResourceVersion: %v Length: %v", obj.ResourceVersion, len(obj.ResourceVersion))
-	glog.Infof("Namespace: %v", NameSpace)
-
 	client := ocpclient.GetAppsClient().DeploymentConfigs(NameSpace)
+	dc, _ := client.Get(obj.Name, metav1.GetOptions{})
 
-	if len(obj.ResourceVersion) > 0 {
-		// update
-		result, err := client.Update(&obj)
+	if len(dc.ResourceVersion) > 0 {
+		obj.ResourceVersion = dc.ResourceVersion
+		_, err := client.Update(&obj)
 		if err != nil {
 			glog.Error(err)
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		glog.Infof("Updated DeploymentConfig: %v(%v)", result.Name, obj.Name)
+		fmt.Println("Updated DeploymentConfig: ", obj.Name," in Namespace: ", obj.Name)
 	} else {
 		result, err := client.Create(&obj)
 		if err != nil {
@@ -414,14 +411,14 @@ func StoreDeploymentConfig(obj appsv1.DeploymentConfig) {
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		glog.Infof("Created DeploymentConfig: %v(%v)", result.Name, obj.Name)
+		fmt.Println("Created DeploymentConfig: ", result.Name," in Namespace: ", obj.Name)
 	}
 }
 
 func DeleteDeploymentConfig(name string) {
 	client := ocpclient.GetAppsClient().DeploymentConfigs(NameSpace)
 
-	_, err := client.Get(name, metav1.GetOptions{})
+	_ , err := client.Get(name, metav1.GetOptions{})
 	if err != nil {
 		fmt.Println("DeploymentConfig: ", name, "does not exist in namespace: ", NameSpace,", skipping...")
 		return
