@@ -54,8 +54,8 @@ var devCmdUp = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
 			glog.Info(StrActiveProject, viper.Get("namespace"))
-			glog.Error(StrMissingMetaGraf)
-			return
+			fmt.Println(StrMissingMetaGraf)
+			os.Exit(1)
 		}
 
 		if len(Namespace) == 0 {
@@ -119,7 +119,6 @@ func devUp(mgf string) {
 func devDown(mgf string) {
 	mg := metagraf.Parse(mgf)
 	basename := modules.Name(&mg)
-	fmt.Println(basename)
 
 	modules.DeleteRoute(basename)
 	modules.DeleteService(basename)
