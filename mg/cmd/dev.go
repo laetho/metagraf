@@ -36,6 +36,7 @@ func init() {
 	devCmdUp.Flags().StringVar(&CVfile, "cvfile","", "Property file with component configuration values. Can be generated with \"mg generate properties\" command.)")
 	devCmdUp.Flags().StringVar(&OName, "name", "", "Overrides name of application.")
 	devCmdUp.Flags().StringVarP(&Context,"context", "c","/","Application contextroot. (\"/<context>\"). Used when creating Route object.")
+	devCmdUp.Flags().BoolVarP(&CreateGlobals, "globals", "g", false, "Override default behavior and force creation of global secrets. Will not overwrite existing ones.")
 	devCmdDown.Flags().StringVarP(&Namespace, "namespace", "n","","namespace to work on, if not supplied it will use current active namespace.")
 	devCmdDown.Flags().BoolVarP(&All, "all", "a", false,"Delete all component resources including images.")
 }
