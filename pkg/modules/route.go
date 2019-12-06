@@ -95,29 +95,25 @@ func GenRoute(mg *metagraf.MetaGraf) {
 }
 
 func StoreRoute(obj routev1.Route) {
-
-	glog.Infof("ResourceVersion: %v Length: %v", obj.ResourceVersion, len(obj.ResourceVersion))
-	glog.Infof("Namespace: %v", NameSpace)
-
 	client := ocpclient.GetRouteClient().Routes(NameSpace)
-
-	if len(obj.ResourceVersion) > 0 {
-		// update
-		result, err := client.Update(&obj)
+    route, _ := client.Get(obj.Name, metav1.GetOptions{} )
+	if len(route.ResourceVersion) > 0 {
+		obj.ResourceVersion = route.ResourceVersion
+		_, err := client.Update(&obj)
 		if err != nil {
 			glog.Error(err)
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		glog.Infof("Updated Route: %v(%v)", result.Name, obj.Name)
+		fmt.Println("Updated Route: ", obj.Name, " in Namespace: ", NameSpace)
 	} else {
-		result, err := client.Create(&obj)
+		_, err := client.Create(&obj)
 		if err != nil {
 			glog.Error(err)
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		glog.Infof("Created Route: %v(%v)", result.Name, obj.Name)
+		fmt.Println("Created Route: ", obj.Name, " in Namespace: ", NameSpace)
 	}
 }
 
