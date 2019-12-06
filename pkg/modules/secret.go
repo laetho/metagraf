@@ -21,6 +21,7 @@ import (
 	"github.com/golang/glog"
 	"metagraf/pkg/metagraf"
 	"os"
+	"strconv"
 	"strings"
 
 	corev1 "k8s.io/api/core/v1"
@@ -37,25 +38,19 @@ func FindSecrets(mg *metagraf.MetaGraf) map[string]string {
 		}
 	}
 
-	for _, c := range mg.Spec.Config {
-		if c.Type == "cert" {
-			maps[strings.ToLower(c.Name)] = "certificate"
-		}
-	}
-
 	for _, s := range mg.Spec.Secret {
-		maps[strings.ToLower(s.Name)] = "Global Secret"
+		maps[strings.ToLower(s.Name)] = strconv.FormatBool(s.Global)
 	}
 
 	return maps
 }
 
-
+// todo: flag creation of resource secrets?
 func GenSecrets(mg *metagraf.MetaGraf) {
 	for _, r := range mg.Spec.Resources {
+
 		// Is secret generation necessary?
 		if len(r.Secret) == 0 && len(r.User) == 0 {
-			glog.Info("Skipping resource: ", r.Name)
 			continue
 		}
 
@@ -74,21 +69,8 @@ func GenSecrets(mg *metagraf.MetaGraf) {
 		}
 	}
 
-	for _, c := range mg.Spec.Config{
-		if c.Type != "cert" {
-			continue
-		}
-
-		obj := genConfigCertSecret(&c, mg)
-		if !Dryrun {
-			StoreSecret(*obj)
-		}
-		if Output{
-			MarshalObject(obj.DeepCopyObject())
-		}
-	}
-
 	for _, s := range mg.Spec.Secret{
+		// Do not create global secrets unless CreateGlobals is true.
 		if s.Global == true && !CreateGlobals {
 			glog.Info("Skipping creation of global secret named: "+ strings.ToLower(s.Name))
 			continue
@@ -115,14 +97,10 @@ func secretExists(name string) bool {
 	obj, err := cli.Secrets(NameSpace).Get(name,metav1.GetOptions{})
 	if err != nil {
 		glog.Error(err)
-		os.Exit(1)
+		return false
 	}
-
-	if obj.Name == name {
-		glog.Info("Secret ", obj.Name, " exists in namespace: ", NameSpace)
-		return true
-	}
-	return false
+	glog.Info("Secret ", obj.Name, " exists in namespace: ", NameSpace)
+	return true
 }
 
 //
@@ -215,50 +193,20 @@ func genResourceSecret(res *metagraf.Resource, mg *metagraf.MetaGraf) *corev1.Se
 	return &sec
 }
 
-func genConfigCertSecret(c *metagraf.Config, mg *metagraf.MetaGraf) *corev1.Secret {
-	// Resource labels
-	l := make(map[string]string)
-	l["name"] = strings.ToLower(c.Name)
-	l["app"] = Name(mg)
-
-	// Populate v1.Secret StringData and Data
-
-	data := make(map[string][]byte)
-
-	data[c.Name] = []byte("Replace this")
-
-	sec := corev1.Secret{
-		TypeMeta: metav1.TypeMeta{
-			Kind:       "Secret",
-			APIVersion: "v1",
-		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name:   strings.ToLower(c.Name),
-			Labels: l,
-		},
-		Type:       corev1.SecretTypeOpaque,
-		Data:       data,
-	}
-
-	return &sec
-}
-
 func StoreSecret(obj corev1.Secret) {
-
-	glog.Infof("ResourceVersion: %v Length: %v", obj.ResourceVersion, len(obj.ResourceVersion))
-	glog.Infof("Namespace: %v", NameSpace)
-
 	client := ocpclient.GetCoreClient().Secrets(NameSpace)
-
-	if len(obj.Data) > 0 {
-		// update
+	sec, err := client.Get(obj.Name, metav1.GetOptions{})
+	if err != nil {
+		glog.Infof("Could not fetch Secret: %v", err)
+	}
+	if len(sec.ResourceVersion) > 0 {
 		result, err := client.Update(&obj)
 		if err != nil {
 			glog.Error(err)
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		glog.Infof("Updated Secret: %v(%v)", result.Name, obj.Name)
+		fmt.Printf("Updated Secret: %v(%v)", result.Name, obj.Name)
 	} else {
 		result, err := client.Create(&obj)
 		if err != nil {
