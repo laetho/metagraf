@@ -162,6 +162,7 @@ func genGitBuildSource(mg *metagraf.MetaGraf) buildv1.BuildSource {
 func StoreBuildConfig(obj buildv1.BuildConfig) {
 	client := ocpclient.GetBuildClient().BuildConfigs(NameSpace)
 	bc, _ := client.Get(obj.Name, metav1.GetOptions{})
+
 	if len(bc.ResourceVersion) > 0 {
 		obj.ResourceVersion = bc.ResourceVersion
 		_, err := client.Update(&obj)
