@@ -125,9 +125,9 @@ func devDown(mgf string) {
 	modules.DeleteService(basename)
 	modules.DeleteDeploymentConfig(basename)
 	modules.DeleteBuildConfig(basename)
+	modules.DeleteConfigMaps(&mg)
 
 	if All {
-		modules.DeleteConfigMaps(&mg)
 		modules.DeleteSecrets(&mg)
 		modules.DeleteImageStream(basename)
 	}
