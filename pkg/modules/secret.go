@@ -56,7 +56,7 @@ func GenSecrets(mg *metagraf.MetaGraf) {
 
 		// Do not create secret if it already exist!
 		if secretExists(ResourceSecretName(&r)) {
-			glog.Info("Skipping resource, already exist: ", r.Name)
+			fmt.Println("Skipping resource: ", r.Name, "already exist in Namespace: ", NameSpace)
 			continue
 		}
 
