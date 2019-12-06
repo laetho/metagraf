@@ -212,7 +212,7 @@ func StoreConfigMap(m corev1.ConfigMap) {
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		glog.Infof("Created ConfigMap: ", m.Name, " in Namespace: ", NameSpace)
+		fmt.Println("Created ConfigMap: ", m.Name, " in Namespace: ", NameSpace)
 	}
 }
 
