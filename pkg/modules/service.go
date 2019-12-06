@@ -107,29 +107,27 @@ func GenService(mg *metagraf.MetaGraf) {
 }
 
 func StoreService(obj corev1.Service) {
-
-	glog.Infof("ResourceVersion: %v Length: %v", obj.ResourceVersion, len(obj.ResourceVersion))
-	glog.Infof("Namespace: %v", NameSpace)
-
 	client := ocpclient.GetCoreClient().Services(NameSpace)
+	svc, _ := client.Get(obj.Name, metav1.GetOptions{})
 
-	if len(obj.ResourceVersion) > 0 {
-		// update
-		result, err := client.Update(&obj)
+	if len(svc.ResourceVersion) > 0 {
+		obj.ResourceVersion = svc.ResourceVersion
+		obj.Spec.ClusterIP = svc.Spec.ClusterIP
+		_, err := client.Update(&obj)
 		if err != nil {
 			glog.Error(err)
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		glog.Infof("Updated Service: %v(%v)", result.Name, obj.Name)
+		fmt.Println("Updated Service: ", obj.Name, " in Namespace: ", NameSpace)
 	} else {
-		result, err := client.Create(&obj)
+		_, err := client.Create(&obj)
 		if err != nil {
 			glog.Error(err)
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		glog.Infof("Created Service: %v(%v)", result.Name, obj.Name)
+		fmt.Println("Created Service: ", obj.Name, " in Namespace: ", NameSpace)
 	}
 }
 
