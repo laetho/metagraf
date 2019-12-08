@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The MetaGraph Authors
+Copyright 2019 The MetaGraph Authors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package main
 
 import (
 	"github.com/golang/glog"
+	log "k8s.io/klog"
 	"metagraf/mg/cmd"
 	"os"
 )
@@ -29,6 +30,6 @@ func main() {
 		glog.Flush()
 		os.Exit(1)
 	}
-	glog.Flush()
+	log.Flush()
 	os.Exit(0)
 }

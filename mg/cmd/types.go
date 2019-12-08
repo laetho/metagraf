@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The MetaGraph Authors
+Copyright 2019 The MetaGraph Authors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@ limitations under the License.
 package cmd
 
 import (
-	"github.com/golang/glog"
+	log "k8s.io/klog"
 	"strings"
 )
 
@@ -42,15 +42,15 @@ var CVars []string
 func (v CmdCVars) Parse() CmdVars {
 	cm := make(CmdVars)
 	for _, str := range v {
-		glog.Info("Cmd Var string:", str)
+		log.Info("Cmd Var string:", str)
 		split := strings.Split(str, "=")
 		if len(split) <= 1 {
-			glog.Info("Split:", split)
-			glog.Warning(StrMalformedVar)
+			log.Info("Split:", split)
+			log.Warning(StrMalformedVar)
 			continue
 		}
 		cm[split[0]] = split[1]
 	}
-	glog.Info("CmdCVars: ", cm)
+	log.Info("CmdCVars: ", cm)
 	return cm
 }

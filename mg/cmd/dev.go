@@ -18,7 +18,7 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/golang/glog"
+	log "k8s.io/klog"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"metagraf/pkg/metagraf"
@@ -53,7 +53,7 @@ var devCmdUp = &cobra.Command{
 	Long:  `sets up the required resources to test the component in the platform.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
-			glog.Info(StrActiveProject, viper.Get("namespace"))
+			log.Info(StrActiveProject, viper.Get("namespace"))
 			fmt.Println(StrMissingMetaGraf)
 			os.Exit(1)
 		}
@@ -61,7 +61,7 @@ var devCmdUp = &cobra.Command{
 		if len(Namespace) == 0 {
 			Namespace = viper.GetString("namespace")
 			if len(Namespace) == 0 {
-				glog.Error(StrMissingNamespace)
+				log.Error(StrMissingNamespace)
 				os.Exit(1)
 			}
 		}
@@ -77,15 +77,15 @@ var devCmdDown = &cobra.Command{
 	Long:  `dev subcommands`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
-			glog.Info(StrActiveProject, viper.Get("namespace"))
-			glog.Error(StrMissingMetaGraf)
+			log.Info(StrActiveProject, viper.Get("namespace"))
+			log.Error(StrMissingMetaGraf)
 			return
 		}
 
 		if len(Namespace) == 0 {
 			Namespace = viper.GetString("namespace")
 			if len(Namespace) == 0 {
-				glog.Error(StrMissingNamespace)
+				log.Error(StrMissingNamespace)
 				os.Exit(1)
 			}
 		}
@@ -98,7 +98,7 @@ var devCmdDown = &cobra.Command{
 func devUp(mgf string) {
 	mg := metagraf.Parse(mgf)
 
-	glog.Info("modules.Variables: ",modules.Variables)
+	log.Info("modules.Variables: ",modules.Variables)
 	if modules.Variables == nil {
 		vars := MergeVars(
 			mg.GetVars(),
