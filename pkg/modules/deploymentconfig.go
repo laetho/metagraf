@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The MetaGraph Authors
+Copyright 2019 The MetaGraph Authors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package modules
 
 import (
 	"fmt"
-	"github.com/golang/glog"
+	log "k8s.io/klog"
 	"github.com/openshift/api/image/docker10"
 	"github.com/spf13/viper"
 	"metagraf/mg/ocpclient"
@@ -306,7 +306,7 @@ func volumes(mg *metagraf.MetaGraf, ImageInfo *docker10.DockerImage ) ([]corev1.
 	var VolumeMounts []corev1.VolumeMount
 
 	// Volumes & VolumeMounts from base image into podspec
-	glog.Info("ImageInfo: Got ", len(ImageInfo.Config.Volumes), " volumes from base image...")
+	log.Info("ImageInfo: Got ", len(ImageInfo.Config.Volumes), " volumes from base image...")
 	for k := range ImageInfo.Config.Volumes {
 		// Volume Definitions
 		Volume := corev1.Volume{
@@ -332,7 +332,7 @@ func volumes(mg *metagraf.MetaGraf, ImageInfo *docker10.DockerImage ) ([]corev1.
 
 		vname = "cm-"+strings.Replace(n,".","-", -1)
 
-		glog.V(2).Infof("Name,Type: %v,%v", n,t)
+		log.V(2).Infof("Name,Type: %v,%v", n,t)
 
 		if t == "template" {
 			oname =  strings.Replace(n,".","-", -1)
@@ -367,7 +367,7 @@ func volumes(mg *metagraf.MetaGraf, ImageInfo *docker10.DockerImage ) ([]corev1.
 	}
 
 	for n, t := range FindSecrets(mg) {
-		glog.V(2).Infof("Secret: %v,%t", n, t)
+		log.V(2).Infof("Secret: %v,%t", n, t)
 		voln := strings.Replace(n,".", "-", -1)
 		var mode int32 = 420
 		vol := corev1.Volume{
@@ -399,7 +399,7 @@ func StoreDeploymentConfig(obj appsv1.DeploymentConfig) {
 		obj.ResourceVersion = dc.ResourceVersion
 		_, err := client.Update(&obj)
 		if err != nil {
-			glog.Error(err)
+			log.Error(err)
 			fmt.Println(err)
 			os.Exit(1)
 		}
@@ -407,7 +407,7 @@ func StoreDeploymentConfig(obj appsv1.DeploymentConfig) {
 	} else {
 		result, err := client.Create(&obj)
 		if err != nil {
-			glog.Error(err)
+			log.Error(err)
 			fmt.Println(err)
 			os.Exit(1)
 		}
@@ -427,7 +427,7 @@ func DeleteDeploymentConfig(name string) {
 	err = client.Delete(name, &metav1.DeleteOptions{})
 	if err != nil {
 		fmt.Println( "Service to delete DeploymentConfig: ", name, " in namespace: ", NameSpace)
-		glog.Error(err)
+		log.Error(err)
 		return
 	}
 	fmt.Println("Deleted DeploymentConfig: ", name, ", in namespace: ", NameSpace)

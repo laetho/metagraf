@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The MetaGraph Authors
+Copyright 2019 The MetaGraph Authors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package modules
 
 import (
 	"fmt"
-	"github.com/golang/glog"
+	log "k8s.io/klog"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
@@ -115,7 +115,7 @@ func StoreService(obj corev1.Service) {
 		obj.Spec.ClusterIP = svc.Spec.ClusterIP
 		_, err := client.Update(&obj)
 		if err != nil {
-			glog.Error(err)
+			log.Error(err)
 			fmt.Println(err)
 			os.Exit(1)
 		}
@@ -123,7 +123,7 @@ func StoreService(obj corev1.Service) {
 	} else {
 		_, err := client.Create(&obj)
 		if err != nil {
-			glog.Error(err)
+			log.Error(err)
 			fmt.Println(err)
 			os.Exit(1)
 		}
@@ -143,7 +143,7 @@ func DeleteService(name string) {
 	err = client.Delete(name, &metav1.DeleteOptions{})
 	if err != nil {
 		fmt.Println( "Unable to delete Service: ", name, " in namespace: ", NameSpace)
-		glog.Error(err)
+		log.Error(err)
 		return
 	}
 	fmt.Println("Deleted Service: ", name, ", in namespace: ", NameSpace)

@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The MetaGraph Authors
+Copyright 2019 The MetaGraph Authors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package modules
 
 import (
 	"fmt"
-	"github.com/golang/glog"
+	log "k8s.io/klog"
 	"metagraf/mg/ocpclient"
 	"metagraf/pkg/helpers"
 	"os"
@@ -40,7 +40,7 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 	err := imgurl.Parse(mg.Spec.BuildImage)
 	if err != nil {
 
-		glog.Error("Malformed BuildImage url provided in metaGraf file; %v", mg.Spec.BuildImage)
+		log.Error("Malformed BuildImage url provided in metaGraf file; %v", mg.Spec.BuildImage)
 		os.Exit(1)
 	}
 
@@ -167,7 +167,7 @@ func StoreBuildConfig(obj buildv1.BuildConfig) {
 		obj.ResourceVersion = bc.ResourceVersion
 		_, err := client.Update(&obj)
 		if err != nil {
-			glog.Error(err)
+			log.Error(err)
 			fmt.Println(err)
 			os.Exit(1)
 		}
@@ -175,7 +175,7 @@ func StoreBuildConfig(obj buildv1.BuildConfig) {
 	} else {
 		_, err := client.Create(&obj)
 		if err != nil {
-			glog.Error(err)
+			log.Error(err)
 			fmt.Println(err)
 			os.Exit(1)
 		}
@@ -195,7 +195,7 @@ func DeleteBuildConfig(name string) {
 	err = client.Delete(name, &metav1.DeleteOptions{})
 	if err != nil {
 		fmt.Println( "Unable to delete BuildConfig: ", name, " in namespace: ", NameSpace)
-		glog.Error(err)
+		log.Error(err)
 		return
 	}
 	fmt.Println("Deleted BuildConfig: ", name, ", in namespace: ", NameSpace)
