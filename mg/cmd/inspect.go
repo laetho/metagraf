@@ -2,9 +2,9 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/golang/glog"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	log "k8s.io/klog"
 	"metagraf/pkg/metagraf"
 	"metagraf/pkg/modules"
 	"os"
@@ -59,13 +59,13 @@ var InspectPropertiesCmd = &cobra.Command{
 	Long:  `inspect a metaGraf specification against a properties file.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
-			glog.Infof("Active project is:", viper.Get("namespace"))
-			glog.Errorf("Missing path to metaGraf specification")
+			log.Infof("Active project is:", viper.Get("namespace"))
+			log.Errorf("Missing path to metaGraf specification")
 			os.Exit(1)
 		}
 
 		if len(args) < 2 {
-			glog.Errorf("Missing path to properties file")
+			log.Errorf("Missing path to properties file")
 			os.Exit(1)
 		}
 

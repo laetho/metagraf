@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The metaGraf Authors
+Copyright 2019 The metaGraf Authors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package modules
 
 import (
 	"github.com/blang/semver"
-	"github.com/golang/glog"
+	log "k8s.io/klog"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"metagraf/pkg/metagraf"
@@ -75,7 +75,7 @@ func Name(mg *metagraf.MetaGraf) string {
 	var objname string
 
 	if len(OName) > 0 {
-		glog.Infof("ObjectName overridden with: %v",OName)
+		log.Infof("ObjectName overridden with: %v",OName)
 		return OName
 	}
 
@@ -199,7 +199,7 @@ func EnvToEnvVar(e *metagraf.EnvironmentVar, ext bool) corev1.EnvVar {
 		if v, t := Variables[e.Name]; t {
 			if len(v) > 0 {
 				value = v
-				glog.Info("Found override value for: ", name, " Override value: ", Variables[name])
+				log.Info("Found override value for: ", name, " Override value: ", Variables[name])
 			}
 		}
 
@@ -251,14 +251,14 @@ func MarshalObject(obj runtime.Object) {
 			s := json.NewSerializer(json.DefaultMetaFactory, scheme.Scheme, scheme.Scheme, true)
 			err := s.Encode(obj,os.Stdout)
 			if err != nil {
-				glog.Error(err)
+				log.Error(err)
 				os.Exit(1)
 			}
 		case "yaml":
 			s := json.NewYAMLSerializer(json.DefaultMetaFactory, scheme.Scheme, scheme.Scheme)
 			err := s.Encode(obj, os.Stdout)
 			if err != nil {
-				glog.Error(err)
+				log.Error(err)
 				os.Exit(1)
 			}
 	}

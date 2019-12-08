@@ -18,7 +18,7 @@ package modules
 
 import (
 	"fmt"
-	"github.com/golang/glog"
+	log "k8s.io/klog"
 	"metagraf/pkg/metagraf"
 	"os"
 	"strconv"
@@ -72,12 +72,12 @@ func GenSecrets(mg *metagraf.MetaGraf) {
 	for _, s := range mg.Spec.Secret{
 		// Do not create global secrets unless CreateGlobals is true.
 		if s.Global == true && !CreateGlobals {
-			glog.Info("Skipping creation of global secret named: "+ strings.ToLower(s.Name))
+			log.Info("Skipping creation of global secret named: "+ strings.ToLower(s.Name))
 			continue
 		}
 
 		if secretExists(strings.ToLower(s.Name)) {
-			glog.Info("Skipping secret: ", Name(mg)+"-"+strings.ToLower(s.Name))
+			log.Info("Skipping secret: ", Name(mg)+"-"+strings.ToLower(s.Name))
 			continue
 		}
 
@@ -96,10 +96,10 @@ func secretExists(name string) bool {
 	cli := ocpclient.GetCoreClient()
 	obj, err := cli.Secrets(NameSpace).Get(name,metav1.GetOptions{})
 	if err != nil {
-		glog.Error(err)
+		log.Error(err)
 		return false
 	}
-	glog.Info("Secret ", obj.Name, " exists in namespace: ", NameSpace)
+	log.Info("Secret ", obj.Name, " exists in namespace: ", NameSpace)
 	return true
 }
 
@@ -197,12 +197,12 @@ func StoreSecret(obj corev1.Secret) {
 	client := ocpclient.GetCoreClient().Secrets(NameSpace)
 	sec, err := client.Get(obj.Name, metav1.GetOptions{})
 	if err != nil {
-		glog.Infof("Could not fetch Secret: %v", err)
+		log.Infof("Could not fetch Secret: %v", err)
 	}
 	if len(sec.ResourceVersion) > 0 {
 		result, err := client.Update(&obj)
 		if err != nil {
-			glog.Error(err)
+			log.Error(err)
 			fmt.Println(err)
 			os.Exit(1)
 		}
@@ -210,11 +210,11 @@ func StoreSecret(obj corev1.Secret) {
 	} else {
 		result, err := client.Create(&obj)
 		if err != nil {
-			glog.Error(err)
+			log.Error(err)
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		glog.Infof("Created Secret: %v(%v)", result.Name, obj.Name)
+		log.Infof("Created Secret: %v(%v)", result.Name, obj.Name)
 	}
 }
 
@@ -246,7 +246,7 @@ func DeleteSecret(name string) {
 	err = client.Delete(name, &metav1.DeleteOptions{})
 	if err != nil {
 		fmt.Println("Unable to delete Secret: ", name, " in namespace: ", NameSpace)
-		glog.Error(err)
+		log.Error(err)
 		return
 	}
 	fmt.Println("Deleted Secret: ", name, ", in namespace: ", NameSpace)

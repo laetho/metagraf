@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The MetaGraph Authors
+Copyright 2019 The MetaGraph Authors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package cmd
 
 import (
 	"bufio"
-	"github.com/golang/glog"
+	log "k8s.io/klog"
 	"metagraf/pkg/metagraf"
 	"metagraf/pkg/modules"
 	"os"
@@ -58,7 +58,7 @@ func VarsFromFile(mgv metagraf.MGVars) map[string]string {
 
 	file, err := os.Open( CVfile )
 	if err != nil {
-		glog.Error(err)
+		log.Error(err)
 		return vars
 	}
 	defer file.Close()
@@ -72,7 +72,7 @@ func VarsFromFile(mgv metagraf.MGVars) map[string]string {
 		}
 		vl := strings.Split(line,"=")
 		if len(vl) < 2 {
-			glog.Errorf("Properties are formatted improperly in: %v", CVfile)
+			log.Errorf("Properties are formatted improperly in: %v", CVfile)
 			break
 		}
 		if len(vl) == 2 {
@@ -119,13 +119,13 @@ func MergeVars(base metagraf.MGVars, override map[string]string) metagraf.MGVars
 	for k, v := range override {
 		base[k] = v
 	}
-	glog.Info("Calling MergeVars: ", base)
+	log.Info("Calling MergeVars: ", base)
 	return base
 }
 
 func MergeSourceVars(base metagraf.MGVars, override map[string]string) metagraf.MGVars {
-	glog.Info("MergeSourcevars(): base mg vars", base)
-	glog.Info("MergeSourceVars(): with override values: ", override)
+	log.Info("MergeSourcevars(): base mg vars", base)
+	log.Info("MergeSourceVars(): with override values: ", override)
 
 	// Translation map, key = untyped key, value typed key name
 	keys := make(map[string]string)

@@ -17,7 +17,7 @@ limitations under the License.
 package cmd
 
 import (
-	"github.com/golang/glog"
+	log "k8s.io/klog"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -41,15 +41,15 @@ var createPipelineCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		if len(args) < 1 {
-			glog.Info(StrActiveProject, viper.Get("namespace"))
-			glog.Error(StrMissingMetaGraf)
+			log.Info(StrActiveProject, viper.Get("namespace"))
+			log.Error(StrMissingMetaGraf)
 			return
 		}
 
 		if len(Namespace) == 0 {
 			Namespace = viper.GetString("namespace")
 			if len(Namespace) == 0 {
-				glog.Error(StrMissingNamespace)
+				log.Error(StrMissingNamespace)
 				os.Exit(1)
 			}
 		}
@@ -63,7 +63,7 @@ var createPipelineCmd = &cobra.Command{
 func pipelineCreate(mgf string, namespace string) {
 	mg := metagraf.Parse(mgf)
 
-	glog.Info("modules.Variables: ",modules.Variables)
+	log.Info("modules.Variables: ",modules.Variables)
 	if modules.Variables == nil {
 		vars := MergeVars(
 			mg.GetVars(),

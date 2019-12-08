@@ -1,8 +1,24 @@
+/*
+Copyright 2019 The MetaGraph Authors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package modules
 
 import (
 	"fmt"
-	"github.com/golang/glog"
+	log "k8s.io/klog"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"metagraf/pkg/helpers"
 	"os"
@@ -40,11 +56,11 @@ func GenRoute(mg *metagraf.MetaGraf) {
 		imgurl.Namespace,
 		imgurl.Image+":"+imgurl.Tag)
 	if err != nil {
-		glog.Errorf("%v", err)
+		log.Errorf("%v", err)
 	}
 
 	ImageInfo := helpers.GetDockerImageFromIST(ist)
-	glog.V(2).Infof("Docker image ports: %v", ImageInfo.Config.ExposedPorts)
+	log.V(2).Infof("Docker image ports: %v", ImageInfo.Config.ExposedPorts)
 
 	var ports []string
 
@@ -53,7 +69,7 @@ func GenRoute(mg *metagraf.MetaGraf) {
 	}
 	sort.Strings(ports)
 
-	glog.V(2).Infof("First port: %v, %t", ports[0], ports[0])
+	log.V(2).Infof("First port: %v, %t", ports[0], ports[0])
 
 
 	l := make(map[string]string)
@@ -101,7 +117,7 @@ func StoreRoute(obj routev1.Route) {
 		obj.ResourceVersion = route.ResourceVersion
 		_, err := client.Update(&obj)
 		if err != nil {
-			glog.Error(err)
+			log.Error(err)
 			fmt.Println(err)
 			os.Exit(1)
 		}
@@ -109,7 +125,7 @@ func StoreRoute(obj routev1.Route) {
 	} else {
 		_, err := client.Create(&obj)
 		if err != nil {
-			glog.Error(err)
+			log.Error(err)
 			fmt.Println(err)
 			os.Exit(1)
 		}
