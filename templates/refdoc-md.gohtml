@@ -70,3 +70,36 @@
 {{ range .Spec.Secret}}| {{.Name}} | {{.Global}} | {{.Description}} |
 {{end}}
 {{end}}
+
+## Middlearth specific documentation
+
+{{ if gt (len .Spec.Environment.Local) 0 }}### Local Enviroment Variables
+  | Variable | Type | Required | Default Value | Description |
+  |----------|------|----------|---------------|-------------|
+  {{ range .Spec.Environment.Local -}}
+      {{ if gt (len .SecretFrom) 0 }}| {{.SecretFrom}} | **Secret** | {{.Required}} | {{.Default}} | *A referenced secret. See secret section.* |{{end}}{{ if gt (len .EnvFrom) 0 }}| {{.EnvFrom}} | **EnvFrom** | {{.Required}} | {{.Default}} | *Environment variables from file. See config section for details.* |{{end }}{{ if and (eq (len .SecretFrom) 0) (eq (len .EnvFrom) 0) }}| {{.Name}} | {{.Type}} | {{.Required}} | {{.Default}} | {{.Description}} |{{end}}
+  {{end}}{{- end}}
+
+## Middlearth
+
+Denne seksjonen inneholder beskrivelse av dokumentasjon på tjenesten opp mot Middlearth for deploy og konfigurasjonsstyring. 
+
+* Lokale *environment* variabler anses som **jvmParams:[]**.
+* En eventuell *jvm.options* blir oversatt til **jvmParams:[]** i Middlearth sin application.json
+
+### jvmParams:[]
+
+| Parameter | Type | Required | Default Value | Description |
+|-----------|------|----------|---------------|-------------|
+{{ if gt (len .Spec.Environment.Local) 0 -}}
+{{ range .Spec.Environment.Local -}}
+{{ if gt (len .SecretFrom) 0 }}| {{.SecretFrom}} | **Secret** | {{.Required}} | {{.Default}} | *A referenced secret. See secret section.* |{{end}}{{ if gt (len .EnvFrom) 0 }}| {{.EnvFrom}} | **EnvFrom** | {{.Required}} | {{.Default}} | *Environment variables from file. See config section for details.* |{{end }}{{ if and (eq (len .SecretFrom) 0) (eq (len .EnvFrom) 0) }}| {{.Name}} | {{.Type}} | {{.Required}} | {{.Default}} | {{.Description}} |{{end}}
+{{end}}{{- end}}
+{{ range .Spec.Config -}}
+{{ if .Name eq "jvm.options -}}
+{{ range .Options }}| {{.Name}} | {{.Type}} | {{.Required}} | {{.Default}} | {{.Description}} |
+{{ end }}
+{{ end }}
+{{ end }}
+
+
