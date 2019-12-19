@@ -22,6 +22,7 @@ import (
 	"html/template"
 	"metagraf/pkg/metagraf"
 	"os"
+	"strings"
 )
 
 func GenRef(mg *metagraf.MetaGraf) {
@@ -32,6 +33,12 @@ func GenRef(mg *metagraf.MetaGraf) {
 		os.Exit(-1)
 	}
 	tmpl, _ := template.New("refdoc").Parse(cm.Data["template"])
+	tmpl.Funcs(
+		template.FuncMap{
+			"split": func(s string, d string) []string {
+				return strings.Split(s, d)
+			},
+		})
 
 	filename := "/tmp/"+Name(mg)+Suffix
 
