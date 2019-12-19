@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The MetaGraph Authors
+Copyright 2019 The MetaGraph Authors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package modules
 import (
 	"encoding/base64"
 	"fmt"
-	"github.com/golang/glog"
+	log "k8s.io/klog"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"metagraf/mg/ocpclient"
@@ -58,14 +58,14 @@ func FindMetagrafConfigMaps(mg *metagraf.MetaGraf) map[string]string {
 		if len(r.TemplateRef) > 0 {
 			cm, err := GetConfigMap(r.TemplateRef)
 			if err != nil {
-				glog.Error(err)
+				log.Error(err)
 				os.Exit(-1)
 			}
 			maps[cm.Name] = "template"
 		}
 	}
 
-	glog.Info("FindMetagrafConfigMaps(): Found", len(maps), " ConfigMaps to mount...")
+	log.Info("FindMetagrafConfigMaps(): Found", len(maps), " ConfigMaps to mount...")
 
 	return maps
 }
@@ -101,7 +101,7 @@ func GetMetagrafConfigByType(mg *metagraf.MetaGraf, ctype string) []metagraf.Con
 	specific to NT internal workings for now.
 */
 func GenConfigMaps(mg *metagraf.MetaGraf) {
-	glog.Info("GenConfigMaps: Handle", len(mg.Spec.Config), " configs...")
+	log.Info("GenConfigMaps: Handle", len(mg.Spec.Config), " configs...")
 	for _, c := range mg.Spec.Config {
 		if c.Type != "parameters" {
 			continue
@@ -148,7 +148,7 @@ func genConfigMapsFromConfig(conf *metagraf.Config, mg *metagraf.MetaGraf) {
 		 if len(o.SecretFrom) > 0 {
 			sec, err := GetSecret(o.SecretFrom)
 			if err != nil {
-				glog.Error(err)
+				log.Error(err)
 			}
 
 			cm.Data[o.Name] = base64.StdEncoding.EncodeToString(sec.Data[o.SecretFrom])
@@ -200,7 +200,7 @@ func StoreConfigMap(m corev1.ConfigMap) {
 		m.ResourceVersion = cm.ResourceVersion
 		_, err := cmclient.Update(&m)
 		if err != nil {
-			glog.Error(err)
+			log.Error(err)
 			fmt.Println(err)
 			os.Exit(1)
 		}
@@ -208,7 +208,7 @@ func StoreConfigMap(m corev1.ConfigMap) {
 	} else {
 		_, err := cmclient.Create(&m)
 		if err != nil {
-			glog.Error(err)
+			log.Error(err)
 			fmt.Println(err)
 			os.Exit(1)
 		}
@@ -244,7 +244,7 @@ func DeleteConfigMap(name string) {
 	err = client.Delete(name, &metav1.DeleteOptions{})
 	if err != nil {
 		fmt.Println("Unable to delete ConfigMap: ", name, " in namespace: ", NameSpace)
-		glog.Error(err)
+		log.Error(err)
 		return
 	}
 	fmt.Println("Deleted Configmap: ", name, ", in namespace: ", NameSpace)

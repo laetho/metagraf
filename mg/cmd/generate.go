@@ -18,9 +18,9 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/golang/glog"
 	"github.com/spf13/cobra"
 	"github.com/spf13/cobra/doc"
+	log "k8s.io/klog"
 	"metagraf/pkg/metagraf"
 	"metagraf/pkg/modules"
 	"os"
@@ -48,7 +48,7 @@ var generateMarkdownCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		err := doc.GenMarkdownTree( RootCmd, "./")
 		if err != nil {
-			glog.Fatalf("%v", err)
+			log.Fatalf("%v", err)
 			os.Exit(1)
 		}
 	},
@@ -66,7 +66,7 @@ var generateManPagesCmd = &cobra.Command{
 		}
 		err := doc.GenManTree( RootCmd, header, "./")
 		if err != nil {
-			glog.Fatalf("%v", err)
+			log.Fatalf("%v", err)
 			os.Exit(1)
 		}
 	},
@@ -77,7 +77,7 @@ var generatePropertiesCmd = &cobra.Command{
 	Long:  Banner + `generate properties`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
-			glog.Error(StrMissingMetaGraf)
+			log.Error(StrMissingMetaGraf)
 			os.Exit(1)
 		}
 

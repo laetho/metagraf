@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The MetaGraph Authors
+Copyright 2019 The MetaGraph Authors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package modules
 
 import (
 	"fmt"
-	"github.com/golang/glog"
+	log "k8s.io/klog"
 	"html/template"
 	"metagraf/pkg/metagraf"
 	"os"
@@ -26,10 +26,10 @@ import (
 )
 
 func GenRef(mg *metagraf.MetaGraf) {
-	glog.Info("Fetching template: %v", Template)
+	log.Info("Fetching template: %v", Template)
 	cm, err  := GetConfigMap(Template)
 	if err != nil {
-		glog.Error(err)
+		log.Error(err)
 		os.Exit(-1)
 	}
 	tmpl, _ := template.New("refdoc").Parse(cm.Data["template"])

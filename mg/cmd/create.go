@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The MetaGraph Authors
+Copyright 2019 The MetaGraph Authors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/golang/glog"
+	log "k8s.io/klog"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -85,15 +85,15 @@ var createBuildConfigCmd = &cobra.Command{
 	Long:  Banner + `create BuildConfig`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
-			glog.Info(StrActiveProject, viper.Get("namespace"))
-			glog.Error(StrMissingMetaGraf)
+			log.Info(StrActiveProject, viper.Get("namespace"))
+			log.Error(StrMissingMetaGraf)
 			os.Exit(1)
 		}
 
 		if len(Namespace) == 0 {
 			Namespace = viper.GetString("namespace")
 			if len(Namespace) == 0 {
-				glog.Error(StrMissingNamespace)
+				log.Error(StrMissingNamespace)
 				os.Exit(1)
 			}
 		}
@@ -119,15 +119,15 @@ var createConfigMapCmd = &cobra.Command{
 	Long:  Banner + `create ConfigMap`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
-			glog.Info(StrActiveProject, viper.Get("namespace"))
-			glog.Error(StrMissingMetaGraf)
+			log.Info(StrActiveProject, viper.Get("namespace"))
+			log.Error(StrMissingMetaGraf)
 			os.Exit(1)
 		}
 
 		if len(Namespace) == 0 {
 			Namespace = viper.GetString("namespace")
 			if len(Namespace) == 0 {
-				glog.Error(StrMissingNamespace)
+				log.Error(StrMissingNamespace)
 				os.Exit(1)
 			}
 		}
@@ -156,15 +156,15 @@ var createDeploymentConfigCmd = &cobra.Command{
 	Long:  Banner + `create DeploymentConfig`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
-			glog.Info(StrActiveProject, viper.Get("namespace"))
-			glog.Error(StrMissingMetaGraf)
+			log.Info(StrActiveProject, viper.Get("namespace"))
+			log.Error(StrMissingMetaGraf)
 			os.Exit(1)
 		}
 
 		if len(Namespace) == 0 {
 			Namespace = viper.GetString("namespace")
 			if len(Namespace) == 0 {
-				glog.Error(StrMissingNamespace)
+				log.Error(StrMissingNamespace)
 				os.Exit(1)
 			}
 		}
@@ -194,15 +194,15 @@ var createImageStreamCmd = &cobra.Command{
 	Long:  Banner + `create ImageStream`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
-			glog.Info(StrActiveProject, viper.Get("namespace"))
-			glog.Error(StrMissingMetaGraf)
+			log.Info(StrActiveProject, viper.Get("namespace"))
+			log.Error(StrMissingMetaGraf)
 			os.Exit(1)
 		}
 
 		if len(Namespace) == 0 {
 			Namespace = viper.GetString("namespace")
 			if len(Namespace) == 0 {
-				glog.Error(StrMissingNamespace)
+				log.Error(StrMissingNamespace)
 				os.Exit(1)
 			}
 		}
@@ -223,15 +223,15 @@ var createServiceCmd = &cobra.Command{
 	Long:  Banner + `create Service`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
-			glog.Info(StrActiveProject, viper.Get("namespace"))
-			glog.Error(StrMissingMetaGraf)
+			log.Info(StrActiveProject, viper.Get("namespace"))
+			log.Error(StrMissingMetaGraf)
 			os.Exit(1)
 		}
 
 		if len(Namespace) == 0 {
 			Namespace = viper.GetString("namespace")
 			if len(Namespace) == 0 {
-				glog.Error(StrMissingNamespace)
+				log.Error(StrMissingNamespace)
 				os.Exit(1)
 			}
 		}
@@ -288,15 +288,15 @@ var createSecretCmd = &cobra.Command{
 	Long:  Banner + `create Secret`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
-			glog.Info(StrActiveProject, viper.Get("namespace"))
-			glog.Error(StrMissingMetaGraf)
+			log.Info(StrActiveProject, viper.Get("namespace"))
+			log.Error(StrMissingMetaGraf)
 			os.Exit(1)
 		}
 
 		if len(Namespace) == 0 {
 			Namespace = viper.GetString("namespace")
 			if len(Namespace) == 0 {
-				glog.Error(StrMissingNamespace)
+				log.Error(StrMissingNamespace)
 				os.Exit(1)
 			}
 		}
@@ -313,15 +313,15 @@ var createRouteCmd = &cobra.Command{
 	Long:  Banner + `create route`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
-			glog.Info(StrActiveProject, viper.Get("namespace"))
-			glog.Error(StrMissingMetaGraf)
+			log.Info(StrActiveProject, viper.Get("namespace"))
+			log.Error(StrMissingMetaGraf)
 			os.Exit(1)
 		}
 
 		if len(Namespace) == 0 {
 			Namespace = viper.GetString("namespace")
 			if len(Namespace) == 0 {
-				glog.Error(StrMissingNamespace)
+				log.Error(StrMissingNamespace)
 				os.Exit(1)
 			}
 		}
