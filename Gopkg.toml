@@ -17,15 +17,11 @@ branch = "release-3.10"
 
 [[constraint]]
   name = "github.com/openshift/api"
-  version = "3.9.0"
+  branch = "release-3.11"
 
 [[constraint]]
   name = "github.com/spf13/cobra"
   version = "0.0.3"
-
-[[constraint]]
-  name = "google.golang.org/grpc"
-  version = "1.12.2"
 
 [[constraint]]
   branch = "release-1.11"
