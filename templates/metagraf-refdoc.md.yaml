@@ -1,0 +1,75 @@
+apiVersion: v1
+data:
+  template: "# {{ .Metadata.Name }} {{ .Spec.Version }}\r\n\r\n{{ .Spec.Description
+    }}\r\n\r\n## Annotations\r\n{{ range $key, $value := .Metadata.Annotations }}\r\n*
+    {{ $key }} : **{{ $value }}**\r\n{{- end }}\r\n\r\n\r\n{{ if gt (len .Spec.Resources)
+    0 }}\r\n## Resource Dependencies\r\n| Resource | Version | Type | External | Required
+    | Description |\r\n|----------|---------|------|----------|----------|-------------|\r\n{{range
+    .Spec.Resources -}}\r\n| {{.Name}} | {{.Type}} | {{.Semop}}  | {{.External}} |
+    |{{.Required}} | {{.Description}} |\r\n{{end }}{{- end }}\r\n\r\n## Environment
+    Variables\r\n{{ if gt (len .Spec.Environment.Local) 0 }}\r\n### Local Enviroment
+    Variables\r\n| Variable | Type | Required | Default Value | Description |\r\n|----------|------|----------|---------------|-------------|\r\n{{
+    range .Spec.Environment.Local -}}\r\n{{ if gt (len .SecretFrom) 0 }}| {{.SecretFrom}}
+    | **Secret** | {{.Required}} | {{.Default}} | *A referenced secret. See secret
+    section.* |{{end}}{{ if gt (len .EnvFrom) 0 }}| {{.EnvFrom}} | **EnvFrom** | {{.Required}}
+    | {{.Default}} | *Environment variables from file. See config section for details.*
+    |{{end }}{{ if and (eq (len .SecretFrom) 0) (eq (len .EnvFrom) 0) }}| {{.Name}}
+    | {{.Type}} | {{.Required}} | {{.Default}} | {{.Description}} |{{end}}\r\n{{end}}{{-
+    end}}\r\n\r\n{{ if gt (len .Spec.Environment.Build) 0 }}\r\n### Build Enviroment
+    Variables\r\n| Variable | Type | Required | Default Value | Description |\r\n|----------|------|----------|---------------|-------------|\r\n{{
+    range .Spec.Environment.Build -}}\r\n| {{.Name}} | {{.Type}} | {{.Required}} |
+    {{.Default}} | {{.Description}} |\r\n{{ end }}{{- end }}\r\n\r\n{{ if or (gt (len
+    .Spec.Environment.External.Introduces) 0) (gt (len .Spec.Environment.External.Consumes)
+    0)  }}\r\n### External Enviroment Variables (RPS_BUSINESS_PROPERTY, Other external
+    configuration management)\r\n{{ if gt (len .Spec.Environment.External.Introduces)
+    0 }}\r\n#### Introduced by Component\r\n| Variable | Type | Required | Default
+    Value | Description |\r\n|----------|------|----------|---------------|-------------|\r\n{{
+    range .Spec.Environment.External.Introduces }}| {{.Name}} | {{.Type}} | {{.Required}}
+    | {{.Default}} | {{.Description}} |\r\n{{ end }}{{ end }}\r\n\r\n{{ if gt (len
+    .Spec.Environment.External.Consumes) 0 }}\r\n#### Consumed by Component\r\n| Variable
+    | Type | Required | Default Value | Description |\r\n|----------|------|----------|---------------|-------------|\r\n{{
+    range .Spec.Environment.External.Consumes}}| {{.Name}} | {{.Type}} | {{.Required}}
+    | {{.Default}} | {{.Description}} |\r\n{{ end }}{{ end }}{{ end }}\r\n\r\n{{ if
+    .Spec.Config }}\r\n## Configuration Files [kind: ConfigMap]\r\n{{ range .Spec.Config
+    }}\r\n| Name | Type | Global | Description |\r\n|------|------|--------|-------------|\r\n|
+    {{.Name}} | {{.Type}}| {{.Global}} |{{.Description}} |\r\n\r\n| Parameter | Type
+    | Required | Default |  Description |\r\n|-----------|------|----------|---------|--------------|\r\n{{
+    range .Options }}| {{.Name}} | {{.Type}} | {{.Required}} | {{.Default}} | {{.Description}}
+    |\r\n{{ end }}\r\n{{ end }}\r\n{{ end }}\r\n\r\n{{ if .Spec.Secret }}\r\n## Secrets
+    [kind: Secret]\r\n| Name | Global | Description |\r\n|------|--------|-------------|\r\n{{
+    range .Spec.Secret}}| {{.Name}} | {{.Global}} | {{.Description}} |\r\n{{end}}\r\n{{end}}\r\n\r\n{{
+    if index .Metadata.Annotations \"norsk-tipping.no/libertyfeatures\"}}\r\n## Middlearth\r\n\r\nDenne
+    seksjonen inneholder beskrivelse av dokumentasjon på tjenesten opp mot Middlearth
+    for deploy og konfigurasjonsstyring. \r\n\r\n* Liberty features kommer fra **norsk-tipping.no/libertyfeatures**
+    annotasjonen.\r\n* Lokale *environment* variabler anses som **jvmParams:[]**.\r\n*
+    En eventuell *jvm.options* blir oversatt til **jvmParams:[]** i Middlearth sin
+    application.json\r\n\r\n\r\n### features: []\r\n\r\n{{ $features := index .Metadata.Annotations
+    \"norsk-tipping.no/libertyfeatures\" }}\r\n{{ $featarr := split $features \",\"
+    }}\r\nFeatures: {{$features}}\r\n\r\n```json\r\nfeatures: [\r\n{{range $key,$value
+    := $featarr}}    \"{{ $value }}\"{{if isLast $featarr $key}}{{ end }}{{if not
+    (isLast $featarr $key) }},{{end}}\r\n{{end -}}\r\n]\r\n```\r\n\r\n### jvmParams:{}\r\n\r\n!>
+    Duplikate EnvironmentName og GetEnvironmentPropertiesURL parametere kan forekomme
+    om leveransen ikke er optimalisert for jvmParams flyten.\r\n\r\n\r\n{{ if gt (len
+    .Spec.Environment.Local) 0 -}}\r\n| Parameter | Type | Required | Default Value
+    | Description |\r\n|-----------|------|----------|---------------|-------------|\r\n{{
+    range .Spec.Environment.Local -}}\r\n{{ if gt (len .SecretFrom) 0 }}| {{.SecretFrom}}
+    | **Secret** | {{.Required}} | {{.Default}} | *A referenced secret. See secret
+    section.* |{{end}}{{ if gt (len .EnvFrom) 0 }}| {{.EnvFrom}} | **EnvFrom** | {{.Required}}
+    | {{.Default}} | *Environment variables from file. See config section for details.*
+    |{{end }}{{ if and (eq (len .SecretFrom) 0) (eq (len .EnvFrom) 0) }}| {{.Name}}
+    | {{.Type}} | {{.Required}} | {{.Default}} | {{.Description}} |{{end}}\r\n{{end}}{{-
+    end}}{{ range .Spec.Config -}}\r\n{{if eq .Name \"jvm.options\" -}}\r\n{{ range
+    .Options }}| {{.Name}} | {{.Type}} | {{.Required}} | {{.Default}} | {{.Description}}
+    |\r\n{{ end }}\r\n{{- end }}\r\n{{- end }}\r\n\r\n{{$envslen := numOfLocal .Spec.Environment.Local}}\r\n\r\n```json\r\njvmParams:
+    { {{ if gt (len .Spec.Environment.Local) 0 -}}\r\n{{ range $index, $value := .Spec.Environment.Local
+    }}\r\n  {{ if gt (len $value.SecretFrom) 0 -}}{{$value.Name}}:TOKENIZED_VALUE{{end
+    -}}\r\n  {{ if gt (len $value.EnvFrom) 0 -}}{{$value.Name}}:{{$value.EnvFrom}}{{end
+    -}}\r\n  {{ if and (eq (len $value.SecretFrom) 0) (eq (len $value.EnvFrom) 0)
+    -}}{{$value.Name}}:{{$value.Default}}{{end -}}\r\n  {{ if not (last $envslen $index)
+    }},{{end -}}\r\n{{- end}}{{- end}}{{ range .Spec.Config -}}{{if eq .Name \"jvm.options\"
+    -}},{{$optlen := numOfOptions .Options -}}\r\n{{ range $key,$value:= .Options
+    }}\r\n  {{$value.Name}}:{{$value.Default}}{{if not (last $optlen $key)}},{{end
+    -}}\r\n{{end}}\r\n{{- end }}\r\n{{- end}}\r\n}\r\n```\r\n{{end}}\r\n"
+kind: ConfigMap
+metadata:
+  name: metagraf-refdoc.md
