@@ -18,8 +18,8 @@ package modules
 
 import (
 	"fmt"
-	log "k8s.io/klog"
 	"html/template"
+	log "k8s.io/klog"
 	"metagraf/pkg/metagraf"
 	"os"
 	"strings"
@@ -32,13 +32,34 @@ func GenRef(mg *metagraf.MetaGraf) {
 		log.Error(err)
 		os.Exit(-1)
 	}
-	tmpl, _ := template.New("refdoc").Parse(cm.Data["template"])
-	tmpl.Funcs(
+	tmpl, err := template.New("refdoc").Funcs(
 		template.FuncMap{
 			"split": func(s string, d string) []string {
 				return strings.Split(s, d)
 			},
-		})
+			"numOfLocal": func(l []metagraf.EnvironmentVar) int {
+				return len(l)
+			},
+			"numOfOptions": func(l []metagraf.ConfigParam) int {
+				return len(l)
+			},
+			"isLast": func(a []string, k int) bool {
+				if (len(a)-1 == k) {
+					return true
+				}
+				return false
+			},
+			"last": func(t int, c int) bool {
+				if (t-1 == c) {
+					return true
+				}
+				return false
+			},
+		}).Parse(cm.Data["template"])
+	if (err != nil) {
+		log.Error(err)
+		os.Exit(1)
+	}
 
 	filename := "/tmp/"+Name(mg)+Suffix
 
