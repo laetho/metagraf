@@ -1,7 +1,15 @@
 
 [[constraint]]
 name = "github.com/openshift/client-go"
-branch = "release-3.10"
+branch = "release-3.11"
+
+#[[constraint]]
+#name = "istio.io/client-go"
+#version = "release-1.4"
+
+#[[constraint]]
+#name = "istio.io/api"
+#version = "release-1.4"
 
 [[override]]
   name = "github.com/russross/blackfriday"
