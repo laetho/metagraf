@@ -42,6 +42,9 @@ func FindMetagrafConfigMaps(mg *metagraf.MetaGraf) map[string]string {
 		if strings.ToLower(c.Type) == "envref" {
 			continue
 		}
+		if strings.ToUpper(c.Type) == "JVM_SYS_PROP" {
+			continue
+		}
 
 		if strings.ToLower(c.Type) == "cert" {
 			fmt.Println("The Config type \"cert\" is deprecated!")
