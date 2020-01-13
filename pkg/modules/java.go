@@ -36,17 +36,18 @@ func HasJVM_SYS_PROP(mg *metagraf.MetaGraf) bool {
 // Generate an EnvVar for a config section.
 // SecretFrom or EnvFrom will not be processed.
 func GenEnvVar_JVM_SYS_PROP(mg *metagraf.MetaGraf, name string) corev1.EnvVar {
-	props := []string
+	var props []string
+
 	for _,c := range mg.Spec.Config {
 		if strings.ToUpper(c.Type) != "JVM_SYS_PROP" {
 			continue
 		}
 		for _,o := range c.Options {
+			str := ""
 			if o.Required {
-				str := ""
 				// Set default value if --defaults arg is given.
 				if Defaults {
-					str = "-D" + o.Name + "=" + Variables[o.Name]
+					str = "-D" + o.Name + "=" + o.Default
 				}
 				// Set value of key from either --cvars of --cvfile
 				if len(Variables[o.Name]) > 0  {
@@ -56,10 +57,17 @@ func GenEnvVar_JVM_SYS_PROP(mg *metagraf.MetaGraf, name string) corev1.EnvVar {
 				// logic kicks in.
 				props = append(props, str)
 			}
+			// If we find an optional value in --cvars og --cvfile
+			if !o.Required {
+				if len(Variables[o.Name]) > 0 {
+					str = "-D" + o.Name + "=" + Variables[o.Name]
+				}
+				props = append(props, str)
+			}
 		}
 	}
 	return corev1.EnvVar{
 		Name: name,
-		Value: strings.Join(props, " ")
+		Value: strings.Join(props, " "),
 	}
 }
