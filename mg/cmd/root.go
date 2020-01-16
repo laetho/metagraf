@@ -53,6 +53,7 @@ var (
 	Tag			string			//
 	Context		string			// Flag for setting application context root.
 	CreateGlobals bool = false	// Flag for overriding default behaviour of skipping creation of global secrets.
+	CVars 		[]string 		// Slice of strings to hold overridden values.
 )
 
 // Array of available config keys

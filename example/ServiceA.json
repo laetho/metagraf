@@ -1,0 +1,52 @@
+{
+  "kind": "MetaGraf",
+  "version": "v1alpha1",
+  "metadata": {
+    "name": "ServiceA",
+    "labels": {
+    },
+    "annotations": {
+      "example.com/somevalue": "123"
+    }
+  },
+  "spec": {
+    "version": "1.0.1",
+    "type": "service",
+    "description": "Service A.",
+    "resources": [],
+    "environment": {
+      "local": [
+        {
+          "name": "JAVA_OPTIONS",
+          "required": true,
+          "type": "JVM_SYS_PROP",
+          "description": "Java System Properties, se Config section with type JVM_SYS_PROP."
+        }
+      ],
+      "external": {}
+    },
+    "config": [
+      {
+        "name": "JVM_SYS_PROP",
+        "type": "JVM_SYS_PROP",
+        "description": "JVM system properties",
+        "options": [
+          {
+            "name": "my.required.prop",
+            "required": true,
+            "description": "test property",
+            "type": "string",
+            "default": "test_value"
+          },
+          {
+            "name": "my.optional.prop",
+            "required": false,
+            "description": "test property",
+            "type": "string",
+            "default": "test_value"
+          }
+        ]
+      }
+    ]
+  }
+}

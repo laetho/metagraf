@@ -67,7 +67,7 @@ func pipelineCreate(mgf string, namespace string) {
 	if modules.Variables == nil {
 		vars := MergeVars(
 			mg.GetVars(),
-			OverrideVars(mg.GetVars(), CmdCVars(CVars).Parse()))
+			OverrideVars(mg.GetVars()))
 		modules.Variables = vars
 	}
 

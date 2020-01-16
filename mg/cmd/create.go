@@ -148,7 +148,7 @@ var createConfigMapCmd = &cobra.Command{
 		if modules.Variables == nil {
 			vars := MergeVars(
 				mg.GetVars(),
-				OverrideVars(mg.GetVars(), CmdCVars(CVars).Parse()))
+				OverrideVars(mg.GetVars()))
 			modules.Variables = vars
 		}
 
@@ -185,7 +185,7 @@ var createDeploymentCmd = &cobra.Command{
 		if modules.Variables == nil {
 			vars := MergeVars(
 				mg.GetVars(),
-				OverrideVars(mg.GetVars(), CmdCVars(CVars).Parse()))
+				OverrideVars(mg.GetVars()))
 			modules.Variables = vars
 		}
 
@@ -223,7 +223,7 @@ var createDeploymentConfigCmd = &cobra.Command{
 		if modules.Variables == nil {
 			vars := MergeVars(
 				mg.GetVars(),
-				OverrideVars(mg.GetVars(), CmdCVars(CVars).Parse()))
+				OverrideVars(mg.GetVars()))
 			modules.Variables = vars
 		}
 
