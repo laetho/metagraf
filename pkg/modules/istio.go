@@ -23,11 +23,25 @@ import (
 	corev1 "k8s.io/api/core/v1"
 )
 
-func GenIstioVirtualService(mg *metagraf.MetaGraf, namespace string) {
+func GenIstioService(mg *metagraf.MetaGraf, namespace string) {
+	svc := istionetv1alpha3.ServiceEntry{
+		Hosts:                nil,
+		Addresses:            nil,
+		Ports:                nil,
+		Location:             0,
+		Resolution:           0,
+		Endpoints:            nil,
+		ExportTo:             nil,
+		SubjectAltNames:      nil,
+		XXX_NoUnkeyedLiteral: struct{}{},
+		XXX_unrecognized:     nil,
+		XXX_sizecache:        0,
+	}
+	
+}
 
+func GenIstioVirtualService(mg *metagraf.MetaGraf, namespace string) {
 	vs := istionetv1alpha3.VirtualService{
-		v1.TypeMeta{},
-		v1.ObjectMeta{}
 		Hosts:                nil,
 		Gateways:             nil,
 		Http:                 nil,
@@ -38,5 +52,4 @@ func GenIstioVirtualService(mg *metagraf.MetaGraf, namespace string) {
 		XXX_unrecognized:     nil,
 		XXX_sizecache:        0,
 	}
-
 }
