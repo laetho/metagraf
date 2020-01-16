@@ -49,7 +49,7 @@ func GenEnvVar_JVM_SYS_PROP(mg *metagraf.MetaGraf, name string) corev1.EnvVar {
 				if Defaults {
 					str = "-D" + o.Name + "=" + o.Default
 				}
-				// Set value of key from either --cvars of --cvfile
+				// Set value of key from either --cvars of --cvfile or Environment
 				if len(Variables[o.Name]) > 0  {
 					str = "-D" + o.Name + "=" + Variables[o.Name]
 				}
@@ -57,7 +57,7 @@ func GenEnvVar_JVM_SYS_PROP(mg *metagraf.MetaGraf, name string) corev1.EnvVar {
 				// logic kicks in.
 				props = append(props, str)
 			}
-			// If we find an optional value in --cvars og --cvfile
+			// If we find an optional value in --cvars og --cvfile or Environment
 			if !o.Required {
 				if len(Variables[o.Name]) > 0 {
 					str = "-D" + o.Name + "=" + Variables[o.Name]

@@ -87,7 +87,7 @@ var generatePropertiesCmd = &cobra.Command{
 		if modules.Variables == nil {
 			vars := MergeSourceVars(
 				mg.GetVarsFromSource(Defaults),
-				OverrideVars(mg.GetVars(), CmdCVars(CVars).Parse()))
+				OverrideVars(mg.GetVars()))
 			modules.Variables = vars
 		}
 		for k,v := range modules.Variables {

@@ -40,7 +40,7 @@ var InspectCmd = &cobra.Command{
 		if modules.Variables == nil {
 			vars := MergeVars(
 				mg.GetVars(),
-				OverrideVars(mg.GetVars(), CmdCVars(CVars).Parse()))
+				OverrideVars(mg.GetVars()))
 			modules.Variables = vars
 		}
 		name := modules.Name(&mg)
@@ -81,7 +81,7 @@ var InspectPropertiesCmd = &cobra.Command{
 		if modules.Variables == nil {
 			vars := MergeVars(
 				mg.GetVars(),
-				OverrideVars(mg.GetVars(), CmdCVars(CVars).Parse()))
+				OverrideVars(mg.GetVars()))
 			modules.Variables = vars
 		}
 	},

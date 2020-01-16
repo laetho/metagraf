@@ -42,8 +42,11 @@ func VarsFromEnv(mgv metagraf.MGVars) EnvVars {
 
 // Returns a map of key, value pairs that matched addressable fields
 // in a metaGraf specification from --cvars argument.
-func VarsFromCmd(mgv metagraf.MGVars, cvars CmdVars) map[string]string {
+func VarsFromCmd(mgv metagraf.MGVars) map[string]string {
 	vars := make(map[string]string)
+
+	// Parse and get values from --cvars
+	cvars := CmdCVars(CVars).Parse()
 
 	for k, v := range cvars {
 		if _, ok := mgv[k]; ok {
@@ -99,23 +102,29 @@ func keyValueFromEnv(s string) (string, string) {
 	return strings.Split(s, "=")[0], strings.Split(s, "=")[1]
 }
 
-// Returns a map of key & value pairs that
-// Precedence is Environment, File and Command
-func OverrideVars(mgv metagraf.MGVars, cvars CmdVars) map[string]string {
+// Returns a map of key, value pairs of addressable fields in a
+// metaGraf specification from Environment, --cvfile argument and
+// --cvars argument.
+//
+// Precedence is:
+//   1. --cvars argument
+//   2. --cvfile argument
+//   3. Environment
+func OverrideVars(keys metagraf.MGVars) map[string]string {
 	ovars := make(map[string]string)
 
 	// Fetch possible variables form metaGraf specification
-	for k, v := range VarsFromEnv(mgv) {
+	for k, v := range VarsFromEnv(keys) {
 		ovars[k] = v
 	}
 
 	// Fetch variable overrides from file if specified with --cvfile
-	for k,v := range VarsFromFile(mgv) {
+	for k,v := range VarsFromFile(keys) {
 		ovars[k] = v
 	}
 
 	// Fetch from commandline
-	for k, v := range VarsFromCmd(mgv, cvars) {
+	for k, v := range VarsFromCmd(keys) {
 		ovars[k] = v
 	}
 
