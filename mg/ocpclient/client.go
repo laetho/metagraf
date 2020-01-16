@@ -18,8 +18,6 @@ package ocpclient
 
 import (
 	"flag"
-	"github.com/golang/glog"
-
 	appsv1client "github.com/openshift/client-go/apps/clientset/versioned/typed/apps/v1"
 	buildv1client "github.com/openshift/client-go/build/clientset/versioned/typed/build/v1"
 	imagev1client "github.com/openshift/client-go/image/clientset/versioned/typed/image/v1"
@@ -28,6 +26,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
+	log "k8s.io/klog"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -45,6 +44,7 @@ func getHomeDir() string {
 		return home
 	}
 	return os.Getenv("HOME")
+
 }
 
 func getKubeConfig() string {
@@ -62,20 +62,20 @@ func getKubeConfig() string {
 
 // Get rest.Config from outside or inside cluster
 func getRestConfig(kc string) *rest.Config{
-	glog.Infof("kubeconfig: %v", kc)
+	log.Infof("kubeconfig: %v", kc)
 	var config *rest.Config
 
 	if _, err := os.Stat(kc); os.IsNotExist(err) {
 		var err error
 		config, err = rest.InClusterConfig()
 		if err != nil {
-			glog.Infof("Did not find InClusterConfig: %v", err)
+			log.Infof("Did not find InClusterConfig: %v", err)
 		}
 	} else {
 		var err error
 		config, err = clientcmd.BuildConfigFromFlags("", kc)
 		if err != nil {
-			glog.Errorf("Unable to build config from flags: %v", err)
+			log.Errorf("Unable to build config from flags: %v", err)
 			os.Exit(1)
 		}
 	}

@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The MetaGraph Authors
+Copyright 2019 The MetaGraph Authors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -18,20 +18,48 @@ package modules
 
 import (
 	"fmt"
-	"github.com/golang/glog"
 	"html/template"
+	log "k8s.io/klog"
 	"metagraf/pkg/metagraf"
 	"os"
+	"strings"
 )
 
 func GenRef(mg *metagraf.MetaGraf) {
-	glog.Info("Fetching template: %v", Template)
+	log.Info("Fetching template: %v", Template)
 	cm, err  := GetConfigMap(Template)
 	if err != nil {
-		glog.Error(err)
+		log.Error(err)
 		os.Exit(-1)
 	}
-	tmpl, _ := template.New("refdoc").Parse(cm.Data["template"])
+	tmpl, err := template.New("refdoc").Funcs(
+		template.FuncMap{
+			"split": func(s string, d string) []string {
+				return strings.Split(s, d)
+			},
+			"numOfLocal": func(l []metagraf.EnvironmentVar) int {
+				return len(l)
+			},
+			"numOfOptions": func(l []metagraf.ConfigParam) int {
+				return len(l)
+			},
+			"isLast": func(a []string, k int) bool {
+				if (len(a)-1 == k) {
+					return true
+				}
+				return false
+			},
+			"last": func(t int, c int) bool {
+				if (t-1 == c) {
+					return true
+				}
+				return false
+			},
+		}).Parse(cm.Data["template"])
+	if (err != nil) {
+		log.Error(err)
+		os.Exit(1)
+	}
 
 	filename := "/tmp/"+Name(mg)+Suffix
 
@@ -45,6 +73,7 @@ func GenRef(mg *metagraf.MetaGraf) {
 	err = tmpl.Execute(f, mg)
 	if err != nil {
 		fmt.Println(err)
+		os.Exit(1)
 	}
 	fmt.Println("Wrote ref file to: ", filename)
 }

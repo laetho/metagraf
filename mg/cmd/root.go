@@ -19,11 +19,11 @@ package cmd
 import (
 	"flag"
 	"fmt"
-	"github.com/golang/glog"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
+	log "k8s.io/klog"
 	"os"
 )
 
@@ -31,6 +31,7 @@ const Banner string = "mg (metaGraf) - "
 
 
 var (
+	All		  bool = false		// Flag for indicating all resources, example delete all resources associated with a application.
 	Namespace string
 	OName     string // Flag for overriding application name.
 	Config    string // Viper config override
@@ -50,6 +51,8 @@ var (
 	ImageNS		string 			// Image Namespace, used in overriding namespace in container image references
 	Registry	string			// Flag for holding a custom container registry
 	Tag			string			//
+	Context		string			// Flag for setting application context root.
+	CreateGlobals bool = false	// Flag for overriding default behaviour of skipping creation of global secrets.
 )
 
 // Array of available config keys
@@ -101,7 +104,7 @@ func initConfig() {
 
 	viper.AutomaticEnv()
 	if err := viper.ReadInConfig(); err != nil {
-		glog.Infof("Failed to read config file:", viper.ConfigFileUsed())
+		log.Infof("Failed to read config file:", viper.ConfigFileUsed())
 	}
 }
 

@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The metaGraf Authors
+Copyright 2019 The metaGraf Authors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package metagraf
 
 import (
 	"encoding/json"
-	"github.com/golang/glog"
+	log "k8s.io/klog"
 	"io/ioutil"
 	"os"
 )
@@ -26,7 +26,7 @@ import (
 func Parse(filepath string) MetaGraf {
 	b, err := ioutil.ReadFile(filepath)
 	if err != nil {
-		glog.Error(err)
+		log.Error(err)
 		os.Exit(1)
 	}
 
@@ -35,7 +35,7 @@ func Parse(filepath string) MetaGraf {
 
 	err = json.Unmarshal(b, &mg)
 	if err != nil {
-		glog.Error(err)
+		log.Error(err)
 		os.Exit(1)
 	}
 	return mg

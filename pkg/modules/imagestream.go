@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The MetaGraph Authors
+Copyright 2019 The MetaGraph Authors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -17,9 +17,11 @@ limitations under the License.
 package modules
 
 import (
-	"github.com/golang/glog"
+	"fmt"
+	log "k8s.io/klog"
 	"metagraf/mg/ocpclient"
 	"metagraf/pkg/metagraf"
+	"os"
 
 	imagev1 "github.com/openshift/api/image/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -27,10 +29,10 @@ import (
 )
 
 func GenImageStream(mg *metagraf.MetaGraf, namespace string) {
-	glog.V(3).Info(mg)
+	log.V(3).Info(mg)
 
 	objname := Name(mg)
-	glog.V(2).Infof("Generated object name: %v", objname)
+	log.V(2).Infof("Generated object name: %v", objname)
 
 	// Resource labels
 	l := make(map[string]string)
@@ -72,23 +74,44 @@ func GenImageStream(mg *metagraf.MetaGraf, namespace string) {
 
 func StoreImageStream(obj imagev1.ImageStream) {
 
-	glog.Infof("ResourceVersion: %v Length: %v", obj.ResourceVersion, len(obj.ResourceVersion))
-	glog.Infof("Namespace: %v", NameSpace)
+	log.Infof("ResourceVersion: %v Length: %v", obj.ResourceVersion, len(obj.ResourceVersion))
+	log.Infof("Namespace: %v", NameSpace)
 
 	client := ocpclient.GetImageClient().ImageStreams(NameSpace)
 
-	if len(obj.ResourceVersion) > 0 {
-		// update
-		result, err := client.Update(&obj)
+	im, err := client.Get(obj.Name, metav1.GetOptions{})
+	if len(im.ResourceVersion) > 0 {
 		if err != nil {
-			glog.Info(err)
+			log.Error(err)
+			fmt.Println(err)
+			os.Exit(1)
 		}
-		glog.Infof("Updated ImageStream: %v(%v)", result.Name, obj.Name)
+		log.Infof("ImageStream: %v", obj.Name, " exist, skipping...")
 	} else {
 		result, err := client.Create(&obj)
 		if err != nil {
-			glog.Info(err)
+			log.Error(err)
+			fmt.Println(err)
+			os.Exit(1)
 		}
-		glog.Infof("Created ImageStream: %v(%v)", result.Name, obj.Name)
+		log.Infof("Created ImageStream: %v(%v)", result.Name, obj.Name)
 	}
+}
+
+func DeleteImageStream(name string) {
+	client := ocpclient.GetImageClient().ImageStreams(NameSpace)
+
+	_, err := client.Get(name, metav1.GetOptions{})
+	if err != nil {
+		fmt.Println("ImageStream: ", name, "does not exist in namespace: ", NameSpace,", skipping...")
+		return
+	}
+
+	err = client.Delete(name, &metav1.DeleteOptions{})
+	if err != nil {
+		fmt.Println( "Unable to delete ImageStream: ", name, " in namespace: ", NameSpace)
+		log.Error(err)
+		return
+	}
+	fmt.Println("Deleted ImageStream: ", name, ", in namespace: ", NameSpace)
 }

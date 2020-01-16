@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The MetaGraph Authors
+Copyright 2019 The MetaGraph Authors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -17,10 +17,12 @@ limitations under the License.
 package modules
 
 import (
-	"github.com/golang/glog"
+	"fmt"
+	log "k8s.io/klog"
 	"github.com/openshift/api/image/docker10"
 	"github.com/spf13/viper"
 	"metagraf/mg/ocpclient"
+	"os"
 	"strconv"
 	"strings"
 
@@ -153,24 +155,28 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 		if len(e.EnvFrom) > 0 {
 			continue
 		}
+
+		// Inject JVM_SYS_PROP as an EnvVar. Content comes from a Config
+		// section of type JVM_SYS_PROPS. But requires a Environment variable
+		// of type JVM_SYS_PROP as well.
+		if strings.ToUpper(e.Type) == "JVM_SYS_PROP" {
+			if HasJVM_SYS_PROP(mg) {
+				EnvVars = append(EnvVars, GenEnvVar_JVM_SYS_PROP(mg, e.Name))
+			}
+			continue
+		}
+
 		// Use EnvToEnvVar to potentially use override values.
 		EnvVars = append(EnvVars, EnvToEnvVar(&e, false))
 	}
 
-	// External variables from metagraf as deployment envvars
-	for _, e := range mg.Spec.Environment.External.Consumes {
-		EnvVars = append(EnvVars, EnvToEnvVar(&e, true))
-	}
-	for _, e := range mg.Spec.Environment.External.Introduces {
-		EnvVars = append(EnvVars, EnvToEnvVar(&e, true))
-	}
+
 
 	// EnvVars from ConfigMaps, fetch Metagraf config resources that is of
 	for _, e := range mg.Spec.Environment.Local {
 		if len(e.EnvFrom) == 0 {
 				continue
 		}
-
 		EnvFrom = append(EnvFrom, corev1.EnvFromSource{
 			ConfigMapRef: &corev1.ConfigMapEnvSource{
 				LocalObjectReference: corev1.LocalObjectReference{
@@ -199,6 +205,13 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 		EnvFrom = append(EnvFrom, cmref)
 	}
 
+	// External variables from metagraf as deployment envvars
+	for _, e := range mg.Spec.Environment.External.Consumes {
+		EnvVars = append(EnvVars, EnvToEnvVar(&e, true))
+	}
+	for _, e := range mg.Spec.Environment.External.Introduces {
+		EnvVars = append(EnvVars, EnvToEnvVar(&e, true))
+	}
 
 	/* Norsk Tipping Specific Logic regarding
 	   WLP / OpenLiberty Features. Should maybe
@@ -304,7 +317,7 @@ func volumes(mg *metagraf.MetaGraf, ImageInfo *docker10.DockerImage ) ([]corev1.
 	var VolumeMounts []corev1.VolumeMount
 
 	// Volumes & VolumeMounts from base image into podspec
-	glog.Info("ImageInfo: Got ", len(ImageInfo.Config.Volumes), " volumes from base image...")
+	log.Info("ImageInfo: Got ", len(ImageInfo.Config.Volumes), " volumes from base image...")
 	for k := range ImageInfo.Config.Volumes {
 		// Volume Definitions
 		Volume := corev1.Volume{
@@ -330,7 +343,7 @@ func volumes(mg *metagraf.MetaGraf, ImageInfo *docker10.DockerImage ) ([]corev1.
 
 		vname = "cm-"+strings.Replace(n,".","-", -1)
 
-		glog.V(2).Infof("Name,Type: %v,%v", n,t)
+		log.V(2).Infof("Name,Type: %v,%v", n,t)
 
 		if t == "template" {
 			oname =  strings.Replace(n,".","-", -1)
@@ -365,7 +378,7 @@ func volumes(mg *metagraf.MetaGraf, ImageInfo *docker10.DockerImage ) ([]corev1.
 	}
 
 	for n, t := range FindSecrets(mg) {
-		glog.V(2).Infof("Secret: %v,%t", n, t)
+		log.V(2).Infof("Secret: %v,%t", n, t)
 		voln := strings.Replace(n,".", "-", -1)
 		var mode int32 = 420
 		vol := corev1.Volume{
@@ -390,24 +403,43 @@ func volumes(mg *metagraf.MetaGraf, ImageInfo *docker10.DockerImage ) ([]corev1.
 
 
 func StoreDeploymentConfig(obj appsv1.DeploymentConfig) {
-
-	glog.Infof("ResourceVersion: %v Length: %v", obj.ResourceVersion, len(obj.ResourceVersion))
-	glog.Infof("Namespace: %v", NameSpace)
-
 	client := ocpclient.GetAppsClient().DeploymentConfigs(NameSpace)
+	dc, _ := client.Get(obj.Name, metav1.GetOptions{})
 
-	if len(obj.ResourceVersion) > 0 {
-		// update
-		result, err := client.Update(&obj)
+	if len(dc.ResourceVersion) > 0 {
+		obj.ResourceVersion = dc.ResourceVersion
+		_, err := client.Update(&obj)
 		if err != nil {
-			glog.Info(err)
+			log.Error(err)
+			fmt.Println(err)
+			os.Exit(1)
 		}
-		glog.Infof("Updated DeploymentConfig: %v(%v)", result.Name, obj.Name)
+		fmt.Println("Updated DeploymentConfig: ", obj.Name," in Namespace: ", obj.Name)
 	} else {
 		result, err := client.Create(&obj)
 		if err != nil {
-			glog.Info(err)
+			log.Error(err)
+			fmt.Println(err)
+			os.Exit(1)
 		}
-		glog.Infof("Created DeploymentConfig: %v(%v)", result.Name, obj.Name)
+		fmt.Println("Created DeploymentConfig: ", result.Name," in Namespace: ", obj.Name)
 	}
+}
+
+func DeleteDeploymentConfig(name string) {
+	client := ocpclient.GetAppsClient().DeploymentConfigs(NameSpace)
+
+	_ , err := client.Get(name, metav1.GetOptions{})
+	if err != nil {
+		fmt.Println("DeploymentConfig: ", name, "does not exist in namespace: ", NameSpace,", skipping...")
+		return
+	}
+
+	err = client.Delete(name, &metav1.DeleteOptions{})
+	if err != nil {
+		fmt.Println( "Service to delete DeploymentConfig: ", name, " in namespace: ", NameSpace)
+		log.Error(err)
+		return
+	}
+	fmt.Println("Deleted DeploymentConfig: ", name, ", in namespace: ", NameSpace)
 }

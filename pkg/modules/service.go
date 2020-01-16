@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The MetaGraph Authors
+Copyright 2019 The MetaGraph Authors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -17,7 +17,8 @@ limitations under the License.
 package modules
 
 import (
-	"github.com/golang/glog"
+	"fmt"
+	log "k8s.io/klog"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
@@ -25,6 +26,7 @@ import (
 	"metagraf/pkg/helpers"
 	"metagraf/pkg/imageurl"
 	"metagraf/pkg/metagraf"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -105,24 +107,44 @@ func GenService(mg *metagraf.MetaGraf) {
 }
 
 func StoreService(obj corev1.Service) {
+	client := ocpclient.GetCoreClient().Services(NameSpace)
+	svc, _ := client.Get(obj.Name, metav1.GetOptions{})
 
-	glog.Infof("ResourceVersion: %v Length: %v", obj.ResourceVersion, len(obj.ResourceVersion))
-	glog.Infof("Namespace: %v", NameSpace)
+	if len(svc.ResourceVersion) > 0 {
+		obj.ResourceVersion = svc.ResourceVersion
+		obj.Spec.ClusterIP = svc.Spec.ClusterIP
+		_, err := client.Update(&obj)
+		if err != nil {
+			log.Error(err)
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		fmt.Println("Updated Service: ", obj.Name, " in Namespace: ", NameSpace)
+	} else {
+		_, err := client.Create(&obj)
+		if err != nil {
+			log.Error(err)
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		fmt.Println("Created Service: ", obj.Name, " in Namespace: ", NameSpace)
+	}
+}
 
+func DeleteService(name string) {
 	client := ocpclient.GetCoreClient().Services(NameSpace)
 
-	if len(obj.ResourceVersion) > 0 {
-		// update
-		result, err := client.Update(&obj)
-		if err != nil {
-			glog.Info(err)
-		}
-		glog.Infof("Updated Service: %v(%v)", result.Name, obj.Name)
-	} else {
-		result, err := client.Create(&obj)
-		if err != nil {
-			glog.Info(err)
-		}
-		glog.Infof("Created Service: %v(%v)", result.Name, obj.Name)
+	_, err := client.Get(name, metav1.GetOptions{})
+	if err != nil {
+		fmt.Println("Service: ", name, "does not exist in namespace: ", NameSpace,", skipping...")
+		return
 	}
+
+	err = client.Delete(name, &metav1.DeleteOptions{})
+	if err != nil {
+		fmt.Println( "Unable to delete Service: ", name, " in namespace: ", NameSpace)
+		log.Error(err)
+		return
+	}
+	fmt.Println("Deleted Service: ", name, ", in namespace: ", NameSpace)
 }

@@ -2,21 +2,21 @@ package metagraf
 
 import (
 	"encoding/json"
-	"github.com/golang/glog"
+	log "k8s.io/klog"
 	"io/ioutil"
 	"os"
 )
 
 func Store(filepath string, mg *MetaGraf) {
-	b, err := json.MarshalIndent(mg, "","\t")
+	b, err := json.MarshalIndent(mg, "","  ")
 	if err != nil {
-		glog.Error(err)
+		log.Error(err)
 		os.Exit(1)
 	}
 
 	err = ioutil.WriteFile(filepath, b, 0644 )
 	if err != nil {
-		glog.Error(err)
+		log.Error(err)
 		os.Exit(1)
 	}
 }

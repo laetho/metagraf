@@ -18,8 +18,8 @@ package cmd
 
 import (
 	"github.com/blang/semver"
-	"github.com/golang/glog"
 	"github.com/spf13/cobra"
+	log "k8s.io/klog"
 	"metagraf/pkg/metagraf"
 	"os"
 )
@@ -44,7 +44,7 @@ var injectAnnotationCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		if len(args) < 3 {
-			glog.Error("Missing arguments...")
+			log.Error("Missing arguments...")
 			os.Exit(1)
 		}
 
@@ -62,7 +62,7 @@ var injectVersionCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		if len(args) < 2 {
-			glog.Error("Missing arguments...")
+			log.Error("Missing arguments...")
 			os.Exit(1)
 		}
 
@@ -80,29 +80,29 @@ var injectSemVerCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		if len(args) < 2 {
-			glog.Error("Missing arguments...")
+			log.Error("Missing arguments...")
 			os.Exit(1)
 		}
 
 		if len(args[0]) < 1 {
-			glog.Error(StrMissingMetaGraf)
+			log.Error(StrMissingMetaGraf)
 			os.Exit(1)
 		}
 
 		if len(args[1]) < 1 {
-			glog.Error("You have to specify a version.")
+			log.Error("You have to specify a version.")
 			os.Exit(1)
 		}
 
 		sv, err := semver.Parse(args[1])
 		if err != nil {
-			glog.Error(err)
+			log.Error(err)
 			os.Exit(1)
 		}
 
 		err = sv.Validate()
 		if err != nil {
-			glog.Error("err")
+			log.Error("err")
 			os.Exit(1)
 		}
 

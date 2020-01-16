@@ -1,9 +1,27 @@
+/*
+Copyright 2019 The MetaGraph Authors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package modules
 
 import (
-	"github.com/golang/glog"
+	"fmt"
+	log "k8s.io/klog"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"metagraf/pkg/helpers"
+	"os"
 	"reflect"
 	"sort"
 	"strings"
@@ -38,11 +56,11 @@ func GenRoute(mg *metagraf.MetaGraf) {
 		imgurl.Namespace,
 		imgurl.Image+":"+imgurl.Tag)
 	if err != nil {
-		glog.Errorf("%v", err)
+		log.Errorf("%v", err)
 	}
 
 	ImageInfo := helpers.GetDockerImageFromIST(ist)
-	glog.V(2).Infof("Docker image ports: %v", ImageInfo.Config.ExposedPorts)
+	log.V(2).Infof("Docker image ports: %v", ImageInfo.Config.ExposedPorts)
 
 	var ports []string
 
@@ -51,7 +69,7 @@ func GenRoute(mg *metagraf.MetaGraf) {
 	}
 	sort.Strings(ports)
 
-	glog.V(2).Infof("First port: %v, %t", ports[0], ports[0])
+	log.V(2).Infof("First port: %v, %t", ports[0], ports[0])
 
 
 	l := make(map[string]string)
@@ -73,7 +91,7 @@ func GenRoute(mg *metagraf.MetaGraf) {
 				Name: objname,
 				Weight: &weight,
 			},
-			Path: "/"+MGAppName(mg),
+			Path: Context,
 			Port: &routev1.RoutePort{
 				TargetPort: intstr.IntOrString{
 					Type: 1,
@@ -93,24 +111,41 @@ func GenRoute(mg *metagraf.MetaGraf) {
 }
 
 func StoreRoute(obj routev1.Route) {
+	client := ocpclient.GetRouteClient().Routes(NameSpace)
+    route, _ := client.Get(obj.Name, metav1.GetOptions{} )
+	if len(route.ResourceVersion) > 0 {
+		obj.ResourceVersion = route.ResourceVersion
+		_, err := client.Update(&obj)
+		if err != nil {
+			log.Error(err)
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		fmt.Println("Updated Route: ", obj.Name, " in Namespace: ", NameSpace)
+	} else {
+		_, err := client.Create(&obj)
+		if err != nil {
+			log.Error(err)
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		fmt.Println("Created Route: ", obj.Name, " in Namespace: ", NameSpace)
+	}
+}
 
-	glog.Infof("ResourceVersion: %v Length: %v", obj.ResourceVersion, len(obj.ResourceVersion))
-	glog.Infof("Namespace: %v", NameSpace)
-
+func DeleteRoute(name string) {
 	client := ocpclient.GetRouteClient().Routes(NameSpace)
 
-	if len(obj.ResourceVersion) > 0 {
-		// update
-		result, err := client.Update(&obj)
-		if err != nil {
-			glog.Info(err)
-		}
-		glog.Infof("Updated Route: %v(%v)", result.Name, obj.Name)
-	} else {
-		result, err := client.Create(&obj)
-		if err != nil {
-			glog.Info(err)
-		}
-		glog.Infof("Created Route: %v(%v)", result.Name, obj.Name)
+	_, err := client.Get(name, metav1.GetOptions{})
+	if err != nil {
+		fmt.Println("Route: ", name, "does not exist in namespace: ", NameSpace,", skipping...")
+		return
 	}
+
+	err = client.Delete(name, &metav1.DeleteOptions{})
+	if err != nil {
+		fmt.Println( "Unable to delete Route: ", name, " in namespace: ", NameSpace)
+		return
+	}
+	fmt.Println("Deleted Route: ", name, ", in namespace: ", NameSpace)
 }

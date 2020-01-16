@@ -1,11 +1,4 @@
 Things to do:
 
-* Add readyness og liveliness checks to metaGraf spec.
 * Consider detecting more advanced build modes, or adding structure to accomplish this. s2i base images from Dockerfile and BuildConfig
 * Design a way to generate buildconfig's with master->branch+pull request ci pattern.
-
-
-
-EnvironmentVar Type -> Deprecated
-* Handle them in ref template
-* Skip them when generating resources.

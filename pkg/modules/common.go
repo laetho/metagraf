@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The metaGraf Authors
+Copyright 2019 The metaGraf Authors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package modules
 
 import (
 	"github.com/blang/semver"
-	"github.com/golang/glog"
+	log "k8s.io/klog"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"metagraf/pkg/metagraf"
@@ -46,6 +46,7 @@ import (
 
 // This is a complete hack. todo: fix this shit, restructure packages
 var (
+	All		  bool
 	NameSpace string // Used to pass namespace from cmd to module to avoid import cycle.
 	Output    bool   // Flag passing hack
 	Version   string // Flag passing hack
@@ -62,7 +63,9 @@ var (
 	ImageNS	  string
 	Registry  string
 	Tag		  string
-	OName		string
+	OName	  string
+	Context   string	// Application context root from FlagPassingHack.
+	CreateGlobals bool
 )
 
 var Variables map[string]string
@@ -72,13 +75,14 @@ func Name(mg *metagraf.MetaGraf) string {
 	var objname string
 
 	if len(OName) > 0 {
+		log.Infof("ObjectName overridden with: %v",OName)
 		return OName
 	}
 
 	if len(Version) > 0 {
-		sv, err := semver.Parse(mg.Spec.Version)
+		sv, err := semver.Parse(Version)
 		if err != nil {
-			return strings.ToLower(mg.Metadata.Name+"-") + Version
+			return strings.ToLower(mg.Metadata.Name)+"-"+Version
 		} else {
 			objname = strings.ToLower(mg.Metadata.Name + "v" + strconv.FormatUint(sv.Major, 10))
 			return objname + "-" + Version
@@ -99,7 +103,7 @@ func SpecName(mg *metagraf.MetaGraf) string {
 	var objname string
 
 	if len(Version) > 0 {
-		sv, err := semver.Parse(mg.Spec.Version)
+		sv, err := semver.Parse(Version)
 		if err != nil {
 			return strings.ToLower(mg.Metadata.Name+"-") + Version
 		} else {
@@ -121,7 +125,7 @@ func MGAppName(mg *metagraf.MetaGraf) string {
 	var objname string
 
 	if len(Version) > 0 {
-		sv, err := semver.Parse(mg.Spec.Version)
+		sv, err := semver.Parse(Version)
 		if err != nil {
 			return mg.Metadata.Name+"-"+ Version
 		} else {
@@ -144,7 +148,7 @@ func ResourceSecretName(r *metagraf.Resource) string {
 	if len(r.User) > 0 && len(r.Secret) == 0 {
 		// When an implicit secret is created it's resource name will
 		// prepended to the user. They resourcename + user will get treated as a global secret.
-		return strings.ToLower(r.Name)+"-"+strings.ToLower(r.User)
+		return strings.ToLower(strings.Replace(r.Name,"_","-", -1))+"-"+strings.ToLower(r.User)
 	} else if len(r.User) == 0 && len(r.Secret) > 0 {
 		// Explicit secret name generation
 		return strings.ToLower(r.Secret)
@@ -195,7 +199,7 @@ func EnvToEnvVar(e *metagraf.EnvironmentVar, ext bool) corev1.EnvVar {
 		if v, t := Variables[e.Name]; t {
 			if len(v) > 0 {
 				value = v
-				glog.Info("Found override value for: ", name, " Override value: ", Variables[name])
+				log.Info("Found override value for: ", name, " Override value: ", Variables[name])
 			}
 		}
 
@@ -247,14 +251,14 @@ func MarshalObject(obj runtime.Object) {
 			s := json.NewSerializer(json.DefaultMetaFactory, scheme.Scheme, scheme.Scheme, true)
 			err := s.Encode(obj,os.Stdout)
 			if err != nil {
-				glog.Error(err)
+				log.Error(err)
 				os.Exit(1)
 			}
 		case "yaml":
 			s := json.NewYAMLSerializer(json.DefaultMetaFactory, scheme.Scheme, scheme.Scheme)
 			err := s.Encode(obj, os.Stdout)
 			if err != nil {
-				glog.Error(err)
+				log.Error(err)
 				os.Exit(1)
 			}
 	}
