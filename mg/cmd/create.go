@@ -166,15 +166,15 @@ var createDeploymentCmd = &cobra.Command{
 	Long:  Banner + `create Deployment`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
-			glog.Info(StrActiveProject, viper.Get("namespace"))
-			glog.Error(StrMissingMetaGraf)
+			log.Info(StrActiveProject, viper.Get("namespace"))
+			log.Error(StrMissingMetaGraf)
 			os.Exit(1)
 		}
 
 		if len(Namespace) == 0 {
 			Namespace = viper.GetString("namespace")
 			if len(Namespace) == 0 {
-				glog.Error(StrMissingNamespace)
+				log.Error(StrMissingNamespace)
 				os.Exit(1)
 			}
 		}
