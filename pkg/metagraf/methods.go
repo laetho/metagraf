@@ -37,11 +37,21 @@ func (mg *MetaGraf) GetVars() MGVars {
 
 	// Config section, find parameters from
 	for _,conf := range mg.Spec.Config {
-		if len(conf.Options) == 0 || conf.Type != "parameters" {continue}
-
-		for _,opts := range conf.Options {
-			vars[opts.Name] = opts.Default
+		if len(conf.Options) == 0 {
+			continue
 		}
+
+		switch conf.Type {
+		case "parameters":
+			for _, opts := range conf.Options {
+				vars[opts.Name] = ""
+			}
+		case "JVM_SYS_PROP":
+			for _, opts := range conf.Options {
+				vars[opts.Name] = ""
+			}
+		}
+
 	}
 	return vars
 }

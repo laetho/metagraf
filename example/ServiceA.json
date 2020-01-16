@@ -21,19 +21,6 @@
           "required": true,
           "type": "JVM_SYS_PROP",
           "description": "Java System Properties, se Config section with type JVM_SYS_PROP."
-        },
-        {
-          "name": "Variable1",
-          "required": true,
-          "type": "string",
-          "description": "Require variable # 1"
-        },
-        {
-          "name": "Variable2",
-          "required": false,
-          "type": "string",
-          "default": "optional",
-          "description": "Optional variable # 2"
         }
       ],
       "external": {}
