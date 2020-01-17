@@ -19,6 +19,8 @@ build-osx:
 	GOOS=darwin ARCH=amd64 go build
 
 build-win:
+	@echo "Building Windows version..."
+	GOOS=windows GOARCH=amd64 go build
 
 clean:
 	@echo "Cleaning up binaries..."
