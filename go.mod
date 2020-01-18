@@ -15,7 +15,6 @@ require (
 	github.com/openshift/api v0.0.0-20190322043348-8741ff068a47
 	github.com/openshift/client-go v0.0.0-20180613143650-6a9817e0a072
 	github.com/pelletier/go-toml v1.6.0 // indirect
-	github.com/petar/GoLLRB v0.0.0-20190514000832-33fb24c13b99 // indirect
 	github.com/peterbourgon/diskv v2.0.1+incompatible // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/afero v1.2.2 // indirect
