@@ -103,7 +103,8 @@ var InspectPropertiesCmd = &cobra.Command{
 				os.Exit(1)
 			}
 		}
-
+		fmt.Printf("%v is valid.", CVfile)
+		os.Exit(0)
 	},
 }
 
