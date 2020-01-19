@@ -20,10 +20,18 @@ import (
 	"github.com/golang/glog"
 	log "k8s.io/klog"
 	"metagraf/mg/cmd"
+	"metagraf/pkg/mgver"
 	"os"
 )
 
+
 func main() {
+	if len(mgver.GitTag) == 0 {
+		cmd.MGVersion = mgver.GitBranch+"("+mgver.GitHash+")"
+	} else {
+		cmd.MGVersion = mgver.GitTag+"("+mgver.GitHash+")"
+	}
+
 	err := cmd.Execute()
 	if err != nil {
 		glog.Error(err)

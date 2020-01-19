@@ -27,8 +27,8 @@ import (
 	"os"
 )
 
-const Banner string = "mg (metaGraf) - "
-
+var MGVersion string
+var MGBanner string = "mg " + MGVersion
 
 var (
 	All		  bool = false		// Flag for indicating all resources, example delete all resources associated with a application.
@@ -67,7 +67,7 @@ var configkeys []string = []string{
 var RootCmd = &cobra.Command{
 	Use:   "mg",
 	Short: "mg operates on collections of metaGraf's objects.",
-	Long: Banner + `is a utility that understands the metaGraf
+	Long: MGBanner + `is a utility that understands the metaGraf
 datastructure and help you generate kubernetes primitives`,
 	//Run: func(cmd *cobra.Command, args []string) {
 	// Do Stuff Here

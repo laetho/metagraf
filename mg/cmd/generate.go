@@ -38,13 +38,13 @@ func init() {
 var generateCmd = &cobra.Command{
 	Use:   "generate",
 	Short: "generate operations",
-	Long:  Banner + ` create `,
+	Long:  MGBanner + ` create `,
 }
 
 var generateMarkdownCmd = &cobra.Command{
 	Use:   "markdown",
 	Short: "create markdown documentation for the mg command.",
-	Long:  Banner + `generate markdown`,
+	Long:  MGBanner + `generate markdown`,
 	Run: func(cmd *cobra.Command, args []string) {
 		err := doc.GenMarkdownTree( RootCmd, "./")
 		if err != nil {
@@ -57,7 +57,7 @@ var generateMarkdownCmd = &cobra.Command{
 var generateManPagesCmd = &cobra.Command{
 	Use:   "manpages",
 	Short: "create manpages for the mg command",
-	Long:  Banner + `generate markdown`,
+	Long:  MGBanner + `generate markdown`,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		header := &doc.GenManHeader{
@@ -74,7 +74,7 @@ var generateManPagesCmd = &cobra.Command{
 var generatePropertiesCmd = &cobra.Command{
 	Use:   "properties <metagraf>",
 	Short: "create configuration properties from metaGraf file",
-	Long:  Banner + `generate properties`,
+	Long:  MGBanner + `generate properties`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
 			log.Error(StrMissingMetaGraf)
