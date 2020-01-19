@@ -14,11 +14,22 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package mgver
+package cmd
 
-var (
-	BuildDate string
-	GitTag string
-	GitHash string
-	GitBranch string
+import (
+	"fmt"
+	"github.com/spf13/cobra"
 )
+
+func init() {
+	RootCmd.AddCommand(versionCmd)
+}
+
+var versionCmd = &cobra.Command{
+	Use:   "version",
+	Short: "display version and build information",
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("mg",MGVersion)
+
+	},
+}

@@ -28,5 +28,5 @@ func init() {
 var deleteCmd = &cobra.Command{
 	Use:   "delete",
 	Short: "delete operations",
-	Long:  Banner + ` delete `,
+	Long:  MGBanner + ` delete `,
 }

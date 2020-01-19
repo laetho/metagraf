@@ -35,7 +35,7 @@ func init() {
 var injectCmd = &cobra.Command{
 	Use:   "inject",
 	Short: "Inject operations",
-	Long:  Banner + ` inject `,
+	Long:  MGBanner + ` inject `,
 }
 
 var injectAnnotationCmd = &cobra.Command{
