@@ -148,7 +148,7 @@ func genConfigMapsFromConfig(conf *metagraf.Config, mg *metagraf.MetaGraf) {
 	}
 
 	for _, o := range conf.Options {
-		 if len(o.SecretFrom) > 0 {
+		if len(o.SecretFrom) > 0 {
 			sec, err := GetSecret(o.SecretFrom)
 			if err != nil {
 				log.Error(err)

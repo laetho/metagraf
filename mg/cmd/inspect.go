@@ -78,12 +78,19 @@ var InspectPropertiesCmd = &cobra.Command{
 		}
 
 		mg := metagraf.Parse(args[0])
-		if modules.Variables == nil {
-			vars := MergeVars(
-				mg.GetVars(),
-				OverrideVars(mg.GetVars()))
-			modules.Variables = vars
-		}
+		CVfile = args[1]
+		confvars := VarsFromFile(mg.GetVars())
+		reqvars := mg.GetRequiredVars()
+
+		fmt.Println("Addressable Variables:", mg.GetVars())
+		fmt.Println("Required Variables", reqvars)
+		fmt.Println("Config Variables: ", confvars)
+
+		// 1. Find required vars not in variables form the properties file.
+		// 2. Find configvars not in specification.
+
+
+
 	},
 }
 

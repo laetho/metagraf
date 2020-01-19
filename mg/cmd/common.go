@@ -132,15 +132,15 @@ func OverrideVars(keys metagraf.MGVars) map[string]string {
 }
 
 func MergeVars(base metagraf.MGVars, override map[string]string) metagraf.MGVars {
+	log.Info("Calling MergeVars: ", base)
 	for k, v := range override {
 		base[k] = v
 	}
-	log.Info("Calling MergeVars: ", base)
 	return base
 }
 
 
-// Used in parsing cvfile
+// Used when parsing --cvfile
 func MergeSourceVars(base metagraf.MGVars, override map[string]string) metagraf.MGVars {
 	log.Info("MergeSourcevars(): base mg vars", base)
 	log.Info("MergeSourceVars(): with override values: ", override)
@@ -150,10 +150,11 @@ func MergeSourceVars(base metagraf.MGVars, override map[string]string) metagraf.
 
 	// Strip Source Label from base
 	for k,_ := range base {
-		key := strings.Split(k, "=")[1]
+		key := strings.Split(k, "=")[1] // Stripping source reference.
 		keys[key] = k
 	}
 
+	// Apply only valid variables from basevars.
 	for k, v := range override {
 		base[keys[k]] = v
 	}

@@ -20,7 +20,6 @@ import "github.com/pkg/errors"
 
 // Returns a map of all parameterized fields in a metaGraf
 // specification.
-// @todo need to look for parameterized fields in more places?
 func (mg *MetaGraf) GetVars() MGVars {
 	vars := MGVars{}
 
@@ -56,6 +55,53 @@ func (mg *MetaGraf) GetVars() MGVars {
 	return vars
 }
 
+// The same as GetVars() but returns a map of only required
+// addressable variables.
+func (mg *MetaGraf) GetRequiredVars() MGVars {
+	vars := MGVars{}
+
+	// Environment Section
+	for _,env := range mg.Spec.Environment.Local {
+		if env.Required == false { continue }
+		vars[env.Name] = ""
+	}
+	for _,env := range mg.Spec.Environment.External.Introduces {
+		if env.Required == false { continue }
+		vars[env.Name] = ""
+	}
+	for _,env := range mg.Spec.Environment.External.Consumes {
+		if env.Required == false { continue }
+		vars[env.Name] = ""
+	}
+
+	// Config section, find parameters from
+	for _,conf := range mg.Spec.Config {
+		if len(conf.Options) == 0 {
+			continue
+		}
+
+		switch conf.Type {
+		case "parameters":
+			for _, opts := range conf.Options {
+				if opts.Required == false {continue}
+				vars[opts.Name] = ""
+			}
+		case "JVM_SYS_PROP":
+			for _, opts := range conf.Options {
+				if opts.Required == false {continue}
+				vars[opts.Name] = ""
+			}
+		}
+
+	}
+	return vars
+}
+
+// Returns a MGVars map of addressable variables found in the specification
+// where the variable key gets prepended a string of where it came from in
+// the specification.
+//
+// Optional required variables are returned. (Required: true)
 func (mg *MetaGraf) GetVarsFromSource(defaults bool) MGVars {
 	vars := MGVars{}
 
@@ -104,7 +150,6 @@ func (mg *MetaGraf) GetVarsFromSource(defaults bool) MGVars {
 				}
 		}
 	}
-
 	return vars
 }
 
