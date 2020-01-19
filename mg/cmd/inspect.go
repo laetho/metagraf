@@ -82,14 +82,27 @@ var InspectPropertiesCmd = &cobra.Command{
 		confvars := VarsFromFile(mg.GetVars())
 		reqvars := mg.GetRequiredVars()
 
-		fmt.Println("Addressable Variables:", mg.GetVars())
-		fmt.Println("Required Variables", reqvars)
-		fmt.Println("Config Variables: ", confvars)
+		log.V(1).Info("Addressable Variables:", mg.GetVars())
+		log.V(1).Info("Required Variables", reqvars)
+		log.V(1).Info("Config Variables: ", confvars)
+
 
 		// 1. Find required vars not in variables form the properties file.
 		// 2. Find configvars not in specification.
 
+		for key,_ := range reqvars {
+			if _, ok := confvars[key]; !ok {
+				fmt.Printf("Required key: %v, is missing from %v\n", key, CVfile)
+				os.Exit(1)
+			}
+		}
 
+		for key,_ := range confvars {
+			if _, ok := mg.GetVars()[key]; !ok {
+				fmt.Printf("%v is an invalid configuration key for this metaGraf specification.\n", key)
+				os.Exit(1)
+			}
+		}
 
 	},
 }
