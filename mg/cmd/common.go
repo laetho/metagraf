@@ -18,6 +18,7 @@ package cmd
 
 import (
 	"bufio"
+	"fmt"
 	log "k8s.io/klog"
 	"metagraf/pkg/metagraf"
 	"metagraf/pkg/modules"
@@ -80,17 +81,28 @@ func VarsFromFile(mgv metagraf.MGVars) map[string]string {
 		if err != nil {
 			break
 		}
-		vl := strings.Split(line,"=")
-		if len(vl) < 2 {
-			log.Errorf("Properties are formatted improperly in: %v", CVfile)
-			break
+
+		// Skip empty lines
+		if len(line) == 1 {
+			if strings.Contains(line, "\n") { continue }
 		}
-		if len(vl) == 2 {
-			vars[vl[1]] = ""
-		} else if len(vl) >= 4 {
-			vars[vl[1]] = strings.ReplaceAll(strings.Join(vl[2:], "="), "\n", "")
+
+		if strings.ContainsRune( line, 58 ) {
+			fmt.Println("new handling")
 		} else {
-			vars[vl[1]] = strings.ReplaceAll(vl[2], "\n", "")
+			// Old --cvfile format
+			vl := strings.Split(line, "=")
+			if len(vl) < 2 {
+				log.Errorf("Properties are formatted improperly in: %s", CVfile)
+				os.Exit(1)
+			}
+			if len(vl) == 2 {
+				vars[vl[1]] = ""
+			} else if len(vl) >= 4 {
+				vars[vl[1]] = strings.ReplaceAll(strings.Join(vl[2:], "="), "\n", "")
+			} else {
+				vars[vl[1]] = strings.ReplaceAll(vl[2], "\n", "")
+			}
 		}
 	}
 	return vars
@@ -141,13 +153,14 @@ func MergeVars(base metagraf.MGVars, override map[string]string) metagraf.MGVars
 
 
 // Used when parsing --cvfile
-func MergeSourceVars(base metagraf.MGVars, override map[string]string) metagraf.MGVars {
+func MergeSourceKeyedVars(base metagraf.MGVars, override map[string]string) metagraf.MGVars {
 	log.Info("MergeSourcevars(): base mg vars", base)
 	log.Info("MergeSourceVars(): with override values: ", override)
 
 	// Translation map, key = untyped key, value typed key name
 	keys := make(map[string]string)
 
+	// @todo Also support : as seperator to make the format of the .properties more readable.
 	// Strip Source Label from base
 	for k,_ := range base {
 		key := strings.Split(k, "=")[1] // Stripping source reference.

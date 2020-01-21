@@ -24,6 +24,7 @@ import (
 	"metagraf/pkg/metagraf"
 	"metagraf/pkg/modules"
 	"os"
+	"sort"
 )
 
 func init() {
@@ -85,13 +86,21 @@ var generatePropertiesCmd = &cobra.Command{
 
 		mg := metagraf.Parse(args[0])
 		if modules.Variables == nil {
-			vars := MergeSourceVars(
-				mg.GetVarsFromSource(Defaults),
+			vars := MergeSourceKeyedVars(
+				mg.GetSourceKeyedVars(Defaults),
 				OverrideVars(mg.GetVars()))
 			modules.Variables = vars
 		}
-		for k,v := range modules.Variables {
-			fmt.Println(k+"="+v)
+
+		keys := make([]string, 0, len(modules.Variables))
+		for k := range modules.Variables {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+
+		for _, k := range keys {
+			fmt.Println(k)
+			fmt.Println(k+"="+modules.Variables[k])
 		}
 	},
 }

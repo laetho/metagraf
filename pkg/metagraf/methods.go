@@ -102,18 +102,19 @@ func (mg *MetaGraf) GetRequiredVars() MGVars {
 // the specification.
 //
 // Optional required variables are returned. (Required: true)
-func (mg *MetaGraf) GetVarsFromSource(defaults bool) MGVars {
+func (mg *MetaGraf) GetSourceKeyedVars(defaults bool) MGVars {
 	vars := MGVars{}
 
 	// Environment Section
 	for _,env := range mg.Spec.Environment.Local {
 		if env.Required == false {continue}
 		if defaults {
-			vars["local="+env.Name] = env.Default
+			vars["local:"+env.Name] = env.Default
 		} else {
-			vars["local="+env.Name] = ""
+			vars["local:"+env.Name] = ""
 		}
 	}
+	/*
 	for _,env := range mg.Spec.Environment.External.Introduces {
 		if env.Required == false {continue}
 		if defaults {
@@ -122,6 +123,7 @@ func (mg *MetaGraf) GetVarsFromSource(defaults bool) MGVars {
 			vars["external="+env.Name] = ""
 		}
 	}
+
 	for _,env := range mg.Spec.Environment.External.Consumes {
 		if env.Required == false {continue}
 		if defaults {
@@ -130,6 +132,7 @@ func (mg *MetaGraf) GetVarsFromSource(defaults bool) MGVars {
 			vars["external="+env.Name] = ""
 		}
 	}
+	*/
 
 	// Config section, find parameters from
 	for _,conf := range mg.Spec.Config {
@@ -141,12 +144,12 @@ func (mg *MetaGraf) GetVarsFromSource(defaults bool) MGVars {
 			case "parameters":
 				for _,opts := range conf.Options {
 					if opts.Required == false {continue}
-					vars[conf.Name+"="+opts.Name] = opts.Default
+					vars[conf.Name+":"+opts.Name] = opts.Default
 				}
 			case "JVM_SYS_PROP":
 				for _,opts := range conf.Options {
 					if opts.Required == false {continue}
-					vars[conf.Type+"="+opts.Name] = opts.Default
+					vars[conf.Type+":"+opts.Name] = opts.Default
 				}
 		}
 	}
