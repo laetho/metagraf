@@ -93,8 +93,8 @@ func VarsFromFile(mgv metagraf.MGVars) map[string]string {
 			if strings.Contains(line, "\n") { continue }
 		}
 		a := strings.FieldsFunc(line, LineSplit)
-		t := metagraf.MGProperties{a[0], a[1], a[2] }
-		vars[t.Key] = t.Key+"="+t.Value
+		t := metagraf.MGProperties{a[0], a[1], strings.TrimRight(a[2], "\n") }
+		vars[t.Key] = t.Value
 	}
 	return vars
 }
@@ -151,7 +151,6 @@ func MergeSourceKeyedVars(base metagraf.MGVars, override map[string]string) meta
 	// Translation map, key = untyped key, value typed key name
 	keys := make(map[string]string)
 
-	// @todo Also support : as seperator to make the format of the .properties more readable.
 	// Strip Source Label from base
 	for k,_ := range base {
 		key := strings.Split(k, "=")[1] // Stripping source reference.
