@@ -46,6 +46,27 @@
             "default": "test_value"
           }
         ]
+      },
+      {
+        "name": "config.properties",
+        "type": "parameters",
+        "description": "some config",
+        "options": [
+          {
+            "name": "key1",
+            "required": true,
+            "description": "onekey",
+            "type": "string",
+            "example": "test_value"
+          },
+          {
+            "name": "key2",
+            "required": false,
+            "description": "twokey",
+            "type": "string",
+            "default": "test_value"
+          }
+        ]
       }
     ]
   }
