@@ -29,7 +29,7 @@ type MGProperties struct {
 	Source		string	`json:source`
 	Key			string	`json:key`
 	Value		string	`json:value, omitempty`
-	Required	bool	`json:required, omitempty`
+	//Required	bool	`json:required, omitempty`
 }
 
 // JSON structure for a MetaGraf entity
