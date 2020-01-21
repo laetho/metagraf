@@ -93,7 +93,7 @@ func VarsFromFile(mgv metagraf.MGVars) map[string]string {
 			if strings.Contains(line, "\n") { continue }
 		}
 		a := strings.FieldsFunc(line, LineSplit)
-		t := metagraf.MGProperties{a[0], a[1], strings.TrimRight(a[2], "\n") }
+		t := metagraf.MGProperty{a[0], a[1], strings.TrimRight(a[2], "\n") }
 		vars[t.Key] = t.Value
 	}
 	return vars

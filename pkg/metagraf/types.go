@@ -25,12 +25,15 @@ type MGVars			map[string]string
 
 // Structure to hold specification secrtion sourced parameters. Should
 // solve key collisions and generally be a more workable solution.
-type MGProperties struct {
+type MGProperty struct {
 	Source		string	`json:source`
 	Key			string	`json:key`
 	Value		string	`json:value, omitempty`
-	//Required	bool	`json:required, omitempty`
+	//Required	bool	`json:required, omitempty`	// Add this when refactoring is done.
 }
+
+
+type MGProperties []MGProperty
 
 // JSON structure for a MetaGraf entity
 type MetaGraf struct {
