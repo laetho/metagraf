@@ -18,6 +18,72 @@ package metagraf
 
 import "github.com/pkg/errors"
 
+// Returns a struct (MGProperties) of all MGProperty addressable
+// in the metaGraf specification.
+func (mg *MetaGraf) GetProperties() MGProperties {
+	props := MGProperties{}
+
+	// Environment Section
+	for _,env := range mg.Spec.Environment.Local {
+		p := MGProperty{
+			Source:   "local",
+			Key:      env.Name,
+			Value:    "",
+			Required: env.Required,
+		}
+		props = append(props, p)
+	}
+	for _,env := range mg.Spec.Environment.External.Introduces {
+		p := MGProperty{
+			Source:   "external",
+			Key:      env.Name,
+			Value:    "",
+			Required: env.Required,
+		}
+		props = append(props, p)
+	}
+	for _,env := range mg.Spec.Environment.External.Consumes {
+		p := MGProperty{
+			Source:   "external",
+			Key:      env.Name,
+			Value:    "",
+			Required: env.Required,
+		}
+		props = append(props, p)
+	}
+
+	// Config section, find parameters from
+	for _,conf := range mg.Spec.Config {
+		if len(conf.Options) == 0 {
+			continue
+		}
+
+		switch conf.Type {
+		case "parameters":
+			for _, opts := range conf.Options {
+				p := MGProperty{
+					Source:   conf.Name,
+					Key:      opts.Name,
+					Value:    "",
+					Required: opts.Required,
+				}
+				props = append(props, p)
+			}
+		case "JVM_SYS_PROP":
+			for _, opts := range conf.Options {
+				p := MGProperty{
+					Source:   "JVM_SYS_PROP",
+					Key:      opts.Name,
+					Value:    "",
+					Required: opts.Required,
+				}
+				props = append(props, p)
+			}
+		}
+	}
+	return props
+}
+
 // Returns a map of all parameterized fields in a metaGraf
 // specification.
 func (mg *MetaGraf) GetVars() MGVars {
