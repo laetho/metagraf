@@ -79,8 +79,9 @@ var InspectPropertiesCmd = &cobra.Command{
 
 		mg := metagraf.Parse(args[0])
 		CVfile = args[1]
-		confvars := VarsFromFile()
-		reqvars := mg.GetRequiredVars()
+		confvars := PropertiesFromFile().Keys()
+		reqvars := mg.GetProperties().GetRequired()
+
 
 		log.V(1).Info("Addressable Variables:", mg.GetVars())
 		log.V(1).Info("Required Variables", reqvars)

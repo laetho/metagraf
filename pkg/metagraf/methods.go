@@ -155,55 +155,24 @@ func (mg *MetaGraf) GetRequiredVars() MGVars {
 	return vars
 }
 
-// The same as GetVars() but returns a map of only required
-// addressable variables.
-func (mg *MetaGraf) GetRequiredProperties() MGProperties {
-	vars := MGProperties{}
+// Returns the MGProperty.Required = true
+func (mgp MGProperties) GetRequired() MGProperties {
+	props := MGProperties{}
 
-	// Environment Section
-	for _,env := range mg.Spec.Environment.Local {
-		if env.Required == false { continue }
-		p:= MGProperty{
-			Source:   "local",
-			Key:      env.Name,
-			Value:    "",
-			Required: env.Required,
-		}
-		vars = append(vars,p )
-	}
-
-	// Config section, find parameters from
-	for _,conf := range mg.Spec.Config {
-		if len(conf.Options) == 0 {
-			continue
-		}
-
-		switch conf.Type {
-		case "parameters":
-			for _, opts := range conf.Options {
-				if opts.Required == false {continue}
-				p:= MGProperty{
-					Source:   conf.Name,
-					Key:      opts.Name,
-					Value:    "",
-					Required: opts.Required,
-				}
-				vars = append(vars,p)
-			}
-		case "JVM_SYS_PROP":
-			for _, opts := range conf.Options {
-				if opts.Required == false {continue}
-				p:= MGProperty{
-					Source:   "JVM_SYS_PROP",
-					Key:      opts.Name,
-					Value:    "",
-					Required: opts.Required,
-				}
-				vars = append(vars,p)
-			}
+	for _, prop := range mgp {
+		if prop.Required {
+			props = append(props, prop)
 		}
 	}
-	return vars
+	return props
+}
+// Returns a slice of Keys
+func (mgp MGProperties) Keys() []string {
+	var keys []string
+	for _, prop := range mgp {
+		keys = append(keys, prop.Key)
+	}
+	return keys
 }
 
 
