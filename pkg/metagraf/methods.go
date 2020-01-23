@@ -65,14 +65,6 @@ func (mg *MetaGraf) GetRequiredVars() MGVars {
 		if env.Required == false { continue }
 		vars[env.Name] = ""
 	}
-	for _,env := range mg.Spec.Environment.External.Introduces {
-		if env.Required == false { continue }
-		vars[env.Name] = ""
-	}
-	for _,env := range mg.Spec.Environment.External.Consumes {
-		if env.Required == false { continue }
-		vars[env.Name] = ""
-	}
 
 	// Config section, find parameters from
 	for _,conf := range mg.Spec.Config {
@@ -97,42 +89,128 @@ func (mg *MetaGraf) GetRequiredVars() MGVars {
 	return vars
 }
 
+// The same as GetVars() but returns a map of only required
+// addressable variables.
+func (mg *MetaGraf) GetRequiredProperties() MGProperties {
+	vars := MGProperties{}
+
+	// Environment Section
+	for _,env := range mg.Spec.Environment.Local {
+		if env.Required == false { continue }
+		p:= MGProperty{
+			Source:   "local",
+			Key:      env.Name,
+			Value:    "",
+			Required: env.Required,
+		}
+		vars = append(vars,p )
+	}
+
+	// Config section, find parameters from
+	for _,conf := range mg.Spec.Config {
+		if len(conf.Options) == 0 {
+			continue
+		}
+
+		switch conf.Type {
+		case "parameters":
+			for _, opts := range conf.Options {
+				if opts.Required == false {continue}
+				p:= MGProperty{
+					Source:   conf.Name,
+					Key:      opts.Name,
+					Value:    "",
+					Required: opts.Required,
+				}
+				vars = append(vars,p)
+			}
+		case "JVM_SYS_PROP":
+			for _, opts := range conf.Options {
+				if opts.Required == false {continue}
+				p:= MGProperty{
+					Source:   "JVM_SYS_PROP",
+					Key:      opts.Name,
+					Value:    "",
+					Required: opts.Required,
+				}
+				vars = append(vars,p)
+			}
+		}
+	}
+	return vars
+}
+
+
 // Returns a MGVars map of addressable variables found in the specification
 // where the variable key gets prepended a string of where it came from in
 // the specification.
 //
 // Optional required variables are returned. (Required: true)
-func (mg *MetaGraf) GetSourceKeyedVars(defaults bool) MGVars {
-	vars := MGVars{}
-
+func (mg *MetaGraf) GetSourceKeyedVars(defaults bool) MGProperties {
+	vars := MGProperties{}
 	// Environment Section
 	for _,env := range mg.Spec.Environment.Local {
 		if env.Required == false {continue}
 		if defaults {
-			vars["local:"+env.Name] = env.Default
+			prop := MGProperty{
+				Source: "local",
+				Key:    env.Name,
+				Value:  env.Default,
+				Required: env.Required,
+			}
+			vars = append(vars, prop)
 		} else {
-			vars["local:"+env.Name] = ""
+			prop := MGProperty{
+				Source: "local",
+				Key:    env.Name,
+				Value:  "",
+				Required: env.Required,
+			}
+			vars = append(vars, prop)
 		}
 	}
-	/*
+
 	for _,env := range mg.Spec.Environment.External.Introduces {
 		if env.Required == false {continue}
 		if defaults {
-			vars["external="+env.Name] = env.Default
+			prop := MGProperty{
+				Source: "external",
+				Key:    env.Name,
+				Value:  env.Default,
+				Required: env.Required,
+			}
+			vars = append(vars, prop)
 		} else {
-			vars["external="+env.Name] = ""
+			prop := MGProperty{
+				Source: "external",
+				Key:    env.Name,
+				Value:  "",
+				Required: env.Required,
+			}
+			vars = append(vars, prop)
 		}
 	}
 
 	for _,env := range mg.Spec.Environment.External.Consumes {
 		if env.Required == false {continue}
 		if defaults {
-			vars["external="+env.Name] = env.Default
+			prop := MGProperty{
+				Source: "external",
+				Key:    env.Name,
+				Value:  env.Default,
+				Required: env.Required,
+			}
+			vars = append(vars, prop)
 		} else {
-			vars["external="+env.Name] = ""
+			prop := MGProperty{
+				Source: "external",
+				Key:    env.Name,
+				Value:  "",
+				Required: env.Required,
+			}
+			vars = append(vars, prop)
 		}
 	}
-	*/
 
 	// Config section, find parameters from
 	for _,conf := range mg.Spec.Config {
@@ -143,13 +221,25 @@ func (mg *MetaGraf) GetSourceKeyedVars(defaults bool) MGVars {
 		switch conf.Type {
 			case "parameters":
 				for _,opts := range conf.Options {
-					if opts.Required == false {continue}
-					vars[conf.Name+":"+opts.Name] = opts.Default
+					if opts.Required == false {continue} // Skip optional
+					prop := MGProperty{
+						Source: conf.Name,
+						Key:    opts.Name,
+						Value:  "",
+						Required: opts.Required,
+					}
+					vars = append(vars, prop)
 				}
 			case "JVM_SYS_PROP":
 				for _,opts := range conf.Options {
-					if opts.Required == false {continue}
-					vars[conf.Type+":"+opts.Name] = opts.Default
+					if opts.Required == false {continue} // Skip optional
+					prop := MGProperty{
+						Source: conf.Name,
+						Key:    opts.Name,
+						Value:  opts.Default,
+						Required: opts.Required,
+					}
+					vars = append(vars, prop)
 				}
 		}
 	}

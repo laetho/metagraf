@@ -29,9 +29,8 @@ type MGProperty struct {
 	Source		string	`json:source`
 	Key			string	`json:key`
 	Value		string	`json:value, omitempty`
-	//Required	bool	`json:required, omitempty`	// Add this when refactoring is done.
+	Required	bool	`json:required, omitempty`	// Add this when refactoring is done.
 }
-
 
 type MGProperties []MGProperty
 
