@@ -80,22 +80,22 @@ var generatePropertiesCmd = &cobra.Command{
 			log.Error(StrMissingMetaGraf)
 			os.Exit(1)
 		}
-		FlagPassingHack()
 
 		mg := metagraf.Parse(args[0])
+		props := mg.GetProperties()
+		//OverrideProperties(props)
 
-		vars := MergeSourceKeyedVars(
-			mg.GetSourceKeyedVars(Defaults),
-			OverrideVars(mg.GetVars()))
+		keys := props.SourceKeys(true )
+		sort.Strings(keys)
 
-		sort.Slice(vars, func(i, j int) bool {
-			return vars[i].Source+vars[i].Key < vars[j].Source+vars[j].Key || vars[i].Source+vars[i].Key > vars[j].Source+vars[j].Key
-		})
-
-		for _, prop := range vars {
+		for _, key := range keys {
+			prop := props[key]
 			if prop.Source == "external" {continue}
-			if !prop.Required {continue}
-			fmt.Println(prop.Source+":"+prop.Key+"="+prop.Value)
+			if Defaults {
+				fmt.Println(prop.MGKey()+"="+prop.Default)
+			} else {
+				fmt.Println(prop.MGKey()+"=")
+			}
 		}
 	},
 }
