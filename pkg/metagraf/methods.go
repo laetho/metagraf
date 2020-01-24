@@ -18,6 +18,11 @@ package metagraf
 
 import "github.com/pkg/errors"
 
+// Returns a metagraf adressable key for a property.
+func (mgp *MGProperty) MGKey() string {
+	return mgp.Source+":"+mgp.Key
+}
+
 // Returns a struct (MGProperties) of all MGProperty addressable
 // in the metaGraf specification.
 func (mg *MetaGraf) GetProperties() MGProperties {
@@ -30,8 +35,9 @@ func (mg *MetaGraf) GetProperties() MGProperties {
 			Key:      env.Name,
 			Value:    "",
 			Required: env.Required,
+			Default: env.Default,
 		}
-		props = append(props, p)
+		props[p.MGKey()] = p
 	}
 	for _,env := range mg.Spec.Environment.External.Introduces {
 		p := MGProperty{
@@ -39,8 +45,9 @@ func (mg *MetaGraf) GetProperties() MGProperties {
 			Key:      env.Name,
 			Value:    "",
 			Required: env.Required,
+			Default: env.Default,
 		}
-		props = append(props, p)
+		props[p.MGKey()] = p
 	}
 	for _,env := range mg.Spec.Environment.External.Consumes {
 		p := MGProperty{
@@ -48,8 +55,9 @@ func (mg *MetaGraf) GetProperties() MGProperties {
 			Key:      env.Name,
 			Value:    "",
 			Required: env.Required,
+			Default: env.Default,
 		}
-		props = append(props, p)
+		props[p.MGKey()] = p
 	}
 
 	// Config section, find parameters from
@@ -66,8 +74,9 @@ func (mg *MetaGraf) GetProperties() MGProperties {
 					Key:      opts.Name,
 					Value:    "",
 					Required: opts.Required,
+					Default: opts.Default,
 				}
-				props = append(props, p)
+				props[p.MGKey()] = p
 			}
 		case "JVM_SYS_PROP":
 			for _, opts := range conf.Options {
@@ -76,8 +85,9 @@ func (mg *MetaGraf) GetProperties() MGProperties {
 					Key:      opts.Name,
 					Value:    "",
 					Required: opts.Required,
+					Default: opts.Default,
 				}
-				props = append(props, p)
+				props[p.MGKey()] = p
 			}
 		}
 	}
@@ -160,8 +170,8 @@ func (mgp MGProperties) GetRequired() MGProperties {
 	props := MGProperties{}
 
 	for _, prop := range mgp {
-		if prop.Required {
-			props = append(props, prop)
+		if prop.Required && prop.Source != "external" {
+			props[prop.MGKey()] = prop
 		}
 	}
 	return props
@@ -175,110 +185,40 @@ func (mgp MGProperties) Keys() []string {
 	return keys
 }
 
-
-// Returns a MGVars map of addressable variables found in the specification
-// where the variable key gets prepended a string of where it came from in
-// the specification.
-//
-// Optional required variables are returned. (Required: true)
-func (mg *MetaGraf) GetSourceKeyedVars(defaults bool) MGProperties {
-	vars := MGProperties{}
-	// Environment Section
-	for _,env := range mg.Spec.Environment.Local {
-		if env.Required == false {continue}
-		if defaults {
-			prop := MGProperty{
-				Source: "local",
-				Key:    env.Name,
-				Value:  env.Default,
-				Required: env.Required,
-			}
-			vars = append(vars, prop)
-		} else {
-			prop := MGProperty{
-				Source: "local",
-				Key:    env.Name,
-				Value:  "",
-				Required: env.Required,
-			}
-			vars = append(vars, prop)
-		}
-	}
-
-	for _,env := range mg.Spec.Environment.External.Introduces {
-		if env.Required == false {continue}
-		if defaults {
-			prop := MGProperty{
-				Source: "external",
-				Key:    env.Name,
-				Value:  env.Default,
-				Required: env.Required,
-			}
-			vars = append(vars, prop)
-		} else {
-			prop := MGProperty{
-				Source: "external",
-				Key:    env.Name,
-				Value:  "",
-				Required: env.Required,
-			}
-			vars = append(vars, prop)
-		}
-	}
-
-	for _,env := range mg.Spec.Environment.External.Consumes {
-		if env.Required == false {continue}
-		if defaults {
-			prop := MGProperty{
-				Source: "external",
-				Key:    env.Name,
-				Value:  env.Default,
-				Required: env.Required,
-			}
-			vars = append(vars, prop)
-		} else {
-			prop := MGProperty{
-				Source: "external",
-				Key:    env.Name,
-				Value:  "",
-				Required: env.Required,
-			}
-			vars = append(vars, prop)
-		}
-	}
-
-	// Config section, find parameters from
-	for _,conf := range mg.Spec.Config {
-		if len(conf.Options) == 0 {
+// Return a slice
+func (mgp MGProperties) SourceKeys(required bool) []string {
+	var keys []string
+	for _, prop := range mgp {
+		if prop.Required == required {
+			keys = append(keys, prop.Source+":"+prop.Key)
 			continue
 		}
-
-		switch conf.Type {
-			case "parameters":
-				for _,opts := range conf.Options {
-					if opts.Required == false {continue} // Skip optional
-					prop := MGProperty{
-						Source: conf.Name,
-						Key:    opts.Name,
-						Value:  "",
-						Required: opts.Required,
-					}
-					vars = append(vars, prop)
-				}
-			case "JVM_SYS_PROP":
-				for _,opts := range conf.Options {
-					if opts.Required == false {continue} // Skip optional
-					prop := MGProperty{
-						Source: conf.Name,
-						Key:    opts.Name,
-						Value:  opts.Default,
-						Required: opts.Required,
-					}
-					vars = append(vars, prop)
-				}
-		}
+		keys = append(keys, prop.Source+":"+prop.Key)
 	}
-	return vars
+	return keys
+}
+
+// Returns a map of key,values
+func (mgp MGProperties) KeyMap() map[string]string {
+	keys := make(map[string]string)
+	for _, prop := range mgp {
+		keys[prop.Key] = prop.Value
+	}
+	return keys
+}
+
+// Returns a map of MGProperty.Source+Key, MGProperty.Value
+// It takes a boolean as argument. Return only required or all keys?
+func (mgp MGProperties) SourceKeyMap(required bool) map[string]string {
+	keys := make(map[string]string)
+	for _, prop := range mgp {
+		if prop.Required == required {
+			keys[prop.Source+":"+prop.Key] = prop.Value
+			continue
+		}
+		keys[prop.Source+":"+prop.Key] = prop.Value
+	}
+	return keys
 }
 
 func (mg *MetaGraf) GetResourceByName(name string) (Resource, error) {
