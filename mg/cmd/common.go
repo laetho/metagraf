@@ -206,14 +206,6 @@ func OverrideProperties(mgp metagraf.MGProperties) {
 	PropertiesFromCmd(mgp)
 }
 
-func MergeVars(base metagraf.MGVars, override map[string]string) metagraf.MGVars {
-	log.Info("Calling MergeVars: ", base)
-	for k, v := range override {
-		base[k] = v
-	}
-	return base
-}
-
 func FlagPassingHack() {
 	if Dryrun {
 		Output = true
