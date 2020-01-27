@@ -26,21 +26,6 @@ import (
 	"strings"
 )
 
-
-// Builds and returns a EnvVars{} map of shell environment
-// variables that matches addressable fields in a metaGraf
-// specification.
-func VarsFromEnv(mgv metagraf.MGVars) EnvVars {
-	envs := EnvVars{}
-	for _, v := range os.Environ() {
-		key, val := keyValueFromEnv(v)
-		if _, ok := mgv[key]; ok {
-			envs[key] = val
-		}
-	}
-	return envs
-}
-
 func PropertiesFromEnv(mgp metagraf.MGProperties) {
 	for _, v := range os.Environ() {
 		key, val := keyValueFromEnv(v)
