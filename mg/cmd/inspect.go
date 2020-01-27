@@ -76,16 +76,13 @@ var InspectPropertiesCmd = &cobra.Command{
 				os.Exit(1)
 			}
 		}
-
 		mg := metagraf.Parse(args[0])
 		CVfile = args[1]
+
 		mgprops := mg.GetProperties()
 		fileprops := PropertiesFromFile(mgprops)
 		confvars := fileprops.SourceKeyMap(false)
 		reqvars := mgprops.GetRequired().SourceKeyMap(true)
-
-		//fmt.Println(mgprops)
-		fmt.Println(reqvars)
 
 		log.V(1).Info("Addressable Variables:", mg.GetProperties())
 		log.V(1).Info("Required Variables", reqvars)
@@ -97,14 +94,14 @@ var InspectPropertiesCmd = &cobra.Command{
 
 		fail := false
 		for key,_ := range reqvars {
-			if _, ok := confvars[key]; !ok {
+			if _, ok := fileprops[key]; !ok {
 				fail = true
 				fmt.Printf("Required key: %v, is missing from %v\n", key, CVfile)
 			}
 		}
 
 		for key,_ := range confvars {
-			if _, ok := mg.GetVars()[key]; !ok {
+			if _, ok := mgprops[key]; !ok {
 				fail = true
 				fmt.Printf("%v is an invalid configuration key for this metaGraf specification.\n", key)
 			}
@@ -112,7 +109,7 @@ var InspectPropertiesCmd = &cobra.Command{
 		if fail {
 			os.Exit(1)
 		}
-		fmt.Printf("%v is valid.\n", CVfile)
+		fmt.Printf("The %v confiuration is valid for this metaGraf specification.\n", CVfile)
 		os.Exit(0)
 	},
 }
