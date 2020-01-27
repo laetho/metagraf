@@ -94,7 +94,11 @@ var generatePropertiesCmd = &cobra.Command{
 			if Defaults {
 				fmt.Println(prop.MGKey()+"="+prop.Default)
 			} else {
-				fmt.Println(prop.MGKey()+"=")
+				if prop.Source == "JVM_SYS_PROP" {
+					fmt.Println(prop.MGKey()+"="+prop.Default)
+				} else {
+					fmt.Println(prop.MGKey() + "=")
+				}
 			}
 		}
 	},
