@@ -68,7 +68,7 @@ var (
 	CreateGlobals bool
 )
 
-var Variables map[string]string
+var Variables metagraf.MGProperties
 
 // Returns a name for a resource based on convention as follows.
 func Name(mg *metagraf.MetaGraf) string {
