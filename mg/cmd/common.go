@@ -18,6 +18,7 @@ package cmd
 
 import (
 	"bufio"
+	"fmt"
 	log "k8s.io/klog"
 	"metagraf/pkg/metagraf"
 	"metagraf/pkg/modules"
@@ -145,6 +146,7 @@ func PropertiesFromFile(mgp metagraf.MGProperties) metagraf.MGProperties {
 	defer file.Close()
 	reader := bufio.NewReader(file)
 
+	fail := false
 	var line string
 	for {
 		line,err = reader.ReadString('\n')
@@ -161,16 +163,25 @@ func PropertiesFromFile(mgp metagraf.MGProperties) metagraf.MGProperties {
 			Source:   a[0],
 			Key:      a[1],
 			Value:    strings.TrimRight(a[2], "\n"),
-			Required: false,
+			Required: true,
 			Default:  "",
 		}
-		if mgp[t.MGKey()].Required == true {
-			mgp[t.MGKey()] = t
-		} else {
-			t.Required = false
+		t.Default = mgp[t.MGKey()].Default
+		t.Required = mgp[t.MGKey()].Required
+
+		if len(t.Value) == 0 {
+			fail = true
+			fmt.Printf("Configured property %v must have a value in %v\n", t.MGKey(),CVfile )
+		}
+		// Only set in mgp MGProperties if the key is valid.
+		if _, ok := mgp[t.MGKey()]; ok {
+			log.V(1).Infof("Found invalid key: %s while reading configuration file.\n", t.MGKey())
 			mgp[t.MGKey()] = t
 		}
 		props[t.MGKey()] = t
+	}
+	if fail {
+		os.Exit(1)
 	}
 	return props
 }
