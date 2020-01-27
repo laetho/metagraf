@@ -84,7 +84,7 @@ func PropertiesFromCmd(mgp metagraf.MGProperties) {
 
 // Used for splitting --cvfile .properties files with strings.FieldsFunc()
 func MgPropertyLineSplit(r rune) bool {
-	return r == ':' || r == '='
+	return r == '|' || r == '='
 }
 
 // Returns a map of key, value pairs that matched addressable fields
@@ -159,6 +159,10 @@ func PropertiesFromFile(mgp metagraf.MGProperties) metagraf.MGProperties {
 			if strings.Contains(line, "\n") { continue }
 		}
 		a := strings.FieldsFunc(line, MgPropertyLineSplit)
+		if len(a) != 3 {
+			fmt.Println("Configuration format error! Is it in: \"souce|key=value\"")
+			os.Exit(1)
+		}
 		t := metagraf.MGProperty{
 			Source:   a[0],
 			Key:      a[1],

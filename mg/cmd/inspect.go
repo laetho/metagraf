@@ -109,7 +109,7 @@ var InspectPropertiesCmd = &cobra.Command{
 		if fail {
 			os.Exit(1)
 		}
-		fmt.Printf("The %v confiuration is valid for this metaGraf specification.\n", CVfile)
+		fmt.Printf("The %v configuration is valid for this metaGraf specification.\n", CVfile)
 		os.Exit(0)
 	},
 }

@@ -20,7 +20,7 @@ import "github.com/pkg/errors"
 
 // Returns a metagraf adressable key for a property.
 func (mgp *MGProperty) MGKey() string {
-	return mgp.Source+":"+mgp.Key
+	return mgp.Source+"|"+mgp.Key
 }
 
 // Returns a struct (MGProperties) of all MGProperty addressable
@@ -201,10 +201,10 @@ func (mgp MGProperties) SourceKeys(required bool) []string {
 	var keys []string
 	for _, prop := range mgp {
 		if prop.Required == required {
-			keys = append(keys, prop.Source+":"+prop.Key)
+			keys = append(keys, prop.MGKey())
 			continue
 		}
-		keys = append(keys, prop.Source+":"+prop.Key)
+		keys = append(keys, prop.MGKey())
 	}
 	return keys
 }
@@ -224,10 +224,10 @@ func (mgp MGProperties) SourceKeyMap(required bool) map[string]string {
 	keys := make(map[string]string)
 	for _, prop := range mgp {
 		if prop.Required == required {
-			keys[prop.Source+":"+prop.Key] = prop.Value
+			keys[prop.MGKey()] = prop.Value
 			continue
 		}
-		keys[prop.Source+":"+prop.Key] = prop.Value
+		keys[prop.MGKey()] = prop.Value
 	}
 	return keys
 }
