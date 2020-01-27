@@ -17,10 +17,9 @@ limitations under the License.
 package modules
 
 import (
+	"fmt"
 	"metagraf/pkg/metagraf"
-	"k8s.io/apimachinery/pkg/apis/meta/v1"
 	istionetv1alpha3 "istio.io/api/networking/v1alpha3"
-	corev1 "k8s.io/api/core/v1"
 )
 
 func GenIstioService(mg *metagraf.MetaGraf, namespace string) {
@@ -37,7 +36,7 @@ func GenIstioService(mg *metagraf.MetaGraf, namespace string) {
 		XXX_unrecognized:     nil,
 		XXX_sizecache:        0,
 	}
-	
+	fmt.Println(svc)
 }
 
 func GenIstioVirtualService(mg *metagraf.MetaGraf, namespace string) {
@@ -52,4 +51,5 @@ func GenIstioVirtualService(mg *metagraf.MetaGraf, namespace string) {
 		XXX_unrecognized:     nil,
 		XXX_sizecache:        0,
 	}
+	fmt.Println(vs)
 }
