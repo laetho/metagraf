@@ -51,22 +51,6 @@ func PropertiesFromEnv(mgp metagraf.MGProperties) {
 	}
 }
 
-// Returns a map of key, value pairs that matched addressable fields
-// in a metaGraf specification from --cvars argument.
-func VarsFromCmd(mgv metagraf.MGVars) map[string]string {
-	vars := make(map[string]string)
-
-	// Parse and get values from --cvars
-	cvars := CmdCVars(CVars).Parse()
-
-	for k, v := range cvars {
-		if _, ok := mgv[k]; ok {
-			vars[k] = v
-		}
-	}
-	return vars
-}
-
 // Modifies a MGProperties map with values from --cvars
 // argument. Only supports local environment variables
 // for now.
