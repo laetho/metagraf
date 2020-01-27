@@ -148,6 +148,7 @@ func genConfigMapsFromConfig(conf *metagraf.Config, mg *metagraf.MetaGraf) {
 	}
 
 	for _, o := range conf.Options {
+		prop := Variables[conf.Name+"|"+o.Name]
 		if len(o.SecretFrom) > 0 {
 			sec, err := GetSecret(o.SecretFrom)
 			if err != nil {
@@ -157,10 +158,10 @@ func genConfigMapsFromConfig(conf *metagraf.Config, mg *metagraf.MetaGraf) {
 			cm.Data[o.Name] = base64.StdEncoding.EncodeToString(sec.Data[o.SecretFrom])
 
 
-		} else if ValueFromEnv(o.Name) { 					// todo: check the ValueFromEnv implementation
-			cm.Data[o.Name] = Variables[o.Name]
+		} else if ValueFromEnv(prop.Key) {
+			cm.Data[prop.Key] = prop.Value
 		} else {
-			cm.Data[o.Name] = o.Default
+			cm.Data[prop.Key] = prop.Value
 		}
 	}
 

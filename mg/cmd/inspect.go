@@ -37,12 +37,10 @@ var InspectCmd = &cobra.Command{
 		}
 
 		mg := metagraf.Parse(args[0])
-		if modules.Variables == nil {
-			vars := MergeVars(
-				mg.GetVars(),
-				OverrideVars(mg.GetVars()))
-			modules.Variables = vars
-		}
+		modules.Variables = mg.GetProperties()
+		OverrideProperties(modules.Variables)
+		log.V(2).Info("Current MGProperties: ", modules.Variables)
+
 		name := modules.Name(&mg)
 		for k, v := range modules.Variables {
 			fmt.Println(name, "Variable:", k, v)

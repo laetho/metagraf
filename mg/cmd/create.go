@@ -145,12 +145,9 @@ var createConfigMapCmd = &cobra.Command{
 
 		mg := metagraf.Parse(args[0])
 
-		if modules.Variables == nil {
-			vars := MergeVars(
-				mg.GetVars(),
-				OverrideVars(mg.GetVars()))
-			modules.Variables = vars
-		}
+		modules.Variables = mg.GetProperties()
+		OverrideProperties(modules.Variables)
+		log.V(2).Info("Current MGProperties: ", modules.Variables)
 
 		if len(modules.NameSpace) == 0 {
 			modules.NameSpace = Namespace
@@ -182,18 +179,12 @@ var createDeploymentCmd = &cobra.Command{
 		mg := metagraf.Parse(args[0])
 		FlagPassingHack()
 
-		if modules.Variables == nil {
-			vars := MergeVars(
-				mg.GetVars(),
-				OverrideVars(mg.GetVars()))
-			modules.Variables = vars
-		}
+		modules.Variables = mg.GetProperties()
+		OverrideProperties(modules.Variables)
 
 		if len(modules.NameSpace) == 0 {
 			modules.NameSpace = Namespace
 		}
-
-		// @todo pass as argument or set exported module variable?
 		modules.GenDeployment(&mg, Namespace)
 	},
 }
@@ -220,18 +211,14 @@ var createDeploymentConfigCmd = &cobra.Command{
 		mg := metagraf.Parse(args[0])
 		FlagPassingHack()
 
-		if modules.Variables == nil {
-			vars := MergeVars(
-				mg.GetVars(),
-				OverrideVars(mg.GetVars()))
-			modules.Variables = vars
-		}
+		modules.Variables = mg.GetProperties()
+		OverrideProperties(modules.Variables)
+		log.V(2).Info("Current MGProperties: ", modules.Variables)
 
 		if len(modules.NameSpace) == 0 {
 			modules.NameSpace = Namespace
 		}
 
-		// @todo pass as argument or set exported module variable?
 		modules.GenDeploymentConfig(&mg, Namespace)
 	},
 }
