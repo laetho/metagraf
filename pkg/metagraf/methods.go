@@ -28,38 +28,6 @@ func (mgp *MGProperty) MGKey() string {
 func (mg *MetaGraf) GetProperties() MGProperties {
 	props := MGProperties{}
 
-	// Environment Section
-	for _,env := range mg.Spec.Environment.Local {
-		p := MGProperty{
-			Source:   "local",
-			Key:      env.Name,
-			Value:    "",
-			Required: env.Required,
-			Default: env.Default,
-		}
-		props[p.MGKey()] = p
-	}
-	for _,env := range mg.Spec.Environment.External.Introduces {
-		p := MGProperty{
-			Source:   "external",
-			Key:      env.Name,
-			Value:    "",
-			Required: env.Required,
-			Default: env.Default,
-		}
-		props[p.MGKey()] = p
-	}
-	for _,env := range mg.Spec.Environment.External.Consumes {
-		p := MGProperty{
-			Source:   "external",
-			Key:      env.Name,
-			Value:    "",
-			Required: env.Required,
-			Default: env.Default,
-		}
-		props[p.MGKey()] = p
-	}
-
 	// Config section, find parameters from
 	for _,conf := range mg.Spec.Config {
 		if len(conf.Options) == 0 {
@@ -91,6 +59,47 @@ func (mg *MetaGraf) GetProperties() MGProperties {
 			}
 		}
 	}
+
+	// Environment Section
+	for _,env := range mg.Spec.Environment.Local {
+		p := MGProperty{
+			Source:   "local",
+			Key:      env.Name,
+			Value:    "",
+			Required: env.Required,
+			Default: env.Default,
+		}
+
+		// Environment variables of type JVM_SYS_PROP will
+		// be implicitly populated by values from config
+		// named JVM_SYS_PROP
+		if env.Type == "JVM_SYS_PROP" {
+			continue
+		}
+		props[p.MGKey()] = p
+	}
+	for _,env := range mg.Spec.Environment.External.Introduces {
+		p := MGProperty{
+			Source:   "external",
+			Key:      env.Name,
+			Value:    "",
+			Required: env.Required,
+			Default: env.Default,
+		}
+		props[p.MGKey()] = p
+	}
+	for _,env := range mg.Spec.Environment.External.Consumes {
+		p := MGProperty{
+			Source:   "external",
+			Key:      env.Name,
+			Value:    "",
+			Required: env.Required,
+			Default: env.Default,
+		}
+		props[p.MGKey()] = p
+	}
+
+
 	return props
 }
 
@@ -98,6 +107,8 @@ func (mg *MetaGraf) GetProperties() MGProperties {
 // specification.
 func (mg *MetaGraf) GetVars() MGVars {
 	vars := MGVars{}
+
+
 
 	// Environment Section
 	for _,env := range mg.Spec.Environment.Local {
