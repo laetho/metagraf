@@ -197,35 +197,6 @@ func keyValueFromEnv(s string) (string, string) {
 	return strings.Split(s, "=")[0], strings.Split(s, "=")[1]
 }
 
-// Returns a map of key, value pairs of addressable fields in a
-// metaGraf specification from Environment, --cvfile argument and
-// --cvars argument.
-//
-// Precedence is:
-//   1. --cvars argument
-//   2. --cvfile argument
-//   3. Environment
-func OverrideVars(keys metagraf.MGVars) map[string]string {
-	ovars := make(map[string]string)
-
-	// Fetch possible variables form metaGraf specification
-	for k, v := range VarsFromEnv(keys) {
-		ovars[k] = v
-	}
-
-	// Fetch variable overrides from file if specified with --cvfile
-	for k,v := range VarsFromFile() {
-		ovars[k] = v
-	}
-
-	// Fetch from commandline
-	for k, v := range VarsFromCmd(keys) {
-		ovars[k] = v
-	}
-
-	return ovars
-}
-
 func OverrideProperties(mgp metagraf.MGProperties) {
 	// Fetch possible variables form metaGraf specification
 	PropertiesFromEnv(mgp)
