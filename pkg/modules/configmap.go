@@ -88,7 +88,7 @@ func GetConfigMap(name string) (*corev1.ConfigMap, error) {
 /*
 	Returns a slice of metagraf Config structs that match specific ctype string
  */
-func GetMetagrafConfigByType(mg *metagraf.MetaGraf, ctype string) []metagraf.Config {
+func GetMetagrafConfigsByType(mg *metagraf.MetaGraf, ctype string) []metagraf.Config {
 	configs := []metagraf.Config{}
 
 	for _, c := range mg.Spec.Config {
@@ -148,7 +148,7 @@ func genConfigMapsFromConfig(conf *metagraf.Config, mg *metagraf.MetaGraf) {
 	}
 
 	for _, o := range conf.Options {
-		 if len(o.SecretFrom) > 0 {
+		if len(o.SecretFrom) > 0 {
 			sec, err := GetSecret(o.SecretFrom)
 			if err != nil {
 				log.Error(err)

@@ -43,7 +43,8 @@ data:
     for deploy og konfigurasjonsstyring. \r\n\r\n* Liberty features kommer fra **norsk-tipping.no/libertyfeatures**
     annotasjonen.\r\n* Lokale *environment* variabler anses som **jvmParams:[]**.\r\n*
     En eventuell *jvm.options* blir oversatt til **jvmParams:[]** i Middlearth sin
-    application.json\r\n\r\n\r\n### features: []\r\n\r\n{{ $features := index .Metadata.Annotations
+    application.json\r\n* en eventuell *JVM_SYS_PROP* config seksjon blir oversatt
+    til **jvmParams:[]**.\r\n\r\n### features: []\r\n\r\n{{ $features := index .Metadata.Annotations
     \"norsk-tipping.no/libertyfeatures\" }}\r\n{{ $featarr := split $features \",\"
     }}\r\nFeatures: {{$features}}\r\n\r\n```json\r\nfeatures: [\r\n{{range $key,$value
     := $featarr}}    \"{{ $value }}\"{{if isLast $featarr $key}}{{ end }}{{if not
@@ -56,17 +57,19 @@ data:
     | **Secret** | {{.Required}} | {{.Default}} | *A referenced secret. See secret
     section.* |{{end}}{{ if gt (len .EnvFrom) 0 }}| {{.EnvFrom}} | **EnvFrom** | {{.Required}}
     | {{.Default}} | *Environment variables from file. See config section for details.*
-    |{{end }}{{ if and (eq (len .SecretFrom) 0) (eq (len .EnvFrom) 0) }}| {{.Name}}
+    |{{end}}{{ if and (eq (len .SecretFrom) 0) (eq (len .EnvFrom) 0) }}| {{.Name}}
     | {{.Type}} | {{.Required}} | {{.Default}} | {{.Description}} |{{end}}\r\n{{end}}{{-
-    end}}{{ range .Spec.Config -}}\r\n{{if eq .Name \"jvm.options\" -}}\r\n{{ range
-    .Options }}| {{.Name}} | {{.Type}} | {{.Required}} | {{.Default}} | {{.Description}}
-    |\r\n{{ end }}\r\n{{- end }}\r\n{{- end }}\r\n\r\n{{$envslen := numOfLocal .Spec.Environment.Local}}\r\n\r\n```json\r\njvmParams:
-    { {{ if gt (len .Spec.Environment.Local) 0 -}}\r\n{{ range $index, $value := .Spec.Environment.Local
-    }}\r\n  {{ if gt (len $value.SecretFrom) 0 -}}{{$value.Name}}:TOKENIZED_VALUE{{end
-    -}}\r\n  {{ if gt (len $value.EnvFrom) 0 -}}{{$value.Name}}:{{$value.EnvFrom}}{{end
-    -}}\r\n  {{ if and (eq (len $value.SecretFrom) 0) (eq (len $value.EnvFrom) 0)
-    -}}{{$value.Name}}:{{$value.Default}}{{end -}}\r\n  {{ if not (last $envslen $index)
-    }},{{end -}}\r\n{{- end}}{{- end}}{{ range .Spec.Config -}}{{if eq .Name \"jvm.options\"
+    end}}{{ range .Spec.Config -}}\r\n{{if or (eq .Name \"jvm.options\") (eq .Name
+    \"JVM_SYS_PROP\") -}}\r\n{{ range .Options }}| {{.Name}} | {{.Type}} | {{.Required}}
+    | {{.Default}} | {{.Description}} |\r\n{{ end }}\r\n{{- end }}\r\n{{- end }}\r\n\r\n{{$envslen
+    := numOfLocal .Spec.Environment.Local}}\r\n\r\n```json\r\njvmParams: { {{ if gt
+    (len .Spec.Environment.Local) 0 -}}\r\n{{ range $index, $value := .Spec.Environment.Local}}\r\n
+    \ {{ if gt (len $value.SecretFrom) 0 -}}{{$value.Name}}:TOKENIZED_VALUE{{end -}}\r\n
+    \ {{ if gt (len $value.EnvFrom) 0 -}}{{$value.Name}}:{{$value.EnvFrom}}{{end -}}\r\n
+    \ {{ if and (eq (len $value.SecretFrom) 0) (eq (len $value.EnvFrom) 0) (ne .Type
+    \"JVM_SYS_PROP\") -}}{{$value.Name}}:{{$value.Default}}{{end -}}\r\n  {{ if and
+    (not (last $envslen $index)) (ne .Type \"JVM_SYS_PROP\")}},{{end -}}\r\n{{- end}}{{-
+    end}}{{ range .Spec.Config -}}{{if or (eq .Name \"jvm.options\") (eq .Name \"JVM_SYS_PROP\")
     -}},{{$optlen := numOfOptions .Options -}}\r\n{{ range $key,$value:= .Options
     }}\r\n  {{$value.Name}}:{{$value.Default}}{{if not (last $optlen $key)}},{{end
     -}}\r\n{{end}}\r\n{{- end }}\r\n{{- end}}\r\n}\r\n```\r\n{{end}}\r\n"

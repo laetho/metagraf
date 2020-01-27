@@ -22,8 +22,8 @@ import (
 	"github.com/spf13/cobra/doc"
 	log "k8s.io/klog"
 	"metagraf/pkg/metagraf"
-	"metagraf/pkg/modules"
 	"os"
+	"sort"
 )
 
 func init() {
@@ -81,17 +81,25 @@ var generatePropertiesCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		FlagPassingHack()
-
 		mg := metagraf.Parse(args[0])
-		if modules.Variables == nil {
-			vars := MergeSourceVars(
-				mg.GetVarsFromSource(Defaults),
-				OverrideVars(mg.GetVars()))
-			modules.Variables = vars
-		}
-		for k,v := range modules.Variables {
-			fmt.Println(k+"="+v)
+		props := mg.GetProperties()
+		//OverrideProperties(props)
+
+		keys := props.SourceKeys(true )
+		sort.Strings(keys)
+
+		for _, key := range keys {
+			prop := props[key]
+			if prop.Source == "external" {continue}
+			if Defaults {
+				fmt.Println(prop.MGKey()+"="+prop.Default)
+			} else {
+				if prop.Source == "JVM_SYS_PROP" {
+					fmt.Println(prop.MGKey()+"="+prop.Default)
+				} else {
+					fmt.Println(prop.MGKey() + "=")
+				}
+			}
 		}
 	},
 }
