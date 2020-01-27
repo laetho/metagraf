@@ -63,13 +63,9 @@ var createPipelineCmd = &cobra.Command{
 func pipelineCreate(mgf string, namespace string) {
 	mg := metagraf.Parse(mgf)
 
-	log.Info("modules.Variables: ",modules.Variables)
-	if modules.Variables == nil {
-		vars := MergeVars(
-			mg.GetVars(),
-			OverrideVars(mg.GetVars(), CmdCVars(CVars).Parse()))
-		modules.Variables = vars
-	}
+	modules.Variables = mg.GetProperties()
+	OverrideProperties(modules.Variables)
+	log.V(2).Info("Current MGProperties: ", modules.Variables)
 
 	modules.GenSecrets(&mg)
 	modules.GenConfigMaps(&mg)

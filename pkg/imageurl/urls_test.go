@@ -1,5 +1,5 @@
 /*
-Copyright 2019 The MetaGraph Authors
+Copyright 2020 The metaGraf Authors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,30 +14,21 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package main
+package imageurl
 
-import (
-	"github.com/golang/glog"
-	log "k8s.io/klog"
-	"metagraf/mg/cmd"
-	"metagraf/pkg/mgver"
-	"os"
-)
+import "testing"
 
+var turl ImageURL = ImageURL{
+	URL:       nil,
+	Namespace: "test",
+	Image:     "test",
+	Tag:       "test",
+}
 
-func main() {
-	if len(mgver.GitTag) == 0 {
-		cmd.MGVersion = mgver.GitBranch+"("+mgver.GitHash+")"
-	} else {
-		cmd.MGVersion = mgver.GitTag+"("+mgver.GitHash+")"
+func TestIsValid(t *testing.T) {
+	expected := true
+	actual := turl.IsValid()
+	if actual != expected {
+		t.Errorf("Test failed, expected: '%v', got:  '%v'", expected, actual)
 	}
-
-	err := cmd.Execute()
-	if err != nil {
-		glog.Error(err)
-		glog.Flush()
-		os.Exit(1)
-	}
-	log.Flush()
-	os.Exit(0)
 }

@@ -18,6 +18,7 @@ package cmd
 
 import (
 	"bufio"
+	"fmt"
 	log "k8s.io/klog"
 	"metagraf/pkg/metagraf"
 	"metagraf/pkg/modules"
@@ -25,121 +26,111 @@ import (
 	"strings"
 )
 
-// Returns a slice of strings of potential parameterized variables in a
-// metaGraf specification that can be found in the execution environment.
-func VarsFromEnv(mgv metagraf.MGVars) EnvVars {
-	envs := EnvVars{}
+func PropertiesFromEnv(mgp metagraf.MGProperties) {
 	for _, v := range os.Environ() {
 		key, val := keyValueFromEnv(v)
-		if _, ok := mgv[key]; ok {
-			envs[key] = val
+		if p, ok := mgp["local:"+key]; ok {
+			p.Value = val
+			mgp[p.MGKey()] = p
 		}
 	}
-	return envs
 }
 
-func VarsFromCmd(mgv metagraf.MGVars, cvars CmdVars) map[string]string {
-	vars := make(map[string]string)
+// Modifies a MGProperties map with values from --cvars
+// argument. Only supports local environment variables
+// for now.
+func PropertiesFromCmd(mgp metagraf.MGProperties) {
+	// Parse and get values from --cvars
+	cvars := CmdCVars(CVars).Parse()
 
 	for k, v := range cvars {
-		if _, ok := mgv[k]; ok {
-			vars[k] = v
+		if p, ok := mgp["local:"+k]; ok {
+			p.Value = v
+			mgp[p.MGKey()] = p
 		}
 	}
-	return vars
 }
 
-// Reads input from properties file.
-func VarsFromFile(mgv metagraf.MGVars) map[string]string {
-	vars := make(map[string]string)
+// Used for splitting --cvfile .properties files with strings.FieldsFunc()
+func MgPropertyLineSplit(r rune) bool {
+	return r == '|' || r == '='
+}
+
+// Modifies MGProfperties map with information from files
+// and also return a map of only the properties on file..
+func PropertiesFromFile(mgp metagraf.MGProperties) metagraf.MGProperties {
+	props := metagraf.MGProperties{}
+
 	if len(CVfile) == 0 {
-		return vars
+		return props
 	}
 
 	file, err := os.Open( CVfile )
 	if err != nil {
 		log.Error(err)
-		return vars
+		os.Exit(1)
 	}
 	defer file.Close()
 	reader := bufio.NewReader(file)
 
+	fail := false
 	var line string
 	for {
 		line,err = reader.ReadString('\n')
 		if err != nil {
 			break
 		}
-		vl := strings.Split(line,"=")
-		if len(vl) < 2 {
-			log.Errorf("Properties are formatted improperly in: %v", CVfile)
-			break
+
+		// Skip empty lines
+		if len(line) == 1 {
+			if strings.Contains(line, "\n") { continue }
 		}
-		if len(vl) == 2 {
-			vars[vl[1]] = ""
-		} else if len(vl) >= 4 {
-			vars[vl[1]] = strings.ReplaceAll(strings.Join(vl[2:], "="), "\n", "")
-		} else {
-			vars[vl[1]] = strings.ReplaceAll(vl[2], "\n", "")
+		a := strings.FieldsFunc(line, MgPropertyLineSplit)
+		if len(a) != 3 {
+			fmt.Println("Configuration format error! Is it in: \"souce|key=value\"")
+			os.Exit(1)
 		}
+		t := metagraf.MGProperty{
+			Source:   a[0],
+			Key:      a[1],
+			Value:    strings.TrimRight(a[2], "\n"),
+			Required: true,
+			Default:  "",
+		}
+		t.Default = mgp[t.MGKey()].Default
+		t.Required = mgp[t.MGKey()].Required
+
+		if len(t.Value) == 0 {
+			fail = true
+			fmt.Printf("Configured property %v must have a value in %v\n", t.MGKey(),CVfile )
+		}
+		// Only set in mgp MGProperties if the key is valid.
+		if _, ok := mgp[t.MGKey()]; ok {
+			log.V(1).Infof("Found invalid key: %s while reading configuration file.\n", t.MGKey())
+			mgp[t.MGKey()] = t
+		}
+		props[t.MGKey()] = t
 	}
-	return vars
+	if fail {
+		os.Exit(1)
+	}
+	return props
 }
 
 
+// Splits a shell environment variable into key and value parts
+// and returns them seperatly.
 func keyValueFromEnv(s string) (string, string) {
 	return strings.Split(s, "=")[0], strings.Split(s, "=")[1]
 }
 
-// Returns a list of variables from command line or environment where
-// command line is the most significant.
-// Precedence is Environment, File and Command
-func OverrideVars(mgv metagraf.MGVars, cvars CmdVars) map[string]string {
-	ovars := make(map[string]string)
-
+func OverrideProperties(mgp metagraf.MGProperties) {
 	// Fetch possible variables form metaGraf specification
-	for k, v := range VarsFromEnv(mgv) {
-		ovars[k] = v
-	}
-
+	PropertiesFromEnv(mgp)
 	// Fetch variable overrides from file if specified with --cvfile
-	for k,v := range VarsFromFile(mgv) {
-		ovars[k] = v
-	}
-
+	PropertiesFromFile(mgp)
 	// Fetch from commandline
-	for k, v := range VarsFromCmd(mgv, cvars) {
-		ovars[k] = v
-	}
-
-	return ovars
-}
-
-func MergeVars(base metagraf.MGVars, override map[string]string) metagraf.MGVars {
-	for k, v := range override {
-		base[k] = v
-	}
-	log.Info("Calling MergeVars: ", base)
-	return base
-}
-
-func MergeSourceVars(base metagraf.MGVars, override map[string]string) metagraf.MGVars {
-	log.Info("MergeSourcevars(): base mg vars", base)
-	log.Info("MergeSourceVars(): with override values: ", override)
-
-	// Translation map, key = untyped key, value typed key name
-	keys := make(map[string]string)
-
-	// Strip Source Label from base
-	for k,_ := range base {
-		key := strings.Split(k, "=")[1]
-		keys[key] = k
-	}
-
-	for k, v := range override {
-		base[keys[k]] = v
-	}
-	return base
+	PropertiesFromCmd(mgp)
 }
 
 func FlagPassingHack() {

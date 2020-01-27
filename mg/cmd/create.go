@@ -31,6 +31,7 @@ import (
 func init() {
 	RootCmd.AddCommand(createCmd)
 	createCmd.AddCommand(createConfigMapCmd)
+	createCmd.AddCommand(createDeploymentCmd)
 	createCmd.AddCommand(createDeploymentConfigCmd)
 	createCmd.AddCommand(createBuildConfigCmd)
 	createCmd.AddCommand(createImageStreamCmd)
@@ -39,6 +40,15 @@ func init() {
 	createCmd.AddCommand(createRefCmd)
 	createCmd.AddCommand(createSecretCmd)
 	createCmd.AddCommand(createRouteCmd)
+	createDeploymentCmd.Flags().StringVarP(&Namespace, "namespace", "n","", "namespace to work on, if not supplied it will use current working namespace")
+	createDeploymentCmd.Flags().StringVar(&OName, "name", "", "Overrides name of deployment.")
+	createDeploymentCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
+	createDeploymentCmd.Flags().StringVar(&CVfile, "cvfile","", "File with component configuration values. (key=value pairs)")
+	createDeploymentCmd.Flags().BoolVar(&BaseEnvs, "baseenv", false, "Hydrate deploymentconfig with baseimage environment variables")
+	createDeploymentCmd.Flags().BoolVar(&Defaults, "defaults", false, "Populate Environment variables with default values from metaGraf")
+	createDeploymentCmd.Flags().StringVarP(&ImageNS,"imagens", "i", "", "Image Namespace, used to override default namespace")
+	createDeploymentCmd.Flags().StringVarP(&Registry,"registry", "r","docker-registry.default.svc:5000", "Specify container registry host")
+	createDeploymentCmd.Flags().StringVarP(&Tag,"tag", "t", "latest", "specify custom tag")
 	createDeploymentConfigCmd.Flags().StringVarP(&Namespace, "namespace", "n","", "namespace to work on, if not supplied it will use current working namespace")
 	createDeploymentConfigCmd.Flags().StringVar(&OName, "name", "", "Overrides name of deployment.")
 	createDeploymentConfigCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
@@ -76,13 +86,13 @@ func init() {
 var createCmd = &cobra.Command{
 	Use:   "create",
 	Short: "create operations",
-	Long:  Banner + ` create `,
+	Long:  MGBanner + ` create `,
 }
 
 var createBuildConfigCmd = &cobra.Command{
 	Use:   "buildconfig <metagraf>",
 	Short: "create BuildConfig from metaGraf file",
-	Long:  Banner + `create BuildConfig`,
+	Long:  MGBanner + `create BuildConfig`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
 			log.Info(StrActiveProject, viper.Get("namespace"))
@@ -116,7 +126,7 @@ var createBuildConfigCmd = &cobra.Command{
 var createConfigMapCmd = &cobra.Command{
 	Use:   "configmap <metagraf>",
 	Short: "create ConfigMaps from metaGraf file",
-	Long:  Banner + `create ConfigMap`,
+	Long:  MGBanner + `create ConfigMap`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
 			log.Info(StrActiveProject, viper.Get("namespace"))
@@ -135,12 +145,9 @@ var createConfigMapCmd = &cobra.Command{
 
 		mg := metagraf.Parse(args[0])
 
-		if modules.Variables == nil {
-			vars := MergeVars(
-				mg.GetVars(),
-				OverrideVars(mg.GetVars(), CmdCVars(CVars).Parse()))
-			modules.Variables = vars
-		}
+		modules.Variables = mg.GetProperties()
+		OverrideProperties(modules.Variables)
+		log.V(2).Info("Current MGProperties: ", modules.Variables)
 
 		if len(modules.NameSpace) == 0 {
 			modules.NameSpace = Namespace
@@ -150,10 +157,10 @@ var createConfigMapCmd = &cobra.Command{
 	},
 }
 
-var createDeploymentConfigCmd = &cobra.Command{
-	Use:   "deploymentconfig <metagraf>",
-	Short: "create DeploymentConfig from metaGraf file",
-	Long:  Banner + `create DeploymentConfig`,
+var createDeploymentCmd = &cobra.Command{
+	Use:   "deployment <metagraf>",
+	Short: "create Deployment from metaGraf file",
+	Long:  MGBanner + `create Deployment`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
 			log.Info(StrActiveProject, viper.Get("namespace"))
@@ -172,18 +179,46 @@ var createDeploymentConfigCmd = &cobra.Command{
 		mg := metagraf.Parse(args[0])
 		FlagPassingHack()
 
-		if modules.Variables == nil {
-			vars := MergeVars(
-				mg.GetVars(),
-				OverrideVars(mg.GetVars(), CmdCVars(CVars).Parse()))
-			modules.Variables = vars
+		modules.Variables = mg.GetProperties()
+		OverrideProperties(modules.Variables)
+
+		if len(modules.NameSpace) == 0 {
+			modules.NameSpace = Namespace
 		}
+		modules.GenDeployment(&mg, Namespace)
+	},
+}
+
+var createDeploymentConfigCmd = &cobra.Command{
+	Use:   "deploymentconfig <metagraf>",
+	Short: "create DeploymentConfig from metaGraf file",
+	Long:  MGBanner + `create DeploymentConfig`,
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) < 1 {
+			log.Info(StrActiveProject, viper.Get("namespace"))
+			log.Error(StrMissingMetaGraf)
+			os.Exit(1)
+		}
+
+		if len(Namespace) == 0 {
+			Namespace = viper.GetString("namespace")
+			if len(Namespace) == 0 {
+				log.Error(StrMissingNamespace)
+				os.Exit(1)
+			}
+		}
+
+		mg := metagraf.Parse(args[0])
+		FlagPassingHack()
+
+		modules.Variables = mg.GetProperties()
+		OverrideProperties(modules.Variables)
+		log.V(2).Info("Current MGProperties: ", modules.Variables)
 
 		if len(modules.NameSpace) == 0 {
 			modules.NameSpace = Namespace
 		}
 
-		// @todo pass as argument or set exported module variable?
 		modules.GenDeploymentConfig(&mg, Namespace)
 	},
 }
@@ -191,7 +226,7 @@ var createDeploymentConfigCmd = &cobra.Command{
 var createImageStreamCmd = &cobra.Command{
 	Use:   "imagestream <metagraf>",
 	Short: "create ImageStream from metaGraf file",
-	Long:  Banner + `create ImageStream`,
+	Long:  MGBanner + `create ImageStream`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
 			log.Info(StrActiveProject, viper.Get("namespace"))
@@ -220,7 +255,7 @@ var createImageStreamCmd = &cobra.Command{
 var createServiceCmd = &cobra.Command{
 	Use:   "service <metagraf>",
 	Short: "create Service from metaGraf file",
-	Long:  Banner + `create Service`,
+	Long:  MGBanner + `create Service`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
 			log.Info(StrActiveProject, viper.Get("namespace"))
@@ -249,7 +284,7 @@ var createServiceCmd = &cobra.Command{
 var createDotCmd = &cobra.Command{
 	Use:   "dot <collection directory>",
 	Short: "create Graphviz service graph from collectio of metaGraf's",
-	Long:  Banner + `create dot`,
+	Long:  MGBanner + `create dot`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
 			fmt.Println(StrMissingCollection)
@@ -263,7 +298,7 @@ var createDotCmd = &cobra.Command{
 var createRefCmd = &cobra.Command{
 	Use:   "ref <metaGraf>",
 	Short: "create ref document from metaGraf specification",
-	Long:  Banner + `create ref`,
+	Long:  MGBanner + `create ref`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
 			fmt.Println(StrMissingCollection)
@@ -285,7 +320,7 @@ var createRefCmd = &cobra.Command{
 var createSecretCmd = &cobra.Command{
 	Use:   "secret <metaGraf>",
 	Short: "create Secrets from metaGraf specification",
-	Long:  Banner + `create Secret`,
+	Long:  MGBanner + `create Secret`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
 			log.Info(StrActiveProject, viper.Get("namespace"))
@@ -310,7 +345,7 @@ var createSecretCmd = &cobra.Command{
 var createRouteCmd = &cobra.Command{
 	Use:   "route <metaGraf>",
 	Short: "create Route from metaGraf specification",
-	Long:  Banner + `create route`,
+	Long:  MGBanner + `create route`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
 			log.Info(StrActiveProject, viper.Get("namespace"))

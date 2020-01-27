@@ -155,24 +155,28 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 		if len(e.EnvFrom) > 0 {
 			continue
 		}
+
+		// Inject JVM_SYS_PROP as an EnvVar. Content comes from a Config
+		// section of type JVM_SYS_PROPS. But requires a Environment variable
+		// of type JVM_SYS_PROP as well.
+		if strings.ToUpper(e.Type) == "JVM_SYS_PROP" {
+			if HasJVM_SYS_PROP(mg) {
+				EnvVars = append(EnvVars, GenEnvVar_JVM_SYS_PROP(mg, e.Name))
+			}
+			continue
+		}
+
 		// Use EnvToEnvVar to potentially use override values.
 		EnvVars = append(EnvVars, EnvToEnvVar(&e, false))
 	}
 
-	// External variables from metagraf as deployment envvars
-	for _, e := range mg.Spec.Environment.External.Consumes {
-		EnvVars = append(EnvVars, EnvToEnvVar(&e, true))
-	}
-	for _, e := range mg.Spec.Environment.External.Introduces {
-		EnvVars = append(EnvVars, EnvToEnvVar(&e, true))
-	}
+
 
 	// EnvVars from ConfigMaps, fetch Metagraf config resources that is of
 	for _, e := range mg.Spec.Environment.Local {
 		if len(e.EnvFrom) == 0 {
 				continue
 		}
-
 		EnvFrom = append(EnvFrom, corev1.EnvFromSource{
 			ConfigMapRef: &corev1.ConfigMapEnvSource{
 				LocalObjectReference: corev1.LocalObjectReference{
@@ -201,6 +205,13 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 		EnvFrom = append(EnvFrom, cmref)
 	}
 
+	// External variables from metagraf as deployment envvars
+	for _, e := range mg.Spec.Environment.External.Consumes {
+		EnvVars = append(EnvVars, EnvToEnvVar(&e, true))
+	}
+	for _, e := range mg.Spec.Environment.External.Introduces {
+		EnvVars = append(EnvVars, EnvToEnvVar(&e, true))
+	}
 
 	/* Norsk Tipping Specific Logic regarding
 	   WLP / OpenLiberty Features. Should maybe

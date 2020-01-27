@@ -42,9 +42,12 @@ func FindMetagrafConfigMaps(mg *metagraf.MetaGraf) map[string]string {
 		if strings.ToLower(c.Type) == "envref" {
 			continue
 		}
+		if strings.ToUpper(c.Type) == "JVM_SYS_PROP" {
+			continue
+		}
 
 		if strings.ToLower(c.Type) == "cert" {
-			fmt.Println("The Config type \"cert\" is deprected")
+			fmt.Println("The Config type \"cert\" is deprecated!")
 			os.Exit(1)
 		}
 		maps[strings.ToLower(c.Name)] = "config"
@@ -85,7 +88,7 @@ func GetConfigMap(name string) (*corev1.ConfigMap, error) {
 /*
 	Returns a slice of metagraf Config structs that match specific ctype string
  */
-func GetMetagrafConfigByType(mg *metagraf.MetaGraf, ctype string) []metagraf.Config {
+func GetMetagrafConfigsByType(mg *metagraf.MetaGraf, ctype string) []metagraf.Config {
 	configs := []metagraf.Config{}
 
 	for _, c := range mg.Spec.Config {
@@ -145,7 +148,8 @@ func genConfigMapsFromConfig(conf *metagraf.Config, mg *metagraf.MetaGraf) {
 	}
 
 	for _, o := range conf.Options {
-		 if len(o.SecretFrom) > 0 {
+		prop := Variables[conf.Name+"|"+o.Name]
+		if len(o.SecretFrom) > 0 {
 			sec, err := GetSecret(o.SecretFrom)
 			if err != nil {
 				log.Error(err)
@@ -154,10 +158,10 @@ func genConfigMapsFromConfig(conf *metagraf.Config, mg *metagraf.MetaGraf) {
 			cm.Data[o.Name] = base64.StdEncoding.EncodeToString(sec.Data[o.SecretFrom])
 
 
-		} else if ValueFromEnv(o.Name) { 					// todo: check the ValueFromEnv implementation
-			cm.Data[o.Name] = Variables[o.Name]
+		} else if ValueFromEnv(prop.Key) {
+			cm.Data[prop.Key] = prop.Value
 		} else {
-			cm.Data[o.Name] = o.Default
+			cm.Data[prop.Key] = prop.Value
 		}
 	}
 

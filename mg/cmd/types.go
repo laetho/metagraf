@@ -30,12 +30,10 @@ var StrMissingNamespace CmdMessage = "Namespace must be supplied or configured."
 var StrMalformedVar CmdMessage = "Malformed key=value pair supplied through --cvars :"
 
 // Type for mg custom variables
-type EnvVars map[string]string
-type CmdCVars []string
+type EnvVars map[string]string		// Map for holding addressable key, value pairs from os.Environ().
+type CmdCVars []string				// Map
 type CmdVars map[string]string
 
-// Slice of strings to hold overridden values
-var CVars []string
 
 // Returns a map (CmdVars) parsed from --cvars flag
 // todo: fix parsing of , seperated values for a key

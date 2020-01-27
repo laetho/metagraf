@@ -68,7 +68,7 @@ var (
 	CreateGlobals bool
 )
 
-var Variables map[string]string
+var Variables metagraf.MGProperties
 
 // Returns a name for a resource based on convention as follows.
 func Name(mg *metagraf.MetaGraf) string {
@@ -196,10 +196,10 @@ func EnvToEnvVar(e *metagraf.EnvironmentVar, ext bool) corev1.EnvVar {
 		}
 
 		// Handle possible override value for non required fields
-		if v, t := Variables[e.Name]; t {
-			if len(v) > 0 {
-				value = v
-				log.Info("Found override value for: ", name, " Override value: ", Variables[name])
+		if p, t := Variables["local|"+e.Name]; t {
+			if len(p.Value) > 0 {
+				value = p.Value
+				log.V(1).Info("Found override value for: ", p.Key, " Override value: ", p.Value)
 			}
 		}
 
@@ -213,8 +213,8 @@ func EnvToEnvVar(e *metagraf.EnvironmentVar, ext bool) corev1.EnvVar {
 			value = e.Default
 		}
 		// Handle override values for optional fields
-		if v, t := Variables[e.Name]; t {
-			value = v
+		if p, t := Variables["local|"+e.Name]; t {
+			value = p.Value
 		}
 
 		return corev1.EnvVar{
@@ -225,7 +225,7 @@ func EnvToEnvVar(e *metagraf.EnvironmentVar, ext bool) corev1.EnvVar {
 }
 
 func ValueFromEnv(key string) bool {
-	if _, t := Variables[key]; t {
+	if _, t := Variables["local"+key]; t {
 		return true
 	}
 	return false

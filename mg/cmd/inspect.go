@@ -37,12 +37,10 @@ var InspectCmd = &cobra.Command{
 		}
 
 		mg := metagraf.Parse(args[0])
-		if modules.Variables == nil {
-			vars := MergeVars(
-				mg.GetVars(),
-				OverrideVars(mg.GetVars(), CmdCVars(CVars).Parse()))
-			modules.Variables = vars
-		}
+		modules.Variables = mg.GetProperties()
+		OverrideProperties(modules.Variables)
+		log.V(2).Info("Current MGProperties: ", modules.Variables)
+
 		name := modules.Name(&mg)
 		for k, v := range modules.Variables {
 			fmt.Println(name, "Variable:", k, v)
@@ -76,14 +74,41 @@ var InspectPropertiesCmd = &cobra.Command{
 				os.Exit(1)
 			}
 		}
-
 		mg := metagraf.Parse(args[0])
-		if modules.Variables == nil {
-			vars := MergeVars(
-				mg.GetVars(),
-				OverrideVars(mg.GetVars(), CmdCVars(CVars).Parse()))
-			modules.Variables = vars
+		CVfile = args[1]
+
+		mgprops := mg.GetProperties()
+		fileprops := PropertiesFromFile(mgprops)
+		confvars := fileprops.SourceKeyMap(false)
+		reqvars := mgprops.GetRequired().SourceKeyMap(true)
+
+		log.V(1).Info("Addressable Variables:", mg.GetProperties())
+		log.V(1).Info("Required Variables", reqvars)
+		log.V(1).Info("Config Variables: ", confvars)
+
+
+		// 1. Find required vars not in variables form the properties file.
+		// 2. Find configvars not in specification.
+
+		fail := false
+		for key,_ := range reqvars {
+			if _, ok := fileprops[key]; !ok {
+				fail = true
+				fmt.Printf("Required key: %v, is missing from %v\n", key, CVfile)
+			}
 		}
+
+		for key,_ := range confvars {
+			if _, ok := mgprops[key]; !ok {
+				fail = true
+				fmt.Printf("%v is an invalid configuration key for this metaGraf specification.\n", key)
+			}
+		}
+		if fail {
+			os.Exit(1)
+		}
+		fmt.Printf("The %v configuration is valid for this metaGraf specification.\n", CVfile)
+		os.Exit(0)
 	},
 }
 

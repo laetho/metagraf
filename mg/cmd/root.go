@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The MetaGraph Authors
+Copyright 2018-2020 The MetaGraph Authors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -27,8 +27,8 @@ import (
 	"os"
 )
 
-const Banner string = "mg (metaGraf) - "
-
+var MGVersion string
+var MGBanner string = "mg " + MGVersion
 
 var (
 	All		  bool = false		// Flag for indicating all resources, example delete all resources associated with a application.
@@ -53,6 +53,7 @@ var (
 	Tag			string			//
 	Context		string			// Flag for setting application context root.
 	CreateGlobals bool = false	// Flag for overriding default behaviour of skipping creation of global secrets.
+	CVars 		[]string 		// Slice of strings to hold overridden values.
 )
 
 // Array of available config keys
@@ -66,7 +67,7 @@ var configkeys []string = []string{
 var RootCmd = &cobra.Command{
 	Use:   "mg",
 	Short: "mg operates on collections of metaGraf's objects.",
-	Long: Banner + `is a utility that understands the metaGraf
+	Long: MGBanner + `is a utility that understands the metaGraf
 datastructure and help you generate kubernetes primitives`,
 	//Run: func(cmd *cobra.Command, args []string) {
 	// Do Stuff Here

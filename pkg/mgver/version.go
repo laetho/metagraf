@@ -1,5 +1,5 @@
 /*
-Copyright 2019 The MetaGraph Authors
+Copyright 2020 The MetaGraph Authors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,30 +14,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package main
+package mgver
 
-import (
-	"github.com/golang/glog"
-	log "k8s.io/klog"
-	"metagraf/mg/cmd"
-	"metagraf/pkg/mgver"
-	"os"
+var (
+	BuildDate string
+	GitTag string
+	GitHash string
+	GitBranch string
 )
-
-
-func main() {
-	if len(mgver.GitTag) == 0 {
-		cmd.MGVersion = mgver.GitBranch+"("+mgver.GitHash+")"
-	} else {
-		cmd.MGVersion = mgver.GitTag+"("+mgver.GitHash+")"
-	}
-
-	err := cmd.Execute()
-	if err != nil {
-		glog.Error(err)
-		glog.Flush()
-		os.Exit(1)
-	}
-	log.Flush()
-	os.Exit(0)
-}
