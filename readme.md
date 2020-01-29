@@ -7,7 +7,9 @@ methodology to aid automation tasks or decisions about a component or collection
 
 <img src="https://github.com/laetho/metagraf/raw/master/docs/component.png" alt="A graph of a software component.">
 
-In a GitOps flow, the metaGraf specification in combination with the tool **mg** will be used as the foundation for manifest generation of the Kubernetes resources(YAML/JSON) that should go into Git. You can use tools like Kustomize to modify/patch generated resources to address the operational domain concerns. 
+In a GitOps flow, the metaGraf specification in combination with the tool **mg** will be used as the foundation for 
+manifest generation of the Kubernetes resources(YAML/JSON) that should go into Git. You can use tools like 
+<a href="kustomize.io">Kustomize</a> to modify/patch generated resources to address the operational domain concerns. 
 
 <img src="https://github.com/laetho/metagraf/raw/master/docs/gitops.png" alt="The foundations of GitOps" style="margin-left:auto;margin-right:auto;">
 
