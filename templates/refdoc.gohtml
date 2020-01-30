@@ -1,264 +1,365 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>{{ .Metadata.Name }} {{ .Spec.Version }}</title>
-  <meta charset="UTF-8">
-  <style type="text/css">
+apiVersion: v1
+data:
+  template: |-
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>{{ .Metadata.Name }} {{ .Spec.Version }}</title>
+      <meta charset="UTF-8">
+      <style type="text/css">
 
-    html {
-      margin:    0 auto;
-      max-width: 90%;
-    }
+        html {
+          margin:    0 auto;
+          max-width: 90%;
+        }
 
-    @font-face {
-      src: url(https://www.norsk-tipping.no/ow/assets/fonts/jubel/Jubel-Regular.eot);
-      src: url(https://www.norsk-tipping.no/ow/assets/fonts/jubel/Jubel-Regular.eot?#iefix) format("embedded-opentype"),
-      url(https://www.norsk-tipping.no/ow/assets/fonts/jubel/Jubel-Regular.woff) format("woff"),
-      url(https://www.norsk-tipping.no/ow/assets/fonts/jubel/Jubel-Regular.woff2) format("woff2"),
-      url(https://www.norsk-tipping.no/ow/assets/fonts/jubel/Jubel-Regular.otf)
-      format("otf"), url(https://www.norsk-tipping.no/ow/assets/fonts/jubel/Jubel-Regular.svg)
-      format("svg"), url(https://www.norsk-tipping.no/ow/assets/fonts/jubel/Jubel-Regular.ttf) format("truetype");
-      font-family: 'Jubel';
-      font-weight: 400;
-    }
+        @font-face {
+          src: url(https://www.norsk-tipping.no/ow/assets/fonts/jubel/Jubel-Regular.eot);
+          src: url(https://www.norsk-tipping.no/ow/assets/fonts/jubel/Jubel-Regular.eot?#iefix) format("embedded-opentype"),
+          url(https://www.norsk-tipping.no/ow/assets/fonts/jubel/Jubel-Regular.woff) format("woff"),
+          url(https://www.norsk-tipping.no/ow/assets/fonts/jubel/Jubel-Regular.woff2) format("woff2"),
+          url(https://www.norsk-tipping.no/ow/assets/fonts/jubel/Jubel-Regular.otf)
+          format("otf"), url(https://www.norsk-tipping.no/ow/assets/fonts/jubel/Jubel-Regular.svg)
+          format("svg"), url(https://www.norsk-tipping.no/ow/assets/fonts/jubel/Jubel-Regular.ttf) format("truetype");
+          font-family: 'Jubel';
+          font-weight: 400;
+        }
 
-    body {
-      font-family: "Jubel", sans-serif !important;
-      font-size : 12pt;
-    }
+        body {
+          font-family: "Jubel", sans-serif !important;
+          font-size : 12pt;
 
-    table {
-      width : 100%;
-      border : 1px dotted #555555;
-      margin-bottom: 20px;
-      background-color: #c0c0c0;
-    }
+        }
 
-    tr.head td{
-      background-color : #261440;
-      color : white;
-    }
+        table {
+          width : 100%;
+          border : 1px dotted #555555;
+          margin-bottom: 20px;
+          background-color: #efefef;
+        }
 
-    th {
-      background-color : #261440;
-      color : #ffffff;
-    }
+        tr.head td{
+          background-color : #261440;
+          color : white;
+        }
 
-    td {
-      background-color : #efefef;
-    }
-    td, th {
-      border-spacing: 1px;
-      padding : 5px;
+        th {
+          background-color : #261440;
+          color : #ffffff;
+        }
 
-    }
+        td {
+          background-color : #efefef;
+        }
+        td, th {
+          border-spacing: 1px;
+          padding : 5px;
 
-  </style>
-</head>
+        }
 
-<body>
+      </style>
+    </head>
 
-<h1>{{ .Metadata.Name }} {{ .Spec.Version }}</h1>
-<p>{{ .Spec.Description }}</p>
+    <body>
 
-<table>
-  <caption>Annotations</caption>
-  {{ range $key, $value := .Metadata.Annotations }}
-  <tr>
-    <td>{{ $key }}</td>
-    <td>{{ $value }}</td>
-  </tr>
-  {{ end }}
-</table>
+    <h1>{{ .Metadata.Name }} {{ .Spec.Version }}</h1>
+    <p>{{ .Spec.Description }}</p>
 
-{{ if gt (len .Spec.Resources) 0 }}
-  <h2>Resource Dependencies</h2>
-  <table>
-    <tr>
-      <th>Resource</th>
-      <th>Version</th>
-      <th>Type</th>
-      <th>External</th>
-      <th>Required</th>
-      <th width="40%">Description</th>
-    </tr>
-    {{range .Spec.Resources}}
-      <tr>
-        <td>{{.Name}}</td>
-        <td>{{.Semop}} {{.Semver}}</td>
-        <td>{{.Type}}</td>
-        <td>{{.External}}</td>
-        <td>{{.Required}}</td>
-        <td>{{.Description}}</td>
-      </tr>
-    {{ end }}
-  </table>
-{{ end }}
-
-
-{{ if gt (len .Spec.Environment.Local) 0 }}
-  <h2>Local Enviroment Variables</h2>
-  <table>
-    <tr>
-      <th>Variable</th>
-      <th>Type</th>
-      <th>Required</th>
-      <th>Default Value</th>
-      <th width="40%">Description</th>
-    </tr>
-    {{ range .Spec.Environment.Local}}
-      {{ if gt (len .SecretFrom) 0 }}
-        <tr>
-          <td>{{.SecretFrom}}</td>
-          <td>Secret</td>
-          <td>{{.Required}}</td>
-          <td>{{.Default}}</td>
-          <td>A referenced secret. See secret section.</td>
-        </tr>
-      {{ end }}
-      {{ if gt (len .EnvFrom) 0 }}
-        <tr>
-          <td>{{.EnvFrom}}</td>
-          <td>Secret</td>
-          <td>{{.Required}}</td>
-          <td>{{.Default}}</td>
-          <td>Environment variables from file. See config section for details.</td>
-        </tr>
-      {{ end }}
-      {{ if and (eq (len .SecretFrom) 0) (eq (len .EnvFrom) 0) }}
-        <tr>
-          <td>{{.Name}}</td>
-          <td>{{.Type}}</td>
-          <td>{{.Required}}</td>
-          <td>{{.Default}}</td>
-          <td>{{.Description}}</td>
-        </tr>
-      {{end}}
-
-    {{ end }}
-  </table>
-{{ end }}
-
-{{ if gt (len .Spec.Environment.Build) 0 }}
-  <h2>Build Enviroment Variables</h2>
-  <table>
-    <tr>
-      <th>Variable</th>
-      <th>Type</th>
-      <th>Required</th>
-      <th>Default Value</th>
-      <th width="40%">Description</th>
-    </tr>
-    {{ range .Spec.Environment.Build}}
-      <tr>
-        <td>{{.Name}}</td>
-        <td>{{.Type}}</td>
-        <td>{{.Required}}</td>
-        <td>{{.Default}}</td>
-        <td>{{.Description}}</td>
-      </tr>
-    {{ end }}
-  </table>
-{{ end }}
-
-
-{{ if or (gt (len .Spec.Environment.External.Introduces) 0) (gt (len .Spec.Environment.External.Consumes) 0)  }}
-  <h2>External Enviroment Variables</h2>
-
-  {{ if gt (len .Spec.Environment.External.Introduces) 0 }}
-    <h3>Introduced by Component</h3>
     <table>
+      <caption>Annotations</caption>
+      {{ range $key, $value := .Metadata.Annotations }}
       <tr>
-        <th>Variable</th>
-        <th>Type</th>
-        <th>Required</th>
-        <th>Default</th>
-        <th width="40%">Description</th>
+        <td>{{ $key }}</td>
+        <td>{{ $value }}</td>
       </tr>
-
-      {{ range .Spec.Environment.External.Introduces }}
-        <tr>
-          <td>{{.Name}}</td>
-          <td>{{.Type}}</td>
-          <td>{{.Required}}</td>
-          <td>{{.Default}}</td>
-          <td>{{.Description}}</td>
-        </tr>
       {{ end }}
     </table>
-  {{ end }}
 
-  {{ if gt (len .Spec.Environment.External.Consumes) 0 }}
-    <h3>Consumed by Component</h3>
-    <table>
-      <tr>
-        <th>Variable</th>
-        <th>Type</th>
-        <th>Required</th>
-        <th>Default</th>
-        <th width="40%">Description</th>
-      </tr>
-      {{ range .Spec.Environment.External.Consumes}}
+    {{ if gt (len .Spec.Resources) 0 }}
+      <h2>Resource Dependencies</h2>
+      <table>
         <tr>
-          <td>{{.Name}}</td>
-          <td>{{.Type}}</td>
-          <td>{{.Required}}</td>
-          <td>{{.Default}}</td>
-          <td>{{.Description}}</td>
+          <th>Resource</th>
+          <th>Version</th>
+          <th>Type</th>
+          <th>External</th>
+          <th>Required</th>
+          <th width="40%">Description</th>
         </tr>
-      {{ end }}
-    </table>
-  {{ end }}
-{{ end }}
+        {{range .Spec.Resources}}
+          <tr>
+            <td>{{.Name}}</td>
+            <td>{{.Semop}} {{.Semver}}</td>
+            <td>{{.Type}}</td>
+            <td>{{.External}}</td>
+            <td>{{.Required}}</td>
+            <td>{{.Description}}</td>
+          </tr>
+        {{ end }}
+      </table>
+    {{ end }}
 
-{{ if .Spec.Config }}
-  <h2>Configuration</h2>
-  {{ range .Spec.Config }}
-    <table>
-      <tr class="head">
-        <td>Name: <strong>{{.Name}}</strong></td>
-        <td>Type: <strong>{{.Type}}</strong></td>
-        <td>Global: <strong>{{.Global}}</strong></td>
-        <td colspan="2" width="40%"><strong>{{.Description}}</strong></td>
-      </tr>
-      <tr>
-        <th>Key</th>
-        <th>Type</th>
-        <th>Required</th>
-        <th>Default</th>
-        <th>Description</th>
-      </tr>
-      {{ range .Options }}
+
+    {{ if gt (len .Spec.Environment.Local) 0 }}
+      <h2>Local Enviroment Variables</h2>
+      <table>
         <tr>
-          <td>{{.Name}}</td>
-          <td>{{.Type}}</td>
-          <td>{{.Required}}</td>
-          <td>{{.Default}}</td>
-          <td>{{.Description}}</td>
+          <th>Variable</th>
+          <th>Type</th>
+          <th>Required</th>
+          <th>Default Value</th>
+          <th width="40%">Description</th>
         </tr>
-      {{ end }}
-    </table>
-  {{ end }}
-{{ end }}
+        {{ range .Spec.Environment.Local}}
+          {{ if gt (len .SecretFrom) 0 }}
+            <tr>
+              <td>{{.SecretFrom}}</td>
+              <td>Secret</td>
+              <td>{{.Required}}</td>
+              <td>{{.Default}}</td>
+              <td>A referenced secret. See secret section.</td>
+            </tr>
+          {{ end }}
+          {{ if gt (len .EnvFrom) 0 }}
+            <tr>
+              <td>{{.EnvFrom}}</td>
+              <td>Secret</td>
+              <td>{{.Required}}</td>
+              <td>{{.Default}}</td>
+              <td>Environment variables from file. See config section for details.</td>
+            </tr>
+          {{ end }}
+          {{ if and (eq (len .SecretFrom) 0) (eq (len .EnvFrom) 0) }}
+            <tr>
+              <td>{{.Name}}</td>
+              <td>{{.Type}}</td>
+              <td>{{.Required}}</td>
+              <td>{{.Default}}</td>
+              <td>{{.Description}}</td>
+            </tr>
+          {{end}}
 
-{{ if .Spec.Secret }}
-  <h2>Secrets</h2>
-  <table>
+        {{ end }}
+      </table>
+    {{ end }}
+
+    {{ if gt (len .Spec.Environment.Build) 0 }}
+      <h2>Build Enviroment Variables</h2>
+      <table>
+        <tr>
+          <th>Variable</th>
+          <th>Type</th>
+          <th>Required</th>
+          <th>Default Value</th>
+          <th width="40%">Description</th>
+        </tr>
+        {{ range .Spec.Environment.Build}}
+          <tr>
+            <td>{{.Name}}</td>
+            <td>{{.Type}}</td>
+            <td>{{.Required}}</td>
+            <td>{{.Default}}</td>
+            <td>{{.Description}}</td>
+          </tr>
+        {{ end }}
+      </table>
+    {{ end }}
+
+
+    {{ if or (gt (len .Spec.Environment.External.Introduces) 0) (gt (len .Spec.Environment.External.Consumes) 0)  }}
+      <h2>External Enviroment Variables</h2>
+
+      {{ if gt (len .Spec.Environment.External.Introduces) 0 }}
+        <h3>Introduced by Component</h3>
+        <table>
+          <tr>
+            <th>Variable</th>
+            <th>Type</th>
+            <th>Required</th>
+            <th>Default</th>
+            <th width="40%">Description</th>
+          </tr>
+
+          {{ range .Spec.Environment.External.Introduces }}
+            <tr>
+              <td>{{.Name}}</td>
+              <td>{{.Type}}</td>
+              <td>{{.Required}}</td>
+              <td>{{.Default}}</td>
+              <td>{{.Description}}</td>
+            </tr>
+          {{ end }}
+        </table>
+      {{ end }}
+
+      {{ if gt (len .Spec.Environment.External.Consumes) 0 }}
+        <h3>Consumed by Component</h3>
+        <table>
+          <tr>
+            <th>Variable</th>
+            <th>Type</th>
+            <th>Required</th>
+            <th>Default</th>
+            <th width="40%">Description</th>
+          </tr>
+          {{ range .Spec.Environment.External.Consumes}}
+            <tr>
+              <td>{{.Name}}</td>
+              <td>{{.Type}}</td>
+              <td>{{.Required}}</td>
+              <td>{{.Default}}</td>
+              <td>{{.Description}}</td>
+            </tr>
+          {{ end }}
+        </table>
+      {{ end }}
+    {{ end }}
+
+    {{ if .Spec.Config }}
+      <h2>Configuration</h2>
+      {{ range .Spec.Config }}
+        <table>
+          <tr class="head">
+            <td>Name: <strong>{{.Name}}</strong></td>
+            <td>Type: <strong>{{.Type}}</strong></td>
+            <td>Global: <strong>{{.Global}}</strong></td>
+            <td colspan="2" width="40%"><strong>{{.Description}}</strong></td>
+          </tr>
+          <tr>
+            <th>Key</th>
+            <th>Type</th>
+            <th>Required</th>
+            <th>Default</th>
+            <th>Description</th>
+          </tr>
+          {{ range .Options }}
+            <tr>
+              <td>{{.Name}}</td>
+              <td>{{.Type}}</td>
+              <td>{{.Required}}</td>
+              <td>{{.Default}}</td>
+              <td>{{.Description}}</td>
+            </tr>
+          {{ end }}
+        </table>
+      {{ end }}
+    {{ end }}
+
+    {{ if .Spec.Secret }}
+      <h2>Secrets</h2>
+      <table>
+        <tr>
+          <th>Name</th>
+          <th>Global</th>
+          <th width="40%">Description</th>
+        </tr>
+        {{ range .Spec.Secret}}
+          <tr>
+            <td>{{.Name}}</td>
+            <td>{{.Global}}</td>
+            <td>{{.Description}}</td>
+          </tr>
+        {{end}}
+      </table>
+    {{ end }}
+
+    {{ if index .Metadata.Annotations "norsk-tipping.no/libertyfeatures"}}
+    <h1>Middlearth</h1>
+    <p> Denne seksjonen inneholder beskrivelse av dokumentasjon på tjenesten opp mot Middlearth for deploy og konfigurasjonsstyring.</p>
+    <ul>
+    <li>Liberty features kommer fra **norsk-tipping.no/libertyfeatures** annotasjonen.</li>
+    <li>Lokale *environment* variabler anses som **jvmParams:[]**.</li>
+    <li>En eventuell *jvm.options* blir oversatt til **jvmParams:[]** i Middlearth sin application.json</li>
+    <li>en eventuell *JVM_SYS_PROP* config seksjon blir oversatt til **jvmParams:[]**.</li>
+    </ul>
+
+    <h2>features: []</h2>
+    {{ $features := index .Metadata.Annotations "norsk-tipping.no/libertyfeatures" }}
+    {{ $featarr := split $features "," }}
+    <p>Features: {{$features}}</p>
+
+    <pre style="background-color:#efefef;">
+    features: [
+    {{range $key,$value := $featarr}}    "{{ $value }}"{{if isLast $featarr $key}}{{ end }}{{if not (isLast $featarr $key) }},{{end}}
+    {{end -}}
+    ]
+    </pre>
+
+    <h2> jvmParams:{}</h2>
+
+    <p style="color:orange;font-weight:bold;">Duplikate EnvironmentName og GetEnvironmentPropertiesURL parametere kan forekomme om leveransen ikke er optimalisert for jvmParams flyten.</p>
+
+
+    {{ if gt (len .Spec.Environment.Local) 0 -}}
+          <table>
+            <tr>
+              <th>Property</th>
+              <th>Type</th>
+              <th>Required</th>
+              <th>Default Value</th>
+              <th width="40%">Description</th>
+            </tr>
+    {{ range .Spec.Environment.Local -}}
     <tr>
-      <th>Name</th>
-      <th>Global</th>
-      <th width="40%">Description</th>
-    </tr>
-    {{ range .Spec.Secret}}
-      <tr>
-        <td>{{.Name}}</td>
-        <td>{{.Global}}</td>
-        <td>{{.Description}}</td>
-      </tr>
+    {{ if gt (len .SecretFrom) 0 }}
+    <td>{{.SecretFrom}}</td>
+    <td>**Secret**</td>
+    <td>{{.Required}}</td>
+    <td>{{.Default}}</td>
+    <td>*A referenced secret. See secret section.*</td>
     {{end}}
-  </table>
+    {{ if gt (len .EnvFrom) 0 }}
+    <td>{{.EnvFrom}}</td><td>**EnvFrom**</td><td>{{.Required}}</td><td>{{.Default}}<td><td>*Environment variables from file. See config section for details.*</td>
+    {{end}}
+    {{ if and (eq (len .SecretFrom) 0) (eq (len .EnvFrom) 0) }}
+    <td>{{.Name}}</td>
+    <td>{{.Type}}</td>
+    <td>{{.Required}}</td>
+    <td>{{.Default}}</td>
+    <td>{{.Description}}</td>
+    {{end}}
+    </tr>
+    {{end}}{{- end}}
 
-{{ end }}
+    {{ range .Spec.Config -}}
+    {{if or (eq .Name "jvm.options") (eq .Name "JVM_SYS_PROP") -}}
+    {{ range .Options }}
+    <tr>
+    <td>{{.Name}}</td>
+    <td>{{.Type}}</td>
+    <td>{{.Required}}</td>
+    <td>{{.Default}}</td>
+    <td>{{.Description}}</td>
+    </tr>
+    {{ end }}
+    {{- end }}
+    {{- end }}
+    </table>
 
-</body>
-</html>
+    {{$envslen := numOfLocal .Spec.Environment.Local}}
+
+    <p>Eksempel på jvmParams seksjon i application.json.:</p>
+
+    <pre style="background-color:#efefef;">
+    jvmParams: { {{ if gt (len .Spec.Environment.Local) 0 -}}
+    {{ range $index, $value := .Spec.Environment.Local}}
+      {{ if gt (len $value.SecretFrom) 0 -}}{{$value.Name}}:TOKENIZED_VALUE{{end -}}
+      {{ if gt (len $value.EnvFrom) 0 -}}{{$value.Name}}:{{$value.EnvFrom}}{{end -}}
+      {{ if and (eq (len $value.SecretFrom) 0) (eq (len $value.EnvFrom) 0) (ne .Type "JVM_SYS_PROP") -}}{{$value.Name}}:{{$value.Default}}{{end -}}
+      {{ if and (not (last $envslen $index)) (ne .Type "JVM_SYS_PROP")}},{{end -}}
+    {{- end}}{{- end}}{{ range .Spec.Config -}}{{if or (eq .Name "jvm.options") (eq .Name "JVM_SYS_PROP") -}},{{$optlen := numOfOptions .Options -}}
+    {{ range $key,$value:= .Options }}
+      {{$value.Name}}:{{$value.Default}}{{if not (last $optlen $key)}},{{end -}}
+    {{end}}
+    {{- end }}
+    {{- end}}
+    }
+    </pre>
+    {{end}}
+
+
+    </body>
+    </html>
+kind: ConfigMap
+metadata:
+  name: metagraf-refdoc.html

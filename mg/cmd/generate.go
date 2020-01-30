@@ -33,6 +33,7 @@ func init() {
 	generatePropertiesCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
 	generateCmd.AddCommand(generateMarkdownCmd)
 	generateCmd.AddCommand(generateManPagesCmd)
+	generateCmd.AddCommand(generateCompletionCmd)
 }
 
 var generateCmd = &cobra.Command{
@@ -101,5 +102,22 @@ var generatePropertiesCmd = &cobra.Command{
 				}
 			}
 		}
+	},
+}
+
+var generateCompletionCmd = &cobra.Command{
+	Use:   "completion",
+	Short: "Generates bash completion scripts",
+	Long: `To load completion run
+
+. <(mg generate completion)
+
+To configure your bash shell to load completions for each session add to your bashrc
+
+# ~/.bashrc or ~/.profile
+. <(mg generate completion)
+`,
+	Run: func(cmd *cobra.Command, args []string) {
+		_ = RootCmd.GenBashCompletion(os.Stdout);
 	},
 }
