@@ -25,6 +25,50 @@ import (
 	"strings"
 )
 
+// Returns a metagraf.MGProperties map of parameters mainly for use in
+// template processing. It filters out JVM_SYS_PROP type.
+func getParamMap(mg *metagraf.MetaGraf) metagraf.MGProperties {
+	params := metagraf.MGProperties{}
+
+	for _, e := range mg.Spec.Environment.Local {
+		if e.Type == "JVM_SYS_PROP" { continue }
+		p := metagraf.MGProperty{
+			Source:   "local",
+			Key:      e.Name,
+			Value:    "",
+			Required: e.Required,
+			Default:  e.Default,
+		}
+		params[p.Key] = p
+	}
+
+	for _, c := range mg.Spec.Config {
+		if c.Name != "JVM_SYS_PROP" || c.Name != "jvm.options"  { continue }
+		for _, o := range c.Options {
+			p := metagraf.MGProperty{
+				Source:   c.Name,
+				Key:      o.Name,
+				Value:    "",
+				Required: o.Required,
+				Default:  o.Default,
+			}
+			params[p.Key] = p
+		}
+	}
+
+	return params
+}
+// Filters out only required property elements.
+func getReqParamMap(p metagraf.MGProperties) metagraf.MGProperties {
+	params := metagraf.MGProperties{}
+	for _, p := range p {
+		if p.Required {
+			params[p.Key] = p
+		}
+	}
+	return params
+}
+
 func GenRef(mg *metagraf.MetaGraf) {
 	log.Info("Fetching template: %v", Template)
 	cm, err  := GetConfigMap(Template)
@@ -34,6 +78,8 @@ func GenRef(mg *metagraf.MetaGraf) {
 	}
 	tmpl, err := template.New("refdoc").Funcs(
 		template.FuncMap{
+			"getParamMap": getParamMap(mg),
+			"getReqParamMap": getReqParamMap(getParamMap(mg)),
 			"split": func(s string, d string) []string {
 				return strings.Split(s, d)
 			},
