@@ -108,15 +108,16 @@ var createBuildConfigCmd = &cobra.Command{
 			}
 		}
 		FlagPassingHack()
-
 		mg := metagraf.Parse(args[0])
+
+		fmt.Println(mg)
+
+		modules.Variables = mg.GetProperties()
+		OverrideProperties(modules.Variables)
+		log.V(2).Info("Current MGProperties: ", modules.Variables)
 
 		if len(modules.NameSpace) == 0 {
 			modules.NameSpace = Namespace
-		}
-
-		if BaseEnvs {
-			modules.BaseEnvs = BaseEnvs
 		}
 
 		modules.GenBuildConfig(&mg)
