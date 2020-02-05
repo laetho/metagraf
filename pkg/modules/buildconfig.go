@@ -52,22 +52,27 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 		buildsource = genGitBuildSource(mg)
 	}
 
-	client := ocpclient.GetImageClient()
+	fmt.Println("Environment", mg.Spec.Environment)
 
-	ist := helpers.GetImageStreamTags(
-		client,
-		imgurl.Namespace,
-		imgurl.Image+":"+imgurl.Tag)
+	if BaseEnvs {
+		log.V(2).Info("Populate environment variables form base image.")
+		client := ocpclient.GetImageClient()
 
-	ImageInfo := helpers.GetDockerImageFromIST(ist)
+		ist := helpers.GetImageStreamTags(
+			client,
+			imgurl.Namespace,
+			imgurl.Image+":"+imgurl.Tag)
 
-	// Environment Variables from buildimage
-	for _, e := range ImageInfo.Config.Env {
-		es := strings.Split(e, "=")
-		if helpers.SliceInString(EnvBlacklistFilter, strings.ToLower(es[0])) {
-			continue
+		ImageInfo := helpers.GetDockerImageFromIST(ist)
+
+		// Environment Variables from buildimage
+		for _, e := range ImageInfo.Config.Env {
+			es := strings.Split(e, "=")
+			if helpers.SliceInString(EnvBlacklistFilter, strings.ToLower(es[0])) {
+				continue
+			}
+			EnvVars = append(EnvVars, corev1.EnvVar{Name: es[0], Value: es[1]})
 		}
-		EnvVars = append(EnvVars, corev1.EnvVar{Name: es[0], Value: es[1]})
 	}
 
 	// Resource labels
@@ -75,9 +80,15 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 	l["app"] = objname
 	l["deploymentconfig"] = objname
 
+
+	km := Variables.KeyMap()
 	for _, e := range mg.Spec.Environment.Build {
 		if e.Required == true {
-			EnvVars = append(EnvVars, corev1.EnvVar{Name: e.Name, Value: e.Default})
+			if len(km[e.Name]) > 0 {
+				EnvVars = append(EnvVars, corev1.EnvVar{Name: e.Name, Value: km[e.Name]})
+			} else {
+				EnvVars = append(EnvVars, corev1.EnvVar{Name: e.Name, Value: e.Default})
+			}
 		} else if e.Required == false {
 			EnvVars = append(EnvVars, corev1.EnvVar{Name: e.Name, Value: "null"})
 		}
