@@ -22,6 +22,8 @@ import (
 )
 
 func GenApplication(mg *metagraf.MetaGraf) {
+
 	app := kapp.Application{}
 }
+
 
