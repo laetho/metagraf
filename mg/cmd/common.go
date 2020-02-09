@@ -44,9 +44,15 @@ func PropertiesFromCmd(mgp metagraf.MGProperties) {
 	cvars := CmdCVars(CVars).Parse()
 
 	for k, v := range cvars {
-		if p, ok := mgp["local:"+k]; ok {
+		if p, ok := mgp["local|"+k]; ok {
 			p.Value = v
 			mgp[p.MGKey()] = p
+			continue
+		}
+		if p, ok := mgp["JVM_SYS_PROP|"+k]; ok {
+			p.Value = v
+			mgp[p.MGKey()] = p
+			continue
 		}
 	}
 }

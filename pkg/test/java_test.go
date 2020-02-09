@@ -32,12 +32,13 @@ func TestGenerateJvmSysPropValue(t *testing.T) {
 		}
 	})
 
-	t.Run("FromCmdVars", func(t *testing.T) {
+	t.Run("FromCmdProps", func(t *testing.T) {
 		cvarsValue := "cvars_value"
 		cmd.CVars = []string{"my.test.prop=" + cvarsValue}
-		modules.Variables = cmd.MergeVars(
-			mg.GetVars(),
-			cmd.OverrideVars(mg.GetVars()))
+
+		modules.Variables = mg.GetProperties()
+		cmd.OverrideProperties(modules.Variables)
+
 
 		generatedEnvVar := modules.GenEnvVar_JVM_SYS_PROP(&mg, "JAVA_OPTIONS")
 
