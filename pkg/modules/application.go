@@ -17,13 +17,57 @@ limitations under the License.
 package modules
 
 import (
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"metagraf/pkg/metagraf"
 	kapp "sigs.k8s.io/application/pkg/apis/app/v1beta1"
 )
 
 func GenApplication(mg *metagraf.MetaGraf) {
 
-	app := kapp.Application{}
+	obj := kapp.Application{
+		TypeMeta:   metav1.TypeMeta{
+			Kind:       "Application",
+			APIVersion: "v1beta1",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:                       MGAppName(mg),
+			GenerateName:               "",
+			Namespace:                  NameSpace,
+			Labels:                     mg.Metadata.Labels,
+			Annotations:                mg.Metadata.Annotations,
+		},
+		Spec:       kapp.ApplicationSpec{
+			ComponentGroupKinds: mg.GroupKinds(),
+			Descriptor: kapp.Descriptor{
+				Type:        mg.Spec.Type,
+				Version:     mg.Spec.Version,
+				Description: mg.Spec.Description,
+				Maintainers: nil,
+				Owners:      nil,
+				Keywords:    nil,
+				Links:       nil,
+				Notes:       "",
+			},
+			Selector: &metav1.LabelSelector{
+				MatchLabels:      nil,
+				MatchExpressions: nil,
+			},
+			AddOwnerRef:   false,
+			Info:          nil,
+			AssemblyPhase: "",
+		},
+		Status:     kapp.ApplicationStatus{},
+	}
+
+	if !Dryrun {
+		StoreApplication(obj)
+	}
+	if Output {
+		MarshalObject(obj.DeepCopyObject())
+	}
 }
 
 
+func StoreApplication(obj kapp.Application) {
+
+}
