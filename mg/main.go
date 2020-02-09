@@ -17,7 +17,6 @@ limitations under the License.
 package main
 
 import (
-	"github.com/golang/glog"
 	log "k8s.io/klog"
 	"metagraf/mg/cmd"
 	"metagraf/pkg/mgver"
@@ -34,8 +33,8 @@ func main() {
 
 	err := cmd.Execute()
 	if err != nil {
-		glog.Error(err)
-		glog.Flush()
+		log.Error(err)
+		log.Flush()
 		os.Exit(1)
 	}
 	log.Flush()
