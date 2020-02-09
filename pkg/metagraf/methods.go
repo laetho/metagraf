@@ -16,11 +16,30 @@ limitations under the License.
 
 package metagraf
 
-import "github.com/pkg/errors"
+import (
+	"github.com/pkg/errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+)
 
 // Returns a metagraf adressable key for a property.
 func (mgp *MGProperty) MGKey() string {
 	return mgp.Source+"|"+mgp.Key
+}
+
+// Returns a list of GroupKind's described by the parsed metaGraf
+// specification
+func (mg *MetaGraf) GroupKinds() []metav1.GroupKind {
+	gks := []metav1.GroupKind{}
+
+	sgk := metav1.GroupKind{Group: "core", Kind: "Service",}
+	dgk := metav1.GroupKind{Group: "apps", Kind: "Deployment",}
+	rgk := metav1.GroupKind{Group: "core", Kind: "Route",}
+
+	gks = append(gks, sgk, dgk, rgk)
+
+
+
+	return gks
 }
 
 // Returns a struct (MGProperties) of all MGProperty addressable
