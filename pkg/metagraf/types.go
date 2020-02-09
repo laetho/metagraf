@@ -23,7 +23,7 @@ import (
 // Map to hold all variables from a specification
 type MGVars			map[string]string
 
-// Structure to hold specification secrtion sourced parameters. Should
+// Structure to hold specification section sourced parameters. Should
 // solve key collisions and generally be a more workable solution.
 type MGProperty struct {
 	Source		string	`json:source`
