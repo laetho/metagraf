@@ -1,5 +1,5 @@
 /*
-Copyright 2019 The MetaGraph Authors
+Copyright 2018-2020 The metaGraf Authors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -108,15 +108,16 @@ var createBuildConfigCmd = &cobra.Command{
 			}
 		}
 		FlagPassingHack()
-
 		mg := metagraf.Parse(args[0])
+
+		fmt.Println(mg)
+
+		modules.Variables = mg.GetProperties()
+		OverrideProperties(modules.Variables)
+		log.V(2).Info("Current MGProperties: ", modules.Variables)
 
 		if len(modules.NameSpace) == 0 {
 			modules.NameSpace = Namespace
-		}
-
-		if BaseEnvs {
-			modules.BaseEnvs = BaseEnvs
 		}
 
 		modules.GenBuildConfig(&mg)

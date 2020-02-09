@@ -1,5 +1,5 @@
 /*
-Copyright 2019 The MetaGraph Authors
+Copyright 2019-2020 The MetaGraph Authors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -25,6 +25,86 @@ import (
 	"strings"
 )
 
+// Returns a metagraf.MGProperties map of parameters mainly for use in
+// template processing. It filters out JVM_SYS_PROP type.
+func getPropSlice(mg *metagraf.MetaGraf) []metagraf.MGProperty {
+	params := []metagraf.MGProperty{}
+
+	// No defaults for Environment Variables.
+	for _, e := range mg.Spec.Environment.Local {
+		if e.Type == "JVM_SYS_PROP" { continue }
+		p := metagraf.MGProperty{
+			Source:   "local",
+			Key:      e.Name,
+			Value:    "",
+			Required: e.Required,
+			Default:  "",
+		}
+		params = append(params, p)
+	}
+
+	for _, c := range mg.Spec.Config {
+		if c.Name != "JVM_SYS_PROP" && c.Name != "jvm.options"  { continue }
+		for _, o := range c.Options {
+			p := metagraf.MGProperty{
+				Source:   c.Name,
+				Key:      o.Name,
+				Value:    "",
+				Required: o.Required,
+				Default:  "",
+			}
+			if c.Name == "JVM_SYS_PROP" {
+				p.Default = o.Default
+			}
+			params = append(params, p)
+		}
+	}
+	return params
+}
+
+// Returns a output sanitized slice of metagraf.EnvironmentVar{} for templates
+func getEnvsForTemplate(mg *metagraf.MetaGraf, nojsp bool) []metagraf.EnvironmentVar {
+	envs := []metagraf.EnvironmentVar{}
+
+	for _, e := range mg.Spec.Environment.Local {
+		// Skip JVM_SYS_PROP type if nojsp = true
+		if nojsp && e.Type == "JVM_SYS_PROP" {continue}
+		me := metagraf.EnvironmentVar{
+			Name:        e.Name,
+			Required:    e.Required,
+			Type:        e.Type,
+			EnvFrom:     e.EnvFrom,
+			SecretFrom:  e.SecretFrom,
+			Description: e.Description,
+			Default:     e.Default,
+			Example:     e.Example,
+		}
+		if len(e.SecretFrom) > 0 {
+			me.Name = me.SecretFrom
+			me.Type = "***Secret***"
+			me.Description = "A referenced secret. See secret section."
+		}
+		if len(e.EnvFrom) > 0 {
+			me.Name = me.EnvFrom
+			me.Type = "***EnvFrom***"
+			me.Description = "Environment variables from file. See config section for details."
+		}
+		envs = append(envs, me)
+	}
+	return envs
+}
+
+// Filters out only required property elements.
+func getReqPropSlice(props []metagraf.MGProperty) []metagraf.MGProperty {
+	params := []metagraf.MGProperty{}
+	for _, p := range props {
+		if p.Required {
+			params = append(params, p)
+		}
+	}
+	return params
+}
+
 func GenRef(mg *metagraf.MetaGraf) {
 	log.Info("Fetching template: %v", Template)
 	cm, err  := GetConfigMap(Template)
@@ -34,6 +114,18 @@ func GenRef(mg *metagraf.MetaGraf) {
 	}
 	tmpl, err := template.New("refdoc").Funcs(
 		template.FuncMap{
+			"getPropSlice": func() []metagraf.MGProperty {
+				return getPropSlice(mg)
+			},
+			"getReqPropSlice": func() []metagraf.MGProperty {
+				return getReqPropSlice(getPropSlice(mg))
+			},
+			"lenPropMap": func(p []metagraf.MGProperty) int {
+				return len(p)
+			},
+			"getEnvsForTemplate": func(f bool) []metagraf.EnvironmentVar {
+				return getEnvsForTemplate(mg, f)
+			},
 			"split": func(s string, d string) []string {
 				return strings.Split(s, d)
 			},
