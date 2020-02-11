@@ -81,6 +81,8 @@ func (mg *MetaGraf) GetProperties() MGProperties {
 
 	// Environment Section
 	for _,env := range mg.Spec.Environment.Local {
+		if len(env.SecretFrom) > 0 {continue}
+		if len(env.EnvFrom) > 0 {continue}
 		p := MGProperty{
 			Source:   "local",
 			Key:      env.Name,
