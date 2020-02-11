@@ -125,7 +125,6 @@ func PropertiesFromFile(mgp metagraf.MGProperties) metagraf.MGProperties {
 		t.Default = mgp[t.MGKey()].Default
 		t.Required = mgp[t.MGKey()].Required
 
-
 		// Only set in mgp MGProperties if the key is valid.
 		if _, ok := mgp[t.MGKey()]; !ok {
 			log.V(1).Infof("Found invalid key: %s while reading configuration file.\n", t.MGKey())
@@ -134,6 +133,7 @@ func PropertiesFromFile(mgp metagraf.MGProperties) metagraf.MGProperties {
 				fail = true
 				fmt.Printf("Configured property %v must have a value in %v\n", t.MGKey(),CVfile )
 			}
+			mgp[t.MGKey()] = t
 		}
 
 		props[t.MGKey()] = t
