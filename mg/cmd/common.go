@@ -96,9 +96,9 @@ func PropertiesFromFile(mgp metagraf.MGProperties) metagraf.MGProperties {
 		if len(a) >= 3 {
 			// Handle multiple = in value.
 			val := strings.SplitAfter(line, a[0]+"|"+a[1]+"=")
-			if len(val[1]) == 0 {
+			if len(val) == 1 {
 				val = strings.SplitAfter(line, a[0]+"="+a[1]+"=")
-				if len(val[1]) == 0 {
+				if len(val) == 1 {
 					fmt.Println("Unable to parse config format!")
 					os.Exit(1)
 				}
@@ -116,9 +116,9 @@ func PropertiesFromFile(mgp metagraf.MGProperties) metagraf.MGProperties {
 		}
 
 		t := metagraf.MGProperty{
-			Source:   a[0],
-			Key:      a[1],
-			Value:    strings.TrimRight(a[2], "\n"),
+			Source:   v[0],
+			Key:      v[1],
+			Value:    strings.TrimRight(v[2], "\n"),
 			Required: true,
 			Default:  "",
 		}
@@ -127,14 +127,15 @@ func PropertiesFromFile(mgp metagraf.MGProperties) metagraf.MGProperties {
 
 
 		// Only set in mgp MGProperties if the key is valid.
-		if _, ok := mgp[t.MGKey()]; ok {
+		if _, ok := mgp[t.MGKey()]; !ok {
 			log.V(1).Infof("Found invalid key: %s while reading configuration file.\n", t.MGKey())
-			mgp[t.MGKey()] = t
+		} else {
+			if len(t.Value) == 0 {
+				fail = true
+				fmt.Printf("Configured property %v must have a value in %v\n", t.MGKey(),CVfile )
+			}
 		}
-		if len(t.Value) == 0 {
-			fail = true
-			fmt.Printf("Configured property %v must have a value in %v\n", t.MGKey(),CVfile )
-		}
+
 		props[t.MGKey()] = t
 	}
 	if fail {
