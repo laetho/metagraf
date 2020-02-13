@@ -22,7 +22,7 @@ import (
 	istionetv1alpha3 "istio.io/api/networking/v1alpha3"
 )
 
-func GenIstioService(mg *metagraf.MetaGraf, namespace string) {
+func GenIstioServiceEntry(mg *metagraf.MetaGraf) {
 	svc := istionetv1alpha3.ServiceEntry{
 		Hosts:                nil,
 		Addresses:            nil,
@@ -39,7 +39,7 @@ func GenIstioService(mg *metagraf.MetaGraf, namespace string) {
 	fmt.Println(svc)
 }
 
-func GenIstioVirtualService(mg *metagraf.MetaGraf, namespace string) {
+func GenIstioVirtualService(mg *metagraf.MetaGraf) {
 	vs := istionetv1alpha3.VirtualService{
 		Hosts:                nil,
 		Gateways:             nil,
