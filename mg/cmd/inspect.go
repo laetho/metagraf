@@ -57,7 +57,7 @@ var InspectPropertiesCmd = &cobra.Command{
 	Long:  `inspect a metaGraf specification against a properties file.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
-			log.Infof("Active project is:", viper.Get("namespace"))
+			log.Infof("Active project is: %v", viper.Get("namespace"))
 			log.Errorf("Missing path to metaGraf specification")
 			os.Exit(1)
 		}

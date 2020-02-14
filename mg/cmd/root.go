@@ -95,7 +95,7 @@ func initConfig() {
 	}
 
 	if Config != "" {
-		fmt.Printf("Using configfile: ", os.Stdout, Config)
+		fmt.Printf("Using configfile: %v %v", os.Stdout, Config)
 		viper.SetConfigFile(Config)
 	} else {
 		//fmt.Println(os.Stderr, "Using default config file: ~/.config/mg/config.yaml")
@@ -105,7 +105,7 @@ func initConfig() {
 
 	viper.AutomaticEnv()
 	if err := viper.ReadInConfig(); err != nil {
-		log.Infof("Failed to read config file:", viper.ConfigFileUsed())
+		log.Infof("Failed to read config file: %v", viper.ConfigFileUsed())
 	}
 }
 
