@@ -37,6 +37,8 @@ type MGProperty struct {
 // MGProperty.Source + ":" + MGProperty.Key
 type MGProperties map[string]MGProperty
 
+type Metagraf[]MetaGraf
+
 // JSON structure for a MetaGraf entity
 type MetaGraf struct {
 	Kind     string		`json:"kind"`
@@ -55,18 +57,28 @@ type MetaGraf struct {
 		Repository		string  	`json:"repository,omitempty"`
 		RepSecRef		string		`json:"repsecref,omitempty"`
 		Branch			string		`json:"branch,omitempty"`
-		BuildImage		string		`json:"buildimage,omitempty"`	// Builder Image for s2i builds.
-		BaseRunImage 	string		`json:"baserunimage,omitempty"`	// Runtime Container Image for binary build.
-		Image		 	string		`json:"image,omitempty"`		// Container Image URL, for wrapping upstream images.
+		Image		 	string		`json:"image,omitempty"`		// Container Image URL, for using existing docker images.
+		BuildImage		string		`json:"buildimage,omitempty"`	// Image used to build the software referenced in Repository.
+		BaseRunImage 	string		`json:"baserunimage,omitempty"`	// Image to inject artifacts from above build.
+		StartupProbe	v1.Probe	`json:"startupProbe,omitempty"`
 		LivenessProbe	v1.Probe	`json:"livenessProbe,omitempty"`	// Using the k8s Probe type
 		ReadinessProbe	v1.Probe	`json:"readinessProbe,omitempty"`	// Using the k8s Probe type
 
 		Resources	 []Resource	`json:"resources,omitempty"`
+		// Structure for holding diffrent kind of environment variables.
 		Environment struct {
+			// Slice for holding environmentvariables for the build process.
 			Build []EnvironmentVar	`json:"build,omitempty"`
+			// Environment variables that should be set on the Deployment resource.
 			Local []EnvironmentVar	`json:"local,omitempty"`
+			// Environment variables or configuration keys that comes from some kind of
+			// central configuration mechanism. Redis, etcd, your solution.
 			External struct {
+				// Slice for holding environment variable or configuration keys  that
+				// are introduces to a central configuration solution.
 				Introduces []EnvironmentVar `json:"introduces,omitempty"`
+				// Slice of environment variable or configuration keys that this
+				// compoent consumes from the central configuration solution.
 				Consumes   []EnvironmentVar `json:"consumes,omitempty"`
 			} `json:"external,omitempty"`
 		} `json:"environment,omitempty"`
