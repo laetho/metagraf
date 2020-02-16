@@ -51,18 +51,28 @@ type MetaGraf struct {
 		Annotations       map[string]string	`json:"annotations,omitempty"`
 	} `json:"metadata"`
 	Spec struct {
+		// Describes the type of metaGraf specification. What types we have are not formalized yet.
 		Type			string		`json:"type"`
 		Version			string		`json:"version"`
 		Description		string		`json:"description"`
+		// Git repository URL for the source code of the described software component.
 		Repository		string  	`json:"repository,omitempty"`
+		// Repository Secret Reference, git pull secret
 		RepSecRef		string		`json:"repsecref,omitempty"`
+		// Check out and build code from another branch than master. Defaults to master if
+		// not provided.
 		Branch			string		`json:"branch,omitempty"`
-		Image		 	string		`json:"image,omitempty"`		// Container Image URL, for using existing docker images.
+		// When a docker image url is provided, we assume you want to wrap an existing
+		// container image with a metaGraf definition.
+		Image		 	string		`json:"image,omitempty"`
 		BuildImage		string		`json:"buildimage,omitempty"`	// Image used to build the software referenced in Repository.
 		BaseRunImage 	string		`json:"baserunimage,omitempty"`	// Image to inject artifacts from above build.
+		// StartupProbe, a v1.Probe{} definition from upstream Kubernetes.
 		StartupProbe	v1.Probe	`json:"startupProbe,omitempty"`
-		LivenessProbe	v1.Probe	`json:"livenessProbe,omitempty"`	// Using the k8s Probe type
-		ReadinessProbe	v1.Probe	`json:"readinessProbe,omitempty"`	// Using the k8s Probe type
+		// LivenessProbe, a v1.Probe{} definition from upstream Kubernetes.
+		LivenessProbe	v1.Probe	`json:"livenessProbe,omitempty"`
+		// ReadinessProbe, a v1.Probe{} definition from upstream Kubernetes.
+		ReadinessProbe	v1.Probe	`json:"readinessProbe,omitempty"`
 
 		Resources	 []Resource	`json:"resources,omitempty"`
 		// Structure for holding diffrent kind of environment variables.
@@ -135,12 +145,31 @@ type Secret struct {
 }
 
 type EnvironmentVar struct {
-	Name        string			`json:"name"`
-	Required    bool			`json:"required"`
-	Type        string			`json:"type,omitempty"`
-	EnvFrom		string			`json:"envfrom,omitempty"`		// Looks for a globally named configmap.
-	SecretFrom	string			`json:"secretfrom,omitempty"`	// References a k8s Secret resource.
-	Description string			`json:"description"`
-	Default		string			`json:"default,omitempty"`
-	Example		string			`json:"example,omitempty"`
+	Name        	string	`json:"name"`
+	Required    	bool	`json:"required"`
+	Type        	string	`json:"type,omitempty"`
+	// Expose environment variables from ConfigMap resources.
+	// All keys, value pairs in secret will be exported from
+	// the ConfigMap into a running Pod.  The Environment.Name
+	// will just be a placeholder value.
+	EnvFrom			string	`json:"envfrom,omitempty"`
+	// When exporting environment variables from a ConfigMap
+	// resource, you have the option to specify a single key.
+	// You will now only export the single key and value from
+	// the ConfigMap resource.
+	EnvFromKey		string	`json:"envfromkey,omitempty"`
+	// Expose  contents of a kubernets Secret as environment variables
+	// exported into a running container. The values are only available
+	// inside a running Pod or if you have access to view secrets in the
+	// namespace. Exposes all key, values from the Secret. The
+	// EnvironmentVar.Name will just be a placeholder.
+	SecretFrom		string	`json:"secretfrom,omitempty"`
+	// When exporting environment variables from a Secret resource, you
+	// have the option to specify the name of a key to export. If provided
+	// the value from the referenced key will appear as EnvironmentVar.Name
+	// inside the running Pod.
+	SecretFromKey	string	`json:"secretfromkey,omitempty"`	// Fetch value from specific key in Secret.
+	Description 	string	`json:"description"`
+	Default			string	`json:"default,omitempty"`
+	Example			string	`json:"example,omitempty"`
 }
