@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The MetaGraph Authors
+Copyright 2018-2020 The metaGrafAuthors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -18,12 +18,14 @@ package helpers
 
 import (
 	"encoding/json"
-	log "k8s.io/klog"
+	"fmt"
 	dockerv10 "github.com/openshift/api/image/docker10"
 	imagev1 "github.com/openshift/api/image/v1"
 	imagev1client "github.com/openshift/client-go/image/clientset/versioned/typed/image/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	log "k8s.io/klog"
 	"os"
+	"os/exec"
 )
 
 func GetImageStreamTags(c *imagev1client.ImageV1Client, ns string, n string) *imagev1.ImageStreamTag {
@@ -42,8 +44,6 @@ func GetImageStreamTags(c *imagev1client.ImageV1Client, ns string, n string) *im
 		}
 		ist.Image.DockerImageMetadata.Object = di
 	}
-
-
 	return ist
 }
 
@@ -61,7 +61,26 @@ func GetDockerImageFromIST(i *imagev1.ImageStreamTag) *dockerv10.DockerImage {
 	return &di
 }
 
-// Unmarshals json data into a DockerImage type
+// Inspect a docker image with skope and unmarshal that json output to
+// a dockerv10.DockerImage{} struct.
+func SkopeoImageInfo(image string) *dockerv10.DockerImage {
+	image = "docker://" + image
+	cmd := exec.Command("skopeo", "inspect", "--config", image)
+	stdout, err := cmd.Output()
+	if err != nil {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
+	list := dockerv10.DockerImage{}
+	err = json.Unmarshal(stdout, &list)
+	if err != nil {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
+	return &list
+}
+
+// Unmarshalljson data into a DockerImage type
 func GetDockerImageFromImage(i *imagev1.Image) *dockerv10.DockerImage {
 	di := dockerv10.DockerImage{}
 	if len(i.DockerImageMetadata.Raw) != 0 {
