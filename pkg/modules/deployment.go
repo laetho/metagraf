@@ -158,14 +158,6 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 		EnvVars = append(EnvVars, EnvToEnvVar(&e, false))
 	}
 
-	// External variables from metagraf as deployment envvars
-	for _, e := range mg.Spec.Environment.External.Consumes {
-		EnvVars = append(EnvVars, EnvToEnvVar(&e, true))
-	}
-	for _, e := range mg.Spec.Environment.External.Introduces {
-		EnvVars = append(EnvVars, EnvToEnvVar(&e, true))
-	}
-
 	// EnvVars from ConfigMaps, fetch Metagraf config resources that is of
 	for _, e := range mg.Spec.Environment.Local {
 		if len(e.EnvFrom) == 0 {
