@@ -16,9 +16,9 @@ limitations under the License.
 package modules
 
 import (
+	corev1 "k8s.io/api/core/v1"
 	"metagraf/pkg/metagraf"
 	"strings"
-	corev1 "k8s.io/api/core/v1"
 )
 
 // Identify if a metagraf specification has a JVM_SYS_PROP configuration type.
@@ -43,27 +43,12 @@ func GenEnvVar_JVM_SYS_PROP(mg *metagraf.MetaGraf, name string) corev1.EnvVar {
 			continue
 		}
 		for _,o := range c.Options {
-			prop := Variables[c.Name+"|"+o.Name]
-			str := ""
-			if o.Required {
-				// Set default value if --defaults arg is given.
+			if p, ok := Variables["JVM_SYS_PROP|"+o.Name]; ok {
 				if Defaults {
-					str = "-D" + o.Name + "=" + o.Default
+					props = append(props, "-D"+o.Name+"="+p.Default)
+				} else {
+					props = append(props, "-D"+o.Name+"="+p.Value)
 				}
-				// Set value of key from either --cvars of --cvfile or Environment
-				if len(prop.Value) > 0  {
-					str = "-D" + o.Name + "=" + prop.Value
-				}
-				// Append generated string to props, could be empty if non of the above
-				// logic kicks in.
-				props = append(props, str)
-			}
-			// If we find an optional value in --cvars og --cvfile or Environment
-			if !o.Required {
-				if len(prop.Value) > 0 {
-					str = "-D" + o.Name + "=" + prop.Value
-				}
-				props = append(props, str)
 			}
 		}
 	}
