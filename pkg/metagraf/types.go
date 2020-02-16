@@ -97,10 +97,10 @@ type MetaGraf struct {
 	} `json:"spec"`
 }
 
-
-/*
- * Describes attached resources for a component. Ref, 12 factor app.
- */
+// Describes attached resources for a component. Ref, 12 factor app.
+// This section is currently a mess because of "lift and shift" approach
+// we  should never have done. Going forward all attached resources
+// should become a Kubernets Service of some kind.
 type Resource struct {
 	Name     	string			`json:"name"`
 	Description string 			`json:"description,omitempty"`
