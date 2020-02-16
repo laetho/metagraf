@@ -252,7 +252,7 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 	obj := appsv1.Deployment{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Deployment",
-			APIVersion: "v1",
+			APIVersion: "apps/v1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:   objname,
