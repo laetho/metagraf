@@ -50,6 +50,10 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 	l := make(map[string]string)
 	l["app"] = objname
 	l["deployment"] = objname
+	// Propagate labels from metagraf to Deployment and Pod resources
+	for k,v := range mg.Metadata.Labels {
+		l[k]=v
+	}
 
 	// Selector
 	sm := make(map[string]string)
@@ -92,20 +96,21 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 	} else if len(mg.Spec.BuildImage) > 0 {
 		DockerImage = mg.Spec.BuildImage
 	} else {
-		DockerImage = ""
+		DockerImage = mg.Spec.Image
 	}
 
 	var imgurl imageurl.ImageURL
 	imgurl.Parse(DockerImage)
 
+	/*
 	client := ocpclient.GetImageClient()
 
 	ist := helpers.GetImageStreamTags(
 		client,
 		imgurl.Namespace,
 		imgurl.Image+":"+imgurl.Tag)
-
-	ImageInfo := helpers.GetDockerImageFromIST(ist)
+*/
+	ImageInfo := helpers.SkopeoImageInfo(DockerImage)
 
 	// Adding name and version of component as en environment variable
 	EnvVars = append(EnvVars, corev1.EnvVar{
