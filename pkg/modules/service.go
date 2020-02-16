@@ -18,6 +18,7 @@ package modules
 
 import (
 	"fmt"
+	"github.com/openshift/api/image/docker10"
 	log "k8s.io/klog"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -43,21 +44,24 @@ func GenService(mg *metagraf.MetaGraf) {
 	} else if len(mg.Spec.BuildImage) > 0 {
 		DockerImage = mg.Spec.BuildImage
 	} else {
-		DockerImage = ""
+		DockerImage = mg.Spec.Image
 	}
 
 	var imgurl imageurl.ImageURL
 	imgurl.Parse(DockerImage)
 
-	client := ocpclient.GetImageClient()
+	ImageInfo := &docker10.DockerImage{}
 
-	ist := helpers.GetImageStreamTags(
-		client,
-		imgurl.Namespace,
-		imgurl.Image+":"+imgurl.Tag)
-
-	ImageInfo := helpers.GetDockerImageFromIST(ist)
-
+	if (len(DockerImage) == 0) {
+		client := ocpclient.GetImageClient()
+		ist := helpers.GetImageStreamTags(
+			client,
+			imgurl.Namespace,
+			imgurl.Image+":"+imgurl.Tag)
+		ImageInfo = helpers.GetDockerImageFromIST(ist)
+	} else {
+		ImageInfo = helpers.SkopeoImageInfo(DockerImage)
+	}
 	for k := range ImageInfo.Config.ExposedPorts {
 		ss := strings.Split(k, "/")
 		port, _ := strconv.Atoi(ss[0])
