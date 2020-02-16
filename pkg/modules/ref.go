@@ -106,7 +106,7 @@ func getReqPropSlice(props []metagraf.MGProperty) []metagraf.MGProperty {
 }
 
 func GenRef(mg *metagraf.MetaGraf) {
-	log.Info("Fetching template: %v", Template)
+	log.Infof("Fetching template: %v", Template)
 	cm, err  := GetConfigMap(Template)
 	if err != nil {
 		log.Error(err)

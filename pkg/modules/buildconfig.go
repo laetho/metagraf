@@ -40,7 +40,7 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 	err := imgurl.Parse(mg.Spec.BuildImage)
 	if err != nil {
 
-		log.Error("Malformed BuildImage url provided in metaGraf file; %v", mg.Spec.BuildImage)
+		log.Errorf("Malformed BuildImage url provided in metaGraf file; %v", mg.Spec.BuildImage)
 		os.Exit(1)
 	}
 

@@ -378,7 +378,7 @@ func volumes(mg *metagraf.MetaGraf, ImageInfo *docker10.DockerImage ) ([]corev1.
 	}
 
 	for n, t := range FindSecrets(mg) {
-		log.V(2).Infof("Secret: %v,%t", n, t)
+		log.V(2).Infof("Secret: %v,%v", n, t)
 		voln := strings.Replace(n,".", "-", -1)
 		var mode int32 = 420
 		vol := corev1.Volume{

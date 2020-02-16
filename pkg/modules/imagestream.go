@@ -86,7 +86,7 @@ func StoreImageStream(obj imagev1.ImageStream) {
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		log.Infof("ImageStream: %v", obj.Name, " exist, skipping...")
+		log.Infof("ImageStream: %v exists, skipping...", obj.Name)
 	} else {
 		result, err := client.Create(&obj)
 		if err != nil {

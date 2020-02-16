@@ -69,7 +69,7 @@ func GenRoute(mg *metagraf.MetaGraf) {
 	}
 	sort.Strings(ports)
 
-	log.V(2).Infof("First port: %v, %t", ports[0], ports[0])
+	log.V(2).Infof("First port: %v, %v", ports[0], ports[0])
 
 
 	l := make(map[string]string)

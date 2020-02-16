@@ -9,6 +9,12 @@ GITBRANCH=$(git rev-parse --abbrev-ref HEAD)
 
 echo "${GITHASH} ${GITTAG}"
 
+echo "Vetting..."
+go vet -v .././...
+
+echo "Testing..."
+go test .././...
+
 go build -ldflags \
 	"-X 'metagraf/pkg/mgver.GitHash=${GITHASH}' \
 	-X 'metagraf/pkg/mgver.GitTag=${GITTAG}' \
