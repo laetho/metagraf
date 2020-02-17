@@ -1,0 +1,38 @@
+{
+  "kind": "MetaGraf",
+  "version": "v1alpha1",
+  "metadata": {
+    "name": "dgraph",
+    "labels": {
+      "dgraph": "rules"
+    },
+    "annotations": {
+      "sigs.k8s.io/applications/owner": "Slartibartfast"
+    }
+  },
+  "spec": {
+    "version": "1.0.1",
+    "type": "service",
+    "description": "Emphemeral dgraph database.",
+    "image": "docker.io/dgraph/standalone:latest",
+    "environment": {
+      "local": [
+        {
+          "name": "PATH",
+          "required": true,
+          "type": "string",
+          "default": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+          "description": "The PATH variable"
+        },
+	{
+          "name": "MYKEY",
+          "required": true,
+          "type": "string",
+          "description": "The PATH variable",
+	  "envfrom": "dgraphv1",
+	  "envfromkey": "key2"
+        }
+      ]
+    }
+  }
+}
