@@ -67,13 +67,6 @@ var InspectPropertiesCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		if len(Namespace) == 0 {
-			Namespace = viper.GetString("namespace")
-			if len(Namespace) == 0 {
-				fmt.Println("Namespace must be supplied")
-				os.Exit(1)
-			}
-		}
 		mg := metagraf.Parse(args[0])
 		CVfile = args[1]
 
