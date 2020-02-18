@@ -37,7 +37,6 @@ func GenService(mg *metagraf.MetaGraf) {
 
 	var serviceports []corev1.ServicePort
 
-	// todo dockerimage should inspected once and return a pointer to the first instance inspection data
 	var DockerImage string
 	if len(mg.Spec.BaseRunImage) > 0 {
 		DockerImage = mg.Spec.BaseRunImage
@@ -52,16 +51,13 @@ func GenService(mg *metagraf.MetaGraf) {
 
 	ImageInfo := &docker10.DockerImage{}
 
-	if (len(DockerImage) == 0) {
-		client := ocpclient.GetImageClient()
-		ist := helpers.GetImageStreamTags(
-			client,
-			imgurl.Namespace,
-			imgurl.Image+":"+imgurl.Tag)
-		ImageInfo = helpers.GetDockerImageFromIST(ist)
-	} else {
-		ImageInfo = helpers.SkopeoImageInfo(DockerImage)
-	}
+	client := ocpclient.GetImageClient()
+	ist := helpers.GetImageStreamTags(
+		client,
+		imgurl.Namespace,
+		imgurl.Image+":"+imgurl.Tag)
+	ImageInfo = helpers.GetDockerImageFromIST(ist)
+
 	for k := range ImageInfo.Config.ExposedPorts {
 		ss := strings.Split(k, "/")
 		port, _ := strconv.Atoi(ss[0])
