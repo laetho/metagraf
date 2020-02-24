@@ -225,7 +225,7 @@ func EnvToEnvVar(e *metagraf.EnvironmentVar, ext bool) corev1.EnvVar {
 }
 
 func ValueFromEnv(key string) bool {
-	if _, t := Variables["local"+key]; t {
+	if _, t := Variables["local|"+key]; t {
 		return true
 	}
 	return false

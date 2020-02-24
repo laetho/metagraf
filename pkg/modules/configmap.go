@@ -154,14 +154,13 @@ func genConfigMapsFromConfig(conf *metagraf.Config, mg *metagraf.MetaGraf) {
 			if err != nil {
 				log.Error(err)
 			}
-
 			cm.Data[o.Name] = base64.StdEncoding.EncodeToString(sec.Data[o.SecretFrom])
-
-
-		} else if ValueFromEnv(prop.Key) {
-			cm.Data[prop.Key] = prop.Value
 		} else {
-			cm.Data[prop.Key] = prop.Value
+			if len(prop.Value) > 0 {
+				cm.Data[prop.Key] = prop.Value
+			} else {
+				cm.Data[prop.Key] = prop.Default
+			}
 		}
 	}
 
