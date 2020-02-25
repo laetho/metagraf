@@ -30,6 +30,7 @@ import (
 var MGVersion string
 var MGBanner string = "mg " + MGVersion
 
+// @todo: This should be moved to it's own package to avoid cyclic dependencies since both cmd and modules package use them.
 var (
 	All		  bool = false		// Flag for indicating all resources, example delete all resources associated with a application.
 	Namespace string
