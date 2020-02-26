@@ -87,10 +87,11 @@ func PropertiesFromFile(mgp metagraf.MGProperties) metagraf.MGProperties {
 			break
 		}
 
-		// Skip empty lines
-		if len(line) == 1 {
-			if strings.Contains(line, "\n") { continue }
+		// Skip emptyish lines, there will never be a line shorter than 3 characters.
+		if len(line) <= 3 {
+			continue
 		}
+
 		a := strings.FieldsFunc(line, MgPropertyLineSplit)
 		var v []string	// to hold soruce, key, value
 		if len(a) >= 3 {
@@ -103,7 +104,7 @@ func PropertiesFromFile(mgp metagraf.MGProperties) metagraf.MGProperties {
 					os.Exit(1)
 				}
 			}
-			v = append(v, a[0]) 	// Set Soruce
+			v = append(v, a[0]) 	// Set Source
 			v = append(v, a[1])		// Set Key
 			v = append(v, val[1])	// Set value
 		} else {
