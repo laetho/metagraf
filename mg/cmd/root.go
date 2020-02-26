@@ -105,7 +105,7 @@ func initConfig() {
 
 	viper.AutomaticEnv()
 	if err := viper.ReadInConfig(); err != nil {
-		log.Infof("Failed to read config file: %v", viper.ConfigFileUsed())
+		log.V(2).Infof("Failed to read config file: %v", viper.ConfigFileUsed())
 	}
 }
 
