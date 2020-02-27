@@ -92,6 +92,7 @@ var generatePropertiesCmd = &cobra.Command{
 		for _, key := range keys {
 			prop := props[key]
 			if prop.Source == "external" {continue}
+			if prop.Required == false {continue}
 			if Defaults {
 				fmt.Println(prop.MGKey()+"="+prop.Default)
 			} else {
