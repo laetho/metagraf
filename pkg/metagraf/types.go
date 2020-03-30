@@ -153,22 +153,17 @@ type EnvironmentVar struct {
 	// the ConfigMap into a running Pod.  The Environment.Name
 	// will just be a placeholder value.
 	EnvFrom			string	`json:"envfrom,omitempty"`
-	// When exporting environment variables from a ConfigMap
-	// resource, you have the option to specify a single key.
-	// You will now only export the single key and value from
-	// the ConfigMap resource.
-	EnvFromKey		string	`json:"envfromkey,omitempty"`
 	// Expose  contents of a kubernets Secret as environment variables
 	// exported into a running container. The values are only available
 	// inside a running Pod or if you have access to view secrets in the
 	// namespace. Exposes all key, values from the Secret. The
 	// EnvironmentVar.Name will just be a placeholder.
 	SecretFrom		string	`json:"secretfrom,omitempty"`
-	// When exporting environment variables from a Secret resource, you
+	// When exporting environment variables from a Secret or Configmap resource, you
 	// have the option to specify the name of a key to export. If provided
 	// the value from the referenced key will appear as EnvironmentVar.Name
 	// inside the running Pod.
-	SecretFromKey	string	`json:"secretfromkey,omitempty"`	// Fetch value from specific key in Secret.
+	Key				string	`json:"key,omitempty"`
 	Description 	string	`json:"description"`
 	Default			string	`json:"default,omitempty"`
 	Example			string	`json:"example,omitempty"`
