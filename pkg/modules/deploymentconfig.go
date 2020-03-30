@@ -1,5 +1,5 @@
 /*
-Copyright 2019 The metaGraf Authors
+Copyright 2020 The metaGraf Authors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -36,6 +36,135 @@ import (
 	"k8s.io/apimachinery/pkg/util/intstr"
 )
 
+// Returns a corev1.EnvVar{} with a valueFrom construct if the metagraf.EnvironmentVar
+// has a SecretFrom or EnvFrom and the Key reference is set.
+func genValueFrom(e *metagraf.EnvironmentVar) corev1.EnvVar {
+	var EnvVar corev1.EnvVar
+
+	if len(e.SecretFrom) > 0 {
+		EnvVar = corev1.EnvVar{
+			Name: e.Name,
+			ValueFrom: &corev1.EnvVarSource{
+				SecretKeyRef: &corev1.SecretKeySelector{
+					LocalObjectReference: corev1.LocalObjectReference{
+						Name: e.SecretFrom,
+					},
+					Key: e.Key,
+				},
+			},
+		}
+	}
+
+	if len(e.EnvFrom) > 0 {
+		EnvVar = corev1.EnvVar{
+			Name: e.Name,
+			ValueFrom: &corev1.EnvVarSource{
+				ConfigMapKeyRef: &corev1.ConfigMapKeySelector{
+					LocalObjectReference: corev1.LocalObjectReference{
+						Name: e.EnvFrom,
+					},
+					Key: e.Key,
+				},
+			},
+		}
+	}
+
+	return EnvVar
+}
+
+func parseEnvVars(mg *metagraf.MetaGraf) []corev1.EnvVar {
+	var EnvVars []corev1.EnvVar
+
+	// Adding name and version of component as en environment variable
+	EnvVars = append(EnvVars, corev1.EnvVar{
+		Name:  "MG_APP_NAME",
+		Value: MGAppName(mg),
+	})
+
+	var oversion string
+	if len(Version) > 0 {
+		oversion = Version
+	} else {
+		oversion = mg.Spec.Version
+	}
+
+	EnvVars = append(EnvVars, corev1.EnvVar{
+		Name:  "MG_APP_VERSION",
+		Value: oversion,
+	})
+
+	// Local variables from metagraf as deployment envvars
+	for _, e := range mg.Spec.Environment.Local {
+
+		if len(e.SecretFrom) > 0 && len(e.Key) == 0 {
+			continue
+		}
+		if len(e.EnvFrom) > 0 && len(e.Key) == 0 {
+			continue
+		}
+
+		// Inject JVM_SYS_PROP as an EnvVar. Content comes from a Config
+		// section of type JVM_SYS_PROPS. But requires a Environment variable
+		// of type JVM_SYS_PROP as well.
+		if strings.ToUpper(e.Type) == "JVM_SYS_PROP" {
+			if HasJVM_SYS_PROP(mg) {
+				EnvVars = append(EnvVars, GenEnvVar_JVM_SYS_PROP(mg, e.Name))
+			}
+			continue
+		}
+
+		if len(e.Key) > 0 {
+			EnvVars = append(EnvVars, genValueFrom(&e))
+		}
+		// Use EnvToEnvVar to potentially use override values.
+		EnvVars = append(EnvVars, EnvToEnvVar(&e, false))
+	}
+
+	// External variables from metagraf as deployment envvars
+	for _, e := range mg.Spec.Environment.External.Consumes {
+		EnvVars = append(EnvVars, EnvToEnvVar(&e, true))
+	}
+	for _, e := range mg.Spec.Environment.External.Introduces {
+		EnvVars = append(EnvVars, EnvToEnvVar(&e, true))
+	}
+
+	return EnvVars
+}
+
+// Parses the metagraf specification for instances of reading environment variables
+// from either a ConfigMap or a Secret. If the metagraf.Environment.Key is provided
+func parseEnvFrom(mg *metagraf.MetaGraf) []corev1.EnvFromSource {
+	var EnvFrom []corev1.EnvFromSource
+
+	for _, e := range mg.Spec.Environment.Local {
+		if len(e.EnvFrom) == 0 || len(e.Key) > 0 {
+			continue
+		}
+		EnvFrom = append(EnvFrom, corev1.EnvFromSource{
+			ConfigMapRef: &corev1.ConfigMapEnvSource{
+				LocalObjectReference: corev1.LocalObjectReference{
+					Name: e.EnvFrom,
+				},
+			},
+		})
+	}
+
+	for _, e := range mg.Spec.Environment.Local {
+		if len(e.SecretFrom) == 0 || len(e.Key) > 0 {
+			continue
+		}
+		cmref := corev1.EnvFromSource{
+			SecretRef: &corev1.SecretEnvSource{
+				LocalObjectReference: corev1.LocalObjectReference{
+					Name: e.SecretFrom,
+				},
+			},
+		}
+		EnvFrom = append(EnvFrom, cmref)
+	}
+	
+	return EnvFrom
+}
 
 // Todo: Still needs to be split up, but some refactoring has been done.
 func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
@@ -89,7 +218,6 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 	//var ContainerVolumes []string
 	var Volumes []corev1.Volume
 	var VolumeMounts []corev1.VolumeMount
-	// Environment
 	var EnvVars []corev1.EnvVar
 
 	var DockerImage string
@@ -113,25 +241,8 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 
 	ImageInfo := helpers.GetDockerImageFromIST(ist)
 
-	// Adding name and version of component as en environment variable
-	EnvVars = append(EnvVars, corev1.EnvVar{
-		Name:  "MG_APP_NAME",
-		Value: MGAppName(mg),
-	})
 
-	// todo: can be removed?
-	var oversion string
-	if len(Version) > 0 {
-		oversion = Version
-	} else {
-		oversion = mg.Spec.Version
-	}
-
-	EnvVars = append(EnvVars, corev1.EnvVar{
-		Name:  "MG_APP_VERSION",
-		Value: oversion,
-	})
-
+	EnvVars = parseEnvVars(mg)
 	// Environment Variables from baserunimage
 	if BaseEnvs {
 		for _, e := range ImageInfo.Config.Env {
@@ -143,81 +254,12 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 		}
 	}
 
-	// Handle EnvFrom
-	var EnvFrom []corev1.EnvFromSource
-
-	// Local variables from metagraf as deployment envvars
-	for _, e := range mg.Spec.Environment.Local {
-		// Skip environment variable if SecretFrom
-		if len(e.SecretFrom) > 0 {
-			continue
-		}
-		if len(e.EnvFrom) > 0 {
-			continue
-		}
-
-		// Inject JVM_SYS_PROP as an EnvVar. Content comes from a Config
-		// section of type JVM_SYS_PROPS. But requires a Environment variable
-		// of type JVM_SYS_PROP as well.
-		if strings.ToUpper(e.Type) == "JVM_SYS_PROP" {
-			if HasJVM_SYS_PROP(mg) {
-				EnvVars = append(EnvVars, GenEnvVar_JVM_SYS_PROP(mg, e.Name))
-			}
-			continue
-		}
-
-		// Use EnvToEnvVar to potentially use override values.
-		EnvVars = append(EnvVars, EnvToEnvVar(&e, false))
-	}
-
-
-
-	// EnvVars from ConfigMaps, fetch Metagraf config resources that is of
-	for _, e := range mg.Spec.Environment.Local {
-		if len(e.EnvFrom) == 0 {
-				continue
-		}
-		EnvFrom = append(EnvFrom, corev1.EnvFromSource{
-			ConfigMapRef: &corev1.ConfigMapEnvSource{
-				LocalObjectReference: corev1.LocalObjectReference{
-					Name: e.EnvFrom,
-				},
-			},
-		})
-	}
-
-	/*
-		EnvVars from Secrets. Find all environment variables
-		that containers the SecretFrom field and append to the
-		EnvFrom as EnvFromSource->SecretRef.
-	*/
-	for _, e := range mg.Spec.Environment.Local {
-		if len(e.SecretFrom) == 0 {
-			continue
-		}
-		cmref := corev1.EnvFromSource{
-			SecretRef: &corev1.SecretEnvSource{
-				LocalObjectReference: corev1.LocalObjectReference{
-					Name: e.SecretFrom,
-				},
-			},
-		}
-		EnvFrom = append(EnvFrom, cmref)
-	}
-
-	// External variables from metagraf as deployment envvars
-	for _, e := range mg.Spec.Environment.External.Consumes {
-		EnvVars = append(EnvVars, EnvToEnvVar(&e, true))
-	}
-	for _, e := range mg.Spec.Environment.External.Introduces {
-		EnvVars = append(EnvVars, EnvToEnvVar(&e, true))
-	}
-
 	/* Norsk Tipping Specific Logic regarding
 	   WLP / OpenLiberty Features. Should maybe
 	   look at some plugin approach to this later.
 	   todo: Add annotations from metagraf to deployment and expose them to pod using downward api.
 	   info: https://kubernetes.io/docs/tasks/inject-data-application/downward-api-volume-expose-pod-information/#the-downward-api
+		or fieldRef in env.
 	*/
 	if len(mg.Metadata.Annotations["norsk-tipping.no/libertyfeatures"]) > 0 {
 		EnvVars = append(EnvVars, corev1.EnvVar{
@@ -225,17 +267,6 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 			Value: mg.Metadata.Annotations["norsk-tipping.no/libertyfeatures"],
 		})
 	}
-
-	// Labels from baserunimage
-	/*
-		for k, v := range ImageInfo.Config.Labels {
-			if helpers.SliceInString(LabelBlacklistFilter, strings.ToLower(k)) {
-				continue
-			}
-			l[k] = helpers.LabelString(v)
-		}
-	*/
-
 	// ContainerPorts
 	for k := range ImageInfo.Config.ExposedPorts {
 		ss := strings.Split(k, "/")
@@ -257,7 +288,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 		Ports:           ContainerPorts,
 		VolumeMounts:    VolumeMounts,
 		Env:             EnvVars,
-		EnvFrom:		 EnvFrom,
+		EnvFrom:		 parseEnvFrom(mg),
 	}
 	Containers = append(Containers, Container)
 
