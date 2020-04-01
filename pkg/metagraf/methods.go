@@ -144,15 +144,17 @@ func (mgp MGProperties) Keys() []string {
 	return keys
 }
 
-// Return a slice
+// Return a slice of property keys. If required == true only return required keys.
 func (mgp MGProperties) SourceKeys(required bool) []string {
 	var keys []string
 	for _, prop := range mgp {
-		if prop.Required == required {
+		if required {
+			if prop.Required == required {
+				keys = append(keys, prop.MGKey())
+			}
+		} else {
 			keys = append(keys, prop.MGKey())
-			continue
 		}
-		keys = append(keys, prop.MGKey())
 	}
 	return keys
 }
