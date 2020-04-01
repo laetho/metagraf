@@ -149,6 +149,7 @@ func parseEnvVars(mg *metagraf.MetaGraf) []corev1.EnvVar {
 
 		if len(e.Key) > 0 {
 			EnvVars = append(EnvVars, genValueFrom(&e))
+			continue
 		}
 		// Use EnvToEnvVar to potentially use override values.
 		EnvVars = append(EnvVars, EnvToEnvVar(&e, false))
