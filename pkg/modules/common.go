@@ -151,7 +151,16 @@ func parseEnvVars(mg *metagraf.MetaGraf) []corev1.EnvVar {
 			EnvVars = append(EnvVars, genValueFrom(&e))
 			continue
 		}
-		// Use EnvToEnvVar to potentially use override values.
+
+		// Omit optional EnvVar's that has no value provided through explicit config.
+		if ev, t := Variables["local|"+e.Name]; t {
+			if len(ev.Value) == 0 && ev.Required == false {
+				log.V(3).Infof("Omitting optional environment variable %s without explicit value", e.Name)
+				continue
+			}
+		}
+
+		// Default behaviour
 		EnvVars = append(EnvVars, EnvToEnvVar(&e, false))
 	}
 
