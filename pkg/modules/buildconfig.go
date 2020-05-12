@@ -20,6 +20,7 @@ import (
 	"fmt"
 	log "k8s.io/klog"
 	"metagraf/mg/ocpclient"
+	"metagraf/mg/params"
 	"metagraf/pkg/helpers"
 	"os"
 	"strings"
@@ -94,6 +95,20 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 		}
 	}
 
+	// Construct toObjRef for BuildConfig output overrides
+	var toObjRefName = objname
+	var toObjRefTag = "latest"
+	if len(params.OutputImagestream) > 0 {
+		toObjRefName = params.OutputImagestream
+	}
+	if len(Tag) > 0 {
+		toObjRefTag = Tag
+	}
+	var toObjRef = &corev1.ObjectReference{
+		Kind: "ImageStreamTag",
+		Name: toObjRefName + toObjRefTag,
+	}
+
 	bc := buildv1.BuildConfig{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "BuildConfig",
@@ -127,10 +142,7 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 					},
 				},
 				Output: buildv1.BuildOutput{
-					To: &corev1.ObjectReference{
-						Kind: "ImageStreamTag",
-						Name: objname + ":latest",
-					},
+					To: toObjRef,
 				},
 			},
 		},

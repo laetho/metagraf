@@ -6,12 +6,15 @@ import (
 	"github.com/spf13/viper"
 	"metagraf/pkg/metagraf"
 	"metagraf/pkg/modules"
+	"metagraf/mg/params"
 	"os"
 	log "k8s.io/klog"
 )
 
 func init() {
 	createBuildConfigCmd.Flags().StringVar(&OName, "name", "", "Overrides name of BuildConfig.")
+	createBuildConfigCmd.Flags().StringVarP(&Tag,"tag", "t", "latest", "specifies custom output tag")
+	createBuildConfigCmd.Flags().StringVarP(&params.OutputImagestream,"ostream", "i", "", "specify if you want to output to another imagestream than the component name")
 	createBuildConfigCmd.Flags().StringVarP(&Namespace, "namespace", "n", "", "namespace to work on, if not supplied it will use current working namespace")
 	createBuildConfigCmd.Flags().StringVar(&Branch, "branch", "", "Override branch to build from.")
 	createBuildConfigCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")

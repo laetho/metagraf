@@ -37,6 +37,7 @@ var (
 	OName     string // Flag for overriding application name.
 	Config    string // Viper config override
 	Verbose   bool = false
+	// Output flag, makes mg output generated kubernetes resources in json or yaml.
 	Output    bool = false
 	Version   string
 	Dryrun    bool = false 	// If true do not create
@@ -51,7 +52,7 @@ var (
 	Enforce		bool = false	// Boolean flag for articulating enforcement mode instead of inform
 	ImageNS		string 			// Image Namespace, used in overriding namespace in container image references
 	Registry	string			// Flag for holding a custom container registry
-	Tag			string			//
+	Tag			string			// Flag to specify tag to work on or target
 	Context		string			// Flag for setting application context root.
 	CreateGlobals bool = false	// Flag for overriding default behaviour of skipping creation of global secrets.
 	CVars 		[]string 		// Slice of strings to hold overridden values.
