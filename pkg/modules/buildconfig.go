@@ -106,7 +106,7 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 	}
 	var toObjRef = &corev1.ObjectReference{
 		Kind: "ImageStreamTag",
-		Name: toObjRefName + toObjRefTag,
+		Name: toObjRefName +":"+ toObjRefTag,
 	}
 
 	bc := buildv1.BuildConfig{
