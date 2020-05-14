@@ -153,7 +153,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 	// Tying Container PodSpec together
 	Container := corev1.Container{
 		Name:            objname,
-		Image:           registry + "/" + namespace + "/" + SpecName(mg) + ":" + Tag,
+		Image:           registry + "/" + namespace + "/" + Name(mg) + ":" + Tag,
 		ImagePullPolicy: corev1.PullAlways,
 		Ports:           ContainerPorts,
 		VolumeMounts:    VolumeMounts,
