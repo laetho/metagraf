@@ -14,9 +14,9 @@ import (
 func init() {
 	createBuildConfigCmd.Flags().StringVar(&OName, "name", "", "Overrides name of BuildConfig.")
 	createBuildConfigCmd.Flags().StringVarP(&Tag,"tag", "t", "latest", "specifies custom output tag")
-	createBuildConfigCmd.Flags().StringVarP(&params.OutputImagestream,"ostream", "i", "", "specify if you want to output to another imagestream than the component name")
+	createBuildConfigCmd.Flags().StringVarP(&params.OutputImagestream,"istream", "i", "", "specify if you want to output to another imagestream than the component name")
 	createBuildConfigCmd.Flags().StringVarP(&Namespace, "namespace", "n", "", "namespace to work on, if not supplied it will use current working namespace")
-	createBuildConfigCmd.Flags().StringVar(&Branch, "branch", "", "Override branch to build from.")
+	createBuildConfigCmd.Flags().StringVar(&params.SourceRef, "ref", "", "specify source ref or branch name.")
 	createBuildConfigCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
 }
 
