@@ -29,10 +29,10 @@ import (
 )
 
 func GenImageStream(mg *metagraf.MetaGraf, namespace string) {
-	log.V(3).Info(mg)
 
 	objname := Name(mg)
-	log.V(2).Infof("Generated object name: %v", objname)
+	log.V(2).Infof("Generated ImageStream name: %v", objname)
+
 
 	// Resource labels
 	l := make(map[string]string)
