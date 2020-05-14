@@ -165,11 +165,12 @@ func genBinaryBuildSource() buildv1.BuildSource {
 
 func genGitBuildSource(mg *metagraf.MetaGraf) buildv1.BuildSource {
 	var branch string
-	if len(Branch) > 0 {
-		branch = Branch
+	if len(params.SourceRef) > 0 {
+		branch = params.SourceRef
 	} else {
 		branch = mg.Spec.Branch
 	}
+
 	return buildv1.BuildSource{
 		Type: "Git",
 		Git: &buildv1.GitBuildSource{
