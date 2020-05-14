@@ -21,8 +21,10 @@ import (
 	log "k8s.io/klog"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"metagraf/mg/params"
 	"metagraf/pkg/metagraf"
 	"metagraf/pkg/modules"
+
 	"os"
 )
 
@@ -31,14 +33,16 @@ func init() {
 	devCmd.AddCommand(devCmdUp)
 	devCmd.AddCommand(devCmdDown)
 	devCmdUp.Flags().StringVarP(&Namespace, "namespace", "n","","namespace to work on, if not supplied it will use current active namespace.")
-	devCmdUp.Flags().StringVar(&Branch, "branch","", "Override branch to build from. Used when generating BuildConfig object.")
+	devCmdUp.Flags().StringVar(&params.SourceRef, "ref","", "use for overriding source ref or branch ref in buildconfig.")
 	devCmdUp.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
 	devCmdUp.Flags().StringVar(&CVfile, "cvfile","", "Property file with component configuration values. Can be generated with \"mg generate properties\" command.)")
 	devCmdUp.Flags().StringVar(&OName, "name", "", "Overrides name of application.")
+	devCmdUp.Flags().StringVarP(&params.OutputImagestream,"istream", "i", "", "specify if you want to output to another imagestream than the component name")
 	devCmdUp.Flags().StringVarP(&Context,"context", "c","/","Application contextroot. (\"/<context>\"). Used when creating Route object.")
 	devCmdUp.Flags().BoolVarP(&CreateGlobals, "globals", "g", false, "Override default behavior and force creation of global secrets. Will not overwrite existing ones.")
 	devCmdDown.Flags().StringVarP(&Namespace, "namespace", "n","","namespace to work on, if not supplied it will use current active namespace.")
 	devCmdDown.Flags().BoolVarP(&All, "all", "a", false,"Delete all component resources including images.")
+	devCmdDown.Flags().StringVar(&OName, "name", "", "Overrides name of application.")
 }
 
 var devCmd = &cobra.Command{
@@ -120,10 +124,10 @@ func devDown(mgf string) {
 	modules.DeleteDeploymentConfig(basename)
 	modules.DeleteBuildConfig(basename)
 	modules.DeleteConfigMaps(&mg)
+	modules.DeleteImageStream(basename)
 
 	if All {
 		modules.DeleteSecrets(&mg)
-		modules.DeleteImageStream(basename)
 	}
 /*
 	client := ocpclient.GetCoreClient()
