@@ -18,27 +18,13 @@ package modules
 
 import (
 	"github.com/blang/semver"
-	log "k8s.io/klog"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
+	log "k8s.io/klog"
 	"metagraf/pkg/metagraf"
 	"os"
 	"strconv"
 	"strings"
-
-
-	appsv1 "github.com/openshift/api/apps/v1"
-	authorizationv1 "github.com/openshift/api/authorization/v1"
-	buildv1 "github.com/openshift/api/build/v1"
-	imagev1 "github.com/openshift/api/image/v1"
-	networkv1 "github.com/openshift/api/network/v1"
-	oauthv1 "github.com/openshift/api/oauth/v1"
-	projectv1 "github.com/openshift/api/project/v1"
-	quotav1 "github.com/openshift/api/quota/v1"
-	routev1 "github.com/openshift/api/route/v1"
-	securityv1 "github.com/openshift/api/security/v1"
-	templatev1 "github.com/openshift/api/template/v1"
-	userv1 "github.com/openshift/api/user/v1"
 
 	"k8s.io/apimachinery/pkg/runtime/serializer/json"
 	"k8s.io/client-go/kubernetes/scheme"
@@ -224,13 +210,20 @@ func Name(mg *metagraf.MetaGraf) string {
 	if len(Version) > 0 {
 		sv, err := semver.Parse(Version)
 		if err != nil {
-			 custver = Version
+			custver = "-"+Version
 		} else {
-			custver = strings.ToLower(strconv.FormatUint(sv.Major, 10))
+			custver = "v" + strings.ToLower(strconv.FormatUint(sv.Major, 10))
+		}
+	} else {
+		sv, err := semver.Parse(mg.Spec.Version)
+		if err != nil {
+			custver = "-"+mg.Spec.Version
+		} else {
+			custver = "v" + strings.ToLower(strconv.FormatUint(sv.Major, 10))
 		}
 	}
 
-	return strings.ToLower(custname +"-"+ custver)
+	return strings.ToLower(custname + custver)
 }
 
 // Return a specification name for a resource base on convention. Does not adhere to override flags.
@@ -368,6 +361,7 @@ func ValueFromEnv(key string) bool {
 
 // Marshal kubernetes resource to json
 func MarshalObject(obj runtime.Object) {
+	/*
 	_ = appsv1.AddToScheme(scheme.Scheme)
 	_ = authorizationv1.AddToScheme(scheme.Scheme)
 	_ = buildv1.AddToScheme(scheme.Scheme)
@@ -380,7 +374,7 @@ func MarshalObject(obj runtime.Object) {
 	_ = securityv1.AddToScheme(scheme.Scheme)
 	_ = templatev1.AddToScheme(scheme.Scheme)
 	_ = userv1.AddToScheme(scheme.Scheme)
-
+*/
 	switch Format {
 		case "json":
 			s := json.NewSerializer(json.DefaultMetaFactory, scheme.Scheme, scheme.Scheme, true)
