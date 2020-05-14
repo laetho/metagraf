@@ -7,30 +7,54 @@ import (
 )
 
 func GenServiceMonitor(mg *metagraf.MetaGraf) {
-	sm := monitoringv1.ServiceMonitor{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      s.ObjectMeta.Name,
-			Namespace: s.ObjectMeta.Namespace,
-			Labels:    labels,
-		},
+	objname := Name(mg)
+	// Resource labels
+	l := make(map[string]string)
+	l["app"] = objname
+	l["deploymentconfig"] = objname
+
+	// Selector
+	s := make(map[string]string)
+	s["app"] = objname
+	s["deploymentconfig"] = objname
+
+
+	// todo: we need to detect this from service object
+	eps := []monitoringv1.Endpoint{}
+	ep := monitoringv1.Endpoint{
+		Port:                 "8080",
+		Path:                 "/metrics",
+		Scheme:               "http",
+		Interval:             "30s",
 	}
-	print(sm)
-/*
-	{
+
+	eps = append(eps, ep)
+
+	var obj = monitoringv1.ServiceMonitor{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "ServiceMonitor",
+			APIVersion: "v1",
+		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      s.ObjectMeta.Name,
-			Namespace: s.ObjectMeta.Namespace,
-			Labels:    labels,
-			},
+			Name:      objname,
+			Namespace: NameSpace,
+			Labels:    l,
 		},
 		Spec: monitoringv1.ServiceMonitorSpec{
+			Endpoints: eps,
 			Selector: metav1.LabelSelector{
-				MatchLabels: labels,
+				MatchLabels: l,
 			},
-			Endpoints: endpoints,
 		},
 	}
-*/
+
+	if !Dryrun {
+		StoreServiceMonitor(obj)
+	}
+	if Output {
+		MarshalObject(obj.DeepCopyObject())
+	}
+
 }
 
 func StoreServiceMonitor(obj monitoringv1.ServiceMonitor) {
