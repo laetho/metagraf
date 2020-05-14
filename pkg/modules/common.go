@@ -212,30 +212,25 @@ func parseEnvFrom(mg *metagraf.MetaGraf) []corev1.EnvFromSource {
 
 // Returns a name for a resource based on convention as follows.
 func Name(mg *metagraf.MetaGraf) string {
-	var objname string
+	var custver string
+	var custname string
 
 	if len(OName) > 0 {
-		log.Infof("ObjectName overridden with: %v",OName)
-		return OName
+		custname = OName
+	} else {
+		custname = strings.ToLower(mg.Metadata.Name)
 	}
 
 	if len(Version) > 0 {
 		sv, err := semver.Parse(Version)
 		if err != nil {
-			return strings.ToLower(mg.Metadata.Name)+"-"+Version
+			 custver = Version
 		} else {
-			objname = strings.ToLower(mg.Metadata.Name + "v" + strconv.FormatUint(sv.Major, 10))
-			return objname + "-" + Version
+			custver = strings.ToLower(strconv.FormatUint(sv.Major, 10))
 		}
 	}
 
-	sv, err := semver.Parse(mg.Spec.Version)
-	if err != nil {
-		objname = strings.ToLower(mg.Metadata.Name)
-	} else {
-		objname = strings.ToLower(mg.Metadata.Name + "v" + strconv.FormatUint(sv.Major, 10))
-	}
-	return objname
+	return strings.ToLower(custname +"-"+ custver)
 }
 
 // Return a specification name for a resource base on convention. Does not adhere to override flags.
