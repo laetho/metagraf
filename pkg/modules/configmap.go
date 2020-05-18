@@ -22,7 +22,7 @@ import (
 	log "k8s.io/klog"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"metagraf/mg/ocpclient"
+	"metagraf/mg/k8sclient"
 	"metagraf/pkg/metagraf"
 	"os"
 	"strings"
@@ -77,7 +77,7 @@ func FindMetagrafConfigMaps(mg *metagraf.MetaGraf) map[string]string {
 	Fetch a ConfigMap resource the connected kubernetes cluster.
  */
 func GetConfigMap(name string) (*corev1.ConfigMap, error) {
-	cli := ocpclient.GetCoreClient()
+	cli := k8sclient.GetCoreClient()
 	cm, err := cli.ConfigMaps(NameSpace).Get(name, metav1.GetOptions{})
 	if err != nil {
 		return cm, err
@@ -196,7 +196,7 @@ func genConfigMapsFromResources(mg *metagraf.MetaGraf) {
 }
 
 func StoreConfigMap(m corev1.ConfigMap) {
-	cmclient := ocpclient.GetCoreClient().ConfigMaps(NameSpace)
+	cmclient := k8sclient.GetCoreClient().ConfigMaps(NameSpace)
 	cm, _ := cmclient.Get(m.Name, metav1.GetOptions{})
 
 	if len(cm.ResourceVersion) > 0 {
@@ -236,7 +236,7 @@ func DeleteConfigMaps(mg *metagraf.MetaGraf) {
 }
 
 func DeleteConfigMap(name string) {
-	client := ocpclient.GetCoreClient().ConfigMaps(NameSpace)
+	client := k8sclient.GetCoreClient().ConfigMaps(NameSpace)
 
 	_, err := client.Get(name, metav1.GetOptions{})
 	if err != nil {

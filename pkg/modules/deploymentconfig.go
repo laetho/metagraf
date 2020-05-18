@@ -21,7 +21,7 @@ import (
 	log "k8s.io/klog"
 	"github.com/openshift/api/image/docker10"
 	"github.com/spf13/viper"
-	"metagraf/mg/ocpclient"
+	"metagraf/mg/k8sclient"
 	"os"
 	"strconv"
 	"strings"
@@ -103,7 +103,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 	var imgurl imageurl.ImageURL
 	imgurl.Parse(DockerImage)
 
-	client := ocpclient.GetImageClient()
+	client := k8sclient.GetImageClient()
 
 	ist := helpers.GetImageStreamTags(
 		client,
@@ -304,7 +304,7 @@ func volumes(mg *metagraf.MetaGraf, ImageInfo *docker10.DockerImage ) ([]corev1.
 
 
 func StoreDeploymentConfig(obj appsv1.DeploymentConfig) {
-	client := ocpclient.GetAppsClient().DeploymentConfigs(NameSpace)
+	client := k8sclient.GetAppsClient().DeploymentConfigs(NameSpace)
 	dc, _ := client.Get(obj.Name, metav1.GetOptions{})
 
 	if len(dc.ResourceVersion) > 0 {
@@ -328,7 +328,7 @@ func StoreDeploymentConfig(obj appsv1.DeploymentConfig) {
 }
 
 func DeleteDeploymentConfig(name string) {
-	client := ocpclient.GetAppsClient().DeploymentConfigs(NameSpace)
+	client := k8sclient.GetAppsClient().DeploymentConfigs(NameSpace)
 
 	_ , err := client.Get(name, metav1.GetOptions{})
 	if err != nil {

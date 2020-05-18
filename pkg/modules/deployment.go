@@ -20,7 +20,7 @@ import (
 	"github.com/golang/glog"
 	"github.com/spf13/viper"
 	"k8s.io/apimachinery/pkg/util/intstr"
-	"metagraf/mg/ocpclient"
+	"metagraf/mg/k8sclient"
 	"metagraf/pkg/helpers"
 	"metagraf/pkg/imageurl"
 	"metagraf/pkg/metagraf"
@@ -102,7 +102,7 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 	var imgurl imageurl.ImageURL
 	imgurl.Parse(DockerImage)
 
-	client := ocpclient.GetImageClient()
+	client := k8sclient.GetImageClient()
 
 	ist := helpers.GetImageStreamTags(
 		client,
@@ -208,7 +208,7 @@ func StoreDeployment(obj appsv1.Deployment) {
 	glog.Infof("ResourceVersion: %v Length: %v", obj.ResourceVersion, len(obj.ResourceVersion))
 	glog.Infof("Namespace: %v", NameSpace)
 
-	client := ocpclient.GetKubernetesClient().AppsV1().Deployments(NameSpace)
+	client := k8sclient.GetKubernetesClient().AppsV1().Deployments(NameSpace)
 	if len(obj.ResourceVersion) > 0 {
 		// update
 		result, err := client.Update(&obj)

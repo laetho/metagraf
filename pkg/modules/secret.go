@@ -26,7 +26,7 @@ import (
 
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"metagraf/mg/ocpclient"
+	"metagraf/mg/k8sclient"
 )
 
 func FindSecrets(mg *metagraf.MetaGraf) map[string]string {
@@ -93,7 +93,7 @@ func GenSecrets(mg *metagraf.MetaGraf) {
 
 // Check if a named secret exsist in the current namespace.
 func secretExists(name string) bool {
-	cli := ocpclient.GetCoreClient()
+	cli := k8sclient.GetCoreClient()
 	obj, err := cli.Secrets(NameSpace).Get(name,metav1.GetOptions{})
 	if err != nil {
 		log.Error(err)
@@ -105,7 +105,7 @@ func secretExists(name string) bool {
 
 //
 func GetSecret(name string) (*corev1.Secret, error) {
-	cli := ocpclient.GetCoreClient()
+	cli := k8sclient.GetCoreClient()
 	sec, err := cli.Secrets(NameSpace).Get(name, metav1.GetOptions{})
 	if err != nil {
 		return sec, err
@@ -194,7 +194,7 @@ func genResourceSecret(res *metagraf.Resource, mg *metagraf.MetaGraf) *corev1.Se
 }
 
 func StoreSecret(obj corev1.Secret) {
-	client := ocpclient.GetCoreClient().Secrets(NameSpace)
+	client := k8sclient.GetCoreClient().Secrets(NameSpace)
 	sec, err := client.Get(obj.Name, metav1.GetOptions{})
 	if err != nil {
 		log.Infof("Could not fetch Secret: %v", err)
@@ -235,7 +235,7 @@ func DeleteSecrets(mg *metagraf.MetaGraf) {
 }
 
 func DeleteSecret(name string) {
-	client := ocpclient.GetCoreClient().Secrets(NameSpace)
+	client := k8sclient.GetCoreClient().Secrets(NameSpace)
 
 	_, err := client.Get(name, metav1.GetOptions{})
 	if err != nil {

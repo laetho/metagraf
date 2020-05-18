@@ -19,7 +19,7 @@ package modules
 import (
 	"fmt"
 	log "k8s.io/klog"
-	"metagraf/mg/ocpclient"
+	"metagraf/mg/k8sclient"
 	"metagraf/pkg/metagraf"
 	"os"
 
@@ -77,7 +77,7 @@ func StoreImageStream(obj imagev1.ImageStream) {
 	log.Infof("ResourceVersion: %v Length: %v", obj.ResourceVersion, len(obj.ResourceVersion))
 	log.Infof("Namespace: %v", NameSpace)
 
-	client := ocpclient.GetImageClient().ImageStreams(NameSpace)
+	client := k8sclient.GetImageClient().ImageStreams(NameSpace)
 
 	im, err := client.Get(obj.Name, metav1.GetOptions{})
 	if len(im.ResourceVersion) > 0 {
@@ -99,7 +99,7 @@ func StoreImageStream(obj imagev1.ImageStream) {
 }
 
 func DeleteImageStream(name string) {
-	client := ocpclient.GetImageClient().ImageStreams(NameSpace)
+	client := k8sclient.GetImageClient().ImageStreams(NameSpace)
 
 	_, err := client.Get(name, metav1.GetOptions{})
 	if err != nil {

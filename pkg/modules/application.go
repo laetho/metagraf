@@ -30,7 +30,7 @@ func GenApplication(mg *metagraf.MetaGraf) {
 			APIVersion: "v1beta1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:                       MGAppName(mg),
+			Name:                       Name(mg),
 			GenerateName:               "",
 			Namespace:                  NameSpace,
 			Labels:                     mg.Metadata.Labels,

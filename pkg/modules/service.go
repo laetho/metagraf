@@ -19,11 +19,12 @@ package modules
 import (
 	"fmt"
 	"github.com/openshift/api/image/docker10"
-	log "k8s.io/klog"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
-	"metagraf/mg/ocpclient"
+	log "k8s.io/klog"
+	"metagraf/mg/k8sclient"
+	"metagraf/mg/params"
 	"metagraf/pkg/helpers"
 	"metagraf/pkg/imageurl"
 	"metagraf/pkg/metagraf"
@@ -51,7 +52,7 @@ func GenService(mg *metagraf.MetaGraf) {
 
 	ImageInfo := &docker10.DockerImage{}
 
-	client := ocpclient.GetImageClient()
+	client := k8sclient.GetImageClient()
 	ist := helpers.GetImageStreamTags(
 		client,
 		imgurl.Namespace,
@@ -97,6 +98,7 @@ func GenService(mg *metagraf.MetaGraf) {
 		},
 	}
 
+
 	if !Dryrun {
 		StoreService(obj)
 	}
@@ -104,10 +106,14 @@ func GenService(mg *metagraf.MetaGraf) {
 		MarshalObject(obj.DeepCopyObject())
 	}
 
+	// Optinonally also create a ServiceMonitor resource.
+	if params.ServiceMonitor {
+		GenServiceMonitor(mg, &obj)
+	}
 }
 
 func StoreService(obj corev1.Service) {
-	client := ocpclient.GetCoreClient().Services(NameSpace)
+	client := k8sclient.GetCoreClient().Services(NameSpace)
 	svc, _ := client.Get(obj.Name, metav1.GetOptions{})
 
 	if len(svc.ResourceVersion) > 0 {
@@ -132,7 +138,7 @@ func StoreService(obj corev1.Service) {
 }
 
 func DeleteService(name string) {
-	client := ocpclient.GetCoreClient().Services(NameSpace)
+	client := k8sclient.GetCoreClient().Services(NameSpace)
 
 	_, err := client.Get(name, metav1.GetOptions{})
 	if err != nil {

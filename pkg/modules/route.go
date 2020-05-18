@@ -26,7 +26,7 @@ import (
 	"sort"
 	"strings"
 
-	"metagraf/mg/ocpclient"
+	"metagraf/mg/k8sclient"
 	"metagraf/pkg/imageurl"
 	"metagraf/pkg/metagraf"
 
@@ -48,7 +48,7 @@ func GenRoute(mg *metagraf.MetaGraf) {
 		DockerImage = ""
 	}
 
-	client := ocpclient.GetImageClient()
+	client := k8sclient.GetImageClient()
 	var imgurl imageurl.ImageURL
 	err := imgurl.Parse(DockerImage)
 	ist := helpers.GetImageStreamTags(
@@ -111,7 +111,7 @@ func GenRoute(mg *metagraf.MetaGraf) {
 }
 
 func StoreRoute(obj routev1.Route) {
-	client := ocpclient.GetRouteClient().Routes(NameSpace)
+	client := k8sclient.GetRouteClient().Routes(NameSpace)
     route, _ := client.Get(obj.Name, metav1.GetOptions{} )
 	if len(route.ResourceVersion) > 0 {
 		obj.ResourceVersion = route.ResourceVersion
@@ -134,7 +134,7 @@ func StoreRoute(obj routev1.Route) {
 }
 
 func DeleteRoute(name string) {
-	client := ocpclient.GetRouteClient().Routes(NameSpace)
+	client := k8sclient.GetRouteClient().Routes(NameSpace)
 
 	_, err := client.Get(name, metav1.GetOptions{})
 	if err != nil {

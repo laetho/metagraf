@@ -19,7 +19,7 @@ package modules
 import (
 	"fmt"
 	log "k8s.io/klog"
-	"metagraf/mg/ocpclient"
+	"metagraf/mg/k8sclient"
 	"metagraf/mg/params"
 	"metagraf/pkg/helpers"
 	"os"
@@ -57,7 +57,7 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 
 	if BaseEnvs {
 		log.V(2).Info("Populate environment variables form base image.")
-		client := ocpclient.GetImageClient()
+		client := k8sclient.GetImageClient()
 
 		ist := helpers.GetImageStreamTags(
 			client,
@@ -184,7 +184,7 @@ func genGitBuildSource(mg *metagraf.MetaGraf) buildv1.BuildSource {
 }
 
 func StoreBuildConfig(obj buildv1.BuildConfig) {
-	client := ocpclient.GetBuildClient().BuildConfigs(NameSpace)
+	client := k8sclient.GetBuildClient().BuildConfigs(NameSpace)
 	bc, _ := client.Get(obj.Name, metav1.GetOptions{})
 
 	if len(bc.ResourceVersion) > 0 {
@@ -208,7 +208,7 @@ func StoreBuildConfig(obj buildv1.BuildConfig) {
 }
 
 func DeleteBuildConfig(name string) {
-	client := ocpclient.GetBuildClient().BuildConfigs(NameSpace)
+	client := k8sclient.GetBuildClient().BuildConfigs(NameSpace)
 
 	_, err := client.Get(name, metav1.GetOptions{})
 	if err != nil {

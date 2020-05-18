@@ -14,10 +14,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package ocpclient
+package k8sclient
 
 import (
 	"flag"
+	monitoringv1client "github.com/coreos/prometheus-operator/pkg/client/versioned/typed/monitoring/v1"
 	appsv1client "github.com/openshift/client-go/apps/clientset/versioned/typed/apps/v1"
 	buildv1client "github.com/openshift/client-go/build/clientset/versioned/typed/build/v1"
 	imagev1client "github.com/openshift/client-go/image/clientset/versioned/typed/image/v1"
@@ -160,6 +161,20 @@ func GetRouteClient() *routev1client.RouteV1Client {
 	}
 
 	client, err := routev1client.NewForConfig(RestConfig)
+	if err != nil {
+		panic(err)
+	}
+
+	return client
+}
+
+// Returns a build client
+func GetMonitoringV1Client() *monitoringv1client.MonitoringV1Client {
+	if RestConfig == nil {
+		RestConfig = getRestConfig(getKubeConfig())
+	}
+
+	client, err := monitoringv1client.NewForConfig(RestConfig)
 	if err != nil {
 		panic(err)
 	}
