@@ -53,8 +53,6 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 		buildsource = genGitBuildSource(mg)
 	}
 
-	fmt.Println("Environment", mg.Spec.Environment)
-
 	if BaseEnvs {
 		log.V(2).Info("Populate environment variables form base image.")
 		client := k8sclient.GetImageClient()
@@ -191,7 +189,6 @@ func StoreBuildConfig(obj buildv1.BuildConfig) {
 		obj.ResourceVersion = bc.ResourceVersion
 		_, err := client.Update(&obj)
 		if err != nil {
-			log.Error(err)
 			fmt.Println(err)
 			os.Exit(1)
 		}
@@ -199,7 +196,6 @@ func StoreBuildConfig(obj buildv1.BuildConfig) {
 	} else {
 		_, err := client.Create(&obj)
 		if err != nil {
-			log.Error(err)
 			fmt.Println(err)
 			os.Exit(1)
 		}
