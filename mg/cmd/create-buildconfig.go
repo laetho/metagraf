@@ -1,14 +1,13 @@
 package cmd
 
 import (
-	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	log "k8s.io/klog"
+	"metagraf/mg/params"
 	"metagraf/pkg/metagraf"
 	"metagraf/pkg/modules"
-	"metagraf/mg/params"
 	"os"
-	log "k8s.io/klog"
 )
 
 func init() {
@@ -40,8 +39,6 @@ var createBuildConfigCmd = &cobra.Command{
 		}
 		FlagPassingHack()
 		mg := metagraf.Parse(args[0])
-
-		fmt.Println(mg)
 
 		modules.Variables = mg.GetProperties()
 		OverrideProperties(modules.Variables)

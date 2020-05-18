@@ -14,6 +14,7 @@ import (
 
 func GenServiceMonitorAndService(mg *metagraf.MetaGraf) {
 
+
 }
 
 func GenServiceMonitor(mg *metagraf.MetaGraf, svc *corev1.Service) {
@@ -61,7 +62,7 @@ func GenServiceMonitor(mg *metagraf.MetaGraf, svc *corev1.Service) {
 		Spec: monitoringv1.ServiceMonitorSpec{
 			Endpoints: eps,
 			Selector: metav1.LabelSelector{
-				MatchLabels: l,
+				MatchLabels: s,
 			},
 		},
 	}
@@ -72,7 +73,6 @@ func GenServiceMonitor(mg *metagraf.MetaGraf, svc *corev1.Service) {
 	if Output {
 		MarshalObject(obj.DeepCopyObject())
 	}
-
 }
 
 func StoreServiceMonitor(obj monitoringv1.ServiceMonitor) {
