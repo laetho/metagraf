@@ -40,6 +40,9 @@ func init() {
 	devCmdUp.Flags().StringVarP(&params.OutputImagestream,"istream", "i", "", "specify if you want to output to another imagestream than the component name")
 	devCmdUp.Flags().StringVarP(&Context,"context", "c","/","Application contextroot. (\"/<context>\"). Used when creating Route object.")
 	devCmdUp.Flags().BoolVarP(&CreateGlobals, "globals", "g", false, "Override default behavior and force creation of global secrets. Will not overwrite existing ones.")
+	devCmdUp.Flags().BoolVar(&params.ServiceMonitor, "service-monitor",false, "Set flag to also create a ServiceMonitor resource. Requires a cluster with the prometheus-operator.")
+	devCmdUp.Flags().Int32Var(&params.ServiceMonitorPort, "service-monitor-port", params.ServiceMonitorPort, "Set Service port to scrape in ServiceMonitor.")
+	devCmdUp.Flags().StringVar(&params.ServiceMonitorOperatorName, "service-monitor-operator-name", params.ServiceMonitorOperatorName,"Name of prometheus-operator instance to create ServiceMonitor for.")
 	devCmdDown.Flags().StringVarP(&Namespace, "namespace", "n","","namespace to work on, if not supplied it will use current active namespace.")
 	devCmdDown.Flags().BoolVarP(&All, "all", "a", false,"Delete all component resources including images.")
 	devCmdDown.Flags().StringVar(&OName, "name", "", "Overrides name of application.")
@@ -121,6 +124,7 @@ func devDown(mgf string) {
 
 	modules.DeleteRoute(basename)
 	modules.DeleteService(basename)
+	modules.DeleteServiceMonitor(basename)
 	modules.DeleteDeploymentConfig(basename)
 	modules.DeleteBuildConfig(basename)
 	modules.DeleteConfigMaps(&mg)
@@ -129,11 +133,4 @@ func devDown(mgf string) {
 	if All {
 		modules.DeleteSecrets(&mg)
 	}
-/*
-	client := ocpclient.GetCoreClient()
-
-
-
-	modules.DeleteBuildConfig()
-*/
 }
