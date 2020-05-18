@@ -21,8 +21,22 @@ var (
 	OutputImagestream string
 	// Override BuildSourceRef with somthing other than provided in specification.
 	SourceRef string
+
+
 	// Set to true for generating ServiceMonitor objects when creating services.
 	ServiceMonitor bool = false
+	// ServiceMonitor definition of which port to scrape.
+	ServiceMonitorPort int32 = 8080
+	// ServiceMonitor definition of scraping interval.
+	ServiceMonitorInterval string = "10s"
+	// ServiceMonitor definition of scraping scheme.
+	ServiceMonitorScheme string = "http"
+	// ServiceMonitor definition of scrape path.
+	ServiceMonitorPath string = "/prometheus"
+
+	// Name of prometheus-operator instance that should discover the generated ServiceMonitor or PodMonitor resources.
+	ServiceMonitorOperatorName string = "prometheus"
+
 )
 
 
