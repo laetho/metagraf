@@ -33,8 +33,6 @@ func init() {
 	createCmd.AddCommand(createConfigMapCmd)
 	createCmd.AddCommand(createDeploymentCmd)
 	createCmd.AddCommand(createDeploymentConfigCmd)
-	createCmd.AddCommand(createBuildConfigCmd)
-	createCmd.AddCommand(createImageStreamCmd)
 	createCmd.AddCommand(createDotCmd)
 	createCmd.AddCommand(createRefCmd)
 	createCmd.AddCommand(createSecretCmd)
@@ -68,8 +66,6 @@ func init() {
 	createRouteCmd.Flags().StringVar(&OName, "name", "", "Overrides name of application.")
 	createRouteCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
 	createRouteCmd.Flags().StringVarP(&Context,"context", "c","/","Application context root. (\"/<context>\")")
-	createImageStreamCmd.Flags().StringVarP(&Namespace, "namespace", "n","", "namespace to work on, if not supplied it will use current working namespace")
-	createImageStreamCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
 	createRefCmd.Flags().StringVarP(&Namespace, "namespace", "n","","namespace to fetch template form")
 	createRefCmd.Flags().StringVarP(&Template, "template", "t", "metagraf-refdoc.md", "name of ConfigMap for go template")
 	createRefCmd.Flags().StringVarP(&Suffix, "suffix", "s", ".html", "file suffix of the generated content")
@@ -182,34 +178,7 @@ var createDeploymentConfigCmd = &cobra.Command{
 	},
 }
 
-var createImageStreamCmd = &cobra.Command{
-	Use:   "imagestream <metagraf>",
-	Short: "create ImageStream from metaGraf file",
-	Long:  MGBanner + `create ImageStream`,
-	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) < 1 {
-			log.Info(StrActiveProject, viper.Get("namespace"))
-			log.Error(StrMissingMetaGraf)
-			os.Exit(1)
-		}
 
-		if len(Namespace) == 0 {
-			Namespace = viper.GetString("namespace")
-			if len(Namespace) == 0 {
-				log.Error(StrMissingNamespace)
-				os.Exit(1)
-			}
-		}
-
-		mg := metagraf.Parse(args[0])
-		FlagPassingHack()
-
-		if len(modules.NameSpace) == 0 {
-			modules.NameSpace = Namespace
-		}
-		modules.GenImageStream(&mg, Namespace)
-	},
-}
 
 var createDotCmd = &cobra.Command{
 	Use:   "dot <collection directory>",
