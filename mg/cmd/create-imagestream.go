@@ -28,7 +28,9 @@ import (
 func init() {
 	createCmd.AddCommand(createImageStreamCmd)
 	createImageStreamCmd.Flags().StringVarP(&Namespace, "namespace", "n","", "namespace to work on, if not supplied it will use current working namespace")
+	createImageStreamCmd.Flags().StringVar(&OName, "name", "", "Overrides name of application basename to generate imagestream for.")
 	createImageStreamCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
+
 }
 
 var createImageStreamCmd = &cobra.Command{
