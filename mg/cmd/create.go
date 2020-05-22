@@ -30,6 +30,11 @@ import (
 
 func init() {
 	RootCmd.AddCommand(createCmd)
+	createCmd.PersistentFlags().BoolVar(&Verbose, "verbose", false, "verbose output")
+	createCmd.PersistentFlags().BoolVar(&Output, "output", false, "also output objects")
+	createCmd.PersistentFlags().StringVarP(&Format, "format","o","json", "specify json or yaml, json id default")
+	createCmd.PersistentFlags().StringVar(&Version, "version", "", "Override version in metaGraf specification.")
+	createCmd.PersistentFlags().BoolVar(&Dryrun, "dryrun", false, "do not create objects, only output")
 	createCmd.AddCommand(createConfigMapCmd)
 	createCmd.AddCommand(createDeploymentCmd)
 	createCmd.AddCommand(createDeploymentConfigCmd)
