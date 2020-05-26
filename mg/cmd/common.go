@@ -77,16 +77,13 @@ func PropertiesFromFile(mgp metagraf.MGProperties) metagraf.MGProperties {
 		os.Exit(1)
 	}
 	defer file.Close()
-	reader := bufio.NewReader(file)
+	scanner := bufio.NewScanner(file)
+	scanner.Split(bufio.ScanLines)
 
 	fail := false
 	var line string
-	for {
-		line,err = reader.ReadString('\n')
-		if err != nil {
-			break
-		}
-
+	for scanner.Scan() {
+		line = scanner.Text()
 		// Skip emptyish lines, there will never be a line shorter than 3 characters.
 		if len(line) <= 3 {
 			continue
