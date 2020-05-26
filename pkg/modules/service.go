@@ -76,7 +76,7 @@ func GenService(mg *metagraf.MetaGraf) {
 	}
 
 	selectors := make(map[string]string)
-	selectors["deploymentconfig"] = objname
+	selectors["app"] = objname
 
 	labels := make(map[string]string)
 	labels["app"] = objname
