@@ -62,7 +62,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 	s["deploymentconfig"] = objname
 
 	var RevisionHistoryLimit int32 = 5
-	var ActiveDeadlineSeconds int64 = 21600
+	var ActiveDeadlineSeconds int64 = 600
 	var TimeoutSeconds int64 = 600
 	var UpdatePeriodSeconds int64 = 1
 	var IntervalSeconds int64 = 1
@@ -159,6 +159,9 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 		VolumeMounts:    VolumeMounts,
 		Env:             EnvVars,
 		EnvFrom:		 parseEnvFrom(mg),
+		ReadinessProbe:  &mg.Spec.ReadinessProbe,
+		LivenessProbe:   &mg.Spec.LivenessProbe,
+		StartupProbe: 	 &mg.Spec.StartupProbe,
 	}
 	Containers = append(Containers, Container)
 
