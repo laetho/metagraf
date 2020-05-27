@@ -159,9 +159,17 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 		VolumeMounts:    VolumeMounts,
 		Env:             EnvVars,
 		EnvFrom:         parseEnvFrom(mg),
-		ReadinessProbe:  &mg.Spec.ReadinessProbe,
-		LivenessProbe:   &mg.Spec.LivenessProbe,
-		StartupProbe: 	 &mg.Spec.StartupProbe,
+	}
+	// Checking for Probes
+	probe := corev1.Probe{}
+	if mg.Spec.ReadinessProbe != probe {
+		Container.ReadinessProbe = &mg.Spec.ReadinessProbe
+	}
+	if mg.Spec.LivenessProbe != probe {
+		Container.LivenessProbe = &mg.Spec.LivenessProbe
+	}
+	if mg.Spec.LivenessProbe != probe {
+		Container.StartupProbe = &mg.Spec.StartupProbe
 	}
 	Containers = append(Containers, Container)
 
