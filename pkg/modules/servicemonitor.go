@@ -68,7 +68,7 @@ func GenServiceMonitor(mg *metagraf.MetaGraf, svc *corev1.Service) {
 	var obj = monitoringv1.ServiceMonitor{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "ServiceMonitor",
-			APIVersion: "v1",
+			APIVersion: "monitoring.coreos.com/v1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      objname,
