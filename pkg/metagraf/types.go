@@ -73,8 +73,12 @@ type MetaGraf struct {
 		LivenessProbe	v1.Probe	`json:"livenessProbe,omitempty"`
 		// ReadinessProbe, a v1.Probe{} definition from upstream Kubernetes.
 		ReadinessProbe	v1.Probe	`json:"readinessProbe,omitempty"`
-
+		// Slice of Resource structs for holding information about attached resources.
 		Resources	 []Resource	`json:"resources,omitempty"`
+		// Slice of strings to reference kubernetes resources manually maintained within the
+		// repository in Spec.Resource. Downstream tooling may care about these.
+		LocalManifests	[]string	`json:"localManifests,omitempty"`
+
 		// Structure for holding diffrent kind of environment variables.
 		Environment struct {
 			// Slice for holding environmentvariables for the build process.
