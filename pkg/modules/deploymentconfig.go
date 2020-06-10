@@ -62,7 +62,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf, namespace string) {
 	s["deploymentconfig"] = objname
 
 	var RevisionHistoryLimit int32 = 5
-	var ActiveDeadlineSeconds int64 = 600
+	var ActiveDeadlineSeconds int64 = 1200
 	var TimeoutSeconds int64 = 600
 	var UpdatePeriodSeconds int64 = 1
 	var IntervalSeconds int64 = 1
