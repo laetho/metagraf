@@ -112,7 +112,7 @@ func devUp(mgf string) {
 	modules.GenConfigMaps(&mg)
 	modules.GenImageStream(&mg, Namespace)
 	modules.GenBuildConfig(&mg)
-	modules.GenDeploymentConfig(&mg, Namespace)
+	modules.GenDeploymentConfig(&mg)
 	modules.GenService(&mg)
 	modules.GenRoute(&mg)
 

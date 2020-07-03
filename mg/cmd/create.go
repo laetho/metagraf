@@ -179,7 +179,7 @@ var createDeploymentConfigCmd = &cobra.Command{
 			modules.NameSpace = Namespace
 		}
 
-		modules.GenDeploymentConfig(&mg, Namespace)
+		modules.GenDeploymentConfig(&mg)
 	},
 }
 
