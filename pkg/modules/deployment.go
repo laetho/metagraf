@@ -34,10 +34,12 @@ import (
 
 func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 	objname := Name(mg)
+
 	registry := viper.GetString("registry")
 
-	if len(ImageNS) > 0 {
-		namespace = ImageNS
+	// If ImageNS is not provided, default to current NameSpace value
+	if len(ImageNS) == 0 {
+		ImageNS = NameSpace
 	}
 
 	// If container registry host is set and it differs from default, use value from -r (--registry) flag.
@@ -49,10 +51,6 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 	l := make(map[string]string)
 	l["app"] = objname
 	l["deployment"] = objname
-	// Propagate labels from metagraf to Deployment and Pod resources
-	for k,v := range mg.Metadata.Labels {
-		l[k]=v
-	}
 
 	// Selector
 	sm := make(map[string]string)
@@ -133,7 +131,7 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 	// Tying Container PodSpec together
 	Container := corev1.Container{
 		Name:            objname,
-		Image:           registry + "/" + namespace + "/" + SpecName(mg) + ":" + Tag,
+		Image:           imageRef(mg),
 		ImagePullPolicy: corev1.PullAlways,
 		Ports:           ContainerPorts,
 		VolumeMounts:    VolumeMounts,
