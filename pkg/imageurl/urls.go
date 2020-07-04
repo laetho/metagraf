@@ -29,7 +29,7 @@ type ImageURL struct {
 	Tag string
 }
 
-func (u *ImageURL) Parse( url string) error {
+func (u *ImageURL) Parse(url string) error {
 
 	// Assume https when schema is unspecified
 	if !strings.HasPrefix(url, "https") {

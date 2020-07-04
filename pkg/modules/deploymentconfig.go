@@ -27,7 +27,6 @@ import (
 	"strings"
 
 	"metagraf/pkg/helpers"
-	"metagraf/pkg/imageurl"
 	"metagraf/pkg/metagraf"
 
 	appsv1 "github.com/openshift/api/apps/v1"
@@ -86,26 +85,8 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 	var VolumeMounts []corev1.VolumeMount
 	var EnvVars []corev1.EnvVar
 
-	var DockerImage string
-	if len(mg.Spec.BaseRunImage) > 0 {
-		DockerImage = mg.Spec.BaseRunImage
-	} else if len(mg.Spec.BuildImage) > 0 {
-		DockerImage = mg.Spec.BuildImage
-	} else {
-		DockerImage = ""
-	}
+	ImageInfo := helpers.ImageInfo(mg)
 
-	var imgurl imageurl.ImageURL
-	imgurl.Parse(DockerImage)
-
-	client := k8sclient.GetImageClient()
-
-	ist := helpers.GetImageStreamTags(
-		client,
-		imgurl.Namespace,
-		imgurl.Image+":"+imgurl.Tag)
-
-	ImageInfo := helpers.GetDockerImageFromIST(ist)
 
 	EnvVars = parseEnvVars(mg)
 	// Environment Variables from baserunimage

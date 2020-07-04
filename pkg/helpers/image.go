@@ -24,6 +24,9 @@ import (
 	imagev1client "github.com/openshift/client-go/image/clientset/versioned/typed/image/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	log "k8s.io/klog"
+	"metagraf/mg/k8sclient"
+	"metagraf/pkg/imageurl"
+	"metagraf/pkg/metagraf"
 	"os"
 	"os/exec"
 )
@@ -101,5 +104,29 @@ func GetImage(c *imagev1client.ImageV1Client, i string) *imagev1.Image {
 		os.Exit(1)
 	}
 	return img
+}
+
+// Returns docker information based on images referenced in spec.
+func ImageInfo(mg *metagraf.MetaGraf) *dockerv10.DockerImage{
+	var DockerImage string
+	if len(mg.Spec.BaseRunImage) > 0 {
+		DockerImage = mg.Spec.BaseRunImage
+	} else if len(mg.Spec.BuildImage) > 0 {
+		DockerImage = mg.Spec.BuildImage
+	} else if len(mg.Spec.Image) > 0 {
+		DockerImage = mg.Spec.Image
+	}
+
+	var imgurl imageurl.ImageURL
+	imgurl.Parse(DockerImage)
+
+	client := k8sclient.GetImageClient()
+
+	ist := GetImageStreamTags(
+		client,
+		imgurl.Namespace,
+		imgurl.Image+":"+imgurl.Tag)
+
+	return GetDockerImageFromIST(ist)
 }
 

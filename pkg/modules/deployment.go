@@ -22,7 +22,6 @@ import (
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"metagraf/mg/k8sclient"
 	"metagraf/pkg/helpers"
-	"metagraf/pkg/imageurl"
 	"metagraf/pkg/metagraf"
 	"strconv"
 	"strings"
@@ -90,27 +89,8 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 	// Environment
 	var EnvVars []corev1.EnvVar
 
-	var DockerImage string
-	if len(mg.Spec.BaseRunImage) > 0 {
-		DockerImage = mg.Spec.BaseRunImage
-	} else if len(mg.Spec.BuildImage) > 0 {
-		DockerImage = mg.Spec.BuildImage
-	} else {
-		DockerImage = mg.Spec.Image
-	}
-
-	var imgurl imageurl.ImageURL
-	imgurl.Parse(DockerImage)
-
-	client := k8sclient.GetImageClient()
-
-	ist := helpers.GetImageStreamTags(
-		client,
-		imgurl.Namespace,
-		imgurl.Image+":"+imgurl.Tag)
-
 	// ImageInfo := helpers.SkopeoImageInfo(DockerImage)
-	ImageInfo := helpers.GetDockerImageFromIST(ist)
+	ImageInfo := helpers.ImageInfo(mg)
 
 	EnvVars = parseEnvVars(mg)
 	// Environment Variables from baserunimage
