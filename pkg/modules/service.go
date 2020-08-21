@@ -108,6 +108,9 @@ func GenService(mg *metagraf.MetaGraf) {
 
 	// Optinonally also create a ServiceMonitor resource.
 	if params.ServiceMonitor {
+		if ( Output && Format == "yaml" ) {
+			fmt.Println("---")
+		}
 		GenServiceMonitor(mg, &obj)
 	}
 }
