@@ -59,7 +59,7 @@ func GenServiceMonitor(mg *metagraf.MetaGraf, svc *corev1.Service) {
 	eps := []monitoringv1.Endpoint{}
 	ep := monitoringv1.Endpoint{
 		Port:                 metricPort.Name,
-		Path:                 params.ServiceMonitorPath,
+		Path:                 FindServiceMonitorPath(mg),
 		Scheme:               params.ServiceMonitorScheme,
 		Interval:             params.ServiceMonitorInterval,
 	}
@@ -89,6 +89,21 @@ func GenServiceMonitor(mg *metagraf.MetaGraf, svc *corev1.Service) {
 	if Output {
 		MarshalObject(obj.DeepCopyObject())
 	}
+}
+
+// Parses metaGraf specification to look for annotation to
+// control scrape path for ServiceMonitor resource.
+func FindServiceMonitorPath(mg *metagraf.MetaGraf) string {
+	// mg cli value
+	if len(params.ServiceMonitorPath) != 0 && params.ServiceMonitorPath != "/prometheus" {
+		return params.ServiceMonitorPath
+	}
+	// Annotation
+	if len(mg.Metadata.Annotations["monitoring.coreos.com/servicemonitor/path"]) > 0 {
+		return mg.Metadata.Annotations["monitoring.coreos.com/servicemonitor/path"]
+	}
+	// Default
+	return params.ServiceMonitorPath
 }
 
 func StoreServiceMonitor(obj monitoringv1.ServiceMonitor) {
