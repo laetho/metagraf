@@ -22,12 +22,15 @@ import (
 	"metagraf/pkg/modules"
 	"os"
 	"github.com/spf13/cobra"
+	"metagraf/mg/params"
 )
 
 func init() {
 	RootCmd.AddCommand(argocdCmd)
 	argocdCmd.AddCommand(argocdCreateCmd)
 	argocdCreateCmd.AddCommand(argocdCreateApplicationCmd)
+	argocdCreateApplicationCmd.Flags().StringVarP(&params.ArgoCDApplicationRepoURL, "repo", "r", "", "Repository URL")
+	argocdCreateApplicationCmd.Flags().StringVarP(&params.ArgoCDApplicationRepoURL, "path", "p", "", "Path to manifests inside the repository")
 }
 
 var argocdCmd = &cobra.Command{

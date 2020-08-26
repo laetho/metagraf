@@ -22,6 +22,8 @@ var (
 	// Override BuildSourceRef with somthing other than provided in specification.
 	SourceRef string
 
+	ArgoCDApplicationRepoURL string
+	ArgoCDApplicationRepoPath string
 
 	// Set to true for generating ServiceMonitor objects when creating services.
 	ServiceMonitor bool = false
@@ -36,6 +38,8 @@ var (
 
 	// Name of prometheus-operator instance that should discover the generated ServiceMonitor or PodMonitor resources.
 	ServiceMonitorOperatorName string = "prometheus"
+
+
 
 )
 
