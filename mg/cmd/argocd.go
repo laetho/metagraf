@@ -16,7 +16,13 @@ limitations under the License.
 
 package cmd
 
-import "github.com/spf13/cobra"
+import (
+	"fmt"
+	"metagraf/pkg/metagraf"
+	"metagraf/pkg/modules"
+	"os"
+	"github.com/spf13/cobra"
+)
 
 func init() {
 	RootCmd.AddCommand(argocdCmd)
@@ -37,7 +43,16 @@ var argocdCreateCmd = &cobra.Command{
 }
 
 var argocdCreateApplicationCmd = &cobra.Command{
-	Use:   "application",
+	Use:   "application <metagraf>",
 	Short: "argocd create application",
 	Long:  `Creates an ArgoCD Application from a metagraf specification`,
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) < 1 {
+			fmt.Println("Insufficient arguments")
+			os.Exit(-1)
+		}
+		mg := metagraf.Parse(args[0])
+		modules.GenArgoApplication(&mg)
+
+	},
 }
