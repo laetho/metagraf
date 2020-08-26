@@ -16,7 +16,6 @@ limitations under the License.
 
 package modules
 
-import "metagraf/pkg/metagraf"
 
 /*
 import (

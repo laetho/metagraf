@@ -17,6 +17,7 @@ limitations under the License.
 package modules
 
 import (
+	"context"
 	"github.com/golang/glog"
 	"github.com/spf13/viper"
 	"k8s.io/apimachinery/pkg/util/intstr"
@@ -200,13 +201,13 @@ func StoreDeployment(obj appsv1.Deployment) {
 	client := k8sclient.GetKubernetesClient().AppsV1().Deployments(NameSpace)
 	if len(obj.ResourceVersion) > 0 {
 		// update
-		result, err := client.Update(&obj)
+		result, err := client.Update(context.TODO(), &obj, metav1.UpdateOptions{})
 		if err != nil {
 			glog.Info(err)
 		}
 		glog.Infof("Updated Deployment: %v(%v)", result.Name, obj.Name)
 	} else {
-		result, err := client.Create(&obj)
+		result, err := client.Create(context.TODO(), &obj, metav1.CreateOptions{})
 		if err != nil {
 			glog.Info(err)
 		}

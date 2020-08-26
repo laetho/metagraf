@@ -17,6 +17,7 @@ limitations under the License.
 package modules
 
 import (
+	"context"
 	monitoringv1 "github.com/coreos/prometheus-operator/pkg/apis/monitoring/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -108,11 +109,11 @@ func FindServiceMonitorPath(mg *metagraf.MetaGraf) string {
 
 func StoreServiceMonitor(obj monitoringv1.ServiceMonitor) {
 	client := k8sclient.GetMonitoringV1Client().ServiceMonitors(NameSpace)
-	res, _ := client.Get(obj.Name, metav1.GetOptions{})
+	res, _ := client.Get(context.TODO(), obj.Name, metav1.GetOptions{})
 
 	if len(res.ResourceVersion) > 0 {
 		obj.ResourceVersion = res.ResourceVersion
-		_, err := client.Update(&obj)
+		_, err := client.Update(context.TODO(), &obj, metav1.UpdateOptions{})
 		if err != nil {
 			log.Error(err)
 			fmt.Println(err)
@@ -120,7 +121,7 @@ func StoreServiceMonitor(obj monitoringv1.ServiceMonitor) {
 		}
 		fmt.Println("Updated ServiceMonitor: ", obj.Name, " in Namespace: ", NameSpace)
 	} else {
-		_, err := client.Create(&obj)
+		_, err := client.Create(context.TODO(), &obj, metav1.CreateOptions{})
 		if err != nil {
 			log.Error(err)
 			fmt.Println(err)
@@ -133,13 +134,13 @@ func StoreServiceMonitor(obj monitoringv1.ServiceMonitor) {
 func DeleteServiceMonitor(name string) {
 	client := k8sclient.GetMonitoringV1Client().ServiceMonitors(NameSpace)
 
-	_, err := client.Get(name, metav1.GetOptions{})
+	_, err := client.Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {
 		fmt.Println("The ServiceMonitor: ", name, "does not exist in namespace: ", NameSpace,", skipping...")
 		return
 	}
 
-	err = client.Delete(name, &metav1.DeleteOptions{})
+	err = client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 	if err != nil {
 		fmt.Println( "Unable to delete ServiceMonitor: ", name, " in namespace: ", NameSpace)
 		log.Error(err)

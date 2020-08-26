@@ -17,6 +17,7 @@ limitations under the License.
 package modules
 
 import (
+	"context"
 	"encoding/base64"
 	"fmt"
 	log "k8s.io/klog"
@@ -78,7 +79,7 @@ func FindMetagrafConfigMaps(mg *metagraf.MetaGraf) map[string]string {
  */
 func GetConfigMap(name string) (*corev1.ConfigMap, error) {
 	cli := k8sclient.GetCoreClient()
-	cm, err := cli.ConfigMaps(NameSpace).Get(name, metav1.GetOptions{})
+	cm, err := cli.ConfigMaps(NameSpace).Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {
 		return cm, err
 	}
@@ -197,11 +198,11 @@ func genConfigMapsFromResources(mg *metagraf.MetaGraf) {
 
 func StoreConfigMap(m corev1.ConfigMap) {
 	cmclient := k8sclient.GetCoreClient().ConfigMaps(NameSpace)
-	cm, _ := cmclient.Get(m.Name, metav1.GetOptions{})
+	cm, _ := cmclient.Get(context.TODO(),m.Name, metav1.GetOptions{})
 
 	if len(cm.ResourceVersion) > 0 {
 		m.ResourceVersion = cm.ResourceVersion
-		_, err := cmclient.Update(&m)
+		_, err := cmclient.Update(context.TODO(),&m,metav1.UpdateOptions{})
 		if err != nil {
 			log.Error(err)
 			fmt.Println(err)
@@ -209,7 +210,7 @@ func StoreConfigMap(m corev1.ConfigMap) {
 		}
 		fmt.Println("Updated ConfigMap: ", m.Name, " in Namespace: ", NameSpace)
 	} else {
-		_, err := cmclient.Create(&m)
+		_, err := cmclient.Create(context.TODO(), &m, metav1.CreateOptions{})
 		if err != nil {
 			log.Error(err)
 			fmt.Println(err)
@@ -238,13 +239,13 @@ func DeleteConfigMaps(mg *metagraf.MetaGraf) {
 func DeleteConfigMap(name string) {
 	client := k8sclient.GetCoreClient().ConfigMaps(NameSpace)
 
-	_, err := client.Get(name, metav1.GetOptions{})
+	_, err := client.Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {
 		fmt.Println("ConfigMap: ", name, "does not exist in namespace: ", NameSpace,", skipping...")
 		return
 	}
 
-	err = client.Delete(name, &metav1.DeleteOptions{})
+	err = client.Delete(context.TODO(),name, metav1.DeleteOptions{})
 	if err != nil {
 		fmt.Println("Unable to delete ConfigMap: ", name, " in namespace: ", NameSpace)
 		log.Error(err)

@@ -17,6 +17,7 @@ limitations under the License.
 package modules
 
 import (
+	"context"
 	"fmt"
 	"github.com/openshift/api/image/docker10"
 	corev1 "k8s.io/api/core/v1"
@@ -117,12 +118,12 @@ func GenService(mg *metagraf.MetaGraf) {
 
 func StoreService(obj corev1.Service) {
 	client := k8sclient.GetCoreClient().Services(NameSpace)
-	svc, _ := client.Get(obj.Name, metav1.GetOptions{})
+	svc, _ := client.Get(context.TODO(), obj.Name, metav1.GetOptions{})
 
 	if len(svc.ResourceVersion) > 0 {
 		obj.ResourceVersion = svc.ResourceVersion
 		obj.Spec.ClusterIP = svc.Spec.ClusterIP
-		_, err := client.Update(&obj)
+		_, err := client.Update(context.TODO(), &obj, metav1.UpdateOptions{})
 		if err != nil {
 			log.Error(err)
 			fmt.Println(err)
@@ -130,7 +131,7 @@ func StoreService(obj corev1.Service) {
 		}
 		fmt.Println("Updated Service: ", obj.Name, " in Namespace: ", NameSpace)
 	} else {
-		_, err := client.Create(&obj)
+		_, err := client.Create(context.TODO(), &obj, metav1.CreateOptions{})
 		if err != nil {
 			log.Error(err)
 			fmt.Println(err)
@@ -143,13 +144,13 @@ func StoreService(obj corev1.Service) {
 func DeleteService(name string) {
 	client := k8sclient.GetCoreClient().Services(NameSpace)
 
-	_, err := client.Get(name, metav1.GetOptions{})
+	_, err := client.Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {
 		fmt.Println("Service: ", name, "does not exist in namespace: ", NameSpace,", skipping...")
 		return
 	}
 
-	err = client.Delete(name, &metav1.DeleteOptions{})
+	err = client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 	if err != nil {
 		fmt.Println( "Unable to delete Service: ", name, " in namespace: ", NameSpace)
 		log.Error(err)

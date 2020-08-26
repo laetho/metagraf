@@ -17,6 +17,7 @@ limitations under the License.
 package modules
 
 import (
+	"context"
 	"fmt"
 	log "k8s.io/klog"
 	"github.com/openshift/api/image/docker10"
@@ -305,11 +306,11 @@ func volumes(mg *metagraf.MetaGraf, ImageInfo *docker10.DockerImage ) ([]corev1.
 
 func StoreDeploymentConfig(obj appsv1.DeploymentConfig) {
 	client := k8sclient.GetAppsClient().DeploymentConfigs(NameSpace)
-	dc, _ := client.Get(obj.Name, metav1.GetOptions{})
+	dc, _ := client.Get(context.TODO(), obj.Name, metav1.GetOptions{})
 
 	if len(dc.ResourceVersion) > 0 {
 		obj.ResourceVersion = dc.ResourceVersion
-		_, err := client.Update(&obj)
+		_, err := client.Update(context.TODO(), &obj, metav1.UpdateOptions{})
 		if err != nil {
 			log.Error(err)
 			fmt.Println(err)
@@ -317,7 +318,7 @@ func StoreDeploymentConfig(obj appsv1.DeploymentConfig) {
 		}
 		fmt.Println("Updated DeploymentConfig: ", obj.Name," in Namespace: ", obj.Name)
 	} else {
-		result, err := client.Create(&obj)
+		result, err := client.Create(context.TODO(), &obj, metav1.CreateOptions{})
 		if err != nil {
 			log.Error(err)
 			fmt.Println(err)
@@ -330,13 +331,13 @@ func StoreDeploymentConfig(obj appsv1.DeploymentConfig) {
 func DeleteDeploymentConfig(name string) {
 	client := k8sclient.GetAppsClient().DeploymentConfigs(NameSpace)
 
-	_ , err := client.Get(name, metav1.GetOptions{})
+	_ , err := client.Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {
 		fmt.Println("DeploymentConfig: ", name, "does not exist in namespace: ", NameSpace,", skipping...")
 		return
 	}
 
-	err = client.Delete(name, &metav1.DeleteOptions{})
+	err = client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 	if err != nil {
 		fmt.Println( "Service to delete DeploymentConfig: ", name, " in namespace: ", NameSpace)
 		log.Error(err)

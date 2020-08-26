@@ -17,6 +17,7 @@ limitations under the License.
 package modules
 
 import (
+	"context"
 	"fmt"
 	log "k8s.io/klog"
 	"metagraf/mg/k8sclient"
@@ -79,7 +80,7 @@ func StoreImageStream(obj imagev1.ImageStream) {
 
 	client := k8sclient.GetImageClient().ImageStreams(NameSpace)
 
-	im, err := client.Get(obj.Name, metav1.GetOptions{})
+	im, err := client.Get(context.TODO(), obj.Name, metav1.GetOptions{})
 	if len(im.ResourceVersion) > 0 {
 		if err != nil {
 			log.Error(err)
@@ -88,7 +89,7 @@ func StoreImageStream(obj imagev1.ImageStream) {
 		}
 		log.Infof("ImageStream: %v exists, skipping...", obj.Name)
 	} else {
-		result, err := client.Create(&obj)
+		result, err := client.Create(context.TODO(), &obj, metav1.CreateOptions{})
 		if err != nil {
 			log.Error(err)
 			fmt.Println(err)
@@ -101,13 +102,13 @@ func StoreImageStream(obj imagev1.ImageStream) {
 func DeleteImageStream(name string) {
 	client := k8sclient.GetImageClient().ImageStreams(NameSpace)
 
-	_, err := client.Get(name, metav1.GetOptions{})
+	_, err := client.Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {
 		fmt.Println("ImageStream: ", name, "does not exist in namespace: ", NameSpace,", skipping...")
 		return
 	}
 
-	err = client.Delete(name, &metav1.DeleteOptions{})
+	err = client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 	if err != nil {
 		fmt.Println( "Unable to delete ImageStream: ", name, " in namespace: ", NameSpace)
 		log.Error(err)

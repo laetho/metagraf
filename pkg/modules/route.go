@@ -17,9 +17,10 @@ limitations under the License.
 package modules
 
 import (
+	"context"
 	"fmt"
-	log "k8s.io/klog"
 	"k8s.io/apimachinery/pkg/util/intstr"
+	log "k8s.io/klog"
 	"metagraf/pkg/helpers"
 	"os"
 	"reflect"
@@ -112,10 +113,10 @@ func GenRoute(mg *metagraf.MetaGraf) {
 
 func StoreRoute(obj routev1.Route) {
 	client := k8sclient.GetRouteClient().Routes(NameSpace)
-    route, _ := client.Get(obj.Name, metav1.GetOptions{} )
+    route, _ := client.Get(context.TODO(), obj.Name, metav1.GetOptions{} )
 	if len(route.ResourceVersion) > 0 {
 		obj.ResourceVersion = route.ResourceVersion
-		_, err := client.Update(&obj)
+		_, err := client.Update(context.TODO(), &obj, metav1.UpdateOptions{})
 		if err != nil {
 			log.Error(err)
 			fmt.Println(err)
@@ -123,7 +124,7 @@ func StoreRoute(obj routev1.Route) {
 		}
 		fmt.Println("Updated Route: ", obj.Name, " in Namespace: ", NameSpace)
 	} else {
-		_, err := client.Create(&obj)
+		_, err := client.Create(context.TODO(), &obj, metav1.CreateOptions{})
 		if err != nil {
 			log.Error(err)
 			fmt.Println(err)
@@ -136,13 +137,13 @@ func StoreRoute(obj routev1.Route) {
 func DeleteRoute(name string) {
 	client := k8sclient.GetRouteClient().Routes(NameSpace)
 
-	_, err := client.Get(name, metav1.GetOptions{})
+	_, err := client.Get(context.TODO(),name, metav1.GetOptions{})
 	if err != nil {
 		fmt.Println("Route: ", name, "does not exist in namespace: ", NameSpace,", skipping...")
 		return
 	}
 
-	err = client.Delete(name, &metav1.DeleteOptions{})
+	err = client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 	if err != nil {
 		fmt.Println( "Unable to delete Route: ", name, " in namespace: ", NameSpace)
 		return

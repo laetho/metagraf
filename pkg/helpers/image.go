@@ -17,6 +17,7 @@ limitations under the License.
 package helpers
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	dockerv10 "github.com/openshift/api/image/docker10"
@@ -32,7 +33,7 @@ import (
 )
 
 func GetImageStreamTags(c *imagev1client.ImageV1Client, ns string, n string) *imagev1.ImageStreamTag {
-	ist, err := c.ImageStreamTags(ns).Get(n, metav1.GetOptions{})
+	ist, err := c.ImageStreamTags(ns).Get(context.TODO(), n, metav1.GetOptions{})
 	if err != nil {
 		log.Error(err)
 		os.Exit(1)
@@ -98,7 +99,7 @@ func GetDockerImageFromImage(i *imagev1.Image) *dockerv10.DockerImage {
 }
 
 func GetImage(c *imagev1client.ImageV1Client, i string) *imagev1.Image {
-	img, err := c.Images().Get(i, metav1.GetOptions{})
+	img, err := c.Images().Get(context.TODO(),i, metav1.GetOptions{})
 	if err != nil {
 		log.Error(err)
 		os.Exit(1)
@@ -107,7 +108,7 @@ func GetImage(c *imagev1client.ImageV1Client, i string) *imagev1.Image {
 }
 
 // Returns docker information based on images referenced in spec.
-func ImageInfo(mg *metagraf.MetaGraf) *dockerv10.DockerImage{
+func ImageInfo(mg *metagraf.MetaGraf) *dockerv10.DockerImage {
 	var DockerImage string
 	if len(mg.Spec.BaseRunImage) > 0 {
 		DockerImage = mg.Spec.BaseRunImage
@@ -129,4 +130,3 @@ func ImageInfo(mg *metagraf.MetaGraf) *dockerv10.DockerImage{
 
 	return GetDockerImageFromIST(ist)
 }
-
