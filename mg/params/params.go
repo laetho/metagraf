@@ -22,8 +22,17 @@ var (
 	// Override BuildSourceRef with somthing other than provided in specification.
 	SourceRef string
 
-	ArgoCDApplicationRepoURL string
+	ArgoCDApplicationProject  string
+	// In which namespace do we want the ArgoCD Application CR to be created
+	ArgoCDApplicationNamespace string
+	ArgoCDApplicationRepoURL  string
 	ArgoCDApplicationRepoPath string
+	ArgoCDSyncPolicyRetry bool
+	ArgoCDSyncPolicyRetryLimit int64
+	ArgoCDAutomatedSyncPolicy bool
+	ArgoCDAutomatedSyncPolicyPrune bool
+	ArgoCDAutomatedSyncPolicySelfHeal bool
+
 
 	// Set to true for generating ServiceMonitor objects when creating services.
 	ServiceMonitor bool = false
