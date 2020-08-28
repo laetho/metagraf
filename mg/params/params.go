@@ -27,6 +27,7 @@ var (
 	ArgoCDApplicationNamespace string
 	ArgoCDApplicationRepoURL  string
 	ArgoCDApplicationRepoPath string
+	ArgoCDApplicationSourceDirectoryRecurse bool
 	ArgoCDSyncPolicyRetry bool
 	ArgoCDSyncPolicyRetryLimit int64
 	ArgoCDAutomatedSyncPolicy bool
