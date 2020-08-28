@@ -315,8 +315,6 @@ func getGlobalConfigMapVolumes(mg *metagraf.MetaGraf, Volumes *[]corev1.Volume, 
 			continue
 		}
 
-		fmt.Println("Handling stuff")
-
 		if strings.ToUpper(v.Type) == "TRUSTED-CA" {
 			itms := []corev1.KeyToPath{}
 			itm := corev1.KeyToPath{
