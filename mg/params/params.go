@@ -22,6 +22,9 @@ var (
 	// Override BuildSourceRef with somthing other than provided in specification.
 	SourceRef string
 
+	// Namespace
+	NameSpace string
+
 	ArgoCDApplicationProject  string
 	// In which namespace do we want the ArgoCD Application CR to be created
 	ArgoCDApplicationNamespace string

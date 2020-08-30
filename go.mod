@@ -9,6 +9,7 @@ require (
 	github.com/argoproj/argo-cd v1.7.0
 	github.com/blang/semver v3.5.1+incompatible
 	github.com/coreos/prometheus-operator v0.41.1
+	github.com/fvbommel/util v0.0.0-20180919145318-efcd4e0f9787 // indirect
 	github.com/gogo/protobuf v1.3.1 // indirect
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
 	github.com/google/go-containerregistry v0.0.0-20200212224832-c629a66d7231 // indirect
@@ -17,6 +18,7 @@ require (
 	github.com/json-iterator/go v1.1.10 // indirect
 	github.com/kubernetes-sigs/application v0.8.1 // indirect
 	github.com/mitchellh/go-homedir v1.1.0
+	github.com/oam-dev/oam-go-sdk v0.0.0-20200710215707-508886568e3f
 	github.com/onsi/gomega v1.8.1 // indirect
 	github.com/openshift/api v0.0.0-20200825174227-962ddb6aceab
 	github.com/openshift/client-go v0.0.0-20200729195840-c2b1adc6bed6
