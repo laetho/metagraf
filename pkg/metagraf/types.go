@@ -126,7 +126,10 @@ type Resource struct {
 type Config struct {
 	Name    	string			`json:"name"`
 	Type        string			`json:"type"`
+	// If this is set to true, this will just be a refernce to a existing ConfigMap
 	Global		bool			`json:"global,omitempty"`
+	// Controls the mount point for the ConfigMap
+	MountPath	string			`json:"mountpath,omitempty"`
 	Description string			`json:"description,omitempty"`
 	Options     []ConfigParam	`json:"options,omitempty"`
 }

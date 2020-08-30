@@ -49,6 +49,13 @@ func GetArgoCDApplicationNamespace() string {
 	return NameSpace
 }
 
+func GetArgoCDSourceDirectory() *argoapp.ApplicationSourceDirectory {
+	asd := argoapp.ApplicationSourceDirectory{
+		Recurse: params.ArgoCDApplicationSourceDirectoryRecurse,
+	}
+	return &asd
+}
+
 func GenArgoApplication(mg *metagraf.MetaGraf) {
 
 	meta := []argoapp.Info{}
@@ -68,9 +75,11 @@ func GenArgoApplication(mg *metagraf.MetaGraf) {
 				Namespace: NameSpace,
 			},
 			Source: argoapp.ApplicationSource{
-				RepoURL:        params.ArgoCDApplicationRepoURL,
-				Path:           params.ArgoCDApplicationRepoPath,
+				RepoURL: 	params.ArgoCDApplicationRepoURL,
+				Path: 		params.ArgoCDApplicationRepoPath,
+				Directory:	GetArgoCDSourceDirectory(),
 			},
+
 			Project:              params.ArgoCDApplicationProject,
 			SyncPolicy:           GetArgoCDApplicationSyncPolicy(),
 			Info:                 meta,

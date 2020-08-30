@@ -47,6 +47,10 @@ func FindMetagrafConfigMaps(mg *metagraf.MetaGraf) map[string]string {
 			continue
 		}
 
+		if strings.ToUpper(c.Type) == "TRUSTED-CA" {
+			continue
+		}
+
 		if strings.ToLower(c.Type) == "cert" {
 			fmt.Println("The Config type \"cert\" is deprecated!")
 			os.Exit(1)
@@ -119,6 +123,10 @@ func GenConfigMaps(mg *metagraf.MetaGraf) {
 	Generates a configmap for jvm.params file for Liberty java apps
 */
 func genConfigMapsFromConfig(conf *metagraf.Config, mg *metagraf.MetaGraf) {
+
+	if conf.Global {
+		return
+	}
 
 	objname := Name(mg)
 

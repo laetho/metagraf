@@ -300,7 +300,58 @@ func volumes(mg *metagraf.MetaGraf, ImageInfo *docker10.DockerImage ) ([]corev1.
 		VolumeMounts = append(VolumeMounts, volm)
 	}
 
+	getGlobalConfigMapVolumes(mg, &Volumes, &VolumeMounts)
+
 	return Volumes, VolumeMounts
+}
+
+//
+func getGlobalConfigMapVolumes(mg *metagraf.MetaGraf, Volumes *[]corev1.Volume, VolumeMounts *[]corev1.VolumeMount ) {
+
+
+	// Only handle global ConfigMaps
+	for _, v := range mg.Spec.Config {
+		if !v.Global {
+			continue
+		}
+
+		if strings.ToUpper(v.Type) == "TRUSTED-CA" {
+			itms := []corev1.KeyToPath{}
+			itm := corev1.KeyToPath{
+				Key:  "ca-bundle.crt",
+				Path: "tls-ca-bundle.pem",
+			}
+			itms = append(itms, itm)
+
+			vol := corev1.Volume{
+				Name:         "trusted-ca",
+				VolumeSource: corev1.VolumeSource{
+					ConfigMap: &corev1.ConfigMapVolumeSource{
+						LocalObjectReference: corev1.LocalObjectReference{
+							Name: "trusted-ca",
+						},
+						Items: itms,
+					},
+				},
+			}
+
+			path := func() string {
+				if len(v.MountPath) > 0 {
+					return v.MountPath
+				} else {
+					return ""
+				}}
+
+			volm := corev1.VolumeMount{
+				Name:             "trusted-ca",
+				ReadOnly:         true,
+				MountPath:        path(),
+			}
+
+			*Volumes = append(*Volumes, vol)
+			*VolumeMounts = append(*VolumeMounts, volm)
+		}
+	}
 }
 
 
