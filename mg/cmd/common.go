@@ -19,6 +19,7 @@ package cmd
 import (
 	"bufio"
 	"fmt"
+	corev1 "k8s.io/api/core/v1"
 	log "k8s.io/klog"
 	"metagraf/pkg/metagraf"
 	"metagraf/pkg/modules"
@@ -182,4 +183,49 @@ func FlagPassingHack() {
 	modules.CreateGlobals = CreateGlobals
 }
 
+func GetGlobalConfigMapVolumes(mg *metagraf.MetaGraf, Volumes *[]corev1.Volume, VolumeMounts *[]corev1.VolumeMount ) {
+	// Only handle global ConfigMaps
+	for _, v := range mg.Spec.Config {
+		if !v.Global {
+			continue
+		}
 
+		paths := []string{"/etc/pki/ca-trust/extracted/pem","/etc/pki/ca-trust/extracted/java"}
+		items := []string{"tls-ca-bundle.pem","cacerts"}
+
+		if strings.ToUpper(v.Type) == "TRUSTED-CA" {
+
+			itms := []corev1.KeyToPath{}
+
+			for _,key := range items {
+				itm := corev1.KeyToPath{
+					Key:  "ca-bundle.crt",
+					Path: key,
+				}
+				itms = append(itms, itm)
+			}
+
+			vol := corev1.Volume{
+				Name:         "trusted-ca",
+				VolumeSource: corev1.VolumeSource{
+					ConfigMap: &corev1.ConfigMapVolumeSource{
+						LocalObjectReference: corev1.LocalObjectReference{
+							Name: "trusted-ca",
+						},
+						Items: itms,
+					},
+				},
+			}
+			*Volumes = append(*Volumes, vol)
+
+			for _, path := range paths {
+				volm := corev1.VolumeMount{
+					Name:      "trusted-ca",
+					ReadOnly:  true,
+					MountPath: path,
+				}
+				*VolumeMounts = append(*VolumeMounts, volm)
+			}
+		}
+	}
+}
