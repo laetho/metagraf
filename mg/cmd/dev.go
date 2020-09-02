@@ -37,6 +37,7 @@ func init() {
 	devCmdUp.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
 	devCmdUp.Flags().StringVar(&CVfile, "cvfile","", "Property file with component configuration values. Can be generated with \"mg generate properties\" command.)")
 	devCmdUp.Flags().StringVar(&OName, "name", "", "Overrides name of application.")
+	devCmdUp.Flags().StringVarP(&Registry,"registry", "r",viper.GetString("registry"), "Specify container registry host")
 	devCmdUp.Flags().StringVarP(&params.OutputImagestream,"istream", "i", "", "specify if you want to output to another imagestream than the component name")
 	devCmdUp.Flags().StringVarP(&Context,"context", "c","/","Application contextroot. (\"/<context>\"). Used when creating Route object.")
 	devCmdUp.Flags().BoolVarP(&CreateGlobals, "globals", "g", false, "Override default behavior and force creation of global secrets. Will not overwrite existing ones.")
