@@ -75,12 +75,11 @@ func GenRoute(mg *metagraf.MetaGraf) {
 
 	l := make(map[string]string)
 	l["app"] = objname
-	l["deploymentconfig"] = objname
 
 	obj := routev1.Route{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Route",
-			APIVersion: "v1",
+			APIVersion: "route.openshift.io/v1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:   objname,
