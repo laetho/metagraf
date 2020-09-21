@@ -68,6 +68,10 @@ func GenRoute(mg *metagraf.MetaGraf) {
 	for _,v := range reflect.ValueOf(ImageInfo.Config.ExposedPorts).MapKeys() {
 		ports = append(ports, v.String())
 	}
+	// Default to port 8080 when no exposed ports are found.
+	if len(ports) == 0 {
+		ports = append(ports,"8080")
+	}
 	sort.Strings(ports)
 
 	log.V(2).Infof("First port: %v, %v", ports[0], ports[0])

@@ -49,7 +49,7 @@ func GenService(mg *metagraf.MetaGraf) {
 	}
 
 	var imgurl imageurl.ImageURL
-	imgurl.Parse(DockerImage)
+	_ = imgurl.Parse(DockerImage)
 
 	ImageInfo := &docker10.DockerImage{}
 
@@ -74,6 +74,22 @@ func GenService(mg *metagraf.MetaGraf) {
 			},
 		}
 		serviceports = append(serviceports, ContainerPort)
+	}
+
+	// Handle no serviceports
+	if len(serviceports) == 0 {
+		serviceports = append(
+			serviceports,
+			corev1.ServicePort{
+				Name:     "http",
+				Port:     int32(80),
+				Protocol: corev1.Protocol("TCP"),
+				TargetPort: intstr.IntOrString{
+					Type:   0,
+					IntVal: int32(8080),
+					StrVal: "8080",
+				},
+			})
 	}
 
 	selectors := make(map[string]string)
@@ -109,7 +125,7 @@ func GenService(mg *metagraf.MetaGraf) {
 
 	// Optinonally also create a ServiceMonitor resource.
 	if params.ServiceMonitor {
-		if ( Output && Format == "yaml" ) {
+		if Output && Format == "yaml" {
 			fmt.Println("---")
 		}
 		GenServiceMonitor(mg, &obj)
