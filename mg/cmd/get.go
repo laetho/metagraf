@@ -29,7 +29,7 @@ import (
 func init() {
 	RootCmd.AddCommand(getCmd)
 	getCmd.AddCommand(getCmdJSONPatch)
-	getCmd.AddCommand(getCmdJSONPath)
+	getCmd.AddCommand(getCmdGJSONPath)
 	getCmdJSONPatch.AddCommand(getCmdJSONPatchLabels)
 
 
@@ -41,10 +41,12 @@ var getCmd = &cobra.Command{
 	Long:  `get subcommands`,
 }
 
-var getCmdJSONPath = &cobra.Command{
-	Use:   "jsonpath <metagraf> <query>",
-	Short: "jsonpath ",
-	Long:  `jsonpath `,
+// Check the following link for gjson query syntax:
+// https://github.com/tidwall/gjson/blob/master/SYNTAX.md
+var getCmdGJSONPath = &cobra.Command{
+	Use:   "gjson <metagraf> <query>",
+	Short: "get json or string with gjson query",
+	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
 			fmt.Println(StrMissingMetaGraf)
