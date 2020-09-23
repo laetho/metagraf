@@ -15,8 +15,9 @@ go vet -v .././...
 echo "Testing..."
 go test .././...
 
-go build -ldflags \
-	"-X 'metagraf/pkg/mgver.GitHash=${GITHASH}' \
+CGO_ENABLED=0 go build -ldflags \
+	"-extldflags '-static' \
+	-X 'metagraf/pkg/mgver.GitHash=${GITHASH}' \
 	-X 'metagraf/pkg/mgver.GitTag=${GITTAG}' \
 	-X 'metagraf/pkg/mgver.GitBranch=${GITBRANCH}'" 
 
