@@ -20,10 +20,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/spf13/cobra"
+	"github.com/tidwall/gjson"
+	"metagraf/mg/params"
 	"metagraf/pkg/metagraf"
 	"os"
 	"strings"
-	"github.com/tidwall/gjson"
 )
 
 func init() {
@@ -31,7 +32,18 @@ func init() {
 	getCmd.AddCommand(getCmdJSONPatch)
 	getCmd.AddCommand(getCmdGJSONPath)
 	getCmdJSONPatch.AddCommand(getCmdJSONPatchLabels)
-
+	getCmdJSONPatchLabels.Flags().StringVarP(
+		&params.NameSpacingFilter,
+		"filter",
+		"f",
+		"",
+		"Filter to use while fetching annotations and turning them into labels. Example: \"kubernetes.io\" or \"productowner\"")
+	getCmdJSONPatchLabels.Flags().BoolVarP(
+		&params.NameSpacingStripHost,
+		"striphost",
+		"s",
+		false,
+		"Strips hostname from annotations and labels when creating a jsonpatch.")
 
 }
 
@@ -52,7 +64,7 @@ var getCmdGJSONPath = &cobra.Command{
 			fmt.Println(StrMissingMetaGraf)
 			os.Exit(1)
 		}
-		data,_ := json.Marshal(metagraf.Parse(args[0]))
+		data, _ := json.Marshal(metagraf.Parse(args[0]))
 		value := gjson.Get(string(data), args[1])
 		fmt.Println(value.String())
 	},
@@ -78,30 +90,40 @@ var getCmdJSONPatchLabels = &cobra.Command{
 		// Anonymous struct and initialization
 		data := struct {
 			Metadata struct {
-				Labels            map[string]string	`json:"labels,omitempty"`
+				Labels map[string]string `json:"labels,omitempty"`
 			} `json:"metadata"`
 		}{}
 		data.Metadata.Labels = make(map[string]string)
 
-		for k,v := range mg.Metadata.Annotations {
-			if !validLabel(sanitizeLabel(v)) {
+		for k, v := range mg.Metadata.Annotations {
+			if !validLabel(sanitizeLabelValue(v)) {
 				continue
 			}
-			if strings.Contains(k,"norsk-tipping.no") {
-				data.Metadata.Labels[k] = sanitizeLabel(v)
+			if strings.Contains(k, params.NameSpacingFilter) {
+				data.Metadata.Labels[sanitizeKey(k)] = sanitizeLabelValue(v)
 			}
 		}
-		for k,v := range mg.Metadata.Labels {
-			data.Metadata.Labels[k] = v
+		for k, v := range mg.Metadata.Labels {
+			data.Metadata.Labels[sanitizeKey(k)] = v
 		}
 		labelString, _ := json.Marshal(data)
 		fmt.Println(string(labelString))
 	},
 }
 
-func sanitizeLabel(val string) string {
+func sanitizeLabelValue(val string) string {
 	ret := strings.Replace(val, " ", "_", -1)
 	return ret
+}
+
+func sanitizeKey(key string) string {
+	if params.NameSpacingStripHost {
+		parts := strings.Split(key,"/")
+		if len(parts) > 1 {
+			return strings.Join(parts[1:], "")
+		}
+	}
+	return key
 }
 
 func validLabel(val string) bool {

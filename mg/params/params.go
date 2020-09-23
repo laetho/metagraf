@@ -22,6 +22,12 @@ var (
 	// Override BuildSourceRef with somthing other than provided in specification.
 	SourceRef string
 
+	// Label and annotation namespacing filter
+	NameSpacingFilter string
+	// If set to true, will strip hostname namespacing from annotatons and labels
+	// when generating a jsonpatch.
+	NameSpacingStripHost bool
+
 	// Namespace
 	NameSpace string
 
