@@ -84,7 +84,6 @@ func GenArgoApplication(mg *metagraf.MetaGraf) {
 			SyncPolicy:           GetArgoCDApplicationSyncPolicy(),
 			Info:                 meta,
 		},
-		Status:     argoapp.ApplicationStatus{},
 		Operation:  nil,
 	}
 
