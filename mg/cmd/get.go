@@ -113,6 +113,7 @@ var getCmdJSONPatchLabels = &cobra.Command{
 
 func sanitizeLabelValue(val string) string {
 	ret := strings.Replace(val, " ", "_", -1)
+	ret = strings.Replace(ret, ",", "-", -1 )
 	return ret
 }
 
