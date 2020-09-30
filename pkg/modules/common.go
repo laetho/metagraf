@@ -361,30 +361,26 @@ func ValueFromEnv(key string) bool {
 
 // Marshal kubernetes resource to json
 func MarshalObject(obj runtime.Object) {
-	/*
-	_ = appsv1.AddToScheme(scheme.Scheme)
-	_ = authorizationv1.AddToScheme(scheme.Scheme)
-	_ = buildv1.AddToScheme(scheme.Scheme)
-	_ = imagev1.AddToScheme(scheme.Scheme)
-	_ = networkv1.AddToScheme(scheme.Scheme)
-	_ = oauthv1.AddToScheme(scheme.Scheme)
-	_ = projectv1.AddToScheme(scheme.Scheme)
-	_ = quotav1.AddToScheme(scheme.Scheme)
-	_ = routev1.AddToScheme(scheme.Scheme)
-	_ = securityv1.AddToScheme(scheme.Scheme)
-	_ = templatev1.AddToScheme(scheme.Scheme)
-	_ = userv1.AddToScheme(scheme.Scheme)
-*/
 	switch Format {
 		case "json":
-			s := json.NewSerializer(json.DefaultMetaFactory, scheme.Scheme, scheme.Scheme, true)
+			opt := json.SerializerOptions{
+				Yaml:   false,
+				Pretty: true,
+				Strict: true,
+			}
+			s := json.NewSerializerWithOptions(json.DefaultMetaFactory, scheme.Scheme, scheme.Scheme, opt)
 			err := s.Encode(obj,os.Stdout)
 			if err != nil {
 				log.Error(err)
 				os.Exit(1)
 			}
 		case "yaml":
-			s := json.NewYAMLSerializer(json.DefaultMetaFactory, scheme.Scheme, scheme.Scheme)
+			opt := json.SerializerOptions{
+				Yaml:   true,
+				Pretty: true,
+				Strict: true,
+			}
+			s := json.NewSerializerWithOptions(json.DefaultMetaFactory, scheme.Scheme, scheme.Scheme, opt)
 			err := s.Encode(obj, os.Stdout)
 			if err != nil {
 				log.Error(err)
