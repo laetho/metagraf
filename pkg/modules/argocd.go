@@ -117,7 +117,27 @@ func GenArgoApplication(mg *metagraf.MetaGraf) {
 		if err != nil  {
 			panic(err)
 		}
-		delete(jsonMap,"status")
+
+		delete(jsonMap, "status")
+		/*sanitize := func(m *map[string]interface{}) {
+			delete(*m, "status")
+			for k,v := range *m {
+				t := reflect.TypeOf(v)
+				if string(t) == "map" {
+					fmt.Println("got a map")
+				}
+				fmt.Println(k)
+				fmt.Println(v)
+			}
+
+		}
+		sanitize(&jsonMap)*/
+
+
+
+		fmt.Println(jsonMap["spec"])
+		spec := jsonMap["spec"]
+		fmt.Println(spec)
 		if Format == "json" {
 			oj, err := gojson.MarshalIndent(jsonMap,"","  ")
 			if err != nil {
