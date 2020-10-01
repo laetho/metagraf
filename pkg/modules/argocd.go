@@ -17,13 +17,21 @@ limitations under the License.
 package modules
 
 import (
+	"bytes"
 	"context"
+	"fmt"
 	argoapp "github.com/argoproj/argo-cd/pkg/apis/application/v1alpha1"
 	"github.com/golang/glog"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime/serializer/json"
 	"metagraf/mg/k8sclient"
 	"metagraf/mg/params"
 	"metagraf/pkg/metagraf"
+	"os"
+	log "k8s.io/klog"
+	gojson "encoding/json"
+	yaml "gopkg.in/yaml.v3"
+
 )
 
 func GetArgoCDApplicationSyncPolicy() *argoapp.SyncPolicy {
@@ -91,7 +99,39 @@ func GenArgoApplication(mg *metagraf.MetaGraf) {
 		StoreArgoCDApplication(obj)
 	}
 	if Output {
-		MarshalObject(obj.DeepCopyObject())
+		opt := json.SerializerOptions{
+			Yaml:   false,
+			Pretty: true,
+			Strict: true,
+		}
+		s := json.NewSerializerWithOptions(json.DefaultMetaFactory, nil, nil, opt)
+
+		var buff bytes.Buffer
+		err := s.Encode(obj.DeepCopyObject(),&buff)
+		if err != nil {
+			log.Error(err)
+			os.Exit(1)
+		}
+		jsonMap := make(map[string]interface{})
+		err = gojson.Unmarshal(buff.Bytes(), &jsonMap)
+		if err != nil  {
+			panic(err)
+		}
+		delete(jsonMap,"status")
+		if Format == "json" {
+			oj, err := gojson.MarshalIndent(jsonMap,"","  ")
+			if err != nil {
+				panic(err)
+			}
+			fmt.Println(string(oj))
+			return
+		} else {
+			oy, err := yaml.Marshal(jsonMap)
+			if err != nil {
+				panic(err)
+			}
+			fmt.Println(string(oy))
+		}
 	}
 }
 
