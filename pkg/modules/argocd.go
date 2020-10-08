@@ -31,7 +31,6 @@ import (
 	log "k8s.io/klog"
 	gojson "encoding/json"
 	yaml "gopkg.in/yaml.v3"
-
 )
 
 func GetArgoCDApplicationSyncPolicy() *argoapp.SyncPolicy {
@@ -60,6 +59,7 @@ func GetArgoCDApplicationNamespace() string {
 func GetArgoCDSourceDirectory() *argoapp.ApplicationSourceDirectory {
 	asd := argoapp.ApplicationSourceDirectory{
 		Recurse: params.ArgoCDApplicationSourceDirectoryRecurse,
+		Jsonnet: argoapp.ApplicationSourceJsonnet{},
 	}
 	return &asd
 }
@@ -85,7 +85,6 @@ func GenArgoApplication(mg *metagraf.MetaGraf) {
 			Source: argoapp.ApplicationSource{
 				RepoURL: 	params.ArgoCDApplicationRepoURL,
 				Path: 		params.ArgoCDApplicationRepoPath,
-				Directory:	GetArgoCDSourceDirectory(),
 			},
 
 			Project:              params.ArgoCDApplicationProject,
@@ -119,19 +118,6 @@ func GenArgoApplication(mg *metagraf.MetaGraf) {
 		}
 
 		delete(jsonMap, "status")
-		/*sanitize := func(m *map[string]interface{}) {
-			delete(*m, "status")
-			for k,v := range *m {
-				t := reflect.TypeOf(v)
-				if string(t) == "map" {
-					fmt.Println("got a map")
-				}
-				fmt.Println(k)
-				fmt.Println(v)
-			}
-
-		}
-		sanitize(&jsonMap)*/
 
 		if Format == "json" {
 			oj, err := gojson.MarshalIndent(jsonMap,"","  ")
