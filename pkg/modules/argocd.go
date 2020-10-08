@@ -133,11 +133,6 @@ func GenArgoApplication(mg *metagraf.MetaGraf) {
 		}
 		sanitize(&jsonMap)*/
 
-
-
-		fmt.Println(jsonMap["spec"])
-		spec := jsonMap["spec"]
-		fmt.Println(spec)
 		if Format == "json" {
 			oj, err := gojson.MarshalIndent(jsonMap,"","  ")
 			if err != nil {
