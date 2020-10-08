@@ -39,7 +39,6 @@ func GenServiceMonitor(mg *metagraf.MetaGraf, svc *corev1.Service) {
 	// Resource labels
 	l := make(map[string]string)
 	l["app"] = objname
-	l["deploymentconfig"] = objname
 	l["prometheus"] = params.ServiceMonitorOperatorName
 
 	// Selector
