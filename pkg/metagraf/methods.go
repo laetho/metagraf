@@ -19,6 +19,8 @@ package metagraf
 import (
 	"github.com/pkg/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"metagraf/mg/params"
+	"strings"
 )
 
 // Returns a metagraf adressable key for a property.
@@ -209,4 +211,45 @@ func (mg *MetaGraf) GetConfigByName(name string) (Config, error) {
 		}
 	}
 	return Config{}, errors.New("Config{} not found, name: "+name)
+}
+
+func (mg *MetaGraf) Labels(name string) map[string]string {
+	l := make(map[string]string)
+	l["app"] = name
+
+	for k, v := range mg.Metadata.Annotations {
+		if !validLabel(sanitizeLabelValue(v)) {
+			continue
+		}
+		if strings.Contains(k, params.NameSpacingFilter) {
+			l[sanitizeKey(k)] = sanitizeLabelValue(v)
+		}
+	}
+	for k, v := range mg.Metadata.Labels {
+		l[sanitizeKey(k)] = v
+	}
+	return l
+}
+
+func sanitizeLabelValue(val string) string {
+	ret := strings.Replace(val, " ", "_", -1)
+	ret = strings.Replace(ret, ",", "-", -1 )
+	return ret
+}
+
+func sanitizeKey(key string) string {
+	if params.NameSpacingStripHost {
+		parts := strings.Split(key,"/")
+		if len(parts) > 1 {
+			return strings.Join(parts[1:], "")
+		}
+	}
+	return key
+}
+
+func validLabel(val string) bool {
+	if len(val) > 64 {
+		return false
+	}
+	return true
 }

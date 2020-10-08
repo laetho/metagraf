@@ -76,6 +76,7 @@ func GenArgoApplication(mg *metagraf.MetaGraf) {
 		ObjectMeta: metav1.ObjectMeta{
 			Name: 	Name(mg),
 			Namespace: GetArgoCDApplicationNamespace(),
+			Labels: mg.Labels(Name(mg)),
 		},
 		Spec: argoapp.ApplicationSpec{
 			Destination: argoapp.ApplicationDestination{
