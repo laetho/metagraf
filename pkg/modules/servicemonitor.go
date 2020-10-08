@@ -39,6 +39,7 @@ func GenServiceMonitor(mg *metagraf.MetaGraf, svc *corev1.Service) {
 	// Resource labels
 	l := make(map[string]string)
 	l["app"] = objname
+	l["app.kubernetes.io/instance"] = objname
 	l["prometheus"] = params.ServiceMonitorOperatorName
 
 	// Selector
