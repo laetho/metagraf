@@ -251,5 +251,8 @@ func validLabel(val string) bool {
 	if len(val) > 64 {
 		return false
 	}
+	if strings.Contains("val", "/") {
+		return false
+	}
 	return true
 }
