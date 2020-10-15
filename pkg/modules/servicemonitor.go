@@ -100,8 +100,8 @@ func FindServiceMonitorPath(mg *metagraf.MetaGraf) string {
 		return params.ServiceMonitorPath
 	}
 	// Annotation
-	if len(mg.Metadata.Annotations["monitoring.coreos.com/servicemonitor/path"]) > 0 {
-		return mg.Metadata.Annotations["monitoring.coreos.com/servicemonitor/path"]
+	if len(mg.Metadata.Annotations["servicemonitor.monitoring.coreos.com/path"]) > 0 {
+		return mg.Metadata.Annotations["servicemonitor.monitoring.coreos.com/path"]
 	}
 	// Default
 	return params.ServiceMonitorPath
