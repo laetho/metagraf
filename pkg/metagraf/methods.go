@@ -218,7 +218,7 @@ func (mg *MetaGraf) Labels(name string) map[string]string {
 	l["app"] = name
 
 	for k, v := range mg.Metadata.Annotations {
-		if !validLabel(sanitizeLabelValue(v)) {
+		if !validLabelValue(sanitizeLabelValue(v)) {
 			continue
 		}
 		if strings.Contains(k, params.NameSpacingFilter) {
@@ -247,7 +247,7 @@ func sanitizeKey(key string) string {
 	return key
 }
 
-func validLabel(val string) bool {
+func validLabelValue(val string) bool {
 	if len(val) > 64 {
 		return false
 	}
