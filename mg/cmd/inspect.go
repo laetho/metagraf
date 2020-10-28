@@ -8,6 +8,7 @@ import (
 	"metagraf/pkg/metagraf"
 	"metagraf/pkg/modules"
 	"os"
+	params "metagraf/mg/params"
 )
 
 func init() {
@@ -15,6 +16,7 @@ func init() {
 	InspectCmd.Flags().BoolVar(&Enforce, "enforce",false, "Enforce findings, defaults to false and informs only.")
 	InspectCmd.AddCommand(InspectPropertiesCmd)
 	InspectPropertiesCmd.Flags().StringVar(&CVfile, "cvfile","", "File with component configuration values. (key=value pairs)")
+	InspectPropertiesCmd.Flags().BoolVarP(&params.InspectAllowExtraConfig, "extra","e",false,"Will not fail inspect command when properties file have more key, value paris than required.")
 }
 
 var InspectCmd = &cobra.Command{
@@ -93,8 +95,13 @@ var InspectPropertiesCmd = &cobra.Command{
 
 		for key,_ := range confvars {
 			if _, ok := mgprops[key]; !ok {
-				fail = true
+				if params.InspectAllowExtraConfig {
+					fail = false
+				} else {
+					fail = true
+				}
 				fmt.Printf("%v is an invalid configuration key for this metaGraf specification.\n", key)
+
 			}
 		}
 		if fail {
