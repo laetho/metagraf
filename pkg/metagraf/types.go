@@ -149,6 +149,8 @@ type Secret struct {
 	Global		bool			`json:"global,omitempty"`
 	Description string			`json:"description,omitempty"`
 	Value		string			`json:"value,omitempty"`		// Never use this!
+	// If set, we will attempt to mount it at provided path.
+	MountPath	string			`json:"mountpath,omitempty"`
 }
 
 type EnvironmentVar struct {

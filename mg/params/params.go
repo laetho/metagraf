@@ -62,7 +62,8 @@ var (
 	// Name of prometheus-operator instance that should discover the generated ServiceMonitor or PodMonitor resources.
 	ServiceMonitorOperatorName string = "prometheus"
 
-
+	// Relative path to template file for use when creating a software component reference document.
+	TemplateFile string = ""
 
 )
 

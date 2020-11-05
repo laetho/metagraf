@@ -26,6 +26,7 @@ import (
 
 	"metagraf/pkg/metagraf"
 	"metagraf/pkg/modules"
+	"metagraf/mg/params"
 )
 
 func init() {
@@ -74,6 +75,7 @@ func init() {
 	createRefCmd.Flags().StringVarP(&Namespace, "namespace", "n","","namespace to fetch template form")
 	createRefCmd.Flags().StringVarP(&Template, "template", "t", "metagraf-refdoc.md", "name of ConfigMap for go template")
 	createRefCmd.Flags().StringVarP(&Suffix, "suffix", "s", ".html", "file suffix of the generated content")
+	createRefCmd.Flags().StringVarP(&params.TemplateFile, "file", "f", "", "file path to go template to use when creating reference doucment")
 }
 
 

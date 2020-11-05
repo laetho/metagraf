@@ -292,6 +292,7 @@ func volumes(mg *metagraf.MetaGraf, ImageInfo *docker10.DockerImage ) ([]corev1.
 				},
 			},
 		}
+
 		volm := corev1.VolumeMount{
 			Name: voln,
 			MountPath: "/mg/secret/"+n,

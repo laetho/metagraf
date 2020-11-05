@@ -19,7 +19,9 @@ package modules
 import (
 	"fmt"
 	"html/template"
+	"io/ioutil"
 	log "k8s.io/klog"
+	"metagraf/mg/params"
 	"metagraf/pkg/metagraf"
 	"os"
 	"strings"
@@ -106,12 +108,30 @@ func getReqPropSlice(props []metagraf.MGProperty) []metagraf.MGProperty {
 }
 
 func GenRef(mg *metagraf.MetaGraf) {
-	log.Infof("Fetching template: %v", Template)
-	cm, err  := GetConfigMap(Template)
-	if err != nil {
-		log.Error(err)
-		os.Exit(-1)
+	// Template string
+	ts := ""
+
+	if len(params.TemplateFile) > 0 {
+		_, err := os.Stat(params.TemplateFile)
+		if os.IsNotExist(err) {
+			log.Infof("Fetching template: %v", Template)
+			cm, err  := GetConfigMap(Template)
+			if err != nil {
+				log.Error(err)
+				os.Exit(-1)
+			}
+			ts = cm.Data["template"]
+		} else {
+			log.Infof("Fetching template from file: %v", params.TemplateFile)
+			c, err := ioutil.ReadFile(params.TemplateFile)
+			if err != nil {
+				panic(err)
+			}
+			ts = string(c)
+		}
+
 	}
+
 	tmpl, err := template.New("refdoc").Funcs(
 		template.FuncMap{
 			"getPropSlice": func() []metagraf.MGProperty {
@@ -147,7 +167,7 @@ func GenRef(mg *metagraf.MetaGraf) {
 				}
 				return false
 			},
-		}).Parse(cm.Data["template"])
+		}).Parse(ts)
 	if (err != nil) {
 		log.Error(err)
 		os.Exit(1)
