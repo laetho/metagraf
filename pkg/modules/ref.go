@@ -30,7 +30,7 @@ import (
 // Returns a metagraf.MGProperties map of parameters mainly for use in
 // template processing. It filters out JVM_SYS_PROP type.
 func getPropSlice(mg *metagraf.MetaGraf) []metagraf.MGProperty {
-	params := []metagraf.MGProperty{}
+	var props []metagraf.MGProperty
 
 	// No defaults for Environment Variables.
 	for _, e := range mg.Spec.Environment.Local {
@@ -42,7 +42,7 @@ func getPropSlice(mg *metagraf.MetaGraf) []metagraf.MGProperty {
 			Required: e.Required,
 			Default:  "",
 		}
-		params = append(params, p)
+		props = append(props, p)
 	}
 
 	for _, c := range mg.Spec.Config {
@@ -58,15 +58,15 @@ func getPropSlice(mg *metagraf.MetaGraf) []metagraf.MGProperty {
 			if c.Name == "JVM_SYS_PROP" {
 				p.Default = o.Default
 			}
-			params = append(params, p)
+			props = append(props, p)
 		}
 	}
-	return params
+	return props
 }
 
 // Returns a output sanitized slice of metagraf.EnvironmentVar{} for templates
 func getEnvsForTemplate(mg *metagraf.MetaGraf, nojsp bool) []metagraf.EnvironmentVar {
-	envs := []metagraf.EnvironmentVar{}
+	var envs []metagraf.EnvironmentVar
 
 	for _, e := range mg.Spec.Environment.Local {
 		// Skip JVM_SYS_PROP type if nojsp = true
@@ -98,21 +98,21 @@ func getEnvsForTemplate(mg *metagraf.MetaGraf, nojsp bool) []metagraf.Environmen
 
 // Filters out only required property elements.
 func getReqPropSlice(props []metagraf.MGProperty) []metagraf.MGProperty {
-	params := []metagraf.MGProperty{}
+	var mgprops []metagraf.MGProperty
 	for _, p := range props {
 		if p.Required {
-			params = append(params, p)
+			mgprops = append(mgprops, p)
 		}
 	}
-	return params
+	return mgprops
 }
 
 func GenRef(mg *metagraf.MetaGraf) {
 	// Template string
 	ts := ""
 
-	if len(params.TemplateFile) > 0 {
-		_, err := os.Stat(params.TemplateFile)
+	if len(params.RefTemplateFile) > 0 {
+		_, err := os.Stat(params.RefTemplateFile)
 		if os.IsNotExist(err) {
 			log.Infof("Fetching template: %v", Template)
 			cm, err  := GetConfigMap(Template)
@@ -122,8 +122,8 @@ func GenRef(mg *metagraf.MetaGraf) {
 			}
 			ts = cm.Data["template"]
 		} else {
-			log.Infof("Fetching template from file: %v", params.TemplateFile)
-			c, err := ioutil.ReadFile(params.TemplateFile)
+			log.Infof("Fetching template from file: %v", params.RefTemplateFile)
+			c, err := ioutil.ReadFile(params.RefTemplateFile)
 			if err != nil {
 				panic(err)
 			}
@@ -156,24 +156,29 @@ func GenRef(mg *metagraf.MetaGraf) {
 				return len(l)
 			},
 			"isLast": func(a []string, k int) bool {
-				if (len(a)-1 == k) {
+				if len(a)-1 == k {
 					return true
 				}
 				return false
 			},
 			"last": func(t int, c int) bool {
-				if (t-1 == c) {
+				if t-1 == c {
 					return true
 				}
 				return false
 			},
 		}).Parse(ts)
-	if (err != nil) {
+	if err != nil {
 		log.Error(err)
 		os.Exit(1)
 	}
 
-	filename := "/tmp/"+Name(mg)+Suffix
+	filename := ""
+	if len(params.RefTemplateOutputFile) > 0 {
+		filename = params.RefTemplateOutputFile
+	} else {
+		filename = "/tmp/" + Name(mg) + Suffix
+	}
 
 	f, err := os.OpenFile(filename, os.O_CREATE|os.O_TRUNC|os.O_RDWR, 0777)
 	if err != nil {

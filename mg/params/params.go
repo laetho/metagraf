@@ -63,8 +63,8 @@ var (
 	ServiceMonitorOperatorName string = "prometheus"
 
 	// Relative path to template file for use when creating a software component reference document.
-	TemplateFile string = ""
-
+	RefTemplateFile string = ""
+	RefTemplateOutputFile string = "REF.md"
 )
 
 

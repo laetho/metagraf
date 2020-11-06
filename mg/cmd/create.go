@@ -26,7 +26,6 @@ import (
 
 	"metagraf/pkg/metagraf"
 	"metagraf/pkg/modules"
-	"metagraf/mg/params"
 )
 
 func init() {
@@ -72,10 +71,7 @@ func init() {
 	createRouteCmd.Flags().StringVar(&OName, "name", "", "Overrides name of application.")
 	createRouteCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
 	createRouteCmd.Flags().StringVarP(&Context,"context", "c","/","Application context root. (\"/<context>\")")
-	createRefCmd.Flags().StringVarP(&Namespace, "namespace", "n","","namespace to fetch template form")
-	createRefCmd.Flags().StringVarP(&Template, "template", "t", "metagraf-refdoc.md", "name of ConfigMap for go template")
-	createRefCmd.Flags().StringVarP(&Suffix, "suffix", "s", ".html", "file suffix of the generated content")
-	createRefCmd.Flags().StringVarP(&params.TemplateFile, "file", "f", "", "file path to go template to use when creating reference doucment")
+
 }
 
 
@@ -198,28 +194,6 @@ var createDotCmd = &cobra.Command{
 		}
 		FlagPassingHack()
 		modules.GenDotFromPath(args[0])
-	},
-}
-
-var createRefCmd = &cobra.Command{
-	Use:   "ref <metaGraf>",
-	Short: "create ref document from metaGraf specification",
-	Long:  MGBanner + `create ref`,
-	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) < 1 {
-			fmt.Println(StrMissingCollection)
-			return
-		}
-
-		mg := metagraf.Parse(args[0])
-		FlagPassingHack()
-
-/*
-	if len(modules.NameSpace) == 0 {
-		modules.NameSpace = Namespace
-}
-*/
-		modules.GenRef(&mg)
 	},
 }
 
