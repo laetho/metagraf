@@ -21,6 +21,7 @@ import (
 	"html/template"
 	"io/ioutil"
 	log "k8s.io/klog"
+	"k8s.io/klog/v2"
 	"metagraf/mg/params"
 	"metagraf/pkg/metagraf"
 	"os"
@@ -187,6 +188,7 @@ func GenRef(mg *metagraf.MetaGraf) {
 	}
 	defer f.Close()
 
+	klog.Infof("Build envs: %v", len(mg.Spec.Environment.Build))
 	err = tmpl.Execute(f, mg)
 	if err != nil {
 		fmt.Println(err)
