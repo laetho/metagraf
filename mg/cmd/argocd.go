@@ -18,11 +18,11 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/spf13/cobra"
+	"metagraf/mg/params"
 	"metagraf/pkg/metagraf"
 	"metagraf/pkg/modules"
 	"os"
-	"github.com/spf13/cobra"
-	"metagraf/mg/params"
 )
 
 func init() {
@@ -46,10 +46,10 @@ func init() {
 	argocdCreateApplicationCmd.Flags().BoolVar(&params.ArgoCDAutomatedSyncPolicyPrune, "auto-prune", false, "Automatically delete removed items")
 	argocdCreateApplicationCmd.Flags().BoolVar(&params.ArgoCDAutomatedSyncPolicySelfHeal, "auto-heal", false, "Try to self heal?")
 
-	argocdCreateCmd.MarkPersistentFlagRequired("namespace")
-	argocdCreateApplicationCmd.MarkFlagRequired("project")
-	argocdCreateApplicationCmd.MarkFlagRequired("repo")
-	argocdCreateApplicationCmd.MarkFlagRequired("path")
+	_ = argocdCreateCmd.MarkPersistentFlagRequired("namespace")
+	_ = argocdCreateApplicationCmd.MarkFlagRequired("project")
+	_ = argocdCreateApplicationCmd.MarkFlagRequired("repo")
+	_ = argocdCreateApplicationCmd.MarkFlagRequired("path")
 }
 
 var argocdCmd = &cobra.Command{
