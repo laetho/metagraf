@@ -19,18 +19,18 @@ package modules
 import (
 	"bytes"
 	"context"
+	gojson "encoding/json"
 	"fmt"
 	argoapp "github.com/argoproj/argo-cd/pkg/apis/application/v1alpha1"
 	"github.com/golang/glog"
+	"gopkg.in/yaml.v3"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/serializer/json"
+	log "k8s.io/klog"
 	"metagraf/mg/k8sclient"
 	"metagraf/mg/params"
 	"metagraf/pkg/metagraf"
 	"os"
-	log "k8s.io/klog"
-	gojson "encoding/json"
-	yaml "gopkg.in/yaml.v3"
 )
 
 func GetArgoCDApplicationSyncPolicy() *argoapp.SyncPolicy {
@@ -66,33 +66,34 @@ func GetArgoCDSourceDirectory() *argoapp.ApplicationSourceDirectory {
 
 func GenArgoApplication(mg *metagraf.MetaGraf) {
 
-	meta := []argoapp.Info{}
+	var meta []argoapp.Info
 
 	obj := argoapp.Application{
-		TypeMeta:   metav1.TypeMeta{
+		TypeMeta: metav1.TypeMeta{
 			Kind:       "Application",
 			APIVersion: "argoproj.io/v1alpha1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name: 	Name(mg),
+			Name:      Name(mg),
 			Namespace: GetArgoCDApplicationNamespace(),
-			Labels: mg.Labels(Name(mg)),
+			Labels:    mg.Labels(Name(mg)),
 		},
 		Spec: argoapp.ApplicationSpec{
 			Destination: argoapp.ApplicationDestination{
-				Server: "https://kubernetes.default.svc",
+				Server:    "https://kubernetes.default.svc",
 				Namespace: NameSpace,
 			},
 			Source: argoapp.ApplicationSource{
-				RepoURL: 	params.ArgoCDApplicationRepoURL,
-				Path: 		params.ArgoCDApplicationRepoPath,
+				RepoURL:        params.ArgoCDApplicationRepoURL,
+				Path:           params.ArgoCDApplicationRepoPath,
+				TargetRevision: params.ArgoCDApplicationTargetRevision,
 			},
 
-			Project:              params.ArgoCDApplicationProject,
-			SyncPolicy:           GetArgoCDApplicationSyncPolicy(),
-			Info:                 meta,
+			Project:    params.ArgoCDApplicationProject,
+			SyncPolicy: GetArgoCDApplicationSyncPolicy(),
+			Info:       meta,
 		},
-		Operation:  nil,
+		Operation: nil,
 	}
 
 	if !Dryrun {
@@ -107,21 +108,21 @@ func GenArgoApplication(mg *metagraf.MetaGraf) {
 		s := json.NewSerializerWithOptions(json.DefaultMetaFactory, nil, nil, opt)
 
 		var buff bytes.Buffer
-		err := s.Encode(obj.DeepCopyObject(),&buff)
+		err := s.Encode(obj.DeepCopyObject(), &buff)
 		if err != nil {
 			log.Error(err)
 			os.Exit(1)
 		}
 		jsonMap := make(map[string]interface{})
 		err = gojson.Unmarshal(buff.Bytes(), &jsonMap)
-		if err != nil  {
+		if err != nil {
 			panic(err)
 		}
 
 		delete(jsonMap, "status")
 
 		if Format == "json" {
-			oj, err := gojson.MarshalIndent(jsonMap,"","  ")
+			oj, err := gojson.MarshalIndent(jsonMap, "", "  ")
 			if err != nil {
 				panic(err)
 			}

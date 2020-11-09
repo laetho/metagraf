@@ -40,12 +40,14 @@ var (
 	ArgoCDApplicationNamespace string
 	ArgoCDApplicationRepoURL  string
 	ArgoCDApplicationRepoPath string
+	// Git Reference (tag/commit)
+	ArgoCDApplicationTargetRevision			string = "HEAD"
 	ArgoCDApplicationSourceDirectoryRecurse bool
-	ArgoCDSyncPolicyRetry bool
-	ArgoCDSyncPolicyRetryLimit int64
-	ArgoCDAutomatedSyncPolicy bool
-	ArgoCDAutomatedSyncPolicyPrune bool
-	ArgoCDAutomatedSyncPolicySelfHeal bool
+	ArgoCDSyncPolicyRetry                   bool
+	ArgoCDSyncPolicyRetryLimit              int64
+	ArgoCDAutomatedSyncPolicy               bool
+	ArgoCDAutomatedSyncPolicyPrune          bool
+	ArgoCDAutomatedSyncPolicySelfHeal       bool
 
 
 	// Set to true for generating ServiceMonitor objects when creating services.
