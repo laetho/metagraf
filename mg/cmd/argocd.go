@@ -38,7 +38,7 @@ func init() {
 	argocdCreateApplicationCmd.Flags().StringVar(&params.ArgoCDApplicationNamespace, "argo-namespace", "", "Namespace for the ArgoCD Application resource.")
 	argocdCreateApplicationCmd.Flags().StringVarP(&params.ArgoCDApplicationRepoURL, "repo", "r", "", "Repository URL")
 	argocdCreateApplicationCmd.Flags().StringVarP(&params.ArgoCDApplicationRepoPath, "path", "p", "", "Path to manifests inside the repository")
-	argocdCreateApplicationCmd.Flags().StringVar(&params.ArgoCDApplicationTargetRevision, "revision", params.ArgoCDApplicationTargetRevision, "Git ref for commit to synchronise.")
+	argocdCreateApplicationCmd.Flags().StringVar(&params.ArgoCDApplicationTargetRevision, "target-revision", params.ArgoCDApplicationTargetRevision, "Git ref for commit to synchronise.")
 	argocdCreateApplicationCmd.Flags().BoolVar(&params.ArgoCDApplicationSourceDirectoryRecurse, "recurse", false, "Recursively traverse basepath looking for manifests")
 	argocdCreateApplicationCmd.Flags().BoolVar(&params.ArgoCDSyncPolicyRetry, "retry", false, "Retry failed synchronizations?")
 	argocdCreateApplicationCmd.Flags().Int64Var(&params.ArgoCDSyncPolicyRetryLimit, "retry-limit", 2, "Retry limit")
