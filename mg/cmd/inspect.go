@@ -95,13 +95,10 @@ var InspectPropertiesCmd = &cobra.Command{
 
 		for key,_ := range confvars {
 			if _, ok := mgprops[key]; !ok {
-				if params.InspectAllowExtraConfig {
-					fail = false
-				} else {
+				if !params.InspectAllowExtraConfig {
 					fail = true
 				}
 				fmt.Printf("%v is an invalid configuration key for this metaGraf specification.\n", key)
-
 			}
 		}
 		if fail {
