@@ -59,7 +59,8 @@ var (
 	// ServiceMonitor definition of scraping scheme.
 	ServiceMonitorScheme string = "http"
 	// ServiceMonitor definition of scrape path.
-	ServiceMonitorPath string = "/metrics"
+	ServiceMonitorPath string
+	ServiceMonitorPathDefault string = "/prometheus"
 
 	// Name of prometheus-operator instance that should discover the generated ServiceMonitor or PodMonitor resources.
 	ServiceMonitorOperatorName string = "prometheus"

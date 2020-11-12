@@ -95,16 +95,16 @@ func GenServiceMonitor(mg *metagraf.MetaGraf, svc *corev1.Service) {
 // Parses metaGraf specification to look for annotation to
 // control scrape path for ServiceMonitor resource.
 func FindServiceMonitorPath(mg *metagraf.MetaGraf) string {
-	// mg cli value
-	if len(params.ServiceMonitorPath) != 0 && params.ServiceMonitorPath != "/prometheus" {
+	// mg cli value, return provided if not default.
+	if len(params.ServiceMonitorPath) > 0 && params.ServiceMonitorPath != params.ServiceMonitorPathDefault {
 		return params.ServiceMonitorPath
 	}
-	// Annotation
+	// Annotation, if not provided return annotation value.
 	if len(mg.Metadata.Annotations["servicemonitor.monitoring.coreos.com/path"]) > 0 {
 		return mg.Metadata.Annotations["servicemonitor.monitoring.coreos.com/path"]
 	}
-	// Default
-	return params.ServiceMonitorPath
+	// Default, return default value
+	return params.ServiceMonitorPathDefault
 }
 
 func StoreServiceMonitor(obj monitoringv1.ServiceMonitor) {
