@@ -23,6 +23,7 @@ import (
 	"github.com/openshift/api/image/docker10"
 	"github.com/spf13/viper"
 	"metagraf/mg/k8sclient"
+	"metagraf/mg/params"
 	"os"
 	"strconv"
 	"strings"
@@ -196,7 +197,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 // Determine if we're using container build by the project or if we are just referencing
 // an existing container.
 func imageRef(mg *metagraf.MetaGraf) string {
-	if (len(mg.Spec.Image) > 0 ) {
+	if (len(mg.Spec.Image) > 0 && !params.DeploymentImageAliasing ) {
 		return mg.Spec.Image
 	} else {
 		registry := viper.GetString("registry")

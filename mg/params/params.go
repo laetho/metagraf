@@ -49,6 +49,9 @@ var (
 	ArgoCDAutomatedSyncPolicyPrune          bool
 	ArgoCDAutomatedSyncPolicySelfHeal       bool
 
+	// Deployment image aliasing will retag upstream image as mg convention names.
+	// mysql:1.2.3 becomes mg-mysqlv1 if your metagraf name is mg-mysqlv1 and version is in 1.x.x range.
+	DeploymentImageAliasing	bool = true
 
 	// Set to true for generating ServiceMonitor objects when creating services.
 	ServiceMonitor bool = false

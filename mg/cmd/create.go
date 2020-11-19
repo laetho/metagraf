@@ -26,6 +26,7 @@ import (
 
 	"metagraf/pkg/metagraf"
 	"metagraf/pkg/modules"
+	"metagraf/mg/params"
 )
 
 func init() {
@@ -51,6 +52,7 @@ func init() {
 	createDeploymentCmd.Flags().StringVarP(&ImageNS,"imagens", "i", "", "Image Namespace, used to override default namespace")
 	createDeploymentCmd.Flags().StringVarP(&Registry,"registry", "r",viper.GetString("registry"), "Specify container registry host")
 	createDeploymentCmd.Flags().StringVarP(&Tag,"tag", "t", "latest", "specify custom tag")
+	createDeploymentCmd.Flags().BoolVar(&params.DeploymentImageAliasing, "image-aliasing", params.DeploymentImageAliasing, "Re tags container image in spec to mg naming conventions")
 	createDeploymentConfigCmd.Flags().StringVarP(&Namespace, "namespace", "n","", "namespace to work on, if not supplied it will use current working namespace")
 	createDeploymentConfigCmd.Flags().StringVar(&OName, "name", "", "Overrides name of deployment.")
 	createDeploymentConfigCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
@@ -60,6 +62,7 @@ func init() {
 	createDeploymentConfigCmd.Flags().StringVarP(&ImageNS,"imagens", "i", "", "Image Namespace, used to override default namespace")
 	createDeploymentConfigCmd.Flags().StringVarP(&Registry,"registry", "r",viper.GetString("registry"), "Specify container registry host")
 	createDeploymentConfigCmd.Flags().StringVarP(&Tag,"tag", "t", "latest", "specify custom tag")
+	createDeploymentConfigCmd.Flags().BoolVar(&params.DeploymentImageAliasing, "image-aliasing", params.DeploymentImageAliasing, "Re tags container image in spec to mg naming conventions")
 	createSecretCmd.Flags().StringVarP(&Namespace, "namespace", "n", "","namespace to work on, if not supplied it will use current working namespace")
 	createSecretCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
 	createSecretCmd.Flags().BoolVarP(&CreateGlobals, "globals", "g", false, "Override default behavior and force creation of global secrets. Will not overwrite existing ones.")
