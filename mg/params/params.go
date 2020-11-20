@@ -51,7 +51,7 @@ var (
 
 	// Deployment image aliasing will expect mg convention tagging of upstream images.
 	// mysql:1.2.3 becomes mg-mysqlv1 if your metagraf name is mg-mysqlv1 and version is in 1.x.x range.
-	DisableDeploymentImageAliasing bool
+	DisableDeploymentImageAliasing bool = false
 
 	// Set to true for generating ServiceMonitor objects when creating services.
 	ServiceMonitor bool = false

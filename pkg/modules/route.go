@@ -45,6 +45,8 @@ func GenRoute(mg *metagraf.MetaGraf) {
 		DockerImage = mg.Spec.BaseRunImage
 	} else if len(mg.Spec.BuildImage) > 0 {
 		DockerImage = mg.Spec.BuildImage
+	} else if len(mg.Spec.Image) > 0 {
+		DockerImage = mg.Spec.Image
 	} else {
 		DockerImage = ""
 	}

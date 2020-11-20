@@ -18,15 +18,15 @@ package modules
 
 import (
 	"context"
+	"fmt"
 	monitoringv1 "github.com/coreos/prometheus-operator/pkg/apis/monitoring/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	log "k8s.io/klog"
 	"metagraf/mg/k8sclient"
 	"metagraf/mg/params"
 	"metagraf/pkg/metagraf"
-	"fmt"
 	"os"
-	log "k8s.io/klog"
 )
 
 func GenServiceMonitorAndService(mg *metagraf.MetaGraf) {
@@ -50,9 +50,16 @@ func GenServiceMonitor(mg *metagraf.MetaGraf, svc *corev1.Service) {
 	for _,p := range svc.Spec.Ports {
 		if p.Port == params.ServiceMonitorPort {
 			metricPort = p
+		} else if p.Port == 80 {
+			metricPort = corev1.ServicePort{
+				Name:        "http",
+				Protocol:    "TCP",
+				Port:        80,
+			}
 		}
 	}
-	if metricPort.Port != params.ServiceMonitorPort {
+	if metricPort.Port != params.ServiceMonitorPort && metricPort.Port != 80 {
+		fmt.Println("DEBUG:", metricPort.Port)
 		fmt.Printf("ERROR: Unable to find default or provided service port for scraping. Tried to find: %v", params.ServiceMonitorPort)
 		os.Exit(1)
 	}
