@@ -35,13 +35,13 @@ var (
 	// chicken and egg problem when migrating configuration schemes.
 	InspectAllowExtraConfig = false
 
-	ArgoCDApplicationProject  string
+	ArgoCDApplicationProject string
 	// In which namespace do we want the ArgoCD Application CR to be created
 	ArgoCDApplicationNamespace string
-	ArgoCDApplicationRepoURL  string
-	ArgoCDApplicationRepoPath string
+	ArgoCDApplicationRepoURL   string
+	ArgoCDApplicationRepoPath  string
 	// Git Reference (tag/commit)
-	ArgoCDApplicationTargetRevision			string = "HEAD"
+	ArgoCDApplicationTargetRevision         string = "HEAD"
 	ArgoCDApplicationSourceDirectoryRecurse bool
 	ArgoCDSyncPolicyRetry                   bool
 	ArgoCDSyncPolicyRetryLimit              int64
@@ -49,9 +49,9 @@ var (
 	ArgoCDAutomatedSyncPolicyPrune          bool
 	ArgoCDAutomatedSyncPolicySelfHeal       bool
 
-	// Deployment image aliasing will retag upstream image as mg convention names.
+	// Deployment image aliasing will expect mg convention tagging of upstream images.
 	// mysql:1.2.3 becomes mg-mysqlv1 if your metagraf name is mg-mysqlv1 and version is in 1.x.x range.
-	DeploymentImageAliasing	bool = true
+	DisableDeploymentImageAliasing bool
 
 	// Set to true for generating ServiceMonitor objects when creating services.
 	ServiceMonitor bool = false
@@ -62,15 +62,13 @@ var (
 	// ServiceMonitor definition of scraping scheme.
 	ServiceMonitorScheme string = "http"
 	// ServiceMonitor definition of scrape path.
-	ServiceMonitorPath string
+	ServiceMonitorPath        string
 	ServiceMonitorPathDefault string = "/prometheus"
 
 	// Name of prometheus-operator instance that should discover the generated ServiceMonitor or PodMonitor resources.
 	ServiceMonitorOperatorName string = "prometheus"
 
 	// Relative path to template file for use when creating a software component reference document.
-	RefTemplateFile string = ""
+	RefTemplateFile       string = ""
 	RefTemplateOutputFile string = "REF.md"
 )
-
-

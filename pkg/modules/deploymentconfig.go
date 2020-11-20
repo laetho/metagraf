@@ -197,7 +197,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 // Determine if we're using container build by the project or if we are just referencing
 // an existing container.
 func imageRef(mg *metagraf.MetaGraf) string {
-	if (len(mg.Spec.Image) > 0 && !params.DeploymentImageAliasing ) {
+	if (len(mg.Spec.Image) > 0 && params.DisableDeploymentImageAliasing) {
 		return mg.Spec.Image
 	} else {
 		registry := viper.GetString("registry")
