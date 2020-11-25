@@ -147,7 +147,7 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 	if mg.Spec.LivenessProbe != probe {
 		Container.LivenessProbe = &mg.Spec.LivenessProbe
 	}
-	if mg.Spec.LivenessProbe != probe {
+	if mg.Spec.StartupProbe != probe {
 		Container.StartupProbe = &mg.Spec.StartupProbe
 	}
 	Containers = append(Containers, Container)
@@ -155,7 +155,8 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 	// Tying the DeploymentObject together, literally :)
 	obj := appsv1.Deployment{
 		TypeMeta: metav1.TypeMeta{
-			Kind:       "Deployment",
+			Kind:       "Deployment",en
+
 			APIVersion: "apps/v1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
