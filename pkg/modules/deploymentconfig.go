@@ -147,7 +147,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 	if mg.Spec.LivenessProbe != probe {
 		Container.LivenessProbe = &mg.Spec.LivenessProbe
 	}
-	if mg.Spec.LivenessProbe != probe {
+	if mg.Spec.StartupProbe != probe {
 		Container.StartupProbe = &mg.Spec.StartupProbe
 	}
 	Containers = append(Containers, Container)
