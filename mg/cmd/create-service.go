@@ -17,9 +17,8 @@ func init() {
 	createServiceCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
 	createServiceCmd.Flags().BoolVar(&params.ServiceMonitor, "service-monitor",false, "Set flag to also create a ServiceMonitor resource. Requires a cluster with the prometheus-operator.")
 	createServiceCmd.Flags().StringVar(&params.ServiceMonitorPath, "service-monitor-path", params.ServiceMonitorPathDefault, "Path to scrape metrics from.")
-	createServiceCmd.Flags().Int32Var(&params.ServiceMonitorPort, "service-monitor-port", params.ServiceMonitorPort, "Set Service port to scrape in ServiceMonitor.")
+	createServiceCmd.Flags().Int32Var(&params.ServiceMonitorPort, "service-monitor-port", params.ServiceMonitorPortDefault, "Set Service port to scrape by a ServiceMonitor.")
 	createServiceCmd.Flags().StringVar(&params.ServiceMonitorOperatorName, "service-monitor-operator-name", params.ServiceMonitorOperatorName,"Name of prometheus-operator instance to create ServiceMonitor for.")
-
 }
 
 var createServiceCmd = &cobra.Command{

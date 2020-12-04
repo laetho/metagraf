@@ -83,7 +83,7 @@ func GenService(mg *metagraf.MetaGraf) {
 			corev1.ServicePort{
 				Name:     "http",
 				Port:     int32(80),
-				Protocol: corev1.Protocol("TCP"),
+				Protocol: "TCP",
 				TargetPort: intstr.IntOrString{
 					Type:   0,
 					IntVal: int32(8080),
@@ -128,7 +128,7 @@ func GenService(mg *metagraf.MetaGraf) {
 		if Output && Format == "yaml" {
 			fmt.Println("---")
 		}
-		GenServiceMonitor(mg, &obj)
+		GenServiceMonitor(mg)
 	}
 }
 

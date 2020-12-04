@@ -27,6 +27,7 @@ import (
 	"metagraf/mg/params"
 	"metagraf/pkg/metagraf"
 	"os"
+	"strconv"
 )
 
 func GenServiceMonitorAndService(mg *metagraf.MetaGraf) {
@@ -34,7 +35,7 @@ func GenServiceMonitorAndService(mg *metagraf.MetaGraf) {
 
 }
 
-func GenServiceMonitor(mg *metagraf.MetaGraf, svc *corev1.Service) {
+func GenServiceMonitor(mg *metagraf.MetaGraf) {
 	objname := Name(mg)
 	// Resource labels
 	l := make(map[string]string)
@@ -46,22 +47,10 @@ func GenServiceMonitor(mg *metagraf.MetaGraf, svc *corev1.Service) {
 	s := make(map[string]string)
 	s["app"] = objname
 
-	var metricPort corev1.ServicePort
-	for _,p := range svc.Spec.Ports {
-		if p.Port == params.ServiceMonitorPort {
-			metricPort = p
-		} else if p.Port == 80 {
-			metricPort = corev1.ServicePort{
-				Name:        "http",
-				Protocol:    "TCP",
-				Port:        80,
-			}
-		}
-	}
-	if metricPort.Port != params.ServiceMonitorPort && metricPort.Port != 80 {
-		fmt.Println("DEBUG:", metricPort.Port)
-		fmt.Printf("ERROR: Unable to find default or provided service port for scraping. Tried to find: %v", params.ServiceMonitorPort)
-		os.Exit(1)
+	metricPort := corev1.ServicePort{
+		Name:        "http",
+		Protocol:    "TCP",
+		Port:        FindServiceMonitorPort(mg),
 	}
 
 	eps := []monitoringv1.Endpoint{}
@@ -112,6 +101,25 @@ func FindServiceMonitorPath(mg *metagraf.MetaGraf) string {
 	}
 	// Default, return default value
 	return params.ServiceMonitorPathDefault
+}
+
+// Parses metaGraf specification to look for annotation to
+// control scrape port when generating ServiceMonitor resource.
+func FindServiceMonitorPort(mg *metagraf.MetaGraf) int32 {
+	// mg cli value, return provided if not default.
+	if params.ServiceMonitorPort > 1024 && params.ServiceMonitorPort!= params.ServiceMonitorPortDefault {
+		return params.ServiceMonitorPort
+	}
+	// Annotation, if not provided return annotation value.
+	port, err := strconv.Atoi(mg.Metadata.Annotations["servicemonitor.monitoring.coreos.com/port"])
+	if err != nil {
+		panic(err)
+	}
+	if int32(port) > 1024  {
+		return int32(port)
+	}
+	// Default, return default value
+	return params.ServiceMonitorPortDefault
 }
 
 func StoreServiceMonitor(obj monitoringv1.ServiceMonitor) {

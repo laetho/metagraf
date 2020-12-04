@@ -56,7 +56,8 @@ var (
 	// Set to true for generating ServiceMonitor objects when creating services.
 	ServiceMonitor bool = false
 	// ServiceMonitor definition of which port to scrape.
-	ServiceMonitorPort int32 = 8080
+	ServiceMonitorPort int32
+	ServiceMonitorPortDefault int32 = 8080
 	// ServiceMonitor definition of scraping interval.
 	ServiceMonitorInterval string = "10s"
 	// ServiceMonitor definition of scraping scheme.
