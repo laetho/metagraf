@@ -64,7 +64,7 @@ func pipelineCreate(mgf string, namespace string) {
 	mg := metagraf.Parse(mgf)
 
 	modules.Variables = mg.GetProperties()
-	OverrideProperties(modules.Variables)
+	modules.Variables = OverrideProperties(mg.GetProperties())
 	log.V(2).Info("Current MGProperties: ", modules.Variables)
 
 	modules.GenSecrets(&mg)

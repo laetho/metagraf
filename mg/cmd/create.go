@@ -105,9 +105,7 @@ var createConfigMapCmd = &cobra.Command{
 		FlagPassingHack()
 
 		mg := metagraf.Parse(args[0])
-
-		modules.Variables = mg.GetProperties()
-		OverrideProperties(modules.Variables)
+		modules.Variables = OverrideProperties(mg.GetProperties())
 		log.V(2).Info("Current MGProperties: ", modules.Variables)
 
 		if len(modules.NameSpace) == 0 {
@@ -141,7 +139,7 @@ var createDeploymentCmd = &cobra.Command{
 		FlagPassingHack()
 
 		modules.Variables = mg.GetProperties()
-		OverrideProperties(modules.Variables)
+		modules.Variables = OverrideProperties(modules.Variables)
 
 		if len(modules.NameSpace) == 0 {
 			modules.NameSpace = Namespace
@@ -172,8 +170,7 @@ var createDeploymentConfigCmd = &cobra.Command{
 		mg := metagraf.Parse(args[0])
 		FlagPassingHack()
 
-		modules.Variables = mg.GetProperties()
-		OverrideProperties(modules.Variables)
+		modules.Variables = OverrideProperties(mg.GetProperties())
 		log.V(2).Info("Current MGProperties: ", modules.Variables)
 
 		if len(modules.NameSpace) == 0 {

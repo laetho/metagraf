@@ -26,7 +26,7 @@ import (
 	"strings"
 )
 
-func PropertiesFromEnv(mgp metagraf.MGProperties) {
+func PropertiesFromEnv(mgp metagraf.MGProperties) metagraf.MGProperties {
 	for _, v := range os.Environ() {
 		key, val := keyValueFromEnv(v)
 		if p, ok := mgp["local:"+key]; ok {
@@ -34,12 +34,13 @@ func PropertiesFromEnv(mgp metagraf.MGProperties) {
 			mgp[p.MGKey()] = p
 		}
 	}
+	return mgp
 }
 
 // Modifies a MGProperties map with values from --cvars
 // argument. Only supports local environment variables
 // for now.
-func PropertiesFromCmd(mgp metagraf.MGProperties) {
+func PropertiesFromCmd(mgp metagraf.MGProperties) metagraf.MGProperties {
 	// Parse and get values from --cvars
 	cvars := CmdCVars(CVars).Parse()
 
@@ -55,6 +56,7 @@ func PropertiesFromCmd(mgp metagraf.MGProperties) {
 			continue
 		}
 	}
+	return mgp
 }
 
 // Used for splitting --cvfile .properties files with strings.FieldsFunc()
@@ -76,7 +78,12 @@ func PropertiesFromFile(mgp metagraf.MGProperties) metagraf.MGProperties {
 		log.Error(err)
 		os.Exit(1)
 	}
-	defer file.Close()
+	defer func() {
+		err := file.Close()
+		if err != nil {
+			log.Warningf("Unable to close file: %v", err)
+		}
+	}()
 	scanner := bufio.NewScanner(file)
 	scanner.Split(bufio.ScanLines)
 
@@ -125,7 +132,18 @@ func PropertiesFromFile(mgp metagraf.MGProperties) metagraf.MGProperties {
 
 		// Only set in mgp MGProperties if the key is valid.
 		if _, ok := mgp[t.MGKey()]; !ok {
-			log.V(1).Infof("Found invalid key: %s while reading configuration file.\n", t.MGKey())
+			// Allow for setting Kubernetes service discovery environment variables
+			// even though they are not part of of the metagraf specification.
+			if strings.Contains(t.Key, "_SERVICE_") {
+				if len(t.Value) == 0 {
+					fail = true
+					fmt.Printf("Configured property %v must have a value in %v\n", t.MGKey(),CVfile)
+				} else {
+					mgp[t.MGKey()] = t
+				}
+			} else {
+				log.V(1).Infof("Found invalid key: %s while reading configuration file.\n", t.MGKey())
+			}
 		} else {
 			if len(t.Value) == 0 {
 				fail = true
@@ -149,13 +167,15 @@ func keyValueFromEnv(s string) (string, string) {
 	return strings.Split(s, "=")[0], strings.Split(s, "=")[1]
 }
 
-func OverrideProperties(mgp metagraf.MGProperties) {
-	// Fetch possible variables form metaGraf specification
-	PropertiesFromEnv(mgp)
+func OverrideProperties(mgp metagraf.MGProperties) metagraf.MGProperties {
+	// Fetch possible variables from metaGraf specification
+	mgp = PropertiesFromEnv(mgp)
 	// Fetch variable overrides from file if specified with --cvfile
-	PropertiesFromFile(mgp)
+	mgp = PropertiesFromFile(mgp)
 	// Fetch from commandline
-	PropertiesFromCmd(mgp)
+	mgp = PropertiesFromCmd(mgp)
+
+	return mgp
 }
 
 func FlagPassingHack() {
