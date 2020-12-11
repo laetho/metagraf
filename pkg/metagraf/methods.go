@@ -18,8 +18,11 @@ package metagraf
 
 import (
 	"github.com/pkg/errors"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/util/intstr"
 	"metagraf/mg/params"
+	"strconv"
 	"strings"
 )
 
@@ -31,11 +34,11 @@ func (mgp *MGProperty) MGKey() string {
 // Returns a list of GroupKind's described by the parsed metaGraf
 // specification
 func (mg *MetaGraf) GroupKinds() []metav1.GroupKind {
-	gks := []metav1.GroupKind{}
+	var gks []metav1.GroupKind
 
-	sgk := metav1.GroupKind{Group: "core", Kind: "Service",}
-	dgk := metav1.GroupKind{Group: "apps", Kind: "Deployment",}
-	rgk := metav1.GroupKind{Group: "core", Kind: "Route",}
+	sgk := metav1.GroupKind{Group: "core", Kind: "Service"}
+	dgk := metav1.GroupKind{Group: "apps", Kind: "Deployment"}
+	rgk := metav1.GroupKind{Group: "core", Kind: "Route"}
 
 	gks = append(gks, sgk, dgk, rgk)
 
@@ -229,6 +232,51 @@ func (mg *MetaGraf) Labels(name string) map[string]string {
 		l[sanitizeKey(k)] = v
 	}
 	return l
+}
+
+// Checks the metagraf specification for k8s.io namespaced port information.
+// Format:
+// <protocol>.service.k8s.io/port : value
+func (mg *MetaGraf) AnnotationServicePorts() ([]corev1.ServicePort, error) {
+	var ports []corev1.ServicePort
+	for k,v := range mg.Metadata.Annotations {
+		if strings.Contains(k, ".service.k8s.io/port") {
+			protocol := strings.Split(k, ".")[0]
+			switch protocol {
+			case "http":
+				intport, err := strconv.Atoi(v)
+				if err != nil {
+					return ports, errors.Errorf("Unable to convert port to numeric value for annotation: %v", k)
+				}
+				ports = append(ports, corev1.ServicePort{
+					Name:     "http",
+					Port:     int32(80),
+					Protocol: "TCP",
+					TargetPort: intstr.IntOrString{
+						Type:   0,
+						IntVal: int32(intport),
+						StrVal: v,
+					},
+				})
+			case "https":
+				intport, err := strconv.Atoi(v)
+				if err != nil {
+					return ports, errors.Errorf("Unable to convert port to numeric value for annotation: %v", k)
+				}
+				ports = append(ports, corev1.ServicePort{
+					Name:     "https",
+					Port:     int32(443),
+					Protocol: "TCP",
+					TargetPort: intstr.IntOrString{
+						Type:   0,
+						IntVal: int32(intport),
+						StrVal: v,
+					},
+				})
+			}
+		}
+	}
+	return ports, nil
 }
 
 func sanitizeLabelValue(val string) string {

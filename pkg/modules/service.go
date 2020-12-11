@@ -30,14 +30,10 @@ import (
 	"metagraf/pkg/imageurl"
 	"metagraf/pkg/metagraf"
 	"os"
-	"strconv"
-	"strings"
 )
 
 func GenService(mg *metagraf.MetaGraf) {
 	objname := Name(mg)
-
-	var serviceports []corev1.ServicePort
 
 	var DockerImage string
 	if len(mg.Spec.BaseRunImage) > 0 {
@@ -60,37 +56,7 @@ func GenService(mg *metagraf.MetaGraf) {
 		imgurl.Image+":"+imgurl.Tag)
 	ImageInfo = helpers.GetDockerImageFromIST(ist)
 
-	for k := range ImageInfo.Config.ExposedPorts {
-		ss := strings.Split(k, "/")
-		port, _ := strconv.Atoi(ss[0])
-		ContainerPort := corev1.ServicePort{
-			Name:     strings.ToLower(ss[0]) + "-" + ss[1],
-			Port:     int32(port),
-			Protocol: corev1.Protocol(strings.ToUpper(ss[1])),
-			TargetPort: intstr.IntOrString{
-				Type:   0,
-				IntVal: int32(port),
-				StrVal: ss[1],
-			},
-		}
-		serviceports = append(serviceports, ContainerPort)
-	}
-
-	// Handle no serviceports
-	if len(serviceports) == 0 {
-		serviceports = append(
-			serviceports,
-			corev1.ServicePort{
-				Name:     "http",
-				Port:     int32(80),
-				Protocol: "TCP",
-				TargetPort: intstr.IntOrString{
-					Type:   0,
-					IntVal: int32(8080),
-					StrVal: "8080",
-				},
-			})
-	}
+	serviceports := ApplyPortConventions(mg, helpers.ImageExposedPortsToServicePorts(ImageInfo.Config))
 
 	selectors := make(map[string]string)
 	selectors["app"] = objname
@@ -115,7 +81,6 @@ func GenService(mg *metagraf.MetaGraf) {
 		},
 	}
 
-
 	if !Dryrun {
 		StoreService(obj)
 	}
@@ -130,6 +95,74 @@ func GenService(mg *metagraf.MetaGraf) {
 		}
 		GenServiceMonitor(mg)
 	}
+}
+
+// Applies protocol and port convetions for generating standardized Kubernetes Service
+// resource. Defaults to 80->8080 mapping if no annotations or image
+// port configuration is found.
+func ApplyPortConventions(mg *metagraf.MetaGraf, ports []corev1.ServicePort) []corev1.ServicePort {
+
+	if len(ports) == 0 {
+		return defaultPortConventions(mg, ports)
+	}
+
+	serviceports, err := mg.AnnotationServicePorts()
+	if err != nil {
+		fmt.Println("ERROR:", err)
+		os.Exit(1)
+	}
+	log.Infof("ServicePort from Annotations: %v", len(serviceports))
+
+	output := []corev1.ServicePort{}
+	// Rewrite port mappings for container image ports that
+	// matches annotations to acheive protocol standardization.
+	fmt.Println("trying to rewrite ports")
+	for _, op := range serviceports {
+		for _, p := range ports {
+			if op.TargetPort.IntVal == p.Port {
+				output = append(output, op)
+			} else {
+				output = append(output, p)
+			}
+		}
+	}
+	return output
+}
+
+// Returns the default port mapping convention
+func defaultPortConventions(mg *metagraf.MetaGraf, ports []corev1.ServicePort) []corev1.ServicePort {
+
+	serviceports, err := mg.AnnotationServicePorts()
+	if err != nil {
+		fmt.Println("ERROR:", err)
+		os.Exit(1)
+	}
+
+	switch {
+	case len(serviceports) > 0:
+		for _, port := range serviceports {
+			ports = append(ports, port)
+		}
+	default:
+		// If we don't have anything explicit set by annotations, default to 80 -> 8080 and named "http".
+		if len(serviceports) == 0 {
+			ports = append(ports, corev1.ServicePort{
+				Name:     "http",
+				Port:     int32(80),
+				Protocol: "TCP",
+				TargetPort: intstr.IntOrString{
+					Type:   0,
+					IntVal: int32(8080),
+					StrVal: "8080",
+				},
+			})
+		}
+	}
+	return serviceports
+}
+
+func applyFuzzyPortConventions() {
+
 }
 
 func StoreService(obj corev1.Service) {
@@ -162,13 +195,13 @@ func DeleteService(name string) {
 
 	_, err := client.Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {
-		fmt.Println("Service: ", name, "does not exist in namespace: ", NameSpace,", skipping...")
+		fmt.Println("Service: ", name, "does not exist in namespace: ", NameSpace, ", skipping...")
 		return
 	}
 
 	err = client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 	if err != nil {
-		fmt.Println( "Unable to delete Service: ", name, " in namespace: ", NameSpace)
+		fmt.Println("Unable to delete Service: ", name, " in namespace: ", NameSpace)
 		log.Error(err)
 		return
 	}

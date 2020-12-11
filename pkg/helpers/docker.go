@@ -16,14 +16,38 @@ limitations under the License.
 
 package helpers
 
-/*
 import (
-	"fmt"
-	"github.com/fsouza/go-dockerclient"
-	"os"
+	"github.com/openshift/api/image/docker10"
+	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/util/intstr"
+	"strconv"
+	"strings"
 )
 
+// Returns a slice of k8s.io v1 ServicePort{} types from a Docker image config.
+func ImageExposedPortsToServicePorts(config *docker10.DockerConfig ) []corev1.ServicePort {
+	var ports []corev1.ServicePort
+	for k := range config.ExposedPorts {
+		ss := strings.Split(k, "/")
+		port, _ := strconv.Atoi(ss[0])
+		ContainerPort := corev1.ServicePort{
+			Name:     strings.ToLower(ss[0]) + "-" + ss[1],
+			Port:     int32(port),
+			Protocol: corev1.Protocol(strings.ToUpper(ss[1])),
+			TargetPort: intstr.IntOrString{
+				Type:   0,
+				IntVal: int32(port),
+				StrVal: ss[1],
+			},
+		}
+		ports = append(ports, ContainerPort)
+	}
+	return ports
+}
+
+/*
 // todo: verify image string
+
 func DockerInspectImage(image string, tag string, auth docker.AuthConfiguration) (*docker.Image, error) {
 
 	endpoint := "unix://var/run/docker.sock"
