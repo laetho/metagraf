@@ -42,8 +42,6 @@ func (mg *MetaGraf) GroupKinds() []metav1.GroupKind {
 
 	gks = append(gks, sgk, dgk, rgk)
 
-
-
 	return gks
 }
 
@@ -147,6 +145,15 @@ func (mgp MGProperties) Keys() []string {
 		keys = append(keys, prop.Key)
 	}
 	return keys
+}
+
+func (mgp MGProperties) GetByKey(key string) (MGProperty, error){
+	for _, p := range mgp {
+		if p.Key == key {
+			return p, nil
+		}
+	}
+	return MGProperty{}, errors.Errorf("Key not found!")
 }
 
 // Return a slice of property keys. If required == true only return required keys.

@@ -92,6 +92,34 @@ func genValueFrom(e *metagraf.EnvironmentVar) corev1.EnvVar {
 	return EnvVar
 }
 
+func GetEnvVars( vars []metagraf.EnvironmentVar, mgp metagraf.MGProperties) []corev1.EnvVar {
+	var envs []corev1.EnvVar
+
+	for _, e := range vars {
+		env := e.ToEnvVar()
+		prop,err := mgp.GetByKey(e.Name)
+		if err != nil {
+			log.V(2).Infof("Did not find input value for %s", e.Name)
+		} else {
+			env.Value = prop.Value
+		}
+		envs = append(envs, env)
+	}
+	return envs
+}
+
+func GetBuildEnvVars(mg *metagraf.MetaGraf, mgp metagraf.MGProperties) []corev1.EnvVar {
+	var envs []corev1.EnvVar
+
+	for _, e := range mg.Spec.Environment.Build {
+		envs = append(envs, e.ToEnvVar())
+	}
+
+	return envs
+}
+
+
+
 func parseEnvVars(mg *metagraf.MetaGraf) []corev1.EnvVar {
 	var EnvVars []corev1.EnvVar
 
