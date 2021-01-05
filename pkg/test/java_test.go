@@ -23,9 +23,9 @@ func TestGenerateJvmSysPropValue(t *testing.T) {
 
 	t.Run("FromDefaults", func(t *testing.T) {
 		modules.Defaults = true
-		modules.Variables = mg.GetProperties()
+		modules.Variables = cmd.OverrideProperties(mg.GetProperties())
 
-		generatedEnvVar := modules.GenEnvVar_JVM_SYS_PROP(&mg, "JAVA_OPTIONS")
+		generatedEnvVar := modules.GenEnvVar_JVM_SYS_PROP(modules.Variables, "JAVA_OPTIONS")
 
 		expected := "-Dmy.test.prop=" + defaultValue
 		if generatedEnvVar.Value != expected {
@@ -36,16 +36,12 @@ func TestGenerateJvmSysPropValue(t *testing.T) {
 	t.Run("FromCmdProps", func(t *testing.T) {
 		modules.Defaults = false
 		cvarsValue := "cvars_value"
-		cmd.CVars = []string{"my.test.prop=" + cvarsValue}
+		cmd.CVars = []string{"JVM_SYS_PROP|my.test.prop=" + cvarsValue}
 
-		modules.Variables = mg.GetProperties()
-		cmd.OverrideProperties(modules.Variables)
-
-		generatedEnvVar := modules.GenEnvVar_JVM_SYS_PROP(&mg, "JAVA_OPTIONS")
-
+		generatedEnvVar := modules.GenEnvVar_JVM_SYS_PROP(cmd.OverrideProperties(mg.GetProperties()), "JAVA_OPTIONS")
 		expected := "-Dmy.test.prop=" + cvarsValue
 		if generatedEnvVar.Value != expected {
-			t.Errorf("Wrong JVM SYS PROP env var generated, expected %v got %v", expected, generatedEnvVar.Value)
+			t.Errorf("Wrong JVM SYS PROP env var generated, expected %v got %v.", expected, generatedEnvVar.Value)
 		}
 	})
 }

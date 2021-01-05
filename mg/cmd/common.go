@@ -43,14 +43,8 @@ func PropertiesFromEnv(mgp metagraf.MGProperties) metagraf.MGProperties {
 func PropertiesFromCmd(mgp metagraf.MGProperties) metagraf.MGProperties {
 	// Parse and get values from --cvars
 	cvars := CmdCVars(CVars).Parse()
-
 	for k, v := range cvars {
-		if p, ok := mgp["local|"+k]; ok {
-			p.Value = v
-			mgp[p.MGKey()] = p
-			continue
-		}
-		if p, ok := mgp["JVM_SYS_PROP|"+k]; ok {
+		if p, ok := mgp[k]; ok {
 			p.Value = v
 			mgp[p.MGKey()] = p
 			continue
@@ -67,10 +61,8 @@ func MgPropertyLineSplit(r rune) bool {
 // Modifies MGProfperties map with information from files
 // and also return a map of only the properties on file..
 func PropertiesFromFile(mgp metagraf.MGProperties) metagraf.MGProperties {
-	props := metagraf.MGProperties{}
-
 	if len(CVfile) == 0 {
-		return props
+		return mgp
 	}
 
 	file, err := os.Open( CVfile )
@@ -152,12 +144,12 @@ func PropertiesFromFile(mgp metagraf.MGProperties) metagraf.MGProperties {
 			mgp[t.MGKey()] = t
 		}
 
-		props[t.MGKey()] = t
+		mgp[t.MGKey()] = t
 	}
 	if fail {
 		os.Exit(1)
 	}
-	return props
+	return mgp
 }
 
 
@@ -172,8 +164,10 @@ func OverrideProperties(mgp metagraf.MGProperties) metagraf.MGProperties {
 	mgp = PropertiesFromEnv(mgp)
 	// Fetch variable overrides from file if specified with --cvfile
 	mgp = PropertiesFromFile(mgp)
-	// Fetch from commandline
+	// Fetch from commandline with --cvars
+	fmt.Println("before:",mgp)
 	mgp = PropertiesFromCmd(mgp)
+	fmt.Println("after:",mgp)
 
 	return mgp
 }

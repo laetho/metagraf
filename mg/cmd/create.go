@@ -138,8 +138,7 @@ var createDeploymentCmd = &cobra.Command{
 		mg := metagraf.Parse(args[0])
 		FlagPassingHack()
 
-		modules.Variables = mg.GetProperties()
-		modules.Variables = OverrideProperties(modules.Variables)
+		modules.Variables = OverrideProperties(mg.GetProperties())
 
 		if len(modules.NameSpace) == 0 {
 			modules.NameSpace = Namespace

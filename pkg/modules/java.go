@@ -35,21 +35,18 @@ func HasJVM_SYS_PROP(mg *metagraf.MetaGraf) bool {
 
 // Generate an EnvVar for a config section.
 // SecretFrom or EnvFrom will not be processed.
-func GenEnvVar_JVM_SYS_PROP(mg *metagraf.MetaGraf, name string) corev1.EnvVar {
+func GenEnvVar_JVM_SYS_PROP(mgp metagraf.MGProperties, name string) corev1.EnvVar {
 	var props []string
-
-	for _,c := range mg.Spec.Config {
-		if strings.ToUpper(c.Type) != "JVM_SYS_PROP" {
+	for _, p := range mgp {
+		// Skip processing if not JVM_SYS_PROP
+		if p.Source != "JVM_SYS_PROP" {
 			continue
 		}
-		for _,o := range c.Options {
-			if p, ok := Variables["JVM_SYS_PROP|"+o.Name]; ok {
-				if Defaults {
-					props = append(props, "-D"+o.Name+"="+p.Default)
-				} else {
-					props = append(props, "-D"+o.Name+"="+p.Value)
-				}
-			}
+
+		if Defaults {
+			props = append(props, "-D"+p.Key+"="+p.Default)
+		} else {
+			props = append(props, "-D"+p.Key+"="+p.Value)
 		}
 	}
 	return corev1.EnvVar{

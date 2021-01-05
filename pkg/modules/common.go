@@ -156,7 +156,7 @@ func parseEnvVars(mg *metagraf.MetaGraf) []corev1.EnvVar {
 		// of type JVM_SYS_PROP as well.
 		if strings.ToUpper(e.Type) == "JVM_SYS_PROP" {
 			if HasJVM_SYS_PROP(mg) {
-				EnvVars = append(EnvVars, GenEnvVar_JVM_SYS_PROP(mg, e.Name))
+				EnvVars = append(EnvVars, GenEnvVar_JVM_SYS_PROP(Variables, e.Name))
 			}
 			continue
 		}
