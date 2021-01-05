@@ -58,14 +58,19 @@ func MgPropertyLineSplit(r rune) bool {
 	return r == '|' || r == '='
 }
 
+
+
 // Modifies MGProfperties map with information from files
 // and also return a map of only the properties on file..
-func PropertiesFromFile(mgp metagraf.MGProperties) metagraf.MGProperties {
-	if len(CVfile) == 0 {
-		return mgp
+func PropertiesFromFile(mgp metagraf.MGProperties, props metagraf.MGProperties) metagraf.MGProperties {
+	if len(propfile) == 0 {
+		if len(CVfile) == 0 {
+			return mgp
+		}
+		propfile = CVfile
 	}
 
-	file, err := os.Open( CVfile )
+	file, err := os.Open( propfile )
 	if err != nil {
 		log.Error(err)
 		os.Exit(1)
@@ -122,19 +127,21 @@ func PropertiesFromFile(mgp metagraf.MGProperties) metagraf.MGProperties {
 		t.Default = mgp[t.MGKey()].Default
 		t.Required = mgp[t.MGKey()].Required
 
+		// Allow for setting Kubernetes service discovery environment variables
+		// even though they are not part of of the metagraf specification.
+		if strings.Contains(t.Key, "_SERVICE_") {
+				mgp[t.MGKey()] = t
+		}
+
 		// Only set in mgp MGProperties if the key is valid.
 		if _, ok := mgp[t.MGKey()]; !ok {
 			// Allow for setting Kubernetes service discovery environment variables
 			// even though they are not part of of the metagraf specification.
-			if strings.Contains(t.Key, "_SERVICE_") {
-				if len(t.Value) == 0 {
-					fail = true
-					fmt.Printf("Configured property %v must have a value in %v\n", t.MGKey(),CVfile)
-				} else {
-					mgp[t.MGKey()] = t
-				}
+			if len(t.Value) == 0 {
+				fail = true
+				fmt.Printf("Configured property %v must have a value in %v\n", t.MGKey(),CVfile)
 			} else {
-				log.V(1).Infof("Found invalid key: %s while reading configuration file.\n", t.MGKey())
+				mgp[t.MGKey()] = t
 			}
 		} else {
 			if len(t.Value) == 0 {
@@ -163,7 +170,7 @@ func OverrideProperties(mgp metagraf.MGProperties) metagraf.MGProperties {
 	// Fetch possible variables from metaGraf specification
 	mgp = PropertiesFromEnv(mgp)
 	// Fetch variable overrides from file if specified with --cvfile
-	mgp = PropertiesFromFile(mgp)
+	mgp = PropertiesFromFile(mgp, CVfile)
 	// Fetch from commandline with --cvars
 	fmt.Println("before:",mgp)
 	mgp = PropertiesFromCmd(mgp)

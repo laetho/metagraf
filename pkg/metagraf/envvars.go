@@ -9,6 +9,7 @@ func (e *EnvironmentVar) ToEnvVar() (corev1.EnvVar) {
 	switch e.GetType() {
 	case "secretfrom":
 		ev = corev1.EnvVar{
+			Name: e.Name,
 			ValueFrom: &corev1.EnvVarSource{
 				SecretKeyRef: &corev1.SecretKeySelector{
 					LocalObjectReference: corev1.LocalObjectReference{
@@ -20,6 +21,7 @@ func (e *EnvironmentVar) ToEnvVar() (corev1.EnvVar) {
 		}
 	case "envfrom":
 		ev = corev1.EnvVar{
+			Name: e.Name,
 			ValueFrom: &corev1.EnvVarSource{
 				ConfigMapKeyRef: &corev1.ConfigMapKeySelector{
 					LocalObjectReference: corev1.LocalObjectReference{
@@ -47,5 +49,4 @@ func (e *EnvironmentVar) GetType() string {
 	} else {
 		return "default"
 	}
-
 }

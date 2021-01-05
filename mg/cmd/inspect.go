@@ -69,42 +69,50 @@ var InspectPropertiesCmd = &cobra.Command{
 		}
 
 		mg := metagraf.Parse(args[0])
-		CVfile = args[1]
+		params.PropertiesFile = args[1]
 
-		mgprops := mg.GetProperties()
-		fileprops := PropertiesFromFile(mgprops)
-		confvars := fileprops.SourceKeyMap(false)
-		reqvars := mgprops.GetRequired().SourceKeyMap(true)
-
-		log.V(1).Info("Addressable Variables:", mg.GetProperties())
-		log.V(1).Info("Required Variables", reqvars)
-		log.V(1).Info("Config Variables: ", confvars)
-
-
-		// 1. Find required vars not in variables form the properties file.
-		// 2. Find configvars not in specification.
-
-		fail := false
-		for key,_ := range reqvars {
-			if _, ok := fileprops[key]; !ok {
-				fail = true
-				fmt.Printf("Required key: %v, is missing from %v\n", key, CVfile)
-			}
-		}
-
-		for key,_ := range confvars {
-			if _, ok := mgprops[key]; !ok {
-				if !params.InspectAllowExtraConfig {
-					fail = true
-				}
-				fmt.Printf("%v is an invalid configuration key for this metaGraf specification.\n", key)
-			}
-		}
-		if fail {
+		if ! InspectProperties(mg, params.PropertiesFile) {
 			os.Exit(1)
+		} else {
+			fmt.Printf("The %v configuration is valid for this metaGraf specification.\n", CVfile)
 		}
-		fmt.Printf("The %v configuration is valid for this metaGraf specification.\n", CVfile)
-		os.Exit(0)
 	},
 }
 
+func InspectProperties(mg metagraf.MetaGraf, propfile string) (bool){
+
+	mgprops := mg.GetProperties()
+	fileprops := PropertiesFromFile(mgprops, propfile)
+	confvars := fileprops.SourceKeyMap(false)
+	reqvars := mgprops.GetRequired().SourceKeyMap(true)
+
+	log.V(1).Info("Addressable Variables:", mg.GetProperties())
+	log.V(1).Info("Required Variables", reqvars)
+	log.V(1).Info("Config Variables: ", confvars)
+
+
+	// 1. Find required vars not in variables form the properties file.
+	// 2. Find configvars not in specification.
+
+	fail := false
+	for key,_ := range reqvars {
+		if _, ok := fileprops[key]; !ok {
+			fail = true
+			fmt.Printf("Required key: %v, is missing from %v\n", key, CVfile)
+		}
+	}
+
+	for key,_ := range confvars {
+		if _, ok := mgprops[key]; !ok {
+			if !params.InspectAllowExtraConfig {
+				fail = true
+			}
+			fmt.Printf("%v is an invalid configuration key for this metaGraf specification.\n", key)
+		}
+	}
+	if fail {
+		return false
+	}
+	fmt.Printf("The %v configuration is valid for this metaGraf specification.\n", CVfile)
+	return true
+}
