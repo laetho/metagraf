@@ -264,16 +264,6 @@ func keyValueFromEnv(s string) (string, string) {
 	return strings.Split(s, "=")[0], strings.Split(s, "=")[1]
 }
 
-func OverrideProperties(mgp metagraf.MGProperties) metagraf.MGProperties {
-	// Fetch possible variables from metaGraf specification
-	mgp = PropertiesFromEnv(mgp)
-	// Fetch variable overrides from file if specified with --cvfile
-	mgp = PropertiesFromFile(mgp, params.PropertiesFile)
-	// Fetch from commandline with --cvars
-	mgp = PropertiesFromCmd(mgp)
-	return mgp
-}
-
 // Process cmd parameters based on metagraf defined properties.
 func GetCmdProperties(mgp metagraf.MGProperties) metagraf.MGProperties {
 	if Defaults {

@@ -105,7 +105,7 @@ var devCmdDown = &cobra.Command{
 
 func devUp(mgf string) {
 	mg := metagraf.Parse(mgf)
-	modules.Variables = OverrideProperties(mg.GetProperties())
+	modules.Variables = GetCmdProperties(mg.GetProperties())
 	log.V(2).Info("Current MGProperties: ", modules.Variables)
 
 	modules.GenSecrets(&mg)
