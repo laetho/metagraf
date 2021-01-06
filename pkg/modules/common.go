@@ -94,6 +94,20 @@ func genValueFrom(e *metagraf.EnvironmentVar) corev1.EnvVar {
 func GetEnvVars( vars []metagraf.EnvironmentVar, mgp metagraf.MGProperties) []corev1.EnvVar {
 	var envs []corev1.EnvVar
 
+	list := make(map[string]metagraf.EnvironmentVar)
+
+	// Generate EnvironmentVar from MGProperty that is not defined in metagraf
+	// provided by vars argument here.
+	for _, i := range vars {
+		list["local|"+i.Name] = i
+	}
+	for _, p := range mgp {
+		if _, ok := list[p.MGKey()]; !ok {
+			vars = append(vars, p.ToEnvironmentVar())
+		}
+	}
+
+	// Convert metagraf EnvironmentVar's to k8s EnvVar's
 	for _, e := range vars {
 		env := e.ToEnvVar()
 		prop,err := mgp.GetByKey(e.Name)

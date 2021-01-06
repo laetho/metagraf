@@ -11,6 +11,17 @@ func (mgp *MGProperty) DefaultValueAsValue() {
 	mgp.Value = mgp.Default
 }
 
+func (mgp *MGProperty) ToEnvironmentVar() EnvironmentVar {
+	return EnvironmentVar{
+		Name:        mgp.Key,
+		Required:    mgp.Required,
+		Type:        "string",
+		Default:     mgp.Default,
+		Description: "MGProperty",
+	}
+
+}
+
 // Returns the MGProperty.Required = true
 func (mgp MGProperties) GetRequired() MGProperties {
 	props := MGProperties{}
