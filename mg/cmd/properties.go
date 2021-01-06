@@ -20,6 +20,7 @@ import (
 	"bufio"
 	"fmt"
 	log "k8s.io/klog"
+	"metagraf/mg/params"
 	"metagraf/pkg/metagraf"
 	"metagraf/pkg/modules"
 	"os"
@@ -59,15 +60,112 @@ func MgPropertyLineSplit(r rune) bool {
 }
 
 
+// Reads a properties file and returns a metagraf.MGProperties structure
+func ReadPropertiesFile(propfile string) metagraf.MGProperties {
+	props := metagraf.MGProperties{}
 
-// Modifies MGProfperties map with information from files
-// and also return a map of only the properties on file..
-func PropertiesFromFile(mgp metagraf.MGProperties, props metagraf.MGProperties) metagraf.MGProperties {
 	if len(propfile) == 0 {
-		if len(CVfile) == 0 {
+		return props
+	}
+
+	file, err := os.Open( propfile )
+	if err != nil {
+		log.Error(err)
+		os.Exit(1)
+	}
+	defer func() {
+		err := file.Close()
+		if err != nil {
+			log.Warningf("Unable to close file: %v", err)
+		}
+	}()
+	scanner := bufio.NewScanner(file)
+	scanner.Split(bufio.ScanLines)
+
+	var line string
+	for scanner.Scan() {
+		line = scanner.Text()
+		// Skip emptyish lines, there will never be a line shorter than 3 characters.
+		if len(line) <= 3 {
+			continue
+		}
+
+		a := strings.FieldsFunc(line, MgPropertyLineSplit)
+		var v []string // to hold soruce, key, value
+		if len(a) >= 3 {
+			// Handle multiple = in value.
+			val := strings.SplitAfter(line, a[0]+"|"+a[1]+"=")
+			if len(val) == 1 {
+				val = strings.SplitAfter(line, a[0]+"="+a[1]+"=")
+				if len(val) == 1 {
+					fmt.Println("Unable to parse config format!")
+					os.Exit(1)
+				}
+			}
+			v = append(v, a[0])   // Set Source
+			v = append(v, a[1])   // Set Key
+			v = append(v, val[1]) // Set value
+		} else {
+			v = a // Set Source, Key, Value from simple line parse
+		}
+
+		if len(v) != 3 {
+			fmt.Println("Configuration format error! Is it in: \"<source>|key=value\"")
+			os.Exit(1)
+		}
+
+		t := metagraf.MGProperty{
+			Source: v[0],
+			Key:    v[1],
+			Value:  strings.TrimRight(v[2], "\n"),
+		}
+		props[t.MGKey()] = t
+	}
+	return props
+}
+
+//
+func MergeAndValidateProperties(base metagraf.MGProperties, merge metagraf.MGProperties, novalidate bool) metagraf.MGProperties {
+	for _,p := range merge {
+		if novalidate {
+			if _, ok := base[p.MGKey()]; !ok {
+				base[p.MGKey()] = p
+			} else {
+				property := base[p.MGKey()]
+				property.Value = p.Value
+				base[p.MGKey()] = property
+			}
+			continue
+		}
+		// Allow for setting Kubernetes service discovery environment variables
+		// even though they are not part of of the metagraf specification.
+		if strings.Contains(p.Key, "_SERVICE_") && !novalidate {
+			base[p.MGKey()] = p
+		}
+
+		// Only set in base MGProperties if the key is valid.
+		if _, ok := base[p.MGKey()]; !ok {
+			if len(p.Value) == 0 && p.Required {
+				fmt.Printf("Configured property %v must have a value in %v\n", p.MGKey(), params.PropertiesFile)
+			} else {
+				target := base[p.MGKey()]
+				target.Value = p.Value
+				base[target.MGKey()] = target
+			}
+		}
+	}
+	return base
+}
+
+
+// Modifies MGProperties map with properties from file.
+// Returns the modified map.
+func PropertiesFromFile(mgp metagraf.MGProperties, propfile string) metagraf.MGProperties {
+	if len(propfile) == 0 {
+		if len(params.PropertiesFile) == 0 {
 			return mgp
 		}
-		propfile = CVfile
+		propfile = params.PropertiesFile
 	}
 
 	file, err := os.Open( propfile )
@@ -139,14 +237,14 @@ func PropertiesFromFile(mgp metagraf.MGProperties, props metagraf.MGProperties) 
 			// even though they are not part of of the metagraf specification.
 			if len(t.Value) == 0 {
 				fail = true
-				fmt.Printf("Configured property %v must have a value in %v\n", t.MGKey(),CVfile)
+				fmt.Printf("Configured property %v must have a value in %v\n", t.MGKey(), params.PropertiesFile)
 			} else {
 				mgp[t.MGKey()] = t
 			}
 		} else {
 			if len(t.Value) == 0 {
 				fail = true
-				fmt.Printf("Configured property %v must have a value in %v\n", t.MGKey(),CVfile )
+				fmt.Printf("Configured property %v must have a value in %v\n", t.MGKey(), params.PropertiesFile)
 			}
 			mgp[t.MGKey()] = t
 		}
@@ -170,26 +268,42 @@ func OverrideProperties(mgp metagraf.MGProperties) metagraf.MGProperties {
 	// Fetch possible variables from metaGraf specification
 	mgp = PropertiesFromEnv(mgp)
 	// Fetch variable overrides from file if specified with --cvfile
-	mgp = PropertiesFromFile(mgp, CVfile)
+	mgp = PropertiesFromFile(mgp, params.PropertiesFile)
 	// Fetch from commandline with --cvars
-	fmt.Println("before:",mgp)
 	mgp = PropertiesFromCmd(mgp)
-	fmt.Println("after:",mgp)
-
 	return mgp
 }
+
+// Process cmd parameters based on metagraf defined properties.
+func GetCmdProperties(mgp metagraf.MGProperties) metagraf.MGProperties {
+	if Defaults {
+		for _, property := range mgp {
+			property.DefaultValueAsValue()
+			mgp[property.MGKey()] = property
+		}
+	}
+	fileprops := ReadPropertiesFile(params.PropertiesFile)
+	// Fetch possible variables from metaGraf specification
+	mgp = MergeAndValidateProperties(mgp,PropertiesFromEnv(mgp), false)
+	// Fetch variable overrides from file if specified with --cvfile
+	mgp = MergeAndValidateProperties(mgp, fileprops, true)
+	// Fetch from commandline with --cvars
+	mgp = MergeAndValidateProperties(mgp, PropertiesFromCmd(mgp), false)
+	return mgp
+}
+
+
 
 func FlagPassingHack() {
 	if Dryrun {
 		Output = true
 	}
-	// Push flags to modules (hack)
+	// Push flags to modules (hack) All of these should be replaced by using params. package
 	modules.Version = Version
 	modules.Output = Output
 	modules.Dryrun = Dryrun
 	modules.NameSpace = Namespace
 	modules.Verbose = Verbose
-	modules.CVfile = CVfile
 	modules.Defaults = Defaults
 	modules.Format = Format
 	modules.Suffix = Suffix

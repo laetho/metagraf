@@ -35,7 +35,7 @@ func init() {
 	devCmdUp.Flags().StringVarP(&Namespace, "namespace", "n","","namespace to work on, if not supplied it will use current active namespace.")
 	devCmdUp.Flags().StringVar(&params.SourceRef, "ref","", "use for overriding source ref or branch ref in buildconfig.")
 	devCmdUp.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
-	devCmdUp.Flags().StringVar(&CVfile, "cvfile","", "Property file with component configuration values. Can be generated with \"mg generate properties\" command.)")
+	devCmdUp.Flags().StringVar(&params.PropertiesFile, "cvfile","", "Property file with component configuration values. Can be generated with \"mg generate properties\" command.)")
 	devCmdUp.Flags().StringVar(&OName, "name", "", "Overrides name of application.")
 	devCmdUp.Flags().StringVarP(&Registry,"registry", "r",viper.GetString("registry"), "Specify container registry host")
 	devCmdUp.Flags().StringVarP(&params.OutputImagestream,"istream", "i", "", "specify if you want to output to another imagestream than the component name")

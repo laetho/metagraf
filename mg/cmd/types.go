@@ -49,6 +49,6 @@ func (v CmdCVars) Parse() CmdVars {
 		}
 		cm[split[0]] = split[1]
 	}
-	log.Info("CmdCVars: ", cm)
+	log.V(2).Info("CmdCVars: ", cm)
 	return cm
 }

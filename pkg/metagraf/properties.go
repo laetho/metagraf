@@ -6,6 +6,10 @@ import "github.com/pkg/errors"
 func (mgp *MGProperty) MGKey() string {
 	return mgp.Source+"|"+mgp.Key
 }
+// Sets the MGProperty Value to the Default value.
+func (mgp *MGProperty) DefaultValueAsValue() {
+	mgp.Value = mgp.Default
+}
 
 // Returns the MGProperty.Required = true
 func (mgp MGProperties) GetRequired() MGProperties {
