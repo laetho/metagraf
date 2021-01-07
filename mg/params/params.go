@@ -17,6 +17,9 @@ limitations under the License.
 package params
 
 var (
+	// PropertiesFile, assigned with --cvfile.
+	PropertiesFile string
+
 	// Potentially used by BuildConfig creation to override output imagestream
 	OutputImagestream string
 	// Override BuildSourceRef with somthing other than provided in specification.

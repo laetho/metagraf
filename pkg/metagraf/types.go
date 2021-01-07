@@ -20,9 +20,6 @@ import (
 	v1 "k8s.io/api/core/v1"
 )
 
-// Map to hold all variables from a specification
-type MGVars			map[string]string
-
 // Structure to hold specification section sourced parameters. Should
 // solve key collisions and generally be a more workable solution.
 type MGProperty struct {

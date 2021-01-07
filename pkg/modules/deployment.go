@@ -91,7 +91,8 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 	// ImageInfo := helpers.SkopeoImageInfo(DockerImage)
 	ImageInfo := helpers.ImageInfo(mg)
 
-	EnvVars = parseEnvVars(mg)
+	EnvVars = GetEnvVars(mg, Variables)
+
 	// Environment Variables from baserunimage
 	if BaseEnvs {
 		for _, e := range ImageInfo.Config.Env {
@@ -137,7 +138,6 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 		Ports:           ContainerPorts,
 		VolumeMounts:    VolumeMounts,
 		Env:             EnvVars,
-		EnvFrom:         parseEnvFrom(mg),
 	}
 	// Checking for Probes
 	probe := corev1.Probe{}

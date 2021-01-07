@@ -38,23 +38,22 @@ var (
 	Config    string // Viper config override
 	Verbose   bool = false
 	// Output flag, makes mg output generated kubernetes resources in json or yaml.
-	Output    bool = false
-	Version   string
-	Dryrun    bool = false 	// If true do not create
-	Branch    string
-	Replicas  int = 1			// Flag for adjusting number of replicas.
-	BaseEnvs  bool = false
-	CVfile    string
-	Defaults  bool = false	// Should we hydrate default values in declarative state.
-	Format    string
-	Template  string			// Command line flag for setting template name
-	Suffix    string			// Command line flag for setting mg create ref output file suffix
-	Enforce		bool = false	// Boolean flag for articulating enforcement mode instead of inform
-	ImageNS		string 			// Image Namespace, used in overriding namespace in container image references
-	Registry	string			// Flag for holding a custom container registry
-	Tag			string			// Flag to specify tag to work on or target
-	Context		string			// Flag for setting application context root.
-	CreateGlobals bool = false	// Flag for overriding default behaviour of skipping creation of global secrets.
+	Output         bool = false
+	Version        string
+	Dryrun         bool = false 	// If true do not create
+	Branch         string
+	Replicas       int = 1			// Flag for adjusting number of replicas.
+	BaseEnvs       bool = false
+	Defaults       bool = false	// Should we hydrate default values in declarative state.
+	Format         string
+	Template       string			// Command line flag for setting template name
+	Suffix         string			// Command line flag for setting mg create ref output file suffix
+	Enforce        bool = false	// Boolean flag for articulating enforcement mode instead of inform
+	ImageNS        string 			// Image Namespace, used in overriding namespace in container image references
+	Registry       string			// Flag for holding a custom container registry
+	Tag            string			// Flag to specify tag to work on or target
+	Context        string			// Flag for setting application context root.
+	CreateGlobals  bool = false	// Flag for overriding default behaviour of skipping creation of global secrets.
 	CVars 		[]string 		// Slice of strings to hold overridden values.
 )
 

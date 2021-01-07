@@ -20,6 +20,7 @@ import (
 	"bufio"
 	"fmt"
 	log "k8s.io/klog"
+	"metagraf/mg/params"
 	"metagraf/pkg/metagraf"
 	"metagraf/pkg/modules"
 	"os"
@@ -43,14 +44,8 @@ func PropertiesFromEnv(mgp metagraf.MGProperties) metagraf.MGProperties {
 func PropertiesFromCmd(mgp metagraf.MGProperties) metagraf.MGProperties {
 	// Parse and get values from --cvars
 	cvars := CmdCVars(CVars).Parse()
-
 	for k, v := range cvars {
-		if p, ok := mgp["local|"+k]; ok {
-			p.Value = v
-			mgp[p.MGKey()] = p
-			continue
-		}
-		if p, ok := mgp["JVM_SYS_PROP|"+k]; ok {
+		if p, ok := mgp[k]; ok {
 			p.Value = v
 			mgp[p.MGKey()] = p
 			continue
@@ -64,16 +59,16 @@ func MgPropertyLineSplit(r rune) bool {
 	return r == '|' || r == '='
 }
 
-// Modifies MGProfperties map with information from files
-// and also return a map of only the properties on file..
-func PropertiesFromFile(mgp metagraf.MGProperties) metagraf.MGProperties {
+
+// Reads a properties file and returns a metagraf.MGProperties structure
+func ReadPropertiesFile(propfile string) metagraf.MGProperties {
 	props := metagraf.MGProperties{}
 
-	if len(CVfile) == 0 {
+	if len(propfile) == 0 {
 		return props
 	}
 
-	file, err := os.Open( CVfile )
+	file, err := os.Open( propfile )
 	if err != nil {
 		log.Error(err)
 		os.Exit(1)
@@ -87,7 +82,6 @@ func PropertiesFromFile(mgp metagraf.MGProperties) metagraf.MGProperties {
 	scanner := bufio.NewScanner(file)
 	scanner.Split(bufio.ScanLines)
 
-	fail := false
 	var line string
 	for scanner.Scan() {
 		line = scanner.Text()
@@ -97,7 +91,7 @@ func PropertiesFromFile(mgp metagraf.MGProperties) metagraf.MGProperties {
 		}
 
 		a := strings.FieldsFunc(line, MgPropertyLineSplit)
-		var v []string	// to hold soruce, key, value
+		var v []string // to hold soruce, key, value
 		if len(a) >= 3 {
 			// Handle multiple = in value.
 			val := strings.SplitAfter(line, a[0]+"|"+a[1]+"=")
@@ -108,11 +102,11 @@ func PropertiesFromFile(mgp metagraf.MGProperties) metagraf.MGProperties {
 					os.Exit(1)
 				}
 			}
-			v = append(v, a[0]) 	// Set Source
-			v = append(v, a[1])		// Set Key
-			v = append(v, val[1])	// Set value
+			v = append(v, a[0])   // Set Source
+			v = append(v, a[1])   // Set Key
+			v = append(v, val[1]) // Set value
 		} else {
-			v =  a 	// Set Source, Key, Value from simple line parse
+			v = a // Set Source, Key, Value from simple line parse
 		}
 
 		if len(v) != 3 {
@@ -121,45 +115,47 @@ func PropertiesFromFile(mgp metagraf.MGProperties) metagraf.MGProperties {
 		}
 
 		t := metagraf.MGProperty{
-			Source:   v[0],
-			Key:      v[1],
-			Value:    strings.TrimRight(v[2], "\n"),
-			Required: true,
-			Default:  "",
+			Source: v[0],
+			Key:    v[1],
+			Value:  strings.TrimRight(v[2], "\n"),
 		}
-		t.Default = mgp[t.MGKey()].Default
-		t.Required = mgp[t.MGKey()].Required
-
-		// Only set in mgp MGProperties if the key is valid.
-		if _, ok := mgp[t.MGKey()]; !ok {
-			// Allow for setting Kubernetes service discovery environment variables
-			// even though they are not part of of the metagraf specification.
-			if strings.Contains(t.Key, "_SERVICE_") {
-				if len(t.Value) == 0 {
-					fail = true
-					fmt.Printf("Configured property %v must have a value in %v\n", t.MGKey(),CVfile)
-				} else {
-					mgp[t.MGKey()] = t
-				}
-			} else {
-				log.V(1).Infof("Found invalid key: %s while reading configuration file.\n", t.MGKey())
-			}
-		} else {
-			if len(t.Value) == 0 {
-				fail = true
-				fmt.Printf("Configured property %v must have a value in %v\n", t.MGKey(),CVfile )
-			}
-			mgp[t.MGKey()] = t
-		}
-
 		props[t.MGKey()] = t
-	}
-	if fail {
-		os.Exit(1)
 	}
 	return props
 }
 
+//
+func MergeAndValidateProperties(base metagraf.MGProperties, merge metagraf.MGProperties, novalidate bool) metagraf.MGProperties {
+	for _,p := range merge {
+		if novalidate {
+			if _, ok := base[p.MGKey()]; !ok {
+				base[p.MGKey()] = p
+			} else {
+				property := base[p.MGKey()]
+				property.Value = p.Value
+				base[p.MGKey()] = property
+			}
+			continue
+		}
+		// Allow for setting Kubernetes service discovery environment variables
+		// even though they are not part of of the metagraf specification.
+		if strings.Contains(p.Key, "_SERVICE_") && !novalidate {
+			base[p.MGKey()] = p
+		}
+
+		// Only set in base MGProperties if the key is valid.
+		if _, ok := base[p.MGKey()]; !ok {
+			if len(p.Value) == 0 && p.Required {
+				fmt.Printf("Configured property %v must have a value in %v\n", p.MGKey(), params.PropertiesFile)
+			} else {
+				target := base[p.MGKey()]
+				target.Value = p.Value
+				base[target.MGKey()] = target
+			}
+		}
+	}
+	return base
+}
 
 // Splits a shell environment variable into key and value parts
 // and returns them seperatly.
@@ -167,28 +163,36 @@ func keyValueFromEnv(s string) (string, string) {
 	return strings.Split(s, "=")[0], strings.Split(s, "=")[1]
 }
 
-func OverrideProperties(mgp metagraf.MGProperties) metagraf.MGProperties {
+// Process cmd parameters based on metagraf defined properties.
+func GetCmdProperties(mgp metagraf.MGProperties) metagraf.MGProperties {
+	if Defaults {
+		for _, property := range mgp {
+			property.DefaultValueAsValue()
+			mgp[property.MGKey()] = property
+		}
+	}
+	fileprops := ReadPropertiesFile(params.PropertiesFile)
 	// Fetch possible variables from metaGraf specification
-	mgp = PropertiesFromEnv(mgp)
+	mgp = MergeAndValidateProperties(mgp,PropertiesFromEnv(mgp), false)
 	// Fetch variable overrides from file if specified with --cvfile
-	mgp = PropertiesFromFile(mgp)
-	// Fetch from commandline
-	mgp = PropertiesFromCmd(mgp)
-
+	mgp = MergeAndValidateProperties(mgp, fileprops, true)
+	// Fetch from commandline with --cvars
+	mgp = MergeAndValidateProperties(mgp, PropertiesFromCmd(mgp), false)
 	return mgp
 }
+
+
 
 func FlagPassingHack() {
 	if Dryrun {
 		Output = true
 	}
-	// Push flags to modules (hack)
+	// Push flags to modules (hack) All of these should be replaced by using params. package
 	modules.Version = Version
 	modules.Output = Output
 	modules.Dryrun = Dryrun
 	modules.NameSpace = Namespace
 	modules.Verbose = Verbose
-	modules.CVfile = CVfile
 	modules.Defaults = Defaults
 	modules.Format = Format
 	modules.Suffix = Suffix

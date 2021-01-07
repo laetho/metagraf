@@ -5,18 +5,18 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	log "k8s.io/klog"
+	params "metagraf/mg/params"
 	"metagraf/pkg/metagraf"
 	"metagraf/pkg/modules"
 	"os"
-	params "metagraf/mg/params"
 )
 
 func init() {
 	RootCmd.AddCommand(InspectCmd)
-	InspectCmd.Flags().BoolVar(&Enforce, "enforce",false, "Enforce findings, defaults to false and informs only.")
+	InspectCmd.Flags().BoolVar(&Enforce, "enforce", false, "Enforce findings, defaults to false and informs only.")
 	InspectCmd.AddCommand(InspectPropertiesCmd)
-	InspectPropertiesCmd.Flags().StringVar(&CVfile, "cvfile","", "File with component configuration values. (key=value pairs)")
-	InspectPropertiesCmd.Flags().BoolVarP(&params.InspectAllowExtraConfig, "extra","e",false,"Will not fail inspect command when properties file have more key, value paris than required.")
+	InspectPropertiesCmd.Flags().StringVar(&params.PropertiesFile, "cvfile", "", "File with component configuration values. (key=value pairs)")
+	InspectPropertiesCmd.Flags().BoolVarP(&params.InspectAllowExtraConfig, "extra", "e", false, "Will not fail inspect command when properties file have more key, value paris than required.")
 }
 
 var InspectCmd = &cobra.Command{
@@ -39,7 +39,7 @@ var InspectCmd = &cobra.Command{
 		}
 
 		mg := metagraf.Parse(args[0])
-		modules.Variables = OverrideProperties(mg.GetProperties())
+		modules.Variables = GetCmdProperties(mg.GetProperties())
 		log.V(2).Info("Current MGProperties: ", modules.Variables)
 
 		name := modules.Name(&mg)
@@ -69,42 +69,33 @@ var InspectPropertiesCmd = &cobra.Command{
 		}
 
 		mg := metagraf.Parse(args[0])
-		CVfile = args[1]
+		params.PropertiesFile = args[1]
+		modules.Variables = GetCmdProperties(mg.GetProperties())
 
-		mgprops := mg.GetProperties()
-		fileprops := PropertiesFromFile(mgprops)
-		confvars := fileprops.SourceKeyMap(false)
-		reqvars := mgprops.GetRequired().SourceKeyMap(true)
-
-		log.V(1).Info("Addressable Variables:", mg.GetProperties())
-		log.V(1).Info("Required Variables", reqvars)
-		log.V(1).Info("Config Variables: ", confvars)
-
-
-		// 1. Find required vars not in variables form the properties file.
-		// 2. Find configvars not in specification.
-
-		fail := false
-		for key,_ := range reqvars {
-			if _, ok := fileprops[key]; !ok {
-				fail = true
-				fmt.Printf("Required key: %v, is missing from %v\n", key, CVfile)
-			}
-		}
-
-		for key,_ := range confvars {
-			if _, ok := mgprops[key]; !ok {
-				if !params.InspectAllowExtraConfig {
-					fail = true
-				}
-				fmt.Printf("%v is an invalid configuration key for this metaGraf specification.\n", key)
-			}
-		}
-		if fail {
+		if !ValidateProperties(modules.Variables) {
 			os.Exit(1)
+		} else {
+			fmt.Printf("The %v configuration is valid for this metaGraf specification.\n", params.PropertiesFile)
 		}
-		fmt.Printf("The %v configuration is valid for this metaGraf specification.\n", CVfile)
-		os.Exit(0)
 	},
 }
 
+// Check if all required MGProperty structs in MGProperties has a value.
+// Returns true if they are valid, false if they are invalid.
+func ValidateProperties(mgprops metagraf.MGProperties) bool {
+	reqvars := mgprops.GetRequired().SourceKeyMap(true)
+
+	fail := false
+	for key, _ := range reqvars {
+		property := mgprops[key]
+		if len(property.Value) == 0 {
+			fail = true
+			fmt.Printf("Required parameter %v does not have a value.\n", property.MGKey())
+		}
+	}
+
+	if fail {
+		return false
+	}
+	return true
+}

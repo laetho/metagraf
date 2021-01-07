@@ -40,7 +40,6 @@ var (
 	Dryrun    bool   // Flag passing hack
 	Branch	  string // Flag passing hack
 	BaseEnvs  bool 		//Flag passing hack
-	CVfile	  string	//Flag passing hack
 	Defaults  bool 		//Flag passing hack
 	Format	  string	// Flag passing hack
 	Template  string	// Flag passing hack
@@ -92,11 +91,11 @@ func genValueFrom(e *metagraf.EnvironmentVar) corev1.EnvVar {
 	return EnvVar
 }
 
-func parseEnvVars(mg *metagraf.MetaGraf) []corev1.EnvVar {
-	var EnvVars []corev1.EnvVar
-
+// Returns a slice of metagraf convention informative k8s EnvVar{}'s
+func GetMGEnvVars(mg *metagraf.MetaGraf) []corev1.EnvVar {
+	var envs []corev1.EnvVar
 	// Adding name and version of component as en environment variable
-	EnvVars = append(EnvVars, corev1.EnvVar{
+	envs = append(envs, corev1.EnvVar{
 		Name:  "MG_APP_NAME",
 		Value: MGAppName(mg),
 	})
@@ -108,57 +107,54 @@ func parseEnvVars(mg *metagraf.MetaGraf) []corev1.EnvVar {
 		oversion = mg.Spec.Version
 	}
 
-	EnvVars = append(EnvVars, corev1.EnvVar{
-		Name:  "MG_APP_VERSION",
+	envs = append(envs, corev1.EnvVar{
+		Name:  "MG_API_VERSION",
 		Value: oversion,
 	})
+	return envs
+}
 
-	// Local variables from metagraf as deployment envvars
-	for _, e := range mg.Spec.Environment.Local {
+func GetEnvVars( mg *metagraf.MetaGraf, mgp metagraf.MGProperties) []corev1.EnvVar {
+	vars := mg.Spec.Environment.Local
+	var envs []corev1.EnvVar
 
-		if len(e.SecretFrom) > 0 && len(e.Key) == 0 {
-			continue
+	envs = append(envs, GetMGEnvVars(mg)...)
+
+	list := make(map[string]metagraf.EnvironmentVar)
+
+	// Generate EnvironmentVar from MGProperty that is not defined in metagraf
+	// provided by vars argument here.
+	for _, i := range vars {
+		list["local|"+i.Name] = i
+	}
+	for _, p := range mgp {
+		if _, ok := list[p.MGKey()]; !ok {
+			vars = append(vars, p.ToEnvironmentVar())
 		}
-		if len(e.EnvFrom) > 0 && len(e.Key) == 0 {
-			continue
-		}
-
-		// Inject JVM_SYS_PROP as an EnvVar. Content comes from a Config
-		// section of type JVM_SYS_PROPS. But requires a Environment variable
-		// of type JVM_SYS_PROP as well.
-		if strings.ToUpper(e.Type) == "JVM_SYS_PROP" {
-			if HasJVM_SYS_PROP(mg) {
-				EnvVars = append(EnvVars, GenEnvVar_JVM_SYS_PROP(mg, e.Name))
-			}
-			continue
-		}
-
-		if len(e.Key) > 0 {
-			EnvVars = append(EnvVars, genValueFrom(&e))
-			continue
-		}
-
-		// Omit optional EnvVar's that has no value provided through explicit config.
-		if ev, t := Variables["local|"+e.Name]; t {
-			if len(ev.Value) == 0 && ev.Required == false {
-				log.V(3).Infof("Omitting optional environment variable %s without explicit value", e.Name)
-				continue
-			}
-		}
-
-		// Default behaviour
-		EnvVars = append(EnvVars, EnvToEnvVar(&e, false))
 	}
 
-	// External variables from metagraf as deployment envvars
-	for _, e := range mg.Spec.Environment.External.Consumes {
-		EnvVars = append(EnvVars, EnvToEnvVar(&e, true))
+	// Convert metagraf EnvironmentVar's to k8s EnvVar's
+	for _, e := range vars {
+		env := e.ToEnvVar()
+		prop,err := mgp.GetByKey(e.Name)
+		if err != nil {
+			log.V(2).Infof("Did not find input value for %s", e.Name)
+		} else {
+			env.Value = prop.Value
+		}
+		envs = append(envs, env)
 	}
-	for _, e := range mg.Spec.Environment.External.Introduces {
-		EnvVars = append(EnvVars, EnvToEnvVar(&e, true))
+	return envs
+}
+
+func GetBuildEnvVars(mg *metagraf.MetaGraf, mgp metagraf.MGProperties) []corev1.EnvVar {
+	var envs []corev1.EnvVar
+
+	for _, e := range mg.Spec.Environment.Build {
+		envs = append(envs, e.ToEnvVar())
 	}
 
-	return EnvVars
+	return envs
 }
 
 // Parses the metagraf specification for instances of reading environment variables

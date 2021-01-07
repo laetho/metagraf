@@ -57,7 +57,7 @@ var createBuildConfigCmd = &cobra.Command{
 		FlagPassingHack()
 		mg := metagraf.Parse(args[0])
 
-		modules.Variables = OverrideProperties(mg.GetProperties())
+		modules.Variables = GetCmdProperties(mg.GetProperties())
 		log.V(2).Info("Current MGProperties: ", modules.Variables)
 
 		if len(modules.NameSpace) == 0 {
