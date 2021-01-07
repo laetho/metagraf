@@ -91,7 +91,7 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 	// ImageInfo := helpers.SkopeoImageInfo(DockerImage)
 	ImageInfo := helpers.ImageInfo(mg)
 
-	EnvVars = GetEnvVars(mg.Spec.Environment.Local, Variables)
+	EnvVars = GetEnvVars(mg, Variables)
 
 	// Environment Variables from baserunimage
 	if BaseEnvs {
