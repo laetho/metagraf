@@ -29,7 +29,7 @@ import (
 
 // Returns a list of GroupKind's described by the parsed metaGraf
 // specification
-func (mg *MetaGraf) GroupKinds() []metav1.GroupKind {
+func (mg MetaGraf) GroupKinds() []metav1.GroupKind {
 	var gks []metav1.GroupKind
 
 	sgk := metav1.GroupKind{Group: "core", Kind: "Service"}
@@ -41,7 +41,7 @@ func (mg *MetaGraf) GroupKinds() []metav1.GroupKind {
 	return gks
 }
 
-func (mg *MetaGraf) GetResourceByName(name string) (Resource, error) {
+func (mg MetaGraf) GetResourceByName(name string) (Resource, error) {
 	for _,r := range mg.Spec.Resources{
 		if r.Name == name {
 			return r, nil
@@ -51,7 +51,7 @@ func (mg *MetaGraf) GetResourceByName(name string) (Resource, error) {
 }
 
 //
-func (mg *MetaGraf) GetSecretByName(name string) (Secret, error) {
+func (mg MetaGraf) GetSecretByName(name string) (Secret, error) {
 	for _,s := range mg.Spec.Secret{
 		if s.Name == name {
 			return s, nil
@@ -61,7 +61,7 @@ func (mg *MetaGraf) GetSecretByName(name string) (Secret, error) {
 }
 
 //
-func (mg *MetaGraf) GetConfigByName(name string) (Config, error) {
+func (mg MetaGraf) GetConfigByName(name string) (Config, error) {
 	for _,c := range mg.Spec.Config{
 		if c.Name == name {
 			return c, nil
@@ -70,7 +70,7 @@ func (mg *MetaGraf) GetConfigByName(name string) (Config, error) {
 	return Config{}, errors.New("Config{} not found, name: "+name)
 }
 
-func (mg *MetaGraf) Labels(name string) map[string]string {
+func (mg MetaGraf) Labels(name string) map[string]string {
 	l := make(map[string]string)
 	l["app"] = name
 
@@ -91,7 +91,7 @@ func (mg *MetaGraf) Labels(name string) map[string]string {
 // Checks the metagraf specification for k8s.io namespaced port information.
 // Format:
 // <protocol>.service.k8s.io/port : value
-func (mg *MetaGraf) AnnotationServicePorts() ([]corev1.ServicePort, error) {
+func (mg MetaGraf) AnnotationServicePorts() ([]corev1.ServicePort, error) {
 	var ports []corev1.ServicePort
 	for k,v := range mg.Metadata.Annotations {
 		if strings.Contains(k, ".service.k8s.io/port") {
