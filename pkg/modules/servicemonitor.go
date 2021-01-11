@@ -111,12 +111,14 @@ func FindServiceMonitorPort(mg *metagraf.MetaGraf) int32 {
 		return params.ServiceMonitorPort
 	}
 	// Annotation, if not provided return annotation value.
-	port, err := strconv.Atoi(mg.Metadata.Annotations["servicemonitor.monitoring.coreos.com/port"])
-	if err != nil {
-		panic(err)
-	}
-	if int32(port) > 1024  {
-		return int32(port)
+	if _, ok := mg.Metadata.Annotations["servicemonitor.monitoring.coreos.com/port"]; ok {
+		port, err := strconv.Atoi(mg.Metadata.Annotations["servicemonitor.monitoring.coreos.com/port"])
+		if err != nil {
+			panic(err)
+		}
+		if int32(port) > 1024 {
+			return int32(port)
+		}
 	}
 	// Default, return default value
 	return params.ServiceMonitorPortDefault
