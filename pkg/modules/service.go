@@ -111,12 +111,11 @@ func ApplyPortConventions(mg *metagraf.MetaGraf, ports []corev1.ServicePort) []c
 		fmt.Println("ERROR:", err)
 		os.Exit(1)
 	}
-	log.Infof("ServicePort from Annotations: %v", len(serviceports))
+	log.V(2).Infof("ServicePort from Annotations: %v", len(serviceports))
 
 	output := []corev1.ServicePort{}
 	// Rewrite port mappings for container image ports that
 	// matches annotations to acheive protocol standardization.
-	fmt.Println("trying to rewrite ports")
 	for _, op := range serviceports {
 		for _, p := range ports {
 			if op.TargetPort.IntVal == p.Port {
@@ -126,6 +125,11 @@ func ApplyPortConventions(mg *metagraf.MetaGraf, ports []corev1.ServicePort) []c
 			}
 		}
 	}
+
+	if len(ports) > 0 && len(output) == 0 {
+		return ports
+	}
+
 	return output
 }
 
