@@ -56,7 +56,7 @@ func GenService(mg *metagraf.MetaGraf) {
 		imgurl.Image+":"+imgurl.Tag)
 	ImageInfo = helpers.GetDockerImageFromIST(ist)
 
-	serviceports := ApplyPortConventions(mg, helpers.ImageExposedPortsToServicePorts(ImageInfo.Config))
+	serviceports := GetServicePorts(mg, helpers.ImageExposedPortsToServicePorts(ImageInfo.Config))
 
 	selectors := make(map[string]string)
 	selectors["app"] = objname
@@ -100,47 +100,40 @@ func GenService(mg *metagraf.MetaGraf) {
 // Applies protocol and port convetions for generating standardized Kubernetes Service
 // resource. Defaults to 80->8080 mapping if no annotations or image
 // port configuration is found.
-func ApplyPortConventions(mg *metagraf.MetaGraf, ports []corev1.ServicePort) []corev1.ServicePort {
+func GetServicePorts(mg *metagraf.MetaGraf, imageports []corev1.ServicePort) []corev1.ServicePort {
 
-	if len(ports) == 0 {
-		return defaultPortConventions(mg, ports)
+	// Apply mg default service port
+	if len(imageports) == 0 && len(mg.Spec.Ports) == 0{
+		return defaultServicePorts(mg, imageports)
 	}
 
-	serviceports, err := mg.AnnotationServicePorts()
-	if err != nil {
-		fmt.Println("ERROR:", err)
-		os.Exit(1)
+	var serviceports []corev1.ServicePort
+	if len(mg.Spec.Ports) > 0 {
+		serviceports = mg.ServicePortsBySpec()
+	} else {
+		serviceports = mg.ServicePortsByAnnotation()
+		log.V(2).Infof("ServicePort from Annotations: %v", len(serviceports))
 	}
-	log.V(2).Infof("ServicePort from Annotations: %v", len(serviceports))
 
 	output := []corev1.ServicePort{}
-	// Rewrite port mappings for container image ports that
+	// Rewrite port mappings for container image imageports that
 	// matches annotations to acheive protocol standardization.
-	for _, op := range serviceports {
-		for _, p := range ports {
-			if op.TargetPort.IntVal == p.Port {
-				output = append(output, op)
-			} else {
-				output = append(output, p)
+	for _, ip := range imageports {
+		for _, sp := range serviceports {
+			if ip.Port == sp.TargetPort.IntVal {
+				ip = sp
 			}
 		}
-	}
-
-	if len(ports) > 0 && len(output) == 0 {
-		return ports
+		output = append(output, ip)
 	}
 
 	return output
 }
 
 // Returns the default port mapping convention
-func defaultPortConventions(mg *metagraf.MetaGraf, ports []corev1.ServicePort) []corev1.ServicePort {
+func defaultServicePorts(mg *metagraf.MetaGraf, ports []corev1.ServicePort) []corev1.ServicePort {
 
-	serviceports, err := mg.AnnotationServicePorts()
-	if err != nil {
-		fmt.Println("ERROR:", err)
-		os.Exit(1)
-	}
+	serviceports := mg.ServicePortsByAnnotation()
 
 	switch {
 	case len(serviceports) > 0:
@@ -163,10 +156,6 @@ func defaultPortConventions(mg *metagraf.MetaGraf, ports []corev1.ServicePort) [
 		}
 	}
 	return serviceports
-}
-
-func applyFuzzyPortConventions() {
-
 }
 
 func StoreService(obj corev1.Service) {

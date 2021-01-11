@@ -21,11 +21,11 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
+	log "k8s.io/klog"
 	"metagraf/mg/params"
 	"strconv"
 	"strings"
 )
-
 
 // Returns a list of GroupKind's described by the parsed metaGraf
 // specification
@@ -42,32 +42,32 @@ func (mg MetaGraf) GroupKinds() []metav1.GroupKind {
 }
 
 func (mg MetaGraf) GetResourceByName(name string) (Resource, error) {
-	for _,r := range mg.Spec.Resources{
+	for _, r := range mg.Spec.Resources {
 		if r.Name == name {
 			return r, nil
 		}
 	}
-	return Resource{}, errors.New("Resource{} not found, name: "+name)
+	return Resource{}, errors.New("Resource{} not found, name: " + name)
 }
 
 //
 func (mg MetaGraf) GetSecretByName(name string) (Secret, error) {
-	for _,s := range mg.Spec.Secret{
+	for _, s := range mg.Spec.Secret {
 		if s.Name == name {
 			return s, nil
 		}
 	}
-	return Secret{}, errors.New("Secret{} not found, name: "+name)
+	return Secret{}, errors.New("Secret{} not found, name: " + name)
 }
 
 //
 func (mg MetaGraf) GetConfigByName(name string) (Config, error) {
-	for _,c := range mg.Spec.Config{
+	for _, c := range mg.Spec.Config {
 		if c.Name == name {
 			return c, nil
 		}
 	}
-	return Config{}, errors.New("Config{} not found, name: "+name)
+	return Config{}, errors.New("Config{} not found, name: " + name)
 }
 
 func (mg MetaGraf) Labels(name string) map[string]string {
@@ -91,16 +91,17 @@ func (mg MetaGraf) Labels(name string) map[string]string {
 // Checks the metagraf specification for k8s.io namespaced port information.
 // Format:
 // <protocol>.service.k8s.io/port : value
-func (mg MetaGraf) AnnotationServicePorts() ([]corev1.ServicePort, error) {
+func (mg MetaGraf) ServicePortsByAnnotation() []corev1.ServicePort {
 	var ports []corev1.ServicePort
-	for k,v := range mg.Metadata.Annotations {
+	for k, v := range mg.Metadata.Annotations {
 		if strings.Contains(k, ".service.k8s.io/port") {
 			protocol := strings.Split(k, ".")[0]
 			switch protocol {
 			case "http":
 				intport, err := strconv.Atoi(v)
 				if err != nil {
-					return ports, errors.Errorf("Unable to convert port to numeric value for annotation: %v", k)
+					log.Warningf("Unable to convert port to numeric value for annotation: %v", k)
+					continue
 				}
 				ports = append(ports, corev1.ServicePort{
 					Name:     "http",
@@ -115,7 +116,8 @@ func (mg MetaGraf) AnnotationServicePorts() ([]corev1.ServicePort, error) {
 			case "https":
 				intport, err := strconv.Atoi(v)
 				if err != nil {
-					return ports, errors.Errorf("Unable to convert port to numeric value for annotation: %v", k)
+					log.Warningf("Unable to convert port to numeric value for annotation: %v", k)
+					continue
 				}
 				ports = append(ports, corev1.ServicePort{
 					Name:     "https",
@@ -130,18 +132,49 @@ func (mg MetaGraf) AnnotationServicePorts() ([]corev1.ServicePort, error) {
 			}
 		}
 	}
-	return ports, nil
+	return ports
+}
+
+func (mg MetaGraf) ServicePortsBySpec() []corev1.ServicePort {
+	var ports []corev1.ServicePort
+	for protocol, port := range mg.Spec.Ports {
+		switch protocol {
+		case "http":
+			ports = append(ports, corev1.ServicePort{
+				Name:     "http",
+				Port:     int32(80),
+				Protocol: "TCP",
+				TargetPort: intstr.IntOrString{
+					Type:   0,
+					IntVal: port,
+					StrVal: protocol,
+				},
+			})
+		case "https":
+			ports = append(ports, corev1.ServicePort{
+				Name:     "https",
+				Port:     int32(443),
+				Protocol: "TCP",
+				TargetPort: intstr.IntOrString{
+					Type:   0,
+					IntVal: port,
+					StrVal: protocol,
+				},
+			})
+		}
+	}
+	return ports
 }
 
 func sanitizeLabelValue(val string) string {
 	ret := strings.Replace(val, " ", "_", -1)
-	ret = strings.Replace(ret, ",", "-", -1 )
+	ret = strings.Replace(ret, ",", "-", -1)
 	return ret
 }
 
 func sanitizeKey(key string) string {
 	if params.NameSpacingStripHost {
-		parts := strings.Split(key,"/")
+		parts := strings.Split(key, "/")
 		if len(parts) > 1 {
 			return strings.Join(parts[1:], "")
 		}

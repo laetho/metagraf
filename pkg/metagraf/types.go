@@ -52,6 +52,8 @@ type MetaGraf struct {
 		Type			string		`json:"type"`
 		Version			string		`json:"version"`
 		Description		string		`json:"description"`
+		// Ports is a map keyed on protocol name (string) with port as it's value.
+		Ports			map[string]int32 `json:"ports,omitempty"`
 		// Git repository URL for the source code of the described software component.
 		Repository		string  	`json:"repository,omitempty"`
 		// Repository Secret Reference, git pull secret
