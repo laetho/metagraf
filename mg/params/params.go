@@ -34,10 +34,6 @@ var (
 	// Namespace
 	NameSpace string
 
-	// Flag to allow key and values in properties files not defined in metagraf.json. Solves
-	// chicken and egg problem when migrating configuration schemes.
-	InspectAllowExtraConfig = false
-
 	ArgoCDApplicationProject string
 	// In which namespace do we want the ArgoCD Application CR to be created
 	ArgoCDApplicationNamespace string

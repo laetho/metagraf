@@ -16,7 +16,6 @@ func init() {
 	InspectCmd.Flags().BoolVar(&Enforce, "enforce", false, "Enforce findings, defaults to false and informs only.")
 	InspectCmd.AddCommand(InspectPropertiesCmd)
 	InspectPropertiesCmd.Flags().StringVar(&params.PropertiesFile, "cvfile", "", "File with component configuration values. (key=value pairs)")
-	InspectPropertiesCmd.Flags().BoolVarP(&params.InspectAllowExtraConfig, "extra", "e", false, "Will not fail inspect command when properties file have more key, value paris than required.")
 }
 
 var InspectCmd = &cobra.Command{
