@@ -23,7 +23,6 @@ import (
 	log "k8s.io/klog"
 	"metagraf/pkg/helpers"
 	"os"
-	"reflect"
 	"sort"
 	"strings"
 
@@ -65,19 +64,19 @@ func GenRoute(mg *metagraf.MetaGraf) {
 	ImageInfo := helpers.GetDockerImageFromIST(ist)
 	log.V(2).Infof("Docker image ports: %v", ImageInfo.Config.ExposedPorts)
 
+	serviceports := GetServicePorts(mg, helpers.ImageExposedPortsToServicePorts(ImageInfo.Config))
+	// Find http port
+	// todo: This needs to be more solid
 	var ports []string
-
-	for _,v := range reflect.ValueOf(ImageInfo.Config.ExposedPorts).MapKeys() {
-		ports = append(ports, v.String())
-	}
-	// Default to port 8080 when no exposed ports are found.
-	if len(ports) == 0 {
-		ports = append(ports,"8080")
+	for _, port := range serviceports {
+		if port.Name == "http" {
+			ports = append(ports, "http")
+			break
+		} else {
+			ports = append(ports, port.Name)
+		}
 	}
 	sort.Strings(ports)
-
-	log.V(2).Infof("First port: %v, %v", ports[0], ports[0])
-
 
 	l := make(map[string]string)
 	l["app"] = objname
