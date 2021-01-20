@@ -68,14 +68,21 @@ func GenRoute(mg *metagraf.MetaGraf) {
 	// Find http port
 	// todo: This needs to be more solid
 	var ports []string
+	var http bool = false
 	for _, port := range serviceports {
 		if port.Name == "http" {
 			ports = append(ports, "http")
-			break
-		} else {
+			http = true
+		}
+	}
+
+	if !http {
+		for _, port := range serviceports {
 			ports = append(ports, port.Name)
 		}
 	}
+
+
 	sort.Strings(ports)
 
 	l := make(map[string]string)
