@@ -135,14 +135,18 @@ func GetEnvVars( mg *metagraf.MetaGraf, mgp metagraf.MGProperties) []corev1.EnvV
 
 	// Convert metagraf EnvironmentVar's to k8s EnvVar's
 	for _, e := range vars {
-		env := e.ToEnvVar()
-		prop,err := mgp.GetByKey(e.Name)
-		if err != nil {
-			log.V(2).Infof("Did not find input value for %s", e.Name)
+		if e.GetType() == "JVM_SYS_PROP" {
+			envs = append(envs, GenEnvVar_JVM_SYS_PROP(mgp, e.Name))
 		} else {
-			env.Value = prop.Value
+			env := e.ToEnvVar()
+			prop, err := mgp.GetByKey(e.Name)
+			if err != nil {
+				log.V(2).Infof("Did not find input value for %s", e.Name)
+			} else {
+				env.Value = prop.Value
+			}
+			envs = append(envs, env)
 		}
-		envs = append(envs, env)
 	}
 	return envs
 }
