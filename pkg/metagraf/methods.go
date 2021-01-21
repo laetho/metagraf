@@ -60,6 +60,16 @@ func (mg MetaGraf) GetSecretByName(name string) (Secret, error) {
 	return Secret{}, errors.New("Secret{} not found, name: " + name)
 }
 
+func (mg MetaGraf) GetEnvVarByType(envtype string) []EnvironmentVar {
+	var envs []EnvironmentVar
+	for _, env := range mg.Spec.Environment.Local {
+		if env.Type == envtype {
+			envs = append(envs, env)
+		}
+	}
+	return envs
+}
+
 //
 func (mg MetaGraf) GetConfigByName(name string) (Config, error) {
 	for _, c := range mg.Spec.Config {

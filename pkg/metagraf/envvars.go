@@ -49,8 +49,6 @@ func (e *EnvironmentVar) GetType() string {
 		return "secretfrom"
 	} else if len(e.EnvFrom) > 0 {
 		return "envfrom"
-	} else if e.Type == "JVM_SYS_PROP" {
-		return "JVM_SYS_PROP"
 	} else {
 		return "default"
 	}
