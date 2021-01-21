@@ -8,6 +8,9 @@ func (e *EnvironmentVar) ToEnvVar() (corev1.EnvVar) {
 	ev := corev1.EnvVar{}
 	switch e.GetType() {
 	case "secretfrom":
+		if len(e.Key) == 0 {
+			e.Key = e.SecretFrom
+		}
 		ev = corev1.EnvVar{
 			Name: e.Name,
 			ValueFrom: &corev1.EnvVarSource{
