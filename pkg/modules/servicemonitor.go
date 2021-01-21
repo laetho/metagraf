@@ -20,8 +20,8 @@ import (
 	"context"
 	"fmt"
 	monitoringv1 "github.com/coreos/prometheus-operator/pkg/apis/monitoring/v1"
-	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/util/intstr"
 	log "k8s.io/klog"
 	"metagraf/mg/k8sclient"
 	"metagraf/mg/params"
@@ -47,15 +47,11 @@ func GenServiceMonitor(mg *metagraf.MetaGraf) {
 	s := make(map[string]string)
 	s["app"] = objname
 
-	metricPort := corev1.ServicePort{
-		Name:        "http",
-		Protocol:    "TCP",
-		Port:        FindServiceMonitorPort(mg),
-	}
-
 	eps := []monitoringv1.Endpoint{}
 	ep := monitoringv1.Endpoint{
-		Port:                 metricPort.Name,
+		TargetPort:			  &intstr.IntOrString{
+			IntVal: FindServiceMonitorPort(mg),
+		},
 		Path:                 FindServiceMonitorPath(mg),
 		Scheme:               params.ServiceMonitorScheme,
 		Interval:             params.ServiceMonitorInterval,
