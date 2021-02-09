@@ -93,7 +93,7 @@ func (mg MetaGraf) Labels(name string) map[string]string {
 		}
 	}
 	for k, v := range mg.Metadata.Labels {
-		l[sanitizeKey(k)] = v
+		l[sanitizeKey(k)] = sanitizeLabelValue(v)
 	}
 	return l
 }
@@ -180,8 +180,9 @@ func sanitizeLabelValue(val string) string {
 	// If a value includes a (, split the string and only return the part
 	// leading up to the first (.
 	ret := strings.Split(val, "(")[0]
-	ret = strings.Replace(val, " ", "_", -1)
+	ret = strings.Replace(ret, " ", "_", -1)
 	ret = strings.Replace(ret, ",", "-", -1)
+	ret = strings.TrimSuffix(ret, "_")
 	return ret
 }
 
