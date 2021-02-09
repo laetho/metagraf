@@ -177,7 +177,10 @@ func (mg MetaGraf) ServicePortsBySpec() []corev1.ServicePort {
 }
 
 func sanitizeLabelValue(val string) string {
-	ret := strings.Replace(val, " ", "_", -1)
+	// If a value includes a (, split the string and only return the part
+	// leading up to the first (.
+	ret := strings.Split(val, "(")[0]
+	ret = strings.Replace(val, " ", "_", -1)
 	ret = strings.Replace(ret, ",", "-", -1)
 	return ret
 }
