@@ -20,7 +20,7 @@ import (
 	v1 "k8s.io/api/core/v1"
 )
 
-// Structure to hold specification section sourced parameters. Should
+// Structure to hold specification section sourced parameters from input. Should
 // solve key collisions and generally be a more workable solution.
 type MGProperty struct {
 	Source		string	`json:"source"`
@@ -35,6 +35,23 @@ type MGProperty struct {
 type MGProperties map[string]MGProperty
 
 type Metagraf[]MetaGraf
+
+type MetagrafType string
+
+const (
+	Application		MetagrafType = "application"
+	Service			MetagrafType = "service"
+	Configuration	MetagrafType = "config"
+)
+
+type ResourceType string
+
+const(
+	ClusterService	ResourceType = "clusterservice"
+	ExternalName	ResourceType = "externalname"
+)
+
+
 
 // JSON structure for a MetaGraf entity
 type MetaGraf struct {
