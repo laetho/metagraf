@@ -1,6 +1,6 @@
 module metagraf
 
-go 1.14
+go 1.15
 
 require (
 	github.com/argoproj/argo-cd v1.7.0
@@ -10,18 +10,23 @@ require (
 	github.com/crossplane/oam-kubernetes-runtime v0.0.9
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
 	github.com/google/gofuzz v1.2.0 // indirect
+	github.com/imdario/mergo v0.3.11 // indirect
 	github.com/kubernetes-sigs/application v0.8.1 // indirect
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/openshift/api v0.0.0-20200825174227-962ddb6aceab
 	github.com/openshift/client-go v0.0.0-20200729195840-c2b1adc6bed6
 	github.com/pelletier/go-toml v1.6.0 // indirect
 	github.com/pkg/errors v0.9.1
+	github.com/sirupsen/logrus v1.7.0 // indirect
 	github.com/spf13/cast v1.3.1 // indirect
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.6.1
 	github.com/tidwall/gjson v1.6.1
+	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad // indirect
 	golang.org/x/net v0.0.0-20200822124328-c89045814202 // indirect
+	golang.org/x/sys v0.0.0-20210108172913-0df2131ae363 // indirect
+	golang.org/x/term v0.0.0-20201210144234-2321bbc49cbf // indirect
 	gopkg.in/ini.v1 v1.51.1 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20200603094226-e3079894b1e8
 	istio.io/api v0.0.0-20200208020912-9564cdd03c96

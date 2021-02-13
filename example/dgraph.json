@@ -24,13 +24,13 @@
           "default": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
           "description": "The PATH variable"
         },
-	{
+	    {
           "name": "MYKEY",
           "required": true,
           "type": "string",
           "description": "The PATH variable",
-	  "envfrom": "dgraphv1",
-	  "envfromkey": "key2"
+          "envfrom": "dgraphv1",
+	      "envfromkey": "key2"
         }
       ]
     }

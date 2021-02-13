@@ -19,6 +19,7 @@ package helpers
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	dockerv10 "github.com/openshift/api/image/docker10"
 	imagev1 "github.com/openshift/api/image/v1"
@@ -99,7 +100,7 @@ func GetDockerImageFromImage(i *imagev1.Image) *dockerv10.DockerImage {
 }
 
 func GetImage(c *imagev1client.ImageV1Client, i string) *imagev1.Image {
-	img, err := c.Images().Get(context.TODO(),i, metav1.GetOptions{})
+	img, err := c.Images().Get(context.TODO(), i, metav1.GetOptions{})
 	if err != nil {
 		log.Error(err)
 		os.Exit(1)
@@ -108,7 +109,7 @@ func GetImage(c *imagev1client.ImageV1Client, i string) *imagev1.Image {
 }
 
 // Returns docker information based on images referenced in spec.
-func ImageInfo(mg *metagraf.MetaGraf) *dockerv10.DockerImage {
+func ImageInfo(mg *metagraf.MetaGraf) (*dockerv10.DockerImage, error) {
 	var DockerImage string
 	if len(mg.Spec.BaseRunImage) > 0 {
 		DockerImage = mg.Spec.BaseRunImage
@@ -116,6 +117,8 @@ func ImageInfo(mg *metagraf.MetaGraf) *dockerv10.DockerImage {
 		DockerImage = mg.Spec.BuildImage
 	} else if len(mg.Spec.Image) > 0 {
 		DockerImage = mg.Spec.Image
+		// @todo, we need a way to natively inspect a upstream image when we're not running in openshift, or make the new way default.
+		return nil, errors.New("blah")
 	}
 
 	var imgurl imageurl.ImageURL
@@ -128,5 +131,5 @@ func ImageInfo(mg *metagraf.MetaGraf) *dockerv10.DockerImage {
 		imgurl.Namespace,
 		imgurl.Image+":"+imgurl.Tag)
 
-	return GetDockerImageFromIST(ist)
+	return GetDockerImageFromIST(ist), nil
 }

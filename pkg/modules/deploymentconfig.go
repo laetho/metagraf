@@ -87,12 +87,19 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 	var VolumeMounts []corev1.VolumeMount
 	var EnvVars []corev1.EnvVar
 
-	ImageInfo := helpers.ImageInfo(mg)
+	// ImageInfo := helpers.SkopeoImageInfo(DockerImage)
+	HasImageInfo := false
+	ImageInfo, err := helpers.ImageInfo(mg)
+	if err != nil {
+		HasImageInfo = false
+	} else {
+		HasImageInfo = true
+	}
 
 
 	EnvVars = GetEnvVars(mg, Variables)
 	// Environment Variables from baserunimage
-	if BaseEnvs {
+	if BaseEnvs && HasImageInfo {
 		for _, e := range ImageInfo.Config.Env {
 			es := strings.Split(e, "=")
 			if helpers.SliceInString(EnvBlacklistFilter, strings.ToLower(es[0])) {
@@ -116,16 +123,17 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 		})
 	}
 	// ContainerPorts
-	for k := range ImageInfo.Config.ExposedPorts {
-		ss := strings.Split(k, "/")
-		port, _ := strconv.Atoi(ss[0])
-		ContainerPort := corev1.ContainerPort{
-			ContainerPort: int32(port),
-			Protocol:      corev1.Protocol(strings.ToUpper(ss[1])),
+	if HasImageInfo {
+		for k := range ImageInfo.Config.ExposedPorts {
+			ss := strings.Split(k, "/")
+			port, _ := strconv.Atoi(ss[0])
+			ContainerPort := corev1.ContainerPort{
+				ContainerPort: int32(port),
+				Protocol:      corev1.Protocol(strings.ToUpper(ss[1])),
+			}
+			ContainerPorts = append(ContainerPorts, ContainerPort)
 		}
-		ContainerPorts = append(ContainerPorts, ContainerPort)
 	}
-
 	Volumes, VolumeMounts = volumes(mg, ImageInfo)
 
 

@@ -37,16 +37,16 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 	objname := Name(mg)
 
 	registry := viper.GetString("registry")
+	// If container registry host is set and it differs from default, use value from -r (--registry) flag.
+	if len(Registry) > 0 && registry != Registry {
+		registry = Registry
+	}
 
 	// If ImageNS is not provided, default to current NameSpace value
 	if len(ImageNS) == 0 {
 		ImageNS = NameSpace
 	}
 
-	// If container registry host is set and it differs from default, use value from -r (--registry) flag.
-	if len(Registry) > 0 && registry != Registry {
-		registry = Registry
-	}
 
 	// Resource labels
 	l := make(map[string]string)
@@ -89,12 +89,18 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 	var EnvVars []corev1.EnvVar
 
 	// ImageInfo := helpers.SkopeoImageInfo(DockerImage)
-	ImageInfo := helpers.ImageInfo(mg)
+	HasImageInfo := false
+	ImageInfo, err := helpers.ImageInfo(mg)
+	if err != nil {
+		HasImageInfo = false
+	} else {
+		HasImageInfo = true
+	}
 
 	EnvVars = GetEnvVars(mg, Variables)
 
 	// Environment Variables from baserunimage
-	if BaseEnvs {
+	if (BaseEnvs && HasImageInfo) {
 		for _, e := range ImageInfo.Config.Env {
 			es := strings.Split(e, "=")
 			if helpers.SliceInString(EnvBlacklistFilter, strings.ToLower(es[0])) {
@@ -118,14 +124,16 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 	}
 
 	// ContainerPorts
-	for k := range ImageInfo.Config.ExposedPorts {
-		ss := strings.Split(k, "/")
-		port, _ := strconv.Atoi(ss[0])
-		ContainerPort := corev1.ContainerPort{
-			ContainerPort: int32(port),
-			Protocol:      corev1.Protocol(strings.ToUpper(ss[1])),
+	if HasImageInfo {
+		for k := range ImageInfo.Config.ExposedPorts {
+			ss := strings.Split(k, "/")
+			port, _ := strconv.Atoi(ss[0])
+			ContainerPort := corev1.ContainerPort{
+				ContainerPort: int32(port),
+				Protocol:      corev1.Protocol(strings.ToUpper(ss[1])),
+			}
+			ContainerPorts = append(ContainerPorts, ContainerPort)
 		}
-		ContainerPorts = append(ContainerPorts, ContainerPort)
 	}
 
 	Volumes, VolumeMounts = volumes(mg, ImageInfo)
@@ -156,7 +164,6 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 	obj := appsv1.Deployment{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Deployment",
-
 			APIVersion: "apps/v1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
