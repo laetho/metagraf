@@ -19,7 +19,6 @@ package modules
 import (
 	"context"
 	"fmt"
-	"github.com/openshift/api/image/docker10"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
@@ -47,16 +46,31 @@ func GenService(mg *metagraf.MetaGraf) {
 	var imgurl imageurl.ImageURL
 	_ = imgurl.Parse(DockerImage)
 
-	ImageInfo := &docker10.DockerImage{}
+	// ImageInfo := helpers.SkopeoImageInfo(DockerImage)
+	HasImageInfo := false
+	ImageInfo, err := helpers.ImageInfo(mg)
+	if err != nil {
+		HasImageInfo = false
+	} else {
+		HasImageInfo = true
+	}
 
-	client := k8sclient.GetImageClient()
-	ist := helpers.GetImageStreamTags(
-		client,
-		imgurl.Namespace,
-		imgurl.Image+":"+imgurl.Tag)
-	ImageInfo = helpers.GetDockerImageFromIST(ist)
+	if HasImageInfo {
+		client := k8sclient.GetImageClient()
+		ist := helpers.GetImageStreamTags(
+			client,
+			imgurl.Namespace,
+			imgurl.Image+":"+imgurl.Tag)
+		ImageInfo = helpers.GetDockerImageFromIST(ist)
+	}
 
-	serviceports := GetServicePorts(mg, helpers.ImageExposedPortsToServicePorts(ImageInfo.Config))
+	var serviceports []corev1.ServicePort
+	if HasImageInfo {
+		serviceports = GetServicePorts(mg, helpers.ImageExposedPortsToServicePorts(ImageInfo.Config))
+	} else {
+		var ports []corev1.ServicePort
+		serviceports = GetServicePorts(mg, ports)
+	}
 
 	selectors := make(map[string]string)
 	selectors["app"] = objname
@@ -103,7 +117,7 @@ func GenService(mg *metagraf.MetaGraf) {
 func GetServicePorts(mg *metagraf.MetaGraf, imageports []corev1.ServicePort) []corev1.ServicePort {
 
 	// Apply mg default service port
-	if len(imageports) == 0 && len(mg.Spec.Ports) == 0{
+	if len(imageports) == 0 && len(mg.Spec.Ports) == 0 {
 		return defaultServicePorts(mg, imageports)
 	}
 
@@ -118,13 +132,17 @@ func GetServicePorts(mg *metagraf.MetaGraf, imageports []corev1.ServicePort) []c
 	output := []corev1.ServicePort{}
 	// Rewrite port mappings for container image imageports that
 	// matches annotations to acheive protocol standardization.
-	for _, ip := range imageports {
-		for _, sp := range serviceports {
-			if ip.Port == sp.TargetPort.IntVal {
-				ip = sp
+	if len(imageports) > 0 {
+		for _, ip := range imageports {
+			for _, sp := range serviceports {
+				if ip.Port == sp.TargetPort.IntVal {
+					ip = sp
+				}
 			}
+			output = append(output, ip)
 		}
-		output = append(output, ip)
+	} else {
+		return serviceports
 	}
 
 	return output

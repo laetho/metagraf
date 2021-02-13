@@ -171,6 +171,17 @@ func (mg MetaGraf) ServicePortsBySpec() []corev1.ServicePort {
 					StrVal: protocol,
 				},
 			})
+		default:
+			ports = append(ports, corev1.ServicePort{
+				Name:        "TCP-"+protocol,
+				Protocol:    "TCP",
+				Port:        port,
+				TargetPort:  intstr.IntOrString{
+					Type:   0,
+					IntVal: port,
+					StrVal: protocol,
+				},
+			})
 		}
 	}
 	return ports
