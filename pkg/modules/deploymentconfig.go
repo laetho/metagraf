@@ -133,8 +133,8 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 			}
 			ContainerPorts = append(ContainerPorts, ContainerPort)
 		}
+		Volumes, VolumeMounts = volumes(mg, ImageInfo)
 	}
-	Volumes, VolumeMounts = volumes(mg, ImageInfo)
 
 
 	// Tying Container PodSpec together
