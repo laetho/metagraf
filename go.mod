@@ -5,10 +5,12 @@ go 1.15
 require (
 	github.com/argoproj/argo-cd v1.7.0
 	github.com/blang/semver v3.5.1+incompatible
+	github.com/containerd/continuity v0.0.0-20210208174643-50096c924a4e // indirect
 	github.com/coreos/prometheus-operator v0.41.1
 	github.com/crossplane/crossplane-runtime v0.9.0 // indirect
 	github.com/crossplane/oam-kubernetes-runtime v0.0.9
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
+	github.com/google/go-containerregistry v0.4.0
 	github.com/google/gofuzz v1.2.0 // indirect
 	github.com/imdario/mergo v0.3.11 // indirect
 	github.com/kubernetes-sigs/application v0.8.1 // indirect
