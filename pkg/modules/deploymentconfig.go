@@ -19,16 +19,16 @@ package modules
 import (
 	"context"
 	"fmt"
-	log "k8s.io/klog"
 	"github.com/openshift/api/image/docker10"
 	"github.com/spf13/viper"
+	log "k8s.io/klog"
 	"metagraf/mg/k8sclient"
 	"metagraf/mg/params"
 	"os"
 	"strconv"
 	"strings"
 
-	"metagraf/pkg/helpers"
+	"metagraf/internal/pkg/helpers/helpers"
 	"metagraf/pkg/metagraf"
 
 	appsv1 "github.com/openshift/api/apps/v1"

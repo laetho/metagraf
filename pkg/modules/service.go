@@ -23,10 +23,10 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	log "k8s.io/klog"
+	"metagraf/internal/pkg/helpers/helpers"
+	"metagraf/internal/pkg/imageurl/imageurl"
 	"metagraf/mg/k8sclient"
 	"metagraf/mg/params"
-	"metagraf/pkg/helpers"
-	"metagraf/pkg/imageurl"
 	"metagraf/pkg/metagraf"
 	"os"
 )

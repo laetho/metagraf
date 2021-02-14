@@ -17,8 +17,8 @@ limitations under the License.
 package imageurl
 
 import (
-	"net/url"
 	"fmt"
+	"net/url"
 	"strings"
 )
 

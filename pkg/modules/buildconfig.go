@@ -20,13 +20,13 @@ import (
 	"context"
 	"fmt"
 	log "k8s.io/klog"
+	"metagraf/internal/pkg/helpers/helpers"
 	"metagraf/mg/k8sclient"
 	"metagraf/mg/params"
-	"metagraf/pkg/helpers"
 	"os"
 	"strings"
 
-	"metagraf/pkg/imageurl"
+	"metagraf/internal/pkg/imageurl/imageurl"
 	"metagraf/pkg/metagraf"
 
 	buildv1 "github.com/openshift/api/build/v1"

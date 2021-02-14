@@ -21,13 +21,13 @@ import (
 	"fmt"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	log "k8s.io/klog"
-	"metagraf/pkg/helpers"
+	"metagraf/internal/pkg/helpers/helpers"
 	"os"
 	"sort"
 	"strings"
 
+	"metagraf/internal/pkg/imageurl/imageurl"
 	"metagraf/mg/k8sclient"
-	"metagraf/pkg/imageurl"
 	"metagraf/pkg/metagraf"
 
 	routev1 "github.com/openshift/api/route/v1"
