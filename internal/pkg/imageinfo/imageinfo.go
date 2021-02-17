@@ -87,5 +87,5 @@ func (info Info) ImageVolumeMounts(nameprefix string) []corev1.VolumeMount {
 		}
 		out = append(out, VolumeMount)
 	}
-	return nil
+	return out
 }
