@@ -3,10 +3,10 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"metagraf/mg/params"
+	log "k8s.io/klog"
+	"metagraf/internal/pkg/params/params"
 	"metagraf/pkg/metagraf"
 	"metagraf/pkg/modules"
-	log "k8s.io/klog"
 	"os"
 )
 

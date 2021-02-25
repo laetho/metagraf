@@ -1,11 +1,11 @@
 package cmd
 
 import (
+	"fmt"
 	"github.com/spf13/cobra"
-	"metagraf/mg/params"
+	"metagraf/internal/pkg/params/params"
 	"metagraf/pkg/metagraf"
 	"metagraf/pkg/modules"
-	"fmt"
 )
 
 func init() {

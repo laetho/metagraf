@@ -23,8 +23,8 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	log "k8s.io/klog"
+	"metagraf/internal/pkg/params/params"
 	"metagraf/mg/k8sclient"
-	"metagraf/mg/params"
 	"metagraf/pkg/metagraf"
 	"os"
 	"strconv"
@@ -52,9 +52,9 @@ func GenServiceMonitor(mg *metagraf.MetaGraf) {
 		TargetPort:			  &intstr.IntOrString{
 			IntVal: FindServiceMonitorPort(mg),
 		},
-		Path:                 FindServiceMonitorPath(mg),
-		Scheme:               params.ServiceMonitorScheme,
-		Interval:             params.ServiceMonitorInterval,
+		Path:     FindServiceMonitorPath(mg),
+		Scheme:   params.ServiceMonitorScheme,
+		Interval: params.ServiceMonitorInterval,
 	}
 	eps = append(eps, ep)
 
@@ -103,7 +103,7 @@ func FindServiceMonitorPath(mg *metagraf.MetaGraf) string {
 // control scrape port when generating ServiceMonitor resource.
 func FindServiceMonitorPort(mg *metagraf.MetaGraf) int32 {
 	// mg cli value, return provided if not default.
-	if params.ServiceMonitorPort > 1024 && params.ServiceMonitorPort!= params.ServiceMonitorPortDefault {
+	if params.ServiceMonitorPort > 1024 && params.ServiceMonitorPort != params.ServiceMonitorPortDefault {
 		return params.ServiceMonitorPort
 	}
 	// Annotation, if not provided return annotation value.

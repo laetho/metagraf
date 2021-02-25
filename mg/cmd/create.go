@@ -24,9 +24,9 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
+	"metagraf/internal/pkg/params/params"
 	"metagraf/pkg/metagraf"
 	"metagraf/pkg/modules"
-	"metagraf/mg/params"
 )
 
 func init() {

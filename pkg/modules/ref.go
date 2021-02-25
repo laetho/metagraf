@@ -22,7 +22,7 @@ import (
 	"io/ioutil"
 	log "k8s.io/klog"
 	"k8s.io/klog/v2"
-	"metagraf/mg/params"
+	"metagraf/internal/pkg/params/params"
 	"metagraf/pkg/metagraf"
 	"os"
 	"strings"

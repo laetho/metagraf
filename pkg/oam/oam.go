@@ -5,7 +5,7 @@ import (
 	oamv1 "github.com/crossplane/oam-kubernetes-runtime/apis/core/v1alpha2"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
-	"metagraf/mg/params"
+	"metagraf/internal/pkg/params/params"
 	"metagraf/pkg/metagraf"
 	"metagraf/pkg/modules"
 )

@@ -25,8 +25,8 @@ import (
 	log "k8s.io/klog"
 	"metagraf/internal/pkg/helpers/helpers"
 	"metagraf/internal/pkg/imageurl/imageurl"
+	"metagraf/internal/pkg/params/params"
 	"metagraf/mg/k8sclient"
-	"metagraf/mg/params"
 	"metagraf/pkg/metagraf"
 	"os"
 )

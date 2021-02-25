@@ -40,7 +40,6 @@ type MetagrafType string
 
 const (
 	Application		MetagrafType = "application"
-	Service			MetagrafType = "service"
 	Configuration	MetagrafType = "config"
 )
 
@@ -128,6 +127,7 @@ type Resource struct {
 	Required 	bool			`json:"required"`
 	External 	bool    		`json:"external"`
 	Semop		string			`json:"semop,omitempty"`		// Semantic operator, how to evaluate version match/requirements.
+
 	Semver  	string			`json:"semver,omitempty"`		// Semantic version to evaluate for attached resource
 	EnvRef		string			`json:"envref,omitempty"`		// Reference an Environment variable
 

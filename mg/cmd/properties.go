@@ -20,7 +20,7 @@ import (
 	"bufio"
 	"fmt"
 	log "k8s.io/klog"
-	"metagraf/mg/params"
+	"metagraf/internal/pkg/params/params"
 	"metagraf/pkg/metagraf"
 	"metagraf/pkg/modules"
 	"os"
