@@ -26,19 +26,27 @@ import (
 	"k8s.io/apimachinery/pkg/util/intstr"
 	log "k8s.io/klog"
 	"k8s.io/kubectl/pkg/scheme"
+	"math"
 	"metagraf/internal/pkg/params/params"
 	"metagraf/mg/k8sclient"
 	"metagraf/pkg/metagraf"
 	"metagraf/pkg/modules"
 	"os"
+	"time"
 )
 
 
 func GenPodDisruptionBudget(mg *metagraf.MetaGraf, replicas int32) {
 	name := modules.Name(mg) // @todo refactor how we create a name.
 
-	minavail   := replicas / 2
-	maxunavail := replicas / 2
+	var maxunavail int32
+
+	switch {
+	case replicas < 2:
+		maxunavail = 0
+	case replicas > 2:
+		maxunavail = int32(math.Floor(float64(replicas / 2)))
+	}
 
 	l := make(map[string]string)
 	l["app"] = name
@@ -48,21 +56,22 @@ func GenPodDisruptionBudget(mg *metagraf.MetaGraf, replicas int32) {
 	}
 
 	obj := v1beta1.PodDisruptionBudget{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:	name,
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "PodDisruptionBudget",
+			APIVersion: "v1beta1",
 		},
-		Spec:       v1beta1.PodDisruptionBudgetSpec{
-			MinAvailable:   &intstr.IntOrString{
-				Type:   0,
-				IntVal: int32(minavail),
-
+		ObjectMeta: metav1.ObjectMeta{
+			Name: name,
+			CreationTimestamp: metav1.Time{
+				Time: time.Now(),
 			},
+		},
+		Spec: v1beta1.PodDisruptionBudgetSpec{
 			MaxUnavailable: &intstr.IntOrString{
 				Type:   0,
 				IntVal: int32(maxunavail),
-
 			},
-			Selector:       &selector,
+			Selector: &selector,
 		},
 	}
 
@@ -70,7 +79,6 @@ func GenPodDisruptionBudget(mg *metagraf.MetaGraf, replicas int32) {
 		StorePodDisruptionBudget(obj)
 	}
 	if params.Output {
-
 		MarshalObject(obj.DeepCopyObject())
 	}
 }
