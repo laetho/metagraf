@@ -22,6 +22,7 @@ import (
 	"github.com/spf13/viper"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"metagraf/internal/pkg/helpers/helpers"
+	"metagraf/internal/pkg/params/params"
 	"metagraf/mg/k8sclient"
 	"metagraf/pkg/metagraf"
 	"strconv"
@@ -76,8 +77,6 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 		MaxSurge:            &MaxSurge,
 		MaxUnavailable:      &MaxUnavailable,
 	}
-
-	var replicas int32 = 1
 
 	// Containers
 	var Containers []corev1.Container
@@ -170,7 +169,7 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 			Labels: l,
 		},
 		Spec: appsv1.DeploymentSpec{
-			Replicas:             &replicas,
+			Replicas:             &params.Replicas,
 			RevisionHistoryLimit: &RevisionHistoryLimit,
 			Selector:             &s,
 			Strategy: appsv1.DeploymentStrategy{

@@ -12,7 +12,7 @@ import (
 
 func init() {
 	createCmd.AddCommand(createPodDisruptionBudget)
-	createPodDisruptionBudget.Flags().IntVarP(&params.Replicas,"replicas", "r", 2, "Number of replicas.")
+	createPodDisruptionBudget.Flags().Int32Var(&params.Replicas,"replicas", params.DefaultReplicas, "Number of replicas.")
 	createPodDisruptionBudget.Flags().StringVarP(&params.NameSpace,"namespace", "n", "", "Set namespace for generated resource.")
 }
 

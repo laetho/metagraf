@@ -27,8 +27,11 @@ var (
 	// Format value can be either json or yaml. Controls output format.
 	Format string = "json"
 
+	// DefaultReplicas
+	DefaultReplicas int32 = 1
+
 	// Replicas, indicate how many of a thing we want.
-	Replicas int
+	Replicas int32
 
 	// PropertiesFile, assigned with --cvfile.
 	PropertiesFile string

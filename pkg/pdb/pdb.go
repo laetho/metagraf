@@ -34,7 +34,7 @@ import (
 )
 
 
-func GenPodDisruptionBudget(mg *metagraf.MetaGraf, replicas int) {
+func GenPodDisruptionBudget(mg *metagraf.MetaGraf, replicas int32) {
 	name := modules.Name(mg) // @todo refactor how we create a name.
 
 	minavail   := replicas / 2
@@ -43,7 +43,7 @@ func GenPodDisruptionBudget(mg *metagraf.MetaGraf, replicas int) {
 	l := make(map[string]string)
 	l["app"] = name
 
-	s := metav1.LabelSelector{
+	selector := metav1.LabelSelector{
 		MatchLabels: l,
 	}
 
@@ -62,10 +62,7 @@ func GenPodDisruptionBudget(mg *metagraf.MetaGraf, replicas int) {
 				IntVal: int32(maxunavail),
 
 			},
-			Selector:       &metav1.LabelSelector{
-				MatchLabels:      nil,
-				MatchExpressions: nil,
-			},
+			Selector:       &selector,
 		},
 	}
 

@@ -22,6 +22,7 @@ func init() {
 	createDeploymentCmd.Flags().StringVarP(&ImageNS,"imagens", "i", "", "Image Namespace, used to override default namespace")
 	createDeploymentCmd.Flags().StringVarP(&Registry,"registry", "r",viper.GetString("registry"), "Specify container registry host")
 	createDeploymentCmd.Flags().StringVarP(&Tag,"tag", "t", "latest", "specify custom tag")
+	createDeploymentCmd.Flags().Int32Var(&params.Replicas,"replicas", params.DefaultReplicas, "Number of replicas.")
 	createDeploymentCmd.Flags().BoolVar(&params.DisableDeploymentImageAliasing, "disable-aliasing", false, "Only applies to .spec.image references. Aliasing will use mg conventions for image references. Setting this to true will disable that behavior.")
 }
 
