@@ -37,32 +37,11 @@ func init() {
 	createCmd.PersistentFlags().StringVar(&Version, "version", "", "Override version in metaGraf specification.")
 	createCmd.PersistentFlags().BoolVar(&Dryrun, "dryrun", false, "do not create objects, only output")
 	createCmd.AddCommand(createConfigMapCmd)
-	createCmd.AddCommand(createDeploymentCmd)
 	createCmd.AddCommand(createDeploymentConfigCmd)
 	createCmd.AddCommand(createDotCmd)
 	createCmd.AddCommand(createRefCmd)
 	createCmd.AddCommand(createSecretCmd)
 	createCmd.AddCommand(createRouteCmd)
-	createDeploymentCmd.Flags().StringVarP(&Namespace, "namespace", "n","", "namespace to work on, if not supplied it will use current working namespace")
-	createDeploymentCmd.Flags().StringVar(&OName, "name", "", "Overrides name of deployment.")
-	createDeploymentCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
-	createDeploymentCmd.Flags().StringVar(&params.PropertiesFile, "cvfile","", "File with component configuration values. (key=value pairs)")
-	createDeploymentCmd.Flags().BoolVar(&BaseEnvs, "baseenv", false, "Hydrate deploymentconfig with baseimage environment variables")
-	createDeploymentCmd.Flags().BoolVar(&Defaults, "defaults", false, "Populate Environment variables with default values from metaGraf")
-	createDeploymentCmd.Flags().StringVarP(&ImageNS,"imagens", "i", "", "Image Namespace, used to override default namespace")
-	createDeploymentCmd.Flags().StringVarP(&Registry,"registry", "r",viper.GetString("registry"), "Specify container registry host")
-	createDeploymentCmd.Flags().StringVarP(&Tag,"tag", "t", "latest", "specify custom tag")
-	createDeploymentCmd.Flags().BoolVar(&params.DisableDeploymentImageAliasing, "disable-aliasing", false, "Only applies to .spec.image references. Aliasing will use mg conventions for image references. Setting this to true will disable that behavior.")
-	createDeploymentConfigCmd.Flags().StringVarP(&Namespace, "namespace", "n","", "namespace to work on, if not supplied it will use current working namespace")
-	createDeploymentConfigCmd.Flags().StringVar(&OName, "name", "", "Overrides name of deployment.")
-	createDeploymentConfigCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
-	createDeploymentConfigCmd.Flags().StringVar(&params.PropertiesFile, "cvfile","", "File with component configuration values. (key=value pairs)")
-	createDeploymentConfigCmd.Flags().BoolVar(&BaseEnvs, "baseenv", false, "Hydrate deploymentconfig with baseimage environment variables")
-	createDeploymentConfigCmd.Flags().BoolVar(&Defaults, "defaults", false, "Populate Environment variables with default values from metaGraf")
-	createDeploymentConfigCmd.Flags().StringVarP(&ImageNS,"imagens", "i", "", "Image Namespace, used to override default namespace")
-	createDeploymentConfigCmd.Flags().StringVarP(&Registry,"registry", "r",viper.GetString("registry"), "Specify container registry host")
-	createDeploymentConfigCmd.Flags().StringVarP(&Tag,"tag", "t", "latest", "specify custom tag")
-	createDeploymentConfigCmd.Flags().BoolVar(&params.DisableDeploymentImageAliasing, "disable-aliasing", false, "Only applies to .spec.image references. Aliasing will use mg conventions for image references. Setting this to true will disable that behavior.")
 	createSecretCmd.Flags().StringVarP(&Namespace, "namespace", "n", "","namespace to work on, if not supplied it will use current working namespace")
 	createSecretCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
 	createSecretCmd.Flags().BoolVarP(&CreateGlobals, "globals", "g", false, "Override default behavior and force creation of global secrets. Will not overwrite existing ones.")
@@ -74,7 +53,6 @@ func init() {
 	createRouteCmd.Flags().StringVar(&OName, "name", "", "Overrides name of application.")
 	createRouteCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
 	createRouteCmd.Flags().StringVarP(&Context,"context", "c","/","Application context root. (\"/<context>\")")
-
 }
 
 
@@ -115,72 +93,6 @@ var createConfigMapCmd = &cobra.Command{
 		modules.GenConfigMaps(&mg)
 	},
 }
-
-var createDeploymentCmd = &cobra.Command{
-	Use:   "deployment <metagraf>",
-	Short: "create Deployment from metaGraf file",
-	Long:  MGBanner + `create Deployment`,
-	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) < 1 {
-			log.Info(StrActiveProject, viper.Get("namespace"))
-			log.Error(StrMissingMetaGraf)
-			os.Exit(1)
-		}
-
-		if len(Namespace) == 0 {
-			Namespace = viper.GetString("namespace")
-			if len(Namespace) == 0 {
-				log.Error(StrMissingNamespace)
-				os.Exit(1)
-			}
-		}
-
-		mg := metagraf.Parse(args[0])
-		FlagPassingHack()
-
-		modules.Variables = GetCmdProperties(mg.GetProperties())
-
-		if len(modules.NameSpace) == 0 {
-			modules.NameSpace = Namespace
-		}
-		modules.GenDeployment(&mg, Namespace)
-	},
-}
-
-var createDeploymentConfigCmd = &cobra.Command{
-	Use:   "deploymentconfig <metagraf>",
-	Short: "create DeploymentConfig from metaGraf file",
-	Long:  MGBanner + `create DeploymentConfig`,
-	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) < 1 {
-			log.Info(StrActiveProject, viper.Get("namespace"))
-			log.Error(StrMissingMetaGraf)
-			os.Exit(1)
-		}
-
-		if len(Namespace) == 0 {
-			Namespace = viper.GetString("namespace")
-			if len(Namespace) == 0 {
-				log.Error(StrMissingNamespace)
-				os.Exit(1)
-			}
-		}
-
-		mg := metagraf.Parse(args[0])
-		FlagPassingHack()
-
-		modules.Variables = GetCmdProperties(mg.GetProperties())
-		log.V(2).Info("Current MGProperties: ", modules.Variables)
-
-		if len(modules.NameSpace) == 0 {
-			modules.NameSpace = Namespace
-		}
-
-		modules.GenDeploymentConfig(&mg)
-	},
-}
-
-
 
 var createDotCmd = &cobra.Command{
 	Use:   "dot <collection directory>",
