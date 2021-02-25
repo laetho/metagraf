@@ -19,14 +19,12 @@ require (
 	github.com/openshift/client-go v0.0.0-20200729195840-c2b1adc6bed6
 	github.com/pelletier/go-toml v1.6.0 // indirect
 	github.com/pkg/errors v0.9.1
-	github.com/sirupsen/logrus v1.7.0 // indirect
 	github.com/spf13/cast v1.3.1 // indirect
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.6.1
 	github.com/tidwall/gjson v1.6.1
 	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad // indirect
-	golang.org/x/net v0.0.0-20200822124328-c89045814202 // indirect
 	golang.org/x/sys v0.0.0-20210108172913-0df2131ae363 // indirect
 	golang.org/x/term v0.0.0-20201210144234-2321bbc49cbf // indirect
 	gopkg.in/ini.v1 v1.51.1 // indirect
@@ -37,6 +35,8 @@ require (
 	k8s.io/client-go v12.0.0+incompatible
 	k8s.io/klog v1.0.0
 	k8s.io/klog/v2 v2.3.0
+	k8s.io/kubectl v0.18.8
+	k8s.io/kubernetes v1.18.8
 	sigs.k8s.io/application v0.8.1
 	sigs.k8s.io/controller-runtime v0.6.2 // indirect
 )

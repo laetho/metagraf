@@ -17,6 +17,19 @@ limitations under the License.
 package params
 
 var (
+
+	// Dryrun bool indicated if mg should do operations against a Kubernetes API.
+	Dryrun bool
+
+	// Output bool indicates if mg should output the generated objects.
+	Output bool
+
+	// Format value can be either json or yaml. Controls output format.
+	Format string = "json"
+
+	// Replicas, indicate how many of a thing we want.
+	Replicas int
+
 	// PropertiesFile, assigned with --cvfile.
 	PropertiesFile string
 
