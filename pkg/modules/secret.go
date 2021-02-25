@@ -27,7 +27,7 @@ import (
 
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"metagraf/mg/k8sclient"
+	"metagraf/internal/pkg/k8sclient/k8sclient"
 )
 
 func FindSecrets(mg *metagraf.MetaGraf) map[string]string {

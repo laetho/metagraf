@@ -21,8 +21,8 @@ import (
 	"fmt"
 	log "k8s.io/klog"
 	"metagraf/internal/pkg/helpers/helpers"
+	"metagraf/internal/pkg/k8sclient/k8sclient"
 	"metagraf/internal/pkg/params/params"
-	"metagraf/mg/k8sclient"
 	"os"
 	"strings"
 

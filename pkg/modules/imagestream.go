@@ -20,7 +20,7 @@ import (
 	"context"
 	"fmt"
 	log "k8s.io/klog"
-	"metagraf/mg/k8sclient"
+	"metagraf/internal/pkg/k8sclient/k8sclient"
 	"metagraf/pkg/metagraf"
 	"os"
 

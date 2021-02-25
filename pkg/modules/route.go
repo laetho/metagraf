@@ -27,7 +27,7 @@ import (
 	"strings"
 
 	"metagraf/internal/pkg/imageurl/imageurl"
-	"metagraf/mg/k8sclient"
+	"metagraf/internal/pkg/k8sclient/k8sclient"
 	"metagraf/pkg/metagraf"
 
 	routev1 "github.com/openshift/api/route/v1"

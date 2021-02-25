@@ -27,8 +27,8 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/serializer/json"
 	log "k8s.io/klog"
+	"metagraf/internal/pkg/k8sclient/k8sclient"
 	"metagraf/internal/pkg/params/params"
-	"metagraf/mg/k8sclient"
 	"metagraf/pkg/metagraf"
 	"os"
 )
