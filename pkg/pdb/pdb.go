@@ -44,7 +44,7 @@ func GenPodDisruptionBudget(mg *metagraf.MetaGraf, replicas int32) {
 	switch {
 	case replicas < 2:
 		maxunavail = 0
-	case replicas > 2:
+	case replicas >= 2:
 		maxunavail = int32(math.Floor(float64(replicas / 2)))
 	}
 

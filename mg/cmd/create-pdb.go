@@ -35,6 +35,7 @@ var createPodDisruptionBudget = &cobra.Command{
 				os.Exit(1)
 			}
 		}
+		// Migration to params not complete.
 		params.Dryrun = Dryrun
 		params.Output = Output
 		mg := metagraf.Parse(args[0])
