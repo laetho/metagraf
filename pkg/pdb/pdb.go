@@ -36,7 +36,7 @@ import (
 )
 
 
-func GenPodDisruptionBudget(mg *metagraf.MetaGraf, replicas int32) {
+func GenPodDisruptionBudget(mg *metagraf.MetaGraf, replicas int32) v1beta1.PodDisruptionBudget {
 	name := modules.Name(mg) // @todo refactor how we create a name.
 
 	var maxunavail int32
@@ -69,7 +69,7 @@ func GenPodDisruptionBudget(mg *metagraf.MetaGraf, replicas int32) {
 		Spec: v1beta1.PodDisruptionBudgetSpec{
 			MaxUnavailable: &intstr.IntOrString{
 				Type:   0,
-				IntVal: int32(maxunavail),
+				IntVal: maxunavail,
 			},
 			Selector: &selector,
 		},
@@ -81,6 +81,7 @@ func GenPodDisruptionBudget(mg *metagraf.MetaGraf, replicas int32) {
 	if params.Output {
 		MarshalObject(obj.DeepCopyObject())
 	}
+	return obj
 }
 
 func StorePodDisruptionBudget(obj v1beta1.PodDisruptionBudget) {
