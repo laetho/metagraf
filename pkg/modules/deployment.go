@@ -99,7 +99,7 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 	EnvVars = GetEnvVars(mg, Variables)
 
 	// Environment Variables from baserunimage
-	if (BaseEnvs && HasImageInfo) {
+	if BaseEnvs && HasImageInfo {
 		for _, e := range ImageInfo.Config.Env {
 			es := strings.Split(e, "=")
 			if helpers.SliceInString(EnvBlacklistFilter, strings.ToLower(es[0])) {
@@ -107,19 +107,6 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 			}
 			EnvVars = append(EnvVars, corev1.EnvVar{Name: es[0], Value: es[1]})
 		}
-	}
-
-	/* Norsk Tipping Specific Logic regarding
-	   WLP / OpenLiberty Features. Should maybe
-	   look at some plugin approach to this later.
-	   todo: Add annotations from metagraf to deployment and expose them to pod using downward api.
-	   info: https://kubernetes.io/docs/tasks/inject-data-application/downward-api-volume-expose-pod-information/#the-downward-api
-	*/
-	if len(mg.Metadata.Annotations["norsk-tipping.no/libertyfeatures"]) > 0 {
-		EnvVars = append(EnvVars, corev1.EnvVar{
-			Name:  "LIBERTY_FEATURES",
-			Value: mg.Metadata.Annotations["norsk-tipping.no/libertyfeatures"],
-		})
 	}
 
 	// ContainerPorts
