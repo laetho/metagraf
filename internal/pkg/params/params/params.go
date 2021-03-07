@@ -87,4 +87,10 @@ var (
 	// Relative path to template file for use when creating a software component reference document.
 	RefTemplateFile       string = ""
 	RefTemplateOutputFile string = "REF.md"
+
+	// RegistryUser stores the explicitly defined username for a private registry. Usually passed to mg with --reguser.
+	RegistryUser string
+	// RegistryPassword stores the explicitly defined password for a private registry. Usually passed to mg with --regpass.
+	RegistryPassword string
+
 )

@@ -7,6 +7,7 @@ import (
 	"github.com/google/go-containerregistry/pkg/v1/remote"
 	corev1 "k8s.io/api/core/v1"
 	"metagraf/internal/pkg/helpers/helpers"
+	"metagraf/internal/pkg/params/params"
 	"metagraf/pkg/metagraf"
 	"metagraf/pkg/mgver"
 )
@@ -44,7 +45,14 @@ func ImageInfo(imageref string) (Info, error) {
 	var options []remote.Option
 
 	options = append(options, remote.WithUserAgent("mg v"+ mgver.GitTag))
-	options = append(options, remote.WithAuth(authn.Anonymous))
+	if len(params.RegistryUser) > 0 {
+		options = append(options, remote.WithAuth(authn.FromConfig(authn.AuthConfig{
+			Username:      params.RegistryUser,
+			Password:      params.RegistryPassword,
+		})))
+	} else {
+		options = append(options, remote.WithAuth(authn.Anonymous))
+	}
 
 	img, err := remote.Image(ref, options...)
 	if err != nil {
