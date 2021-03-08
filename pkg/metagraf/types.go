@@ -57,7 +57,7 @@ const(
 type MGFile struct {
 	// A map for defining mg cli arguments. Used for controlling replicas
 	// and other considerations at mg invocation for manifest generation.
-	CliArgs map[string]string `json:"arguments,omitempty"`
+	CliArgs map[string]string `json:"cliargs,omitempty"`
 
 	// A map of local environment variables and their values
 	LocalEnvs	  map[string]string	`json:"local,omitempty"`
