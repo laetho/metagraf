@@ -96,17 +96,26 @@ type MetaGraf struct {
 	Spec struct {
 		// Describes the type of metaGraf specification. What types we have are not formalized yet.
 		Type			string		`json:"type"`
+
+		// A semver string representing the api or version of the component.
 		Version			string		`json:"version"`
+
+		// A description of the component.
 		Description		string		`json:"description"`
+
 		// Ports is a map keyed on protocol name (string) with port as it's value.
 		Ports			map[string]int32 `json:"ports,omitempty"`
-		// Git repository URL for the source code of the described software component.
+
+		// Repository URL for the source code of the described software component.
 		Repository		string  	`json:"repository,omitempty"`
-		// Repository Secret Reference, git pull secret
+
+		// A reference to a Kubernetes Secret holding the credentials for pulling the source code.
 		RepSecRef		string		`json:"repsecref,omitempty"`
+
 		// Check out and build code from another branch than master. Defaults to master if
 		// not provided.
 		Branch			string		`json:"branch,omitempty"`
+
 		// When a docker image url is provided, we assume you want to wrap an existing
 		// container image with a metaGraf definition.
 		Image		 	string		`json:"image,omitempty"`
@@ -126,12 +135,15 @@ type MetaGraf struct {
 
 		// Structure for holding diffrent kind of environment variables.
 		Environment struct {
-			// Slice for holding environmentvariables for the build process.
+			// Environment variables we want to set for a build context. On a build pod or
+			// in a Openshift BuildConfig.
 			Build []EnvironmentVar	`json:"build,omitempty"`
-			// Environment variables that should be set on the Deployment resource.
+
+			// Environment variables that are set local to the execution context. In Kubernetes
+			// these will be environment variables set on a Deployment.
 			Local []EnvironmentVar	`json:"local,omitempty"`
-			// Environment variables or configuration keys that comes from some kind of
-			// central configuration mechanism. Redis, etcd, your solution.
+
+			// A structure for describing values a component reads for an external source.
 			External struct {
 				// Slice for holding environment variable or configuration keys  that
 				// are introduces to a central configuration solution.
