@@ -34,7 +34,7 @@ type MGProperty struct {
 // MGProperty.Source + ":" + MGProperty.Key
 type MGProperties map[string]MGProperty
 
-type Metagraf[]MetaGraf
+type Metagrafs []MetaGraf
 
 type MetagrafType string
 
@@ -51,6 +51,36 @@ const(
 )
 
 
+// The MGFile is the environment configuration input for a metagraf specification.
+// It contains the wanted values for what is possible to configure for the component
+// described.
+type MGFile struct {
+	// A map for defining mg cli arguments. Used for controlling replicas
+	// and other considerations at mg invocation for manifest generation.
+	CliArgs map[string]string `json:"arguments,omitempty"`
+
+	// A map of local environment variables and their values
+	LocalEnvs	  map[string]string	`json:"local,omitempty"`
+
+	// A map of environment variables we want to set in a build pod.
+	BuildEnvs	  map[string]string	`json:"build,omitempty"`
+
+	// A slice of MGFileConfig. This represents configuration files the component
+	// needs.
+	Configs		  []MGFileConfig	`json:"configs,omitempty"`
+}
+
+// A sturcture for mapping configuration files and values for a MGFile.
+// We only support flattened configuration file types (key=value), no
+// TOML, YAML or JSON.
+type MGFileConfig struct {
+	// Name of the configuration file. Must adhere to kubernetes object naming
+	// conventions for a ConfigMap.
+	Name	string				`json:"name"`
+
+	// A map for holding key and value pairs of the configuration files.
+	Keys	map[string]string	`json:"keys"`
+}
 
 // JSON structure for a MetaGraf entity
 type MetaGraf struct {
