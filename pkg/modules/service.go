@@ -118,7 +118,7 @@ func GetServicePorts(mg *metagraf.MetaGraf, imageports []corev1.ServicePort) []c
 
 	// Apply mg default service port
 	if len(imageports) == 0 && len(mg.Spec.Ports) == 0 {
-		return defaultServicePorts(mg, imageports)
+		return defaultServicePorts()
 	}
 
 	var serviceports []corev1.ServicePort
@@ -147,32 +147,21 @@ func GetServicePorts(mg *metagraf.MetaGraf, imageports []corev1.ServicePort) []c
 
 	return output
 }
+// Returns the mg tool's opinionated default if ports in a metagraf spec
+// or the container image has no default exposed ports.
+func defaultServicePorts() []corev1.ServicePort {
+	var serviceports []corev1.ServicePort
 
-// Returns the default port mapping convention
-func defaultServicePorts(mg *metagraf.MetaGraf, ports []corev1.ServicePort) []corev1.ServicePort {
-
-	serviceports := mg.ServicePortsByAnnotation()
-
-	switch {
-	case len(serviceports) > 0:
-		for _, port := range serviceports {
-			ports = append(ports, port)
-		}
-	default:
-		// If we don't have anything explicit set by annotations, default to 80 -> 8080 and named "http".
-		if len(serviceports) == 0 {
-			ports = append(ports, corev1.ServicePort{
-				Name:     "http",
-				Port:     int32(80),
-				Protocol: "TCP",
-				TargetPort: intstr.IntOrString{
-					Type:   0,
-					IntVal: int32(8080),
-					StrVal: "8080",
-				},
-			})
-		}
-	}
+	serviceports = append(serviceports, corev1.ServicePort{
+		Name:     "http",
+		Port:     int32(80),
+		Protocol: "TCP",
+		TargetPort: intstr.IntOrString{
+			Type:   0,
+			IntVal: int32(8080),
+			StrVal: "8080",
+		},
+	})
 	return serviceports
 }
 
