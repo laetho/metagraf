@@ -37,7 +37,7 @@ import (
 
 
 func GenPodDisruptionBudget(mg *metagraf.MetaGraf, replicas int32) v1beta1.PodDisruptionBudget {
-	name := modules.Name(mg) // @todo refactor how we create a name.
+	name := modules.Name(mg) // @todo refactor how we create a name. Badly structured code.
 
 	var maxunavail int32
 
@@ -108,7 +108,7 @@ func StorePodDisruptionBudget(obj v1beta1.PodDisruptionBudget) {
 	}
 }
 
-// todo: need to restructure code, this is a duplication
+// todo: need to restructure code, this is a duplication because of bad structure
 // Marshal kubernetes resource to json
 func MarshalObject(obj runtime.Object) {
 	switch params.Format {
