@@ -111,7 +111,7 @@ func GenService(mg *metagraf.MetaGraf) {
 	}
 }
 
-// Applies protocol and port convetions for generating standardized Kubernetes Service
+// Applies protocol and port conventions for generating standardized Kubernetes Service
 // resource. Defaults to 80->8080 mapping if no annotations or image
 // port configuration is found.
 func GetServicePorts(mg *metagraf.MetaGraf, imageports []corev1.ServicePort) []corev1.ServicePort {
@@ -129,7 +129,7 @@ func GetServicePorts(mg *metagraf.MetaGraf, imageports []corev1.ServicePort) []c
 		log.V(2).Infof("ServicePort from Annotations: %v", len(serviceports))
 	}
 
-	output := []corev1.ServicePort{}
+	var output []corev1.ServicePort
 	// Rewrite port mappings for container image imageports that
 	// matches annotations to acheive protocol standardization.
 	if len(imageports) > 0 {
