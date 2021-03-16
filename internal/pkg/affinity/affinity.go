@@ -4,7 +4,6 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"metagraf/internal/pkg/params/params"
-	"metagraf/pkg/metagraf"
 )
 
 
@@ -50,6 +49,24 @@ func SoftPodAntiAffinity(app string, topologyKey string, weight int32) *corev1.A
 	return &aff
 }
 
-func HardPodAntiAffinity(mg *metagraf.MetaGraf, topologyKey string){
+func HardPodAntiAffinity(app string, topologyKey string) *corev1.Affinity {
+	var terms  []corev1.PodAffinityTerm
+	var namespaces []string
 
+	namespaces = append(namespaces, params.NameSpace)
+
+	terms = append(terms, corev1.PodAffinityTerm{
+			LabelSelector: AntiAffinityLabelSelector("app", metav1.LabelSelectorOpIn, app),
+			Namespaces:    namespaces,
+			TopologyKey:   topologyKey,
+		},
+	)
+
+	aff := corev1.Affinity{
+		PodAntiAffinity: &corev1.PodAntiAffinity{
+			RequiredDuringSchedulingIgnoredDuringExecution: terms,
+
+		},
+	}
+	return &aff
 }
