@@ -21,6 +21,7 @@ import (
 	"github.com/golang/glog"
 	"github.com/spf13/viper"
 	"k8s.io/apimachinery/pkg/util/intstr"
+	"metagraf/internal/pkg/affinity"
 	"metagraf/internal/pkg/helpers/helpers"
 	"metagraf/internal/pkg/k8sclient/k8sclient"
 	"metagraf/internal/pkg/params/params"
@@ -175,6 +176,10 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 			},
 		},
 		Status: appsv1.DeploymentStatus{},
+	}
+
+	if params.WithAffinityRules{
+		obj.Spec.Template.Spec.Affinity = affinity.SoftPodAntiAffinity(objname, params.PodAffinityTopologyKey, params.PodAffinityWeight)
 	}
 
 	if !Dryrun {

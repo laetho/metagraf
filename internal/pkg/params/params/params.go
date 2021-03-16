@@ -93,4 +93,16 @@ var (
 	// RegistryPassword stores the explicitly defined password for a private registry. Usually passed to mg with --regpass.
 	RegistryPassword string
 
+	// Toggle for generating corev1.Affinity{} in Pod Templates in Deployment or DeploymentConfig.
+	WithAffinityRules			bool
+	// Default value for WithAffinityRules if it's not set.
+	WithPodAffinityRulesDefault bool = false
+	// Name of node label to use as a topologyKey when generating pod affinity rules.
+	PodAffinityTopologyKey 		string
+
+	// Flag for defining weight in a WeightedPodAffinityTerm.
+	PodAffinityWeight			int32
+	// The default value for PodAffinityWeight
+	PodAffinityWeightDefault	int32 = 100
+
 )
