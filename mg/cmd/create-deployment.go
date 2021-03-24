@@ -26,8 +26,8 @@ func init() {
 	createDeploymentCmd.Flags().Int32Var(&params.Replicas,"replicas", params.DefaultReplicas, "Number of replicas.")
 	createDeploymentCmd.Flags().BoolVar(&params.DisableDeploymentImageAliasing, "disable-aliasing", false, "Only applies to .spec.image references. Aliasing will use mg conventions for image references. Setting this to true will disable that behavior.")
 	createDeploymentCmd.Flags().BoolVar(&params.WithAffinityRules, "with-affinity-rules", params.WithPodAffinityRulesDefault,"Enable generation of pod affinity or anti-affinity rules." )
-	createDeploymentCmd.Flags().StringVar(&params.PodAffinityTopologyKey, "affinity-topology-key", "", "Define which node label to use as a topologyKey (describing a datacenter, zone or a rack as an example)")
-	createDeploymentCmd.Flags().Int32Var(&params.PodAffinityWeight, "pod-affinity-weight", params.PodAffinityWeightDefault, "Provide weight for WeightedPodAffinityTerm.")
+	createDeploymentCmd.Flags().StringVar(&params.PodAntiAffinityTopologyKey, "anti-affinity-topology-key", "", "Define which node label to use as a topologyKey (describing a datacenter, zone or a rack as an example)")
+	createDeploymentCmd.Flags().Int32Var(&params.PodAntiAffinityWeight, "pod-anti-affinity-weight", params.PodAntiAffinityWeightDefault, "Provide weight for WeightedPodAffinityTerm.")
 }
 
 var createDeploymentCmd = &cobra.Command{
@@ -50,7 +50,7 @@ var createDeploymentCmd = &cobra.Command{
 		}
 		params.NameSpace = Namespace
 
-		if params.WithAffinityRules && len(params.PodAffinityTopologyKey) == 0 {
+		if params.WithAffinityRules && len(params.PodAntiAffinityTopologyKey) == 0 {
 			fmt.Println("ERROR: --affinity-topology-key cannot be empty when --with-affinity-rules is active!")
 			os.Exit(1)
 		}

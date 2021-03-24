@@ -1,5 +1,5 @@
 /*
-Copyright 2018 The metaGraf Authors
+Copyright 2018-2021 The metaGraf Authors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -179,7 +179,7 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 	}
 
 	if params.WithAffinityRules{
-		obj.Spec.Template.Spec.Affinity = affinity.SoftPodAntiAffinity(objname, params.PodAffinityTopologyKey, params.PodAffinityWeight)
+		obj.Spec.Template.Spec.Affinity = affinity.SoftPodAntiAffinity(objname, params.PodAntiAffinityTopologyKey, params.PodAntiAffinityWeight)
 	}
 
 	if !Dryrun {

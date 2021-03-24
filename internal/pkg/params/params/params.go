@@ -98,11 +98,11 @@ var (
 	// Default value for WithAffinityRules if it's not set.
 	WithPodAffinityRulesDefault bool = false
 	// Name of node label to use as a topologyKey when generating pod affinity rules.
-	PodAffinityTopologyKey 		string
+	PodAntiAffinityTopologyKey string
 
 	// Flag for defining weight in a WeightedPodAffinityTerm.
-	PodAffinityWeight			int32
-	// The default value for PodAffinityWeight
-	PodAffinityWeightDefault	int32 = 100
+	PodAntiAffinityWeight int32
+	// The default value for PodAntiAffinityWeight
+	PodAntiAffinityWeightDefault int32 = 100
 
 )
