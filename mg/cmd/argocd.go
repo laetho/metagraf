@@ -17,22 +17,19 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
 	"github.com/laetho/metagraf/internal/pkg/params"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	"github.com/laetho/metagraf/pkg/modules"
 	"github.com/spf13/cobra"
-	"os"
 )
 
 func init() {
 	RootCmd.AddCommand(argocdCmd)
 	argocdCmd.AddCommand(argocdCreateCmd)
-	argocdCreateCmd.PersistentFlags().BoolVar(&Verbose, "verbose", false, "verbose output")
-	argocdCreateCmd.PersistentFlags().BoolVar(&Output, "output", false, "also output objects")
-	argocdCreateCmd.PersistentFlags().StringVarP(&Format, "format", "o", "json", "specify json or yaml, json id default")
-	argocdCreateCmd.PersistentFlags().BoolVar(&Dryrun, "dryrun", false, "do not create objects, only output")
-	argocdCreateCmd.PersistentFlags().StringVarP(&Namespace, "namespace", "n", "", "namespace to work on")
+	argocdCreateCmd.PersistentFlags().BoolVar(&params.Output, "output", false, "also output objects")
+	argocdCreateCmd.PersistentFlags().StringVarP(&params.Format, "format", "o", "json", "specify json or yaml, json id default")
+	argocdCreateCmd.PersistentFlags().BoolVar(&params.Dryrun, "dryrun", false, "do not create objects, only output")
+	argocdCreateCmd.PersistentFlags().StringVarP(&params.NameSpace, "namespace", "n", "", "namespace to work on")
 	argocdCreateCmd.AddCommand(argocdCreateApplicationCmd)
 	argocdCreateApplicationCmd.Flags().StringVar(&params.ArgoCDApplicationProject, "project", "", "Project reference")
 	argocdCreateApplicationCmd.Flags().StringVar(&params.ArgoCDApplicationNamespace, "argo-namespace", "", "Namespace for the ArgoCD Application resource.")
@@ -70,16 +67,15 @@ var argocdCreateApplicationCmd = &cobra.Command{
 	Short:            "argocd create application",
 	Long:             `Creates an ArgoCD Application from a metagraf specification`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) < 1 {
-			fmt.Println("Insufficient arguments")
-			os.Exit(-1)
-		}
+		requireMetagraf(args)
+		requireNamespace()
 		mg := metagraf.Parse(args[0])
-		FlagPassingHack()
-
-		if len(modules.NameSpace) == 0 {
-			modules.NameSpace = Namespace
+		app := modules.GenArgoApplication(&mg)
+		if !params.Dryrun {
+			modules.StoreArgoCDApplication(app)
 		}
-		modules.GenArgoApplication(&mg)
+		if params.Output{
+			modules.OutputArgoCDApplication(app)
+		}
 	},
 }

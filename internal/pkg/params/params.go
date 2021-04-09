@@ -18,15 +18,6 @@ package params
 
 var (
 
-	// Dryrun bool indicated if mg should do operations against a Kubernetes API.
-	Dryrun bool
-
-	// Output bool indicates if mg should output the generated objects.
-	Output bool
-
-	// Format value can be either json or yaml. Controls output format.
-	Format string = "json"
-
 	// Everything bool is a flag for indicating if we want to delete or operate on all resources.
 	// As an example, mg dev down --everything. Which deletes all created resources and artifacts from
 	// mg dev up command.
@@ -54,20 +45,6 @@ var (
 
 	// Namespace
 	NameSpace string
-
-	ArgoCDApplicationProject string
-	// In which namespace do we want the ArgoCD Application CR to be created
-	ArgoCDApplicationNamespace string
-	ArgoCDApplicationRepoURL   string
-	ArgoCDApplicationRepoPath  string
-	// Git Reference (tag/commit)
-	ArgoCDApplicationTargetRevision         string = "HEAD"
-	ArgoCDApplicationSourceDirectoryRecurse bool
-	ArgoCDSyncPolicyRetry                   bool
-	ArgoCDSyncPolicyRetryLimit              int64
-	ArgoCDAutomatedSyncPolicy               bool
-	ArgoCDAutomatedSyncPolicyPrune          bool
-	ArgoCDAutomatedSyncPolicySelfHeal       bool
 
 	// Deployment image aliasing will expect mg convention tagging of upstream images.
 	// mysql:1.2.3 becomes mg-mysqlv1 if your metagraf name is mg-mysqlv1 and version is in 1.x.x range.
