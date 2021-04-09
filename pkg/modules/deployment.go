@@ -20,7 +20,7 @@ import (
 	"context"
 	"github.com/golang/glog"
 	"github.com/laetho/metagraf/internal/pkg/affinity"
-	"github.com/laetho/metagraf/internal/pkg/helpers/helpers"
+	helpers2 "github.com/laetho/metagraf/internal/pkg/helpers"
 	k8sclient2 "github.com/laetho/metagraf/internal/pkg/k8sclient"
 	params2 "github.com/laetho/metagraf/internal/pkg/params"
 	"github.com/laetho/metagraf/pkg/metagraf"
@@ -89,7 +89,7 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 
 	// ImageInfo := helpers.SkopeoImageInfo(DockerImage)
 	HasImageInfo := false
-	ImageInfo, err := helpers.ImageInfo(mg)
+	ImageInfo, err := helpers2.ImageInfo(mg)
 	if err != nil {
 		HasImageInfo = false
 	} else {
@@ -102,7 +102,7 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 	if BaseEnvs && HasImageInfo {
 		for _, e := range ImageInfo.Config.Env {
 			es := strings.Split(e, "=")
-			if helpers.SliceInString(EnvBlacklistFilter, strings.ToLower(es[0])) {
+			if helpers2.SliceInString(EnvBlacklistFilter, strings.ToLower(es[0])) {
 				continue
 			}
 			EnvVars = append(EnvVars, corev1.EnvVar{Name: es[0], Value: es[1]})

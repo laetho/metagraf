@@ -19,6 +19,7 @@ package modules
 import (
 	"context"
 	"fmt"
+	helpers2 "github.com/laetho/metagraf/internal/pkg/helpers"
 	k8sclient2 "github.com/laetho/metagraf/internal/pkg/k8sclient"
 	params2 "github.com/laetho/metagraf/internal/pkg/params"
 	"github.com/openshift/api/image/docker10"
@@ -28,7 +29,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/laetho/metagraf/internal/pkg/helpers/helpers"
 	"github.com/laetho/metagraf/pkg/metagraf"
 
 	appsv1 "github.com/openshift/api/apps/v1"
@@ -88,7 +88,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 
 	// ImageInfo := helpers.SkopeoImageInfo(DockerImage)
 	HasImageInfo := false
-	ImageInfo, err := helpers.ImageInfo(mg)
+	ImageInfo, err := helpers2.ImageInfo(mg)
 	if err != nil {
 		HasImageInfo = false
 	} else {
@@ -100,7 +100,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 	if BaseEnvs && HasImageInfo {
 		for _, e := range ImageInfo.Config.Env {
 			es := strings.Split(e, "=")
-			if helpers.SliceInString(EnvBlacklistFilter, strings.ToLower(es[0])) {
+			if helpers2.SliceInString(EnvBlacklistFilter, strings.ToLower(es[0])) {
 				continue
 			}
 			EnvVars = append(EnvVars, corev1.EnvVar{Name: es[0], Value: es[1]})
@@ -229,7 +229,7 @@ func volumes(mg *metagraf.MetaGraf, ImageInfo *docker10.DockerImage) ([]corev1.V
 	for k := range ImageInfo.Config.Volumes {
 		// Volume Definitions
 		Volume := corev1.Volume{
-			Name: objname + helpers.PathToIdentifier(k),
+			Name: objname + helpers2.PathToIdentifier(k),
 			VolumeSource: corev1.VolumeSource{
 				EmptyDir: &corev1.EmptyDirVolumeSource{},
 			},
@@ -238,7 +238,7 @@ func volumes(mg *metagraf.MetaGraf, ImageInfo *docker10.DockerImage) ([]corev1.V
 
 		VolumeMount := corev1.VolumeMount{
 			MountPath: k,
-			Name:      objname + helpers.PathToIdentifier(k),
+			Name:      objname + helpers2.PathToIdentifier(k),
 		}
 		VolumeMounts = append(VolumeMounts, VolumeMount)
 	}

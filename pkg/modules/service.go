@@ -19,8 +19,8 @@ package modules
 import (
 	"context"
 	"fmt"
-	"github.com/laetho/metagraf/internal/pkg/helpers/helpers"
-	"github.com/laetho/metagraf/internal/pkg/imageurl/imageurl"
+	helpers2 "github.com/laetho/metagraf/internal/pkg/helpers"
+	imageurl2 "github.com/laetho/metagraf/internal/pkg/imageurl"
 	k8sclient2 "github.com/laetho/metagraf/internal/pkg/k8sclient"
 	params2 "github.com/laetho/metagraf/internal/pkg/params"
 	"github.com/laetho/metagraf/pkg/metagraf"
@@ -43,12 +43,12 @@ func GenService(mg *metagraf.MetaGraf) {
 		DockerImage = mg.Spec.Image
 	}
 
-	var imgurl imageurl.ImageURL
+	var imgurl imageurl2.ImageURL
 	_ = imgurl.Parse(DockerImage)
 
 	// ImageInfo := helpers.SkopeoImageInfo(DockerImage)
 	HasImageInfo := false
-	ImageInfo, err := helpers.ImageInfo(mg)
+	ImageInfo, err := helpers2.ImageInfo(mg)
 	if err != nil {
 		HasImageInfo = false
 	} else {
@@ -57,16 +57,16 @@ func GenService(mg *metagraf.MetaGraf) {
 
 	if HasImageInfo {
 		client := k8sclient2.GetImageClient()
-		ist := helpers.GetImageStreamTags(
+		ist := helpers2.GetImageStreamTags(
 			client,
 			imgurl.Namespace,
 			imgurl.Image+":"+imgurl.Tag)
-		ImageInfo = helpers.GetDockerImageFromIST(ist)
+		ImageInfo = helpers2.GetDockerImageFromIST(ist)
 	}
 
 	var serviceports []corev1.ServicePort
 	if HasImageInfo {
-		serviceports = GetServicePorts(mg, helpers.ImageExposedPortsToServicePorts(ImageInfo.Config))
+		serviceports = GetServicePorts(mg, helpers2.ImageExposedPortsToServicePorts(ImageInfo.Config))
 	} else {
 		var ports []corev1.ServicePort
 		serviceports = GetServicePorts(mg, ports)

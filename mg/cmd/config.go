@@ -18,7 +18,7 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/laetho/metagraf/internal/pkg/helpers/helpers"
+	helpers2 "github.com/laetho/metagraf/internal/pkg/helpers"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -44,7 +44,7 @@ var configCmdSet = &cobra.Command{
 			fmt.Println("Insufficient arguments")
 			return
 		}
-		if helpers.StringInSlice(args[0], configkeys) {
+		if helpers2.StringInSlice(args[0], configkeys) {
 			viper.Set(args[0], args[1])
 			err := viper.WriteConfig()
 			if err != nil {

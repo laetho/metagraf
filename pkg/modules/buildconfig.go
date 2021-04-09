@@ -19,14 +19,14 @@ package modules
 import (
 	"context"
 	"fmt"
-	"github.com/laetho/metagraf/internal/pkg/helpers/helpers"
+	helpers2 "github.com/laetho/metagraf/internal/pkg/helpers"
+	imageurl2 "github.com/laetho/metagraf/internal/pkg/imageurl"
 	k8sclient2 "github.com/laetho/metagraf/internal/pkg/k8sclient"
 	params2 "github.com/laetho/metagraf/internal/pkg/params"
 	log "k8s.io/klog"
 	"os"
 	"strings"
 
-	"github.com/laetho/metagraf/internal/pkg/imageurl/imageurl"
 	"github.com/laetho/metagraf/pkg/metagraf"
 
 	buildv1 "github.com/openshift/api/build/v1"
@@ -36,7 +36,7 @@ import (
 
 func GenBuildConfig(mg *metagraf.MetaGraf) {
 	var buildsource buildv1.BuildSource
-	var imgurl imageurl.ImageURL
+	var imgurl imageurl2.ImageURL
 	var EnvVars []corev1.EnvVar
 
 	err := imgurl.Parse(mg.Spec.BuildImage)
@@ -58,17 +58,17 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 		log.V(2).Info("Populate environment variables form base image.")
 		client := k8sclient2.GetImageClient()
 
-		ist := helpers.GetImageStreamTags(
+		ist := helpers2.GetImageStreamTags(
 			client,
 			imgurl.Namespace,
 			imgurl.Image+":"+imgurl.Tag)
 
-		ImageInfo := helpers.GetDockerImageFromIST(ist)
+		ImageInfo := helpers2.GetDockerImageFromIST(ist)
 
 		// Environment Variables from buildimage
 		for _, e := range ImageInfo.Config.Env {
 			es := strings.Split(e, "=")
-			if helpers.SliceInString(EnvBlacklistFilter, strings.ToLower(es[0])) {
+			if helpers2.SliceInString(EnvBlacklistFilter, strings.ToLower(es[0])) {
 				continue
 			}
 			EnvVars = append(EnvVars, corev1.EnvVar{Name: es[0], Value: es[1]})

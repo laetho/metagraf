@@ -19,7 +19,8 @@ package modules
 import (
 	"context"
 	"fmt"
-	"github.com/laetho/metagraf/internal/pkg/helpers/helpers"
+	helpers2 "github.com/laetho/metagraf/internal/pkg/helpers"
+	imageurl2 "github.com/laetho/metagraf/internal/pkg/imageurl"
 	k8sclient2 "github.com/laetho/metagraf/internal/pkg/k8sclient"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	log "k8s.io/klog"
@@ -27,7 +28,6 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/laetho/metagraf/internal/pkg/imageurl/imageurl"
 	"github.com/laetho/metagraf/pkg/metagraf"
 
 	routev1 "github.com/openshift/api/route/v1"
@@ -51,9 +51,9 @@ func GenRoute(mg *metagraf.MetaGraf) {
 	}
 
 	client := k8sclient2.GetImageClient()
-	var imgurl imageurl.ImageURL
+	var imgurl imageurl2.ImageURL
 	err := imgurl.Parse(DockerImage)
-	ist := helpers.GetImageStreamTags(
+	ist := helpers2.GetImageStreamTags(
 		client,
 		imgurl.Namespace,
 		imgurl.Image+":"+imgurl.Tag)
@@ -61,10 +61,10 @@ func GenRoute(mg *metagraf.MetaGraf) {
 		log.Errorf("%v", err)
 	}
 
-	ImageInfo := helpers.GetDockerImageFromIST(ist)
+	ImageInfo := helpers2.GetDockerImageFromIST(ist)
 	log.V(2).Infof("Docker image ports: %v", ImageInfo.Config.ExposedPorts)
 
-	serviceports := GetServicePorts(mg, helpers.ImageExposedPortsToServicePorts(ImageInfo.Config))
+	serviceports := GetServicePorts(mg, helpers2.ImageExposedPortsToServicePorts(ImageInfo.Config))
 	// Find http port
 	// todo: This needs to be more solid
 	var ports []string
