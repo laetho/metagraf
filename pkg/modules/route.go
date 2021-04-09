@@ -20,6 +20,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/laetho/metagraf/internal/pkg/helpers/helpers"
+	k8sclient2 "github.com/laetho/metagraf/internal/pkg/k8sclient"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	log "k8s.io/klog"
 	"os"
@@ -27,7 +28,6 @@ import (
 	"strings"
 
 	"github.com/laetho/metagraf/internal/pkg/imageurl/imageurl"
-	"github.com/laetho/metagraf/internal/pkg/k8sclient/k8sclient"
 	"github.com/laetho/metagraf/pkg/metagraf"
 
 	routev1 "github.com/openshift/api/route/v1"
@@ -50,7 +50,7 @@ func GenRoute(mg *metagraf.MetaGraf) {
 		DockerImage = ""
 	}
 
-	client := k8sclient.GetImageClient()
+	client := k8sclient2.GetImageClient()
 	var imgurl imageurl.ImageURL
 	err := imgurl.Parse(DockerImage)
 	ist := helpers.GetImageStreamTags(
@@ -121,7 +121,7 @@ func GenRoute(mg *metagraf.MetaGraf) {
 }
 
 func StoreRoute(obj routev1.Route) {
-	client := k8sclient.GetRouteClient().Routes(NameSpace)
+	client := k8sclient2.GetRouteClient().Routes(NameSpace)
 	route, _ := client.Get(context.TODO(), obj.Name, metav1.GetOptions{})
 	if len(route.ResourceVersion) > 0 {
 		obj.ResourceVersion = route.ResourceVersion
@@ -144,7 +144,7 @@ func StoreRoute(obj routev1.Route) {
 }
 
 func DeleteRoute(name string) {
-	client := k8sclient.GetRouteClient().Routes(NameSpace)
+	client := k8sclient2.GetRouteClient().Routes(NameSpace)
 
 	_, err := client.Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {

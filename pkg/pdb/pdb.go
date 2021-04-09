@@ -19,7 +19,7 @@ package pdb
 import (
 	"context"
 	"github.com/golang/glog"
-	"github.com/laetho/metagraf/internal/pkg/k8sclient/k8sclient"
+	k8sclient2 "github.com/laetho/metagraf/internal/pkg/k8sclient"
 	params2 "github.com/laetho/metagraf/internal/pkg/params"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	"github.com/laetho/metagraf/pkg/modules"
@@ -88,7 +88,7 @@ func StorePodDisruptionBudget(obj v1beta1.PodDisruptionBudget) {
 	glog.Infof("ResourceVersion: %v Length: %v", obj.ResourceVersion, len(obj.ResourceVersion))
 	glog.Infof("Namespace: %v", params2.NameSpace)
 
-	client := k8sclient.GetKubernetesClient().PolicyV1beta1().PodDisruptionBudgets(params2.NameSpace)
+	client := k8sclient2.GetKubernetesClient().PolicyV1beta1().PodDisruptionBudgets(params2.NameSpace)
 	if len(obj.ResourceVersion) > 0 {
 		// update
 		result, err := client.Update(context.TODO(), &obj, metav1.UpdateOptions{})

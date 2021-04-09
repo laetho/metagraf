@@ -20,7 +20,7 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
-	"github.com/laetho/metagraf/internal/pkg/k8sclient/k8sclient"
+	k8sclient2 "github.com/laetho/metagraf/internal/pkg/k8sclient"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -81,7 +81,7 @@ func FindMetagrafConfigMaps(mg *metagraf.MetaGraf) map[string]string {
 	Fetch a ConfigMap resource the connected kubernetes cluster.
 */
 func GetConfigMap(name string) (*corev1.ConfigMap, error) {
-	cli := k8sclient.GetCoreClient()
+	cli := k8sclient2.GetCoreClient()
 	cm, err := cli.ConfigMaps(NameSpace).Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {
 		return cm, err
@@ -204,7 +204,7 @@ func genConfigMapsFromResources(mg *metagraf.MetaGraf) {
 }
 
 func StoreConfigMap(m corev1.ConfigMap) {
-	cmclient := k8sclient.GetCoreClient().ConfigMaps(NameSpace)
+	cmclient := k8sclient2.GetCoreClient().ConfigMaps(NameSpace)
 	cm, _ := cmclient.Get(context.TODO(), m.Name, metav1.GetOptions{})
 
 	if len(cm.ResourceVersion) > 0 {
@@ -244,7 +244,7 @@ func DeleteConfigMaps(mg *metagraf.MetaGraf) {
 }
 
 func DeleteConfigMap(name string) {
-	client := k8sclient.GetCoreClient().ConfigMaps(NameSpace)
+	client := k8sclient2.GetCoreClient().ConfigMaps(NameSpace)
 
 	_, err := client.Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {

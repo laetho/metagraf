@@ -23,7 +23,7 @@ import (
 	"fmt"
 	argoapp "github.com/argoproj/argo-cd/pkg/apis/application/v1alpha1"
 	"github.com/golang/glog"
-	"github.com/laetho/metagraf/internal/pkg/k8sclient/k8sclient"
+	k8sclient2 "github.com/laetho/metagraf/internal/pkg/k8sclient"
 	params2 "github.com/laetho/metagraf/internal/pkg/params"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	"gopkg.in/yaml.v3"
@@ -143,7 +143,7 @@ func StoreArgoCDApplication(obj argoapp.Application) {
 	glog.Infof("ResourceVersion: %v Length: %v", obj.ResourceVersion, len(obj.ResourceVersion))
 	glog.Infof("Namespace: %v", NameSpace)
 
-	client := k8sclient.GetArgoCDClient().Applications(NameSpace)
+	client := k8sclient2.GetArgoCDClient().Applications(NameSpace)
 	if len(obj.ResourceVersion) > 0 {
 		// update
 		result, err := client.Update(context.TODO(), &obj, metav1.UpdateOptions{})

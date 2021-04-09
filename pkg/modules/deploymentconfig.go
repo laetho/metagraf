@@ -19,7 +19,7 @@ package modules
 import (
 	"context"
 	"fmt"
-	"github.com/laetho/metagraf/internal/pkg/k8sclient/k8sclient"
+	k8sclient2 "github.com/laetho/metagraf/internal/pkg/k8sclient"
 	params2 "github.com/laetho/metagraf/internal/pkg/params"
 	"github.com/openshift/api/image/docker10"
 	"github.com/spf13/viper"
@@ -313,7 +313,7 @@ func volumes(mg *metagraf.MetaGraf, ImageInfo *docker10.DockerImage) ([]corev1.V
 }
 
 func StoreDeploymentConfig(obj appsv1.DeploymentConfig) {
-	client := k8sclient.GetAppsClient().DeploymentConfigs(NameSpace)
+	client := k8sclient2.GetAppsClient().DeploymentConfigs(NameSpace)
 	dc, _ := client.Get(context.TODO(), obj.Name, metav1.GetOptions{})
 
 	if len(dc.ResourceVersion) > 0 {
@@ -337,7 +337,7 @@ func StoreDeploymentConfig(obj appsv1.DeploymentConfig) {
 }
 
 func DeleteDeploymentConfig(name string) {
-	client := k8sclient.GetAppsClient().DeploymentConfigs(NameSpace)
+	client := k8sclient2.GetAppsClient().DeploymentConfigs(NameSpace)
 
 	_, err := client.Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {

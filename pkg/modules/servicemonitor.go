@@ -20,7 +20,7 @@ import (
 	"context"
 	"fmt"
 	monitoringv1 "github.com/coreos/prometheus-operator/pkg/apis/monitoring/v1"
-	"github.com/laetho/metagraf/internal/pkg/k8sclient/k8sclient"
+	k8sclient2 "github.com/laetho/metagraf/internal/pkg/k8sclient"
 	params2 "github.com/laetho/metagraf/internal/pkg/params"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -120,7 +120,7 @@ func FindServiceMonitorPort(mg *metagraf.MetaGraf) int32 {
 }
 
 func StoreServiceMonitor(obj monitoringv1.ServiceMonitor) {
-	client := k8sclient.GetMonitoringV1Client().ServiceMonitors(NameSpace)
+	client := k8sclient2.GetMonitoringV1Client().ServiceMonitors(NameSpace)
 	res, _ := client.Get(context.TODO(), obj.Name, metav1.GetOptions{})
 
 	if len(res.ResourceVersion) > 0 {
@@ -144,7 +144,7 @@ func StoreServiceMonitor(obj monitoringv1.ServiceMonitor) {
 }
 
 func DeleteServiceMonitor(name string) {
-	client := k8sclient.GetMonitoringV1Client().ServiceMonitors(NameSpace)
+	client := k8sclient2.GetMonitoringV1Client().ServiceMonitors(NameSpace)
 
 	_, err := client.Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {

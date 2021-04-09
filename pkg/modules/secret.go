@@ -19,13 +19,13 @@ package modules
 import (
 	"context"
 	"fmt"
+	k8sclient2 "github.com/laetho/metagraf/internal/pkg/k8sclient"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	log "k8s.io/klog"
 	"os"
 	"strconv"
 	"strings"
 
-	"github.com/laetho/metagraf/internal/pkg/k8sclient/k8sclient"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -94,7 +94,7 @@ func GenSecrets(mg *metagraf.MetaGraf) {
 
 // Check if a named secret exsist in the current namespace.
 func secretExists(name string) bool {
-	cli := k8sclient.GetCoreClient()
+	cli := k8sclient2.GetCoreClient()
 	obj, err := cli.Secrets(NameSpace).Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {
 		log.Error(err)
@@ -106,7 +106,7 @@ func secretExists(name string) bool {
 
 //
 func GetSecret(name string) (*corev1.Secret, error) {
-	cli := k8sclient.GetCoreClient()
+	cli := k8sclient2.GetCoreClient()
 	sec, err := cli.Secrets(NameSpace).Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {
 		return sec, err
@@ -195,7 +195,7 @@ func genResourceSecret(res *metagraf.Resource, mg *metagraf.MetaGraf) *corev1.Se
 }
 
 func StoreSecret(obj corev1.Secret) {
-	client := k8sclient.GetCoreClient().Secrets(NameSpace)
+	client := k8sclient2.GetCoreClient().Secrets(NameSpace)
 	sec, err := client.Get(context.TODO(), obj.Name, metav1.GetOptions{})
 	if err != nil {
 		log.Infof("Could not fetch Secret: %v", err)
@@ -236,7 +236,7 @@ func DeleteSecrets(mg *metagraf.MetaGraf) {
 }
 
 func DeleteSecret(name string) {
-	client := k8sclient.GetCoreClient().Secrets(NameSpace)
+	client := k8sclient2.GetCoreClient().Secrets(NameSpace)
 
 	_, err := client.Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {

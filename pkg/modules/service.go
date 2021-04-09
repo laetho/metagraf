@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"github.com/laetho/metagraf/internal/pkg/helpers/helpers"
 	"github.com/laetho/metagraf/internal/pkg/imageurl/imageurl"
-	"github.com/laetho/metagraf/internal/pkg/k8sclient/k8sclient"
+	k8sclient2 "github.com/laetho/metagraf/internal/pkg/k8sclient"
 	params2 "github.com/laetho/metagraf/internal/pkg/params"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	corev1 "k8s.io/api/core/v1"
@@ -56,7 +56,7 @@ func GenService(mg *metagraf.MetaGraf) {
 	}
 
 	if HasImageInfo {
-		client := k8sclient.GetImageClient()
+		client := k8sclient2.GetImageClient()
 		ist := helpers.GetImageStreamTags(
 			client,
 			imgurl.Namespace,
@@ -167,7 +167,7 @@ func defaultServicePorts() []corev1.ServicePort {
 }
 
 func StoreService(obj corev1.Service) {
-	client := k8sclient.GetCoreClient().Services(NameSpace)
+	client := k8sclient2.GetCoreClient().Services(NameSpace)
 	svc, _ := client.Get(context.TODO(), obj.Name, metav1.GetOptions{})
 
 	if len(svc.ResourceVersion) > 0 {
@@ -192,7 +192,7 @@ func StoreService(obj corev1.Service) {
 }
 
 func DeleteService(name string) {
-	client := k8sclient.GetCoreClient().Services(NameSpace)
+	client := k8sclient2.GetCoreClient().Services(NameSpace)
 
 	_, err := client.Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {

@@ -20,7 +20,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/laetho/metagraf/internal/pkg/helpers/helpers"
-	"github.com/laetho/metagraf/internal/pkg/k8sclient/k8sclient"
+	k8sclient2 "github.com/laetho/metagraf/internal/pkg/k8sclient"
 	params2 "github.com/laetho/metagraf/internal/pkg/params"
 	log "k8s.io/klog"
 	"os"
@@ -56,7 +56,7 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 
 	if BaseEnvs {
 		log.V(2).Info("Populate environment variables form base image.")
-		client := k8sclient.GetImageClient()
+		client := k8sclient2.GetImageClient()
 
 		ist := helpers.GetImageStreamTags(
 			client,
@@ -182,7 +182,7 @@ func genGitBuildSource(mg *metagraf.MetaGraf) buildv1.BuildSource {
 }
 
 func StoreBuildConfig(obj buildv1.BuildConfig) {
-	client := k8sclient.GetBuildClient().BuildConfigs(NameSpace)
+	client := k8sclient2.GetBuildClient().BuildConfigs(NameSpace)
 	bc, _ := client.Get(context.TODO(), obj.Name, metav1.GetOptions{})
 
 	if len(bc.ResourceVersion) > 0 {
@@ -204,7 +204,7 @@ func StoreBuildConfig(obj buildv1.BuildConfig) {
 }
 
 func DeleteBuildConfig(name string) {
-	client := k8sclient.GetBuildClient().BuildConfigs(NameSpace)
+	client := k8sclient2.GetBuildClient().BuildConfigs(NameSpace)
 
 	_, err := client.Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {
