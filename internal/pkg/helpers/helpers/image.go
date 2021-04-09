@@ -26,9 +26,9 @@ import (
 	imagev1client "github.com/openshift/client-go/image/clientset/versioned/typed/image/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	log "k8s.io/klog"
-	"metagraf/internal/pkg/imageurl/imageurl"
-	"metagraf/internal/pkg/k8sclient/k8sclient"
-	"metagraf/pkg/metagraf"
+	"github.com/laetho/metagraf/internal/pkg/imageurl/imageurl"
+	"github.com/laetho/metagraf/internal/pkg/k8sclient/k8sclient"
+	"github.com/laetho/metagraf/pkg/metagraf"
 	"os"
 	"os/exec"
 )

@@ -18,7 +18,7 @@ package modules
 
 import (
 	"fmt"
-	"metagraf/pkg/metagraf"
+	"github.com/laetho/metagraf/pkg/metagraf"
 	"strings"
 )
 

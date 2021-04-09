@@ -23,9 +23,9 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	log "k8s.io/klog"
-	"metagraf/internal/pkg/k8sclient/k8sclient"
-	"metagraf/internal/pkg/params/params"
-	"metagraf/pkg/metagraf"
+	"github.com/laetho/metagraf/internal/pkg/k8sclient/k8sclient"
+	"github.com/laetho/metagraf/internal/pkg/params/params"
+	"github.com/laetho/metagraf/pkg/metagraf"
 	"os"
 	"strconv"
 )

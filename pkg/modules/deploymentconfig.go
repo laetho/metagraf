@@ -22,14 +22,14 @@ import (
 	"github.com/openshift/api/image/docker10"
 	"github.com/spf13/viper"
 	log "k8s.io/klog"
-	"metagraf/internal/pkg/k8sclient/k8sclient"
-	"metagraf/internal/pkg/params/params"
+	"github.com/laetho/metagraf/internal/pkg/k8sclient/k8sclient"
+	"github.com/laetho/metagraf/internal/pkg/params/params"
 	"os"
 	"strconv"
 	"strings"
 
-	"metagraf/internal/pkg/helpers/helpers"
-	"metagraf/pkg/metagraf"
+	"github.com/laetho/metagraf/internal/pkg/helpers/helpers"
+	"github.com/laetho/metagraf/pkg/metagraf"
 
 	appsv1 "github.com/openshift/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"

@@ -5,9 +5,9 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	log "k8s.io/klog"
-	"metagraf/internal/pkg/params/params"
-	"metagraf/pkg/metagraf"
-	"metagraf/pkg/modules"
+	"github.com/laetho/metagraf/internal/pkg/params/params"
+	"github.com/laetho/metagraf/pkg/metagraf"
+	"github.com/laetho/metagraf/pkg/modules"
 	"os"
 )
 

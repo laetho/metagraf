@@ -20,8 +20,8 @@ import (
 	"context"
 	"fmt"
 	log "k8s.io/klog"
-	"metagraf/internal/pkg/k8sclient/k8sclient"
-	"metagraf/pkg/metagraf"
+	"github.com/laetho/metagraf/internal/pkg/k8sclient/k8sclient"
+	"github.com/laetho/metagraf/pkg/metagraf"
 	"os"
 
 	imagev1 "github.com/openshift/api/image/v1"

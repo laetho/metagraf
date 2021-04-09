@@ -18,7 +18,7 @@ package modules
 
 import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"metagraf/pkg/metagraf"
+	"github.com/laetho/metagraf/pkg/metagraf"
 	kapp "sigs.k8s.io/application/pkg/apis/app/v1beta1"
 )
 

@@ -19,10 +19,10 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"metagraf/pkg/metagraf"
+	"github.com/laetho/metagraf/pkg/metagraf"
 	"os"
 	log "k8s.io/klog"
-	"metagraf/pkg/modules"
+	"github.com/laetho/metagraf/pkg/modules"
 )
 
 func init() {

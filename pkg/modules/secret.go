@@ -20,14 +20,14 @@ import (
 	"context"
 	"fmt"
 	log "k8s.io/klog"
-	"metagraf/pkg/metagraf"
+	"github.com/laetho/metagraf/pkg/metagraf"
 	"os"
 	"strconv"
 	"strings"
 
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"metagraf/internal/pkg/k8sclient/k8sclient"
+	"github.com/laetho/metagraf/internal/pkg/k8sclient/k8sclient"
 )
 
 func FindSecrets(mg *metagraf.MetaGraf) map[string]string {

@@ -18,8 +18,8 @@ package main
 
 import (
 	log "k8s.io/klog"
-	"metagraf/mg/cmd"
-	"metagraf/pkg/mgver"
+	"github.com/laetho/metagraf/mg/cmd"
+	"github.com/laetho/metagraf/pkg/mgver"
 	"os"
 )
 

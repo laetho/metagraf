@@ -5,9 +5,9 @@ import (
 	oamv1 "github.com/crossplane/oam-kubernetes-runtime/apis/core/v1alpha2"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
-	"metagraf/internal/pkg/params/params"
-	"metagraf/pkg/metagraf"
-	"metagraf/pkg/modules"
+	"github.com/laetho/metagraf/internal/pkg/params/params"
+	"github.com/laetho/metagraf/pkg/metagraf"
+	"github.com/laetho/metagraf/pkg/modules"
 )
 
 func GetParameters(mg *metagraf.MetaGraf) []oamv1.ComponentParameter {

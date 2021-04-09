@@ -21,7 +21,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/cobra/doc"
 	log "k8s.io/klog"
-	"metagraf/pkg/metagraf"
+	"github.com/laetho/metagraf/pkg/metagraf"
 	"os"
 	"sort"
 )

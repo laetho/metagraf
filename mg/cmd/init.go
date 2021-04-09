@@ -20,7 +20,7 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/spf13/cobra"
-	"metagraf/pkg/metagraf"
+	"github.com/laetho/metagraf/pkg/metagraf"
 	"os"
 	"strings"
 )

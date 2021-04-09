@@ -21,14 +21,14 @@ import (
 	"fmt"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	log "k8s.io/klog"
-	"metagraf/internal/pkg/helpers/helpers"
+	"github.com/laetho/metagraf/internal/pkg/helpers/helpers"
 	"os"
 	"sort"
 	"strings"
 
-	"metagraf/internal/pkg/imageurl/imageurl"
-	"metagraf/internal/pkg/k8sclient/k8sclient"
-	"metagraf/pkg/metagraf"
+	"github.com/laetho/metagraf/internal/pkg/imageurl/imageurl"
+	"github.com/laetho/metagraf/internal/pkg/k8sclient/k8sclient"
+	"github.com/laetho/metagraf/pkg/metagraf"
 
 	routev1 "github.com/openshift/api/route/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"

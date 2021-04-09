@@ -21,8 +21,8 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/tidwall/gjson"
-	"metagraf/internal/pkg/params/params"
-	"metagraf/pkg/metagraf"
+	"github.com/laetho/metagraf/internal/pkg/params/params"
+	"github.com/laetho/metagraf/pkg/metagraf"
 	"os"
 	"strings"
 )

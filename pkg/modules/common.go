@@ -22,7 +22,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	log "k8s.io/klog"
 	"k8s.io/klog/v2"
-	"metagraf/pkg/metagraf"
+	"github.com/laetho/metagraf/pkg/metagraf"
 	"os"
 	"strconv"
 	"strings"

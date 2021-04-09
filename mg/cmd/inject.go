@@ -20,7 +20,7 @@ import (
 	"github.com/blang/semver"
 	"github.com/spf13/cobra"
 	log "k8s.io/klog"
-	"metagraf/pkg/metagraf"
+	"github.com/laetho/metagraf/pkg/metagraf"
 	"os"
 )
 

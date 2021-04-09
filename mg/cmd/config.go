@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"metagraf/internal/pkg/helpers/helpers"
+	"github.com/laetho/metagraf/internal/pkg/helpers/helpers"
 )
 
 func init() {

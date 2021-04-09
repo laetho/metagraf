@@ -18,7 +18,7 @@ package modules
 
 import (
 	"fmt"
-	"metagraf/pkg/metagraf"
+	"github.com/laetho/metagraf/pkg/metagraf"
 	istionetv1alpha3 "istio.io/api/networking/v1alpha3"
 )
 
