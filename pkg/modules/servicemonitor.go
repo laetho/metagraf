@@ -20,18 +20,17 @@ import (
 	"context"
 	"fmt"
 	monitoringv1 "github.com/coreos/prometheus-operator/pkg/apis/monitoring/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/util/intstr"
-	log "k8s.io/klog"
 	"github.com/laetho/metagraf/internal/pkg/k8sclient/k8sclient"
 	"github.com/laetho/metagraf/internal/pkg/params/params"
 	"github.com/laetho/metagraf/pkg/metagraf"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/util/intstr"
+	log "k8s.io/klog"
 	"os"
 	"strconv"
 )
 
 func GenServiceMonitorAndService(mg *metagraf.MetaGraf) {
-
 
 }
 
@@ -49,7 +48,7 @@ func GenServiceMonitor(mg *metagraf.MetaGraf) {
 
 	eps := []monitoringv1.Endpoint{}
 	ep := monitoringv1.Endpoint{
-		TargetPort:			  &intstr.IntOrString{
+		TargetPort: &intstr.IntOrString{
 			IntVal: FindServiceMonitorPort(mg),
 		},
 		Path:     FindServiceMonitorPath(mg),
@@ -149,13 +148,13 @@ func DeleteServiceMonitor(name string) {
 
 	_, err := client.Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {
-		fmt.Println("The ServiceMonitor: ", name, "does not exist in namespace: ", NameSpace,", skipping...")
+		fmt.Println("The ServiceMonitor: ", name, "does not exist in namespace: ", NameSpace, ", skipping...")
 		return
 	}
 
 	err = client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 	if err != nil {
-		fmt.Println( "Unable to delete ServiceMonitor: ", name, " in namespace: ", NameSpace)
+		fmt.Println("Unable to delete ServiceMonitor: ", name, " in namespace: ", NameSpace)
 		log.Error(err)
 		return
 	}

@@ -19,13 +19,13 @@ package modules
 import (
 	"context"
 	"github.com/golang/glog"
-	"github.com/spf13/viper"
-	"k8s.io/apimachinery/pkg/util/intstr"
 	"github.com/laetho/metagraf/internal/pkg/affinity"
 	"github.com/laetho/metagraf/internal/pkg/helpers/helpers"
 	"github.com/laetho/metagraf/internal/pkg/k8sclient/k8sclient"
 	"github.com/laetho/metagraf/internal/pkg/params/params"
 	"github.com/laetho/metagraf/pkg/metagraf"
+	"github.com/spf13/viper"
+	"k8s.io/apimachinery/pkg/util/intstr"
 	"strconv"
 	"strings"
 
@@ -48,7 +48,6 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 	if len(ImageNS) == 0 {
 		ImageNS = NameSpace
 	}
-
 
 	// Resource labels
 	l := make(map[string]string)
@@ -75,8 +74,8 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 
 	// Instance of RollingDeploymentStrategyParams
 	rollingParams := appsv1.RollingUpdateDeployment{
-		MaxSurge:            &MaxSurge,
-		MaxUnavailable:      &MaxUnavailable,
+		MaxSurge:       &MaxSurge,
+		MaxUnavailable: &MaxUnavailable,
 	}
 
 	// Containers
@@ -161,8 +160,8 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 			RevisionHistoryLimit: &RevisionHistoryLimit,
 			Selector:             &s,
 			Strategy: appsv1.DeploymentStrategy{
-				Type:                  appsv1.RollingUpdateDeploymentStrategyType,
-				RollingUpdate:         &rollingParams,
+				Type:          appsv1.RollingUpdateDeploymentStrategyType,
+				RollingUpdate: &rollingParams,
 			},
 			Template: corev1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
@@ -178,7 +177,7 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 		Status: appsv1.DeploymentStatus{},
 	}
 
-	if params.WithAffinityRules{
+	if params.WithAffinityRules {
 		obj.Spec.Template.Spec.Affinity = affinity.SoftPodAntiAffinity(objname, params.PodAntiAffinityTopologyKey, params.PodAntiAffinityWeight)
 	}
 
@@ -189,7 +188,6 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 		MarshalObject(obj.DeepCopyObject())
 	}
 }
-
 
 func StoreDeployment(obj appsv1.Deployment) {
 

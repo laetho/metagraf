@@ -18,11 +18,11 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
-	log "k8s.io/klog"
 	"github.com/laetho/metagraf/internal/pkg/params/params"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	"github.com/laetho/metagraf/pkg/modules"
+	"github.com/spf13/cobra"
+	log "k8s.io/klog"
 	"os"
 )
 
@@ -30,7 +30,7 @@ func init() {
 	createCmd.AddCommand(createApplicationCmd)
 	createApplicationCmd.Flags().StringVarP(&Namespace, "namespace", "n", "", "namespace to work on, if not supplied it will use current working namespace")
 	createApplicationCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
-	createApplicationCmd.Flags().StringVar(&params.PropertiesFile, "cvfile","", "File with component configuration values. (source|key=value) pairs")
+	createApplicationCmd.Flags().StringVar(&params.PropertiesFile, "cvfile", "", "File with component configuration values. (source|key=value) pairs")
 }
 
 var createApplicationCmd = &cobra.Command{

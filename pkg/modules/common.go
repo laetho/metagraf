@@ -18,11 +18,11 @@ package modules
 
 import (
 	"github.com/blang/semver"
+	"github.com/laetho/metagraf/pkg/metagraf"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	log "k8s.io/klog"
 	"k8s.io/klog/v2"
-	"github.com/laetho/metagraf/pkg/metagraf"
 	"os"
 	"strconv"
 	"strings"

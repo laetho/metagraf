@@ -17,12 +17,12 @@ limitations under the License.
 package metagraf
 
 import (
+	"github.com/laetho/metagraf/internal/pkg/params/params"
 	"github.com/pkg/errors"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	log "k8s.io/klog"
-	"github.com/laetho/metagraf/internal/pkg/params/params"
 	"strconv"
 	"strings"
 )
@@ -173,10 +173,10 @@ func (mg MetaGraf) ServicePortsBySpec() []corev1.ServicePort {
 			})
 		default:
 			ports = append(ports, corev1.ServicePort{
-				Name:        "TCP-"+protocol,
-				Protocol:    "TCP",
-				Port:        port,
-				TargetPort:  intstr.IntOrString{
+				Name:     "TCP-" + protocol,
+				Protocol: "TCP",
+				Port:     port,
+				TargetPort: intstr.IntOrString{
 					Type:   0,
 					IntVal: port,
 					StrVal: protocol,

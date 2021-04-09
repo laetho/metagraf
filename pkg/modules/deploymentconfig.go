@@ -19,11 +19,11 @@ package modules
 import (
 	"context"
 	"fmt"
+	"github.com/laetho/metagraf/internal/pkg/k8sclient/k8sclient"
+	"github.com/laetho/metagraf/internal/pkg/params/params"
 	"github.com/openshift/api/image/docker10"
 	"github.com/spf13/viper"
 	log "k8s.io/klog"
-	"github.com/laetho/metagraf/internal/pkg/k8sclient/k8sclient"
-	"github.com/laetho/metagraf/internal/pkg/params/params"
 	"os"
 	"strconv"
 	"strings"
@@ -36,7 +36,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 )
-
 
 // Todo: Still needs to be split up, but some refactoring has been done.
 func GenDeploymentConfig(mg *metagraf.MetaGraf) {
@@ -96,7 +95,6 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 		HasImageInfo = true
 	}
 
-
 	EnvVars = GetEnvVars(mg, Variables)
 	// Environment Variables from baserunimage
 	if BaseEnvs && HasImageInfo {
@@ -136,7 +134,6 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 		Volumes, VolumeMounts = volumes(mg, ImageInfo)
 	}
 
-
 	// Tying Container PodSpec together
 	Container := corev1.Container{
 		Name:            objname,
@@ -145,7 +142,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 		Ports:           ContainerPorts,
 		VolumeMounts:    VolumeMounts,
 		Env:             EnvVars,
-		EnvFrom:		 parseEnvFrom(mg),
+		EnvFrom:         parseEnvFrom(mg),
 	}
 	// Checking for Probes
 	probe := corev1.Probe{}
@@ -205,7 +202,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 // Determine if we're using container build by the project or if we are just referencing
 // an existing container.
 func imageRef(mg *metagraf.MetaGraf) string {
-	if (len(mg.Spec.Image) > 0 && params.DisableDeploymentImageAliasing) {
+	if len(mg.Spec.Image) > 0 && params.DisableDeploymentImageAliasing {
 		return mg.Spec.Image
 	} else {
 		registry := viper.GetString("registry")
@@ -219,10 +216,10 @@ func imageRef(mg *metagraf.MetaGraf) string {
 }
 
 /**
-	Builds up slices of corev1.Volume and corev1.VolumeMount structs and returns them.
-	Should maybe consider splitting this up even further.
- */
-func volumes(mg *metagraf.MetaGraf, ImageInfo *docker10.DockerImage ) ([]corev1.Volume, []corev1.VolumeMount) {
+Builds up slices of corev1.Volume and corev1.VolumeMount structs and returns them.
+Should maybe consider splitting this up even further.
+*/
+func volumes(mg *metagraf.MetaGraf, ImageInfo *docker10.DockerImage) ([]corev1.Volume, []corev1.VolumeMount) {
 	objname := Name(mg)
 	var Volumes []corev1.Volume
 	var VolumeMounts []corev1.VolumeMount
@@ -252,14 +249,14 @@ func volumes(mg *metagraf.MetaGraf, ImageInfo *docker10.DockerImage ) ([]corev1.
 		var vname string
 		var oname string
 
-		vname = "cm-"+strings.Replace(n,".","-", -1)
+		vname = "cm-" + strings.Replace(n, ".", "-", -1)
 
-		log.V(2).Infof("Name,Type: %v,%v", n,t)
+		log.V(2).Infof("Name,Type: %v,%v", n, t)
 
 		if t == "template" {
-			oname =  strings.Replace(n,".","-", -1)
+			oname = strings.Replace(n, ".", "-", -1)
 		} else {
-			oname = objname+"-"+strings.Replace(n,".","-", -1)
+			oname = objname + "-" + strings.Replace(n, ".", "-", -1)
 		}
 
 		vol := corev1.Volume{
@@ -281,7 +278,7 @@ func volumes(mg *metagraf.MetaGraf, ImageInfo *docker10.DockerImage ) ([]corev1.
 		if t == "resource" {
 			volm.MountPath = "/mg/" + n
 		} else {
-			volm.MountPath = "/mg/"+t+"/"+n
+			volm.MountPath = "/mg/" + t + "/" + n
 		}
 
 		Volumes = append(Volumes, vol)
@@ -290,21 +287,21 @@ func volumes(mg *metagraf.MetaGraf, ImageInfo *docker10.DockerImage ) ([]corev1.
 
 	for n, t := range FindSecrets(mg) {
 		log.V(2).Infof("Secret: %v,%v", n, t)
-		voln := strings.Replace(n,".", "-", -1)
+		voln := strings.Replace(n, ".", "-", -1)
 		var mode int32 = 420
 		vol := corev1.Volume{
 			Name: voln,
 			VolumeSource: corev1.VolumeSource{
 				Secret: &corev1.SecretVolumeSource{
-					SecretName: n,
+					SecretName:  n,
 					DefaultMode: &mode,
 				},
 			},
 		}
 
 		volm := corev1.VolumeMount{
-			Name: voln,
-			MountPath: "/mg/secret/"+n,
+			Name:      voln,
+			MountPath: "/mg/secret/" + n,
 		}
 		Volumes = append(Volumes, vol)
 		VolumeMounts = append(VolumeMounts, volm)
@@ -314,9 +311,6 @@ func volumes(mg *metagraf.MetaGraf, ImageInfo *docker10.DockerImage ) ([]corev1.
 
 	return Volumes, VolumeMounts
 }
-
-
-
 
 func StoreDeploymentConfig(obj appsv1.DeploymentConfig) {
 	client := k8sclient.GetAppsClient().DeploymentConfigs(NameSpace)
@@ -330,7 +324,7 @@ func StoreDeploymentConfig(obj appsv1.DeploymentConfig) {
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		fmt.Println("Updated DeploymentConfig: ", obj.Name," in Namespace: ", obj.Name)
+		fmt.Println("Updated DeploymentConfig: ", obj.Name, " in Namespace: ", obj.Name)
 	} else {
 		result, err := client.Create(context.TODO(), &obj, metav1.CreateOptions{})
 		if err != nil {
@@ -338,22 +332,22 @@ func StoreDeploymentConfig(obj appsv1.DeploymentConfig) {
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		fmt.Println("Created DeploymentConfig: ", result.Name," in Namespace: ", obj.Name)
+		fmt.Println("Created DeploymentConfig: ", result.Name, " in Namespace: ", obj.Name)
 	}
 }
 
 func DeleteDeploymentConfig(name string) {
 	client := k8sclient.GetAppsClient().DeploymentConfigs(NameSpace)
 
-	_ , err := client.Get(context.TODO(), name, metav1.GetOptions{})
+	_, err := client.Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {
-		fmt.Println("DeploymentConfig: ", name, "does not exist in namespace: ", NameSpace,", skipping...")
+		fmt.Println("DeploymentConfig: ", name, "does not exist in namespace: ", NameSpace, ", skipping...")
 		return
 	}
 
 	err = client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 	if err != nil {
-		fmt.Println( "Service to delete DeploymentConfig: ", name, " in namespace: ", NameSpace)
+		fmt.Println("Service to delete DeploymentConfig: ", name, " in namespace: ", NameSpace)
 		log.Error(err)
 		return
 	}

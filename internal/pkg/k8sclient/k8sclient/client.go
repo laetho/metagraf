@@ -63,7 +63,7 @@ func getKubeConfig() string {
 }
 
 // Get rest.Config from outside or inside cluster
-func getRestConfig(kc string) *rest.Config{
+func getRestConfig(kc string) *rest.Config {
 	log.Infof("kubeconfig: %v", kc)
 	var config *rest.Config
 

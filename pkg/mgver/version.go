@@ -18,7 +18,7 @@ package mgver
 
 var (
 	BuildDate string
-	GitTag string
-	GitHash string
+	GitTag    string
+	GitHash   string
 	GitBranch string
 )

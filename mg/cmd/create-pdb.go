@@ -17,19 +17,19 @@ limitations under the License.
 package cmd
 
 import (
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-	log "k8s.io/klog"
 	"github.com/laetho/metagraf/internal/pkg/params/params"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	"github.com/laetho/metagraf/pkg/pdb"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	log "k8s.io/klog"
 	"os"
 )
 
 func init() {
 	createCmd.AddCommand(createPodDisruptionBudget)
-	createPodDisruptionBudget.Flags().Int32Var(&params.Replicas,"replicas", params.DefaultReplicas, "Number of replicas.")
-	createPodDisruptionBudget.Flags().StringVarP(&params.NameSpace,"namespace", "n", "", "Set namespace for generated resource.")
+	createPodDisruptionBudget.Flags().Int32Var(&params.Replicas, "replicas", params.DefaultReplicas, "Number of replicas.")
+	createPodDisruptionBudget.Flags().StringVarP(&params.NameSpace, "namespace", "n", "", "Set namespace for generated resource.")
 }
 
 var createPodDisruptionBudget = &cobra.Command{

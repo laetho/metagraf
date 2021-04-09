@@ -19,10 +19,10 @@ package cmd
 import (
 	"bufio"
 	"fmt"
-	log "k8s.io/klog"
 	"github.com/laetho/metagraf/internal/pkg/params/params"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	"github.com/laetho/metagraf/pkg/modules"
+	log "k8s.io/klog"
 	"os"
 	"strings"
 )
@@ -59,7 +59,6 @@ func MgPropertyLineSplit(r rune) bool {
 	return r == '|' || r == '='
 }
 
-
 // Reads a properties file and returns a metagraf.MGProperties structure
 func ReadPropertiesFile(propfile string) metagraf.MGProperties {
 	props := metagraf.MGProperties{}
@@ -68,7 +67,7 @@ func ReadPropertiesFile(propfile string) metagraf.MGProperties {
 		return props
 	}
 
-	file, err := os.Open( propfile )
+	file, err := os.Open(propfile)
 	if err != nil {
 		log.Error(err)
 		os.Exit(1)
@@ -126,7 +125,7 @@ func ReadPropertiesFile(propfile string) metagraf.MGProperties {
 
 //
 func MergeAndValidateProperties(base metagraf.MGProperties, merge metagraf.MGProperties, novalidate bool) metagraf.MGProperties {
-	for _,p := range merge {
+	for _, p := range merge {
 		if novalidate {
 			if _, ok := base[p.MGKey()]; !ok {
 				base[p.MGKey()] = p
@@ -173,15 +172,13 @@ func GetCmdProperties(mgp metagraf.MGProperties) metagraf.MGProperties {
 	}
 	fileprops := ReadPropertiesFile(params.PropertiesFile)
 	// Fetch possible variables from metaGraf specification
-	mgp = MergeAndValidateProperties(mgp,PropertiesFromEnv(mgp), false)
+	mgp = MergeAndValidateProperties(mgp, PropertiesFromEnv(mgp), false)
 	// Fetch variable overrides from file if specified with --cvfile
 	mgp = MergeAndValidateProperties(mgp, fileprops, true)
 	// Fetch from commandline with --cvars
 	mgp = MergeAndValidateProperties(mgp, PropertiesFromCmd(mgp), false)
 	return mgp
 }
-
-
 
 func FlagPassingHack() {
 	if Dryrun {
@@ -205,4 +202,3 @@ func FlagPassingHack() {
 	modules.Context = Context
 	modules.CreateGlobals = CreateGlobals
 }
-

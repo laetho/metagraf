@@ -39,16 +39,16 @@ func ImageInfo(imageref string) (Info, error) {
 
 	ref, err := name.ParseReference(imageref)
 	if err != nil {
-		return Info{},err
+		return Info{}, err
 	}
 
 	var options []remote.Option
 
-	options = append(options, remote.WithUserAgent("mg v"+ mgver.GitTag))
+	options = append(options, remote.WithUserAgent("mg v"+mgver.GitTag))
 	if len(params.RegistryUser) > 0 {
 		options = append(options, remote.WithAuth(authn.FromConfig(authn.AuthConfig{
-			Username:      params.RegistryUser,
-			Password:      params.RegistryPassword,
+			Username: params.RegistryUser,
+			Password: params.RegistryPassword,
 		})))
 	} else {
 		options = append(options, remote.WithAuth(authn.Anonymous))
@@ -62,7 +62,6 @@ func ImageInfo(imageref string) (Info, error) {
 	config, _ := img.ConfigFile()
 	return Info(config.Config), nil
 }
-
 
 // Turns the OCI or Docker image volume information into a
 // slice of corev1.Volume{}

@@ -3,24 +3,24 @@ package oam
 import (
 	"fmt"
 	oamv1 "github.com/crossplane/oam-kubernetes-runtime/apis/core/v1alpha2"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/runtime"
 	"github.com/laetho/metagraf/internal/pkg/params/params"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	"github.com/laetho/metagraf/pkg/modules"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
 )
 
 func GetParameters(mg *metagraf.MetaGraf) []oamv1.ComponentParameter {
 	props := mg.GetProperties()
 	cpars := []oamv1.ComponentParameter{}
 
-	for _,v := range props {
+	for _, v := range props {
 		if v.Source != "local" {
 			continue
 		}
 		param := oamv1.ComponentParameter{
-			Name:        v.Key,
-			Required:    &v.Required,
+			Name:     v.Key,
+			Required: &v.Required,
 		}
 		cpars = append(cpars, param)
 	}
@@ -35,7 +35,7 @@ func GenOAMComponent(mg *metagraf.MetaGraf) {
 	fmt.Println(mg)
 
 	obj := oamv1.Component{
-		TypeMeta:   metav1.TypeMeta{
+		TypeMeta: metav1.TypeMeta{
 			Kind:       "Component",
 			APIVersion: "core.oam.dev/v1alpha2",
 		},
@@ -48,8 +48,8 @@ func GenOAMComponent(mg *metagraf.MetaGraf) {
 			OwnerReferences:            nil,
 			Finalizers:                 nil,
 		},
-		Spec:       oamv1.ComponentSpec{
-			Workload:	runtime.RawExtension{
+		Spec: oamv1.ComponentSpec{
+			Workload: runtime.RawExtension{
 				Object: &oamv1.ContainerizedWorkload{
 					TypeMeta:   metav1.TypeMeta{},
 					ObjectMeta: metav1.ObjectMeta{},
@@ -59,7 +59,7 @@ func GenOAMComponent(mg *metagraf.MetaGraf) {
 			},
 			Parameters: GetParameters(mg),
 		},
-		Status:     oamv1.ComponentStatus{},
+		Status: oamv1.ComponentStatus{},
 	}
 
 	if modules.Output {

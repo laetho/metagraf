@@ -18,8 +18,8 @@ package metagraf
 
 import (
 	"encoding/json"
-	log "k8s.io/klog"
 	"io/ioutil"
+	log "k8s.io/klog"
 	"os"
 )
 

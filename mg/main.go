@@ -17,18 +17,17 @@ limitations under the License.
 package main
 
 import (
-	log "k8s.io/klog"
 	"github.com/laetho/metagraf/mg/cmd"
 	"github.com/laetho/metagraf/pkg/mgver"
+	log "k8s.io/klog"
 	"os"
 )
 
-
 func main() {
 	if len(mgver.GitTag) == 0 {
-		cmd.MGVersion = mgver.GitBranch+"("+mgver.GitHash+")"
+		cmd.MGVersion = mgver.GitBranch + "(" + mgver.GitHash + ")"
 	} else {
-		cmd.MGVersion = mgver.GitTag+"("+mgver.GitHash+")"
+		cmd.MGVersion = mgver.GitTag + "(" + mgver.GitHash + ")"
 	}
 
 	err := cmd.Execute()

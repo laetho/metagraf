@@ -18,11 +18,11 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
 	"github.com/laetho/metagraf/pkg/metagraf"
-	"os"
-	log "k8s.io/klog"
 	"github.com/laetho/metagraf/pkg/modules"
+	"github.com/spf13/cobra"
+	log "k8s.io/klog"
+	"os"
 )
 
 func init() {
@@ -48,7 +48,7 @@ var istioCreateCmd = &cobra.Command{
 var istioCreateServiceEntryCmd = &cobra.Command{
 	Use:   "serviceentry <metagraf>",
 	Short: "create istio service resource",
-	Long:  `
+	Long: `
 ServiceEntry enables adding additional entries into Istio’s internal service registry, 
 so that auto-discovered services in the mesh can access/route to these manually specified services.
 A service entry describes the properties of a service (DNS name, VIPs, ports, protocols, endpoints). 
@@ -72,7 +72,7 @@ not part of the platform’s service registry (e.g., a set of VMs talking to ser
 var istioCreateVirtualServiceCmd = &cobra.Command{
 	Use:   "virtualservice <metagraf>",
 	Short: "create istio VirtualService resource",
-	Long:  `
+	Long: `
 A VirtualService defines a set of traffic routing rules to apply when a host is addressed. 
 Each routing rule defines matching criteria for traffic of a specific protocol. If the 
 traffic is matched, then it is sent to a named destination service (or subset/version of 

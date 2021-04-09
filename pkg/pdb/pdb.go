@@ -19,6 +19,10 @@ package pdb
 import (
 	"context"
 	"github.com/golang/glog"
+	"github.com/laetho/metagraf/internal/pkg/k8sclient/k8sclient"
+	"github.com/laetho/metagraf/internal/pkg/params/params"
+	"github.com/laetho/metagraf/pkg/metagraf"
+	"github.com/laetho/metagraf/pkg/modules"
 	"k8s.io/api/policy/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -27,14 +31,9 @@ import (
 	log "k8s.io/klog"
 	"k8s.io/kubectl/pkg/scheme"
 	"math"
-	"github.com/laetho/metagraf/internal/pkg/k8sclient/k8sclient"
-	"github.com/laetho/metagraf/internal/pkg/params/params"
-	"github.com/laetho/metagraf/pkg/metagraf"
-	"github.com/laetho/metagraf/pkg/modules"
 	"os"
 	"time"
 )
-
 
 func GenPodDisruptionBudget(mg *metagraf.MetaGraf, replicas int32) v1beta1.PodDisruptionBudget {
 	name := modules.Name(mg) // @todo refactor how we create a name.
@@ -88,8 +87,6 @@ func StorePodDisruptionBudget(obj v1beta1.PodDisruptionBudget) {
 
 	glog.Infof("ResourceVersion: %v Length: %v", obj.ResourceVersion, len(obj.ResourceVersion))
 	glog.Infof("Namespace: %v", params.NameSpace)
-
-
 
 	client := k8sclient.GetKubernetesClient().PolicyV1beta1().PodDisruptionBudgets(params.NameSpace)
 	if len(obj.ResourceVersion) > 0 {

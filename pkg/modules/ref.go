@@ -18,12 +18,12 @@ package modules
 
 import (
 	"fmt"
+	"github.com/laetho/metagraf/internal/pkg/params/params"
+	"github.com/laetho/metagraf/pkg/metagraf"
 	"html/template"
 	"io/ioutil"
 	log "k8s.io/klog"
 	"k8s.io/klog/v2"
-	"github.com/laetho/metagraf/internal/pkg/params/params"
-	"github.com/laetho/metagraf/pkg/metagraf"
 	"os"
 	"strings"
 )
@@ -35,7 +35,9 @@ func getPropSlice(mg *metagraf.MetaGraf) []metagraf.MGProperty {
 
 	// No defaults for Environment Variables.
 	for _, e := range mg.Spec.Environment.Local {
-		if e.Type == "JVM_SYS_PROP" { continue }
+		if e.Type == "JVM_SYS_PROP" {
+			continue
+		}
 		p := metagraf.MGProperty{
 			Source:   "local",
 			Key:      e.Name,
@@ -47,7 +49,9 @@ func getPropSlice(mg *metagraf.MetaGraf) []metagraf.MGProperty {
 	}
 
 	for _, c := range mg.Spec.Config {
-		if c.Name != "JVM_SYS_PROP" && c.Name != "jvm.options"  { continue }
+		if c.Name != "JVM_SYS_PROP" && c.Name != "jvm.options" {
+			continue
+		}
 		for _, o := range c.Options {
 			p := metagraf.MGProperty{
 				Source:   c.Name,
@@ -71,7 +75,9 @@ func getEnvsForTemplate(mg *metagraf.MetaGraf, nojsp bool) []metagraf.Environmen
 
 	for _, e := range mg.Spec.Environment.Local {
 		// Skip JVM_SYS_PROP type if nojsp = true
-		if nojsp && e.Type == "JVM_SYS_PROP" {continue}
+		if nojsp && e.Type == "JVM_SYS_PROP" {
+			continue
+		}
 		me := metagraf.EnvironmentVar{
 			Name:        e.Name,
 			Required:    e.Required,
@@ -116,7 +122,7 @@ func GenRef(mg *metagraf.MetaGraf) {
 		_, err := os.Stat(params.RefTemplateFile)
 		if os.IsNotExist(err) {
 			log.Infof("Fetching template: %v", Template)
-			cm, err  := GetConfigMap(Template)
+			cm, err := GetConfigMap(Template)
 			if err != nil {
 				log.Error(err)
 				os.Exit(-1)

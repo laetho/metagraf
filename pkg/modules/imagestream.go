@@ -19,9 +19,9 @@ package modules
 import (
 	"context"
 	"fmt"
-	log "k8s.io/klog"
 	"github.com/laetho/metagraf/internal/pkg/k8sclient/k8sclient"
 	"github.com/laetho/metagraf/pkg/metagraf"
+	log "k8s.io/klog"
 	"os"
 
 	imagev1 "github.com/openshift/api/image/v1"
@@ -33,7 +33,6 @@ func GenImageStream(mg *metagraf.MetaGraf, namespace string) {
 
 	objname := Name(mg)
 	log.V(2).Infof("Generated ImageStream name: %v", objname)
-
 
 	// Resource labels
 	l := make(map[string]string)
@@ -104,13 +103,13 @@ func DeleteImageStream(name string) {
 
 	_, err := client.Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {
-		fmt.Println("ImageStream: ", name, "does not exist in namespace: ", NameSpace,", skipping...")
+		fmt.Println("ImageStream: ", name, "does not exist in namespace: ", NameSpace, ", skipping...")
 		return
 	}
 
 	err = client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 	if err != nil {
-		fmt.Println( "Unable to delete ImageStream: ", name, " in namespace: ", NameSpace)
+		fmt.Println("Unable to delete ImageStream: ", name, " in namespace: ", NameSpace)
 		log.Error(err)
 		return
 	}

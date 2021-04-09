@@ -4,7 +4,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 )
 
-func (e *EnvironmentVar) ToEnvVar() (corev1.EnvVar) {
+func (e *EnvironmentVar) ToEnvVar() corev1.EnvVar {
 	ev := corev1.EnvVar{}
 	switch e.GetType() {
 	case "secretfrom":
@@ -37,8 +37,8 @@ func (e *EnvironmentVar) ToEnvVar() (corev1.EnvVar) {
 		return ev
 	case "default":
 		ev = corev1.EnvVar{
-			Name:      e.Name,
-			Value:     "",
+			Name:  e.Name,
+			Value: "",
 		}
 	}
 	return ev

@@ -23,10 +23,10 @@ import (
 )
 
 type ImageURL struct {
-	URL *url.URL
+	URL       *url.URL
 	Namespace string
-	Image string
-	Tag string
+	Image     string
+	Tag       string
 }
 
 func (u *ImageURL) Parse(url string) error {
@@ -53,7 +53,7 @@ func (u *ImageURL) Parse(url string) error {
 func (u *ImageURL) ParsePath() error {
 	sa := strings.Split(u.URL.Path, "/")
 	if len(sa) < 3 {
-		err := fmt.Errorf("Unexpected path format: %v", u.URL.Path )
+		err := fmt.Errorf("Unexpected path format: %v", u.URL.Path)
 		return err
 	}
 	sb := strings.Split(sa[2], ":")
@@ -70,8 +70,14 @@ func (u *ImageURL) ParsePath() error {
 }
 
 func (u *ImageURL) IsValid() bool {
-	if len(u.Namespace) < 1 {return false}
-	if len(u.Image) < 1 {return false}
-	if len(u.Tag) < 1 {return false}
+	if len(u.Namespace) < 1 {
+		return false
+	}
+	if len(u.Image) < 1 {
+		return false
+	}
+	if len(u.Tag) < 1 {
+		return false
+	}
 	return true
 }

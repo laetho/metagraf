@@ -17,17 +17,17 @@ limitations under the License.
 package cmd
 
 import (
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	"github.com/laetho/metagraf/pkg/modules"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	log "k8s.io/klog"
 	"os"
 )
 
 func init() {
 	createCmd.AddCommand(createImageStreamCmd)
-	createImageStreamCmd.Flags().StringVarP(&Namespace, "namespace", "n","", "namespace to work on, if not supplied it will use current working namespace")
+	createImageStreamCmd.Flags().StringVarP(&Namespace, "namespace", "n", "", "namespace to work on, if not supplied it will use current working namespace")
 	createImageStreamCmd.Flags().StringVar(&OName, "name", "", "Overrides name of application basename to generate imagestream for.")
 	createImageStreamCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
 

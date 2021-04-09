@@ -17,26 +17,26 @@ limitations under the License.
 package modules
 
 import (
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"github.com/laetho/metagraf/pkg/metagraf"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	kapp "sigs.k8s.io/application/pkg/apis/app/v1beta1"
 )
 
 func GenApplication(mg *metagraf.MetaGraf) {
 
 	obj := kapp.Application{
-		TypeMeta:   metav1.TypeMeta{
+		TypeMeta: metav1.TypeMeta{
 			Kind:       "Application",
 			APIVersion: "v1beta1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:                       Name(mg),
-			GenerateName:               "",
-			Namespace:                  NameSpace,
-			Labels:                     mg.Metadata.Labels,
-			Annotations:                mg.Metadata.Annotations,
+			Name:         Name(mg),
+			GenerateName: "",
+			Namespace:    NameSpace,
+			Labels:       mg.Metadata.Labels,
+			Annotations:  mg.Metadata.Annotations,
 		},
-		Spec:       kapp.ApplicationSpec{
+		Spec: kapp.ApplicationSpec{
 			ComponentGroupKinds: mg.GroupKinds(),
 			Descriptor: kapp.Descriptor{
 				Type:        mg.Spec.Type,
@@ -56,7 +56,7 @@ func GenApplication(mg *metagraf.MetaGraf) {
 			Info:          nil,
 			AssemblyPhase: "",
 		},
-		Status:     kapp.ApplicationStatus{},
+		Status: kapp.ApplicationStatus{},
 	}
 
 	if !Dryrun {
@@ -66,7 +66,6 @@ func GenApplication(mg *metagraf.MetaGraf) {
 		MarshalObject(obj.DeepCopyObject())
 	}
 }
-
 
 func StoreApplication(obj kapp.Application) {
 

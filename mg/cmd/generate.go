@@ -18,10 +18,10 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/laetho/metagraf/pkg/metagraf"
 	"github.com/spf13/cobra"
 	"github.com/spf13/cobra/doc"
 	log "k8s.io/klog"
-	"github.com/laetho/metagraf/pkg/metagraf"
 	"os"
 	"sort"
 )
@@ -47,7 +47,7 @@ var generateMarkdownCmd = &cobra.Command{
 	Short: "create markdown documentation for the mg command.",
 	Long:  MGBanner + `generate markdown`,
 	Run: func(cmd *cobra.Command, args []string) {
-		err := doc.GenMarkdownTree( RootCmd, "./")
+		err := doc.GenMarkdownTree(RootCmd, "./")
 		if err != nil {
 			log.Fatalf("%v", err)
 			os.Exit(1)
@@ -62,10 +62,10 @@ var generateManPagesCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		header := &doc.GenManHeader{
-			Title: "mg",
+			Title:   "mg",
 			Section: "3",
 		}
-		err := doc.GenManTree( RootCmd, header, "./")
+		err := doc.GenManTree(RootCmd, header, "./")
 		if err != nil {
 			log.Fatalf("%v", err)
 			os.Exit(1)
@@ -86,18 +86,22 @@ var generatePropertiesCmd = &cobra.Command{
 		props := mg.GetProperties()
 		//OverrideProperties(props)
 
-		keys := props.SourceKeys(true )
+		keys := props.SourceKeys(true)
 		sort.Strings(keys)
 
 		for _, key := range keys {
 			prop := props[key]
-			if prop.Source == "external" {continue}
-			if prop.Required == false {continue}
+			if prop.Source == "external" {
+				continue
+			}
+			if prop.Required == false {
+				continue
+			}
 			if Defaults {
-				fmt.Println(prop.MGKey()+"="+prop.Default)
+				fmt.Println(prop.MGKey() + "=" + prop.Default)
 			} else {
 				if prop.Source == "JVM_SYS_PROP" {
-					fmt.Println(prop.MGKey()+"="+prop.Default)
+					fmt.Println(prop.MGKey() + "=" + prop.Default)
 				} else {
 					fmt.Println(prop.MGKey() + "=")
 				}
@@ -119,6 +123,6 @@ To configure your bash shell to load completions for each session add to your ba
 . <(mg generate completion)
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		_ = RootCmd.GenBashCompletion(os.Stdout);
+		_ = RootCmd.GenBashCompletion(os.Stdout)
 	},
 }

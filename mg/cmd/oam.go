@@ -18,10 +18,10 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
 	"github.com/laetho/metagraf/internal/pkg/params/params"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	"github.com/laetho/metagraf/pkg/oam"
+	"github.com/spf13/cobra"
 	"os"
 )
 
@@ -30,9 +30,9 @@ func init() {
 	oamCmd.AddCommand(oamCreateCmd)
 	oamCreateCmd.PersistentFlags().BoolVar(&Verbose, "verbose", false, "verbose output")
 	oamCreateCmd.PersistentFlags().BoolVar(&Output, "output", false, "also output objects")
-	oamCreateCmd.PersistentFlags().StringVarP(&Format, "format","o","json", "specify json or yaml, json id default")
+	oamCreateCmd.PersistentFlags().StringVarP(&Format, "format", "o", "json", "specify json or yaml, json id default")
 	oamCreateCmd.PersistentFlags().BoolVar(&Dryrun, "dryrun", false, "do not create objects, only output")
-	oamCreateCmd.PersistentFlags().StringVarP(&Namespace, "namespace", "n","", "namespace to work on")
+	oamCreateCmd.PersistentFlags().StringVarP(&Namespace, "namespace", "n", "", "namespace to work on")
 	oamCreateCmd.AddCommand(oamCreateComponentCmd)
 	oamCreateCmd.AddCommand(oamCreateApplicationConfigurationCmd)
 }
@@ -51,9 +51,9 @@ var oamCreateCmd = &cobra.Command{
 
 var oamCreateComponentCmd = &cobra.Command{
 	TraverseChildren: true,
-	Use:   "component <metagraf>",
-	Short: "oam create component",
-	Long:  `Creates an oam component from a metagraf specification`,
+	Use:              "component <metagraf>",
+	Short:            "oam create component",
+	Long:             `Creates an oam component from a metagraf specification`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
 			fmt.Println("Insufficient arguments")
@@ -70,9 +70,9 @@ var oamCreateComponentCmd = &cobra.Command{
 
 var oamCreateApplicationConfigurationCmd = &cobra.Command{
 	TraverseChildren: true,
-	Use:   "configuration <metagraf>",
-	Short: "oam create configuration",
-	Long:  `Creates an oam application configuration from a metagraf specification and properties`,
+	Use:              "configuration <metagraf>",
+	Short:            "oam create configuration",
+	Long:             `Creates an oam application configuration from a metagraf specification and properties`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
 			fmt.Println("Insufficient arguments")

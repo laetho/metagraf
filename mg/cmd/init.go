@@ -19,8 +19,8 @@ package cmd
 import (
 	"bufio"
 	"fmt"
-	"github.com/spf13/cobra"
 	"github.com/laetho/metagraf/pkg/metagraf"
+	"github.com/spf13/cobra"
 	"os"
 	"strings"
 )
@@ -37,7 +37,7 @@ var initCmd = &cobra.Command{
 
 		newmg := metagraf.MetaGraf{}
 		newmg.Kind = "metagraf"
-		initInput( &newmg )
+		initInput(&newmg)
 
 		// Populate default annotations and labels
 		var annotations = map[string]string{
@@ -48,26 +48,26 @@ var initCmd = &cobra.Command{
 		}
 		newmg.Metadata.Annotations = annotations
 		newmg.Metadata.Labels = labels
-		newmg.Spec.Environment.Local = append( newmg.Spec.Environment.Local, metagraf.EnvironmentVar{
+		newmg.Spec.Environment.Local = append(newmg.Spec.Environment.Local, metagraf.EnvironmentVar{
 			Name:        "LOCAL_EXAMPLE_ENV",
 			Required:    false,
 			Type:        "string",
 			Description: "An example local environment variable.",
 			Default:     "default",
 		})
-		newmg.Spec.Environment.Build = append( newmg.Spec.Environment.Build, metagraf.EnvironmentVar{
+		newmg.Spec.Environment.Build = append(newmg.Spec.Environment.Build, metagraf.EnvironmentVar{
 			Name:        "BUILD_EXAMPLE_ENV",
 			Required:    false,
 			Type:        "string",
 			Description: "An example build environment variable.",
 			Default:     "default",
 		})
-		newmg.Spec.Config = append( newmg.Spec.Config,metagraf.Config{
+		newmg.Spec.Config = append(newmg.Spec.Config, metagraf.Config{
 			Name:        "example.properties",
 			Type:        "parameters",
 			Global:      false,
 			Description: "An example file",
-			Options:     append([]metagraf.ConfigParam{}, metagraf.ConfigParam{
+			Options: append([]metagraf.ConfigParam{}, metagraf.ConfigParam{
 				Name:        "key",
 				Required:    true,
 				Dynamic:     false,
@@ -81,7 +81,7 @@ var initCmd = &cobra.Command{
 			Global:      true,
 			Description: "Certificate Authority",
 		})
-		
+
 		metagraf.Store("./metagraf.json", &newmg)
 
 	},
@@ -95,30 +95,30 @@ func initInput(mg *metagraf.MetaGraf) {
 	fmt.Println("Initialize a metaGraf specification:")
 
 	fmt.Print(" Name of component -> ")
-	text, _ = reader.ReadString( '\n')
+	text, _ = reader.ReadString('\n')
 	text = strings.Trim(text, "\n\r")
-	if ( len(text) > 0 ) {
+	if len(text) > 0 {
 		mg.Metadata.Name = text
 	}
 
 	fmt.Print(" Description of component -> ")
-	text, _ = reader.ReadString( '\n')
+	text, _ = reader.ReadString('\n')
 	text = strings.Trim(text, "\n\r")
-	if ( len(text) > 0 ) {
+	if len(text) > 0 {
 		mg.Spec.Description = text
 	}
 
 	fmt.Print("GIT Repository url -> ")
-	text, _ = reader.ReadString( '\n')
+	text, _ = reader.ReadString('\n')
 	text = strings.Trim(text, "\n\r")
-	if ( len(text) > 0 ) {
+	if len(text) > 0 {
 		mg.Spec.Repository = text
 	}
 
 	fmt.Print("GIT Repository branch -> ")
-	text, _ = reader.ReadString( '\n')
+	text, _ = reader.ReadString('\n')
 	text = strings.Trim(text, "\n\r")
-	if ( len(text) > 0 ) {
+	if len(text) > 0 {
 		mg.Spec.Branch = text
 	}
 

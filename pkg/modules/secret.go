@@ -19,15 +19,15 @@ package modules
 import (
 	"context"
 	"fmt"
-	log "k8s.io/klog"
 	"github.com/laetho/metagraf/pkg/metagraf"
+	log "k8s.io/klog"
 	"os"
 	"strconv"
 	"strings"
 
+	"github.com/laetho/metagraf/internal/pkg/k8sclient/k8sclient"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"github.com/laetho/metagraf/internal/pkg/k8sclient/k8sclient"
 )
 
 func FindSecrets(mg *metagraf.MetaGraf) map[string]string {
@@ -35,7 +35,7 @@ func FindSecrets(mg *metagraf.MetaGraf) map[string]string {
 
 	for _, r := range mg.Spec.Resources {
 		if len(r.User) > 0 {
-			maps[strings.ToLower(strings.Replace(r.Name,"_","-", -1))+"-"+strings.ToLower(r.User)] = "password"
+			maps[strings.ToLower(strings.Replace(r.Name, "_", "-", -1))+"-"+strings.ToLower(r.User)] = "password"
 		}
 	}
 
@@ -70,10 +70,10 @@ func GenSecrets(mg *metagraf.MetaGraf) {
 		}
 	}
 
-	for _, s := range mg.Spec.Secret{
+	for _, s := range mg.Spec.Secret {
 		// Do not create global secrets unless CreateGlobals is true.
 		if s.Global == true && !CreateGlobals {
-			log.Info("Skipping creation of global secret named: "+ strings.ToLower(s.Name))
+			log.Info("Skipping creation of global secret named: " + strings.ToLower(s.Name))
 			continue
 		}
 
@@ -86,7 +86,7 @@ func GenSecrets(mg *metagraf.MetaGraf) {
 		if !Dryrun {
 			StoreSecret(*obj)
 		}
-		if Output{
+		if Output {
 			MarshalObject(obj.DeepCopyObject())
 		}
 	}
@@ -95,7 +95,7 @@ func GenSecrets(mg *metagraf.MetaGraf) {
 // Check if a named secret exsist in the current namespace.
 func secretExists(name string) bool {
 	cli := k8sclient.GetCoreClient()
-	obj, err := cli.Secrets(NameSpace).Get(context.TODO(), name,metav1.GetOptions{})
+	obj, err := cli.Secrets(NameSpace).Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {
 		log.Error(err)
 		return false
@@ -123,15 +123,15 @@ func genSecret(s *metagraf.Secret, mg *metagraf.MetaGraf) *corev1.Secret {
 	if s.Global == true {
 		l["name"] = strings.ToLower(s.Name)
 	} else {
-		l["name"] = objname+"-"+strings.ToLower(s.Name)
+		l["name"] = objname + "-" + strings.ToLower(s.Name)
 	}
 
 	// Populate v1.Secret StringData and Data
 	stringdata := make(map[string]string)
 	data := make(map[string][]byte)
-		name := strings.Replace(s.Name, ".", "_", -1)
-		data[name] = []byte("data")
-		stringdata[name] = "data"
+	name := strings.Replace(s.Name, ".", "_", -1)
+	data[name] = []byte("data")
+	stringdata[name] = "data"
 
 	sec := corev1.Secret{
 		TypeMeta: metav1.TypeMeta{
@@ -228,7 +228,7 @@ func DeleteSecrets(mg *metagraf.MetaGraf) {
 			continue
 		}
 
-		name := strings.ToLower(obname+"-"+s.Name)
+		name := strings.ToLower(obname + "-" + s.Name)
 		name = strings.Replace(name, "_", "-", -1)
 		name = strings.Replace(name, ".", "-", -1)
 		DeleteSecret(name)
@@ -240,7 +240,7 @@ func DeleteSecret(name string) {
 
 	_, err := client.Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {
-		fmt.Println("Secret: ", name, "does not exist in namespace: ", NameSpace,", skipping...")
+		fmt.Println("Secret: ", name, "does not exist in namespace: ", NameSpace, ", skipping...")
 		return
 	}
 

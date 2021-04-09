@@ -19,10 +19,10 @@ package modules
 import (
 	"context"
 	"fmt"
-	log "k8s.io/klog"
 	"github.com/laetho/metagraf/internal/pkg/helpers/helpers"
 	"github.com/laetho/metagraf/internal/pkg/k8sclient/k8sclient"
 	"github.com/laetho/metagraf/internal/pkg/params/params"
+	log "k8s.io/klog"
 	"os"
 	"strings"
 
@@ -80,7 +80,6 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 	l["app"] = objname
 	l["deploymentconfig"] = objname
 
-
 	km := Variables.KeyMap()
 	for _, e := range mg.Spec.Environment.Build {
 		if e.Required == true {
@@ -105,7 +104,7 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 	}
 	var toObjRef = &corev1.ObjectReference{
 		Kind: "ImageStreamTag",
-		Name: toObjRefName +":"+ toObjRefTag,
+		Name: toObjRefName + ":" + toObjRefTag,
 	}
 
 	bc := buildv1.BuildConfig{
@@ -114,7 +113,7 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 			APIVersion: "v1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name: objname,
+			Name:   objname,
 			Labels: l,
 		},
 		Spec: buildv1.BuildConfigSpec{
@@ -209,13 +208,13 @@ func DeleteBuildConfig(name string) {
 
 	_, err := client.Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {
-		fmt.Println("The BuildConfig: ", name, "does not exist in namespace: ", NameSpace,", skipping...")
+		fmt.Println("The BuildConfig: ", name, "does not exist in namespace: ", NameSpace, ", skipping...")
 		return
 	}
 
 	err = client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 	if err != nil {
-		fmt.Println( "Unable to delete BuildConfig: ", name, " in namespace: ", NameSpace)
+		fmt.Println("Unable to delete BuildConfig: ", name, " in namespace: ", NameSpace)
 		log.Error(err)
 		return
 	}

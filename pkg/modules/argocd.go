@@ -23,13 +23,13 @@ import (
 	"fmt"
 	argoapp "github.com/argoproj/argo-cd/pkg/apis/application/v1alpha1"
 	"github.com/golang/glog"
+	"github.com/laetho/metagraf/internal/pkg/k8sclient/k8sclient"
+	"github.com/laetho/metagraf/internal/pkg/params/params"
+	"github.com/laetho/metagraf/pkg/metagraf"
 	"gopkg.in/yaml.v3"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/serializer/json"
 	log "k8s.io/klog"
-	"github.com/laetho/metagraf/internal/pkg/k8sclient/k8sclient"
-	"github.com/laetho/metagraf/internal/pkg/params/params"
-	"github.com/laetho/metagraf/pkg/metagraf"
 	"os"
 )
 

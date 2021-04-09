@@ -18,9 +18,9 @@ package cmd
 
 import (
 	"github.com/blang/semver"
+	"github.com/laetho/metagraf/pkg/metagraf"
 	"github.com/spf13/cobra"
 	log "k8s.io/klog"
-	"github.com/laetho/metagraf/pkg/metagraf"
 	"os"
 )
 
@@ -39,7 +39,7 @@ var injectCmd = &cobra.Command{
 }
 
 var injectAnnotationCmd = &cobra.Command{
-	Use: "annotation <metagraf> <arg>",
+	Use:   "annotation <metagraf> <arg>",
 	Short: "Injects annotations",
 	Run: func(cmd *cobra.Command, args []string) {
 
@@ -47,7 +47,6 @@ var injectAnnotationCmd = &cobra.Command{
 			log.Error("Missing arguments...")
 			os.Exit(1)
 		}
-
 
 		mg := metagraf.Parse(args[0])
 		mg.Metadata.Annotations[args[1]] = args[2]
@@ -57,7 +56,7 @@ var injectAnnotationCmd = &cobra.Command{
 }
 
 var injectVersionCmd = &cobra.Command{
-	Use: "version <metagraf> <version>",
+	Use:   "version <metagraf> <version>",
 	Short: "Injects a custom version for the component.",
 	Run: func(cmd *cobra.Command, args []string) {
 
@@ -75,7 +74,7 @@ var injectVersionCmd = &cobra.Command{
 }
 
 var injectSemVerCmd = &cobra.Command{
-	Use: "semver <metagraf> <version>",
+	Use:   "semver <metagraf> <version>",
 	Short: "Injects a SemVer 2.0 version for the component.",
 	Run: func(cmd *cobra.Command, args []string) {
 

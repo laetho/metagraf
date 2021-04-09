@@ -19,15 +19,15 @@ package modules
 import (
 	"context"
 	"fmt"
-	corev1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/util/intstr"
-	log "k8s.io/klog"
 	"github.com/laetho/metagraf/internal/pkg/helpers/helpers"
 	"github.com/laetho/metagraf/internal/pkg/imageurl/imageurl"
 	"github.com/laetho/metagraf/internal/pkg/k8sclient/k8sclient"
 	"github.com/laetho/metagraf/internal/pkg/params/params"
 	"github.com/laetho/metagraf/pkg/metagraf"
+	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/util/intstr"
+	log "k8s.io/klog"
 	"os"
 )
 
@@ -147,6 +147,7 @@ func GetServicePorts(mg *metagraf.MetaGraf, imageports []corev1.ServicePort) []c
 
 	return output
 }
+
 // Returns the mg tool's opinionated default if ports in a metagraf spec
 // or the container image has no default exposed ports.
 func defaultServicePorts() []corev1.ServicePort {

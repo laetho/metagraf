@@ -20,15 +20,14 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+	"github.com/laetho/metagraf/internal/pkg/k8sclient/k8sclient"
+	"github.com/laetho/metagraf/pkg/metagraf"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	log "k8s.io/klog"
-	"github.com/laetho/metagraf/internal/pkg/k8sclient/k8sclient"
-	"github.com/laetho/metagraf/pkg/metagraf"
 	"os"
 	"strings"
 )
-
 
 /*
 	This function will inspect the metaGraf specification
@@ -80,7 +79,7 @@ func FindMetagrafConfigMaps(mg *metagraf.MetaGraf) map[string]string {
 
 /*
 	Fetch a ConfigMap resource the connected kubernetes cluster.
- */
+*/
 func GetConfigMap(name string) (*corev1.ConfigMap, error) {
 	cli := k8sclient.GetCoreClient()
 	cm, err := cli.ConfigMaps(NameSpace).Get(context.TODO(), name, metav1.GetOptions{})
@@ -92,13 +91,13 @@ func GetConfigMap(name string) (*corev1.ConfigMap, error) {
 
 /*
 	Returns a slice of metagraf Config structs that match specific ctype string
- */
+*/
 func GetMetagrafConfigsByType(mg *metagraf.MetaGraf, ctype string) []metagraf.Config {
 	configs := []metagraf.Config{}
 
 	for _, c := range mg.Spec.Config {
 		if strings.ToLower(c.Type) == strings.ToLower(ctype) {
-			configs = append(configs,c)
+			configs = append(configs, c)
 		}
 	}
 	return configs
@@ -131,7 +130,7 @@ func genConfigMapsFromConfig(conf *metagraf.Config, mg *metagraf.MetaGraf) {
 	objname := Name(mg)
 
 	l := make(map[string]string)
-	l["app"] =  objname
+	l["app"] = objname
 
 	cm := corev1.ConfigMap{
 		TypeMeta: metav1.TypeMeta{
@@ -184,33 +183,33 @@ func genConfigMapsFromConfig(conf *metagraf.Config, mg *metagraf.MetaGraf) {
 
 /*
 	todo: redo this to use template in spec to do this.
- */
+*/
 func genConfigMapsFromResources(mg *metagraf.MetaGraf) {
 	return
 	// objname := Name(mg)
 
 	/*
-	for _, r := range mg.Spec.Resources {
-		if strings.Contains(r.Type, "oracle") {
-			cm := genJDBCOracle(objname, &r)
-			if !Dryrun {
-				StoreConfigMap(cm)
-			}
-			if Output {
-				MarshalObject(cm.DeepCopyObject())
+		for _, r := range mg.Spec.Resources {
+			if strings.Contains(r.Type, "oracle") {
+				cm := genJDBCOracle(objname, &r)
+				if !Dryrun {
+					StoreConfigMap(cm)
+				}
+				if Output {
+					MarshalObject(cm.DeepCopyObject())
+				}
 			}
 		}
-	}
 	*/
 }
 
 func StoreConfigMap(m corev1.ConfigMap) {
 	cmclient := k8sclient.GetCoreClient().ConfigMaps(NameSpace)
-	cm, _ := cmclient.Get(context.TODO(),m.Name, metav1.GetOptions{})
+	cm, _ := cmclient.Get(context.TODO(), m.Name, metav1.GetOptions{})
 
 	if len(cm.ResourceVersion) > 0 {
 		m.ResourceVersion = cm.ResourceVersion
-		_, err := cmclient.Update(context.TODO(),&m,metav1.UpdateOptions{})
+		_, err := cmclient.Update(context.TODO(), &m, metav1.UpdateOptions{})
 		if err != nil {
 			log.Error(err)
 			fmt.Println(err)
@@ -237,7 +236,7 @@ func DeleteConfigMaps(mg *metagraf.MetaGraf) {
 			continue
 		}
 
-		name := strings.ToLower(obname+"-"+c.Name)
+		name := strings.ToLower(obname + "-" + c.Name)
 		name = strings.Replace(name, "_", "-", -1)
 		name = strings.Replace(name, ".", "-", -1)
 		DeleteConfigMap(name)
@@ -249,11 +248,11 @@ func DeleteConfigMap(name string) {
 
 	_, err := client.Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {
-		fmt.Println("ConfigMap: ", name, "does not exist in namespace: ", NameSpace,", skipping...")
+		fmt.Println("ConfigMap: ", name, "does not exist in namespace: ", NameSpace, ", skipping...")
 		return
 	}
 
-	err = client.Delete(context.TODO(),name, metav1.DeleteOptions{})
+	err = client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 	if err != nil {
 		fmt.Println("Unable to delete ConfigMap: ", name, " in namespace: ", NameSpace)
 		log.Error(err)

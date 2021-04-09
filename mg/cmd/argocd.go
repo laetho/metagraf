@@ -18,10 +18,10 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
 	"github.com/laetho/metagraf/internal/pkg/params/params"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	"github.com/laetho/metagraf/pkg/modules"
+	"github.com/spf13/cobra"
 	"os"
 )
 
@@ -30,11 +30,11 @@ func init() {
 	argocdCmd.AddCommand(argocdCreateCmd)
 	argocdCreateCmd.PersistentFlags().BoolVar(&Verbose, "verbose", false, "verbose output")
 	argocdCreateCmd.PersistentFlags().BoolVar(&Output, "output", false, "also output objects")
-	argocdCreateCmd.PersistentFlags().StringVarP(&Format, "format","o","json", "specify json or yaml, json id default")
+	argocdCreateCmd.PersistentFlags().StringVarP(&Format, "format", "o", "json", "specify json or yaml, json id default")
 	argocdCreateCmd.PersistentFlags().BoolVar(&Dryrun, "dryrun", false, "do not create objects, only output")
-	argocdCreateCmd.PersistentFlags().StringVarP(&Namespace, "namespace", "n","", "namespace to work on")
+	argocdCreateCmd.PersistentFlags().StringVarP(&Namespace, "namespace", "n", "", "namespace to work on")
 	argocdCreateCmd.AddCommand(argocdCreateApplicationCmd)
-	argocdCreateApplicationCmd.Flags().StringVar(&params.ArgoCDApplicationProject, "project","", "Project reference")
+	argocdCreateApplicationCmd.Flags().StringVar(&params.ArgoCDApplicationProject, "project", "", "Project reference")
 	argocdCreateApplicationCmd.Flags().StringVar(&params.ArgoCDApplicationNamespace, "argo-namespace", "", "Namespace for the ArgoCD Application resource.")
 	argocdCreateApplicationCmd.Flags().StringVarP(&params.ArgoCDApplicationRepoURL, "repo", "r", "", "Repository URL")
 	argocdCreateApplicationCmd.Flags().StringVarP(&params.ArgoCDApplicationRepoPath, "path", "p", "", "Path to manifests inside the repository")
@@ -66,9 +66,9 @@ var argocdCreateCmd = &cobra.Command{
 
 var argocdCreateApplicationCmd = &cobra.Command{
 	TraverseChildren: true,
-	Use:   "application <metagraf>",
-	Short: "argocd create application",
-	Long:  `Creates an ArgoCD Application from a metagraf specification`,
+	Use:              "application <metagraf>",
+	Short:            "argocd create application",
+	Long:             `Creates an ArgoCD Application from a metagraf specification`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
 			fmt.Println("Insufficient arguments")

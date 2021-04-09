@@ -16,8 +16,8 @@ limitations under the License.
 package modules
 
 import (
-	corev1 "k8s.io/api/core/v1"
 	"github.com/laetho/metagraf/pkg/metagraf"
+	corev1 "k8s.io/api/core/v1"
 	"strings"
 )
 
@@ -25,7 +25,7 @@ import (
 // This is a special type for handling system properties in the java space that
 // your application might not know about.
 func HasJVM_SYS_PROP(mg *metagraf.MetaGraf) bool {
-	for _,c := range mg.Spec.Config {
+	for _, c := range mg.Spec.Config {
 		if strings.ToUpper(c.Type) == "JVM_SYS_PROP" {
 			return true
 		}
@@ -50,7 +50,7 @@ func GenEnvVar_JVM_SYS_PROP(mgp metagraf.MGProperties, name string) corev1.EnvVa
 		}
 	}
 	return corev1.EnvVar{
-		Name: name,
+		Name:  name,
 		Value: strings.Join(props, " "),
 	}
 }

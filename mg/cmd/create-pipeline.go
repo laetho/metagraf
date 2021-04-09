@@ -22,14 +22,14 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/spf13/viper"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	"github.com/laetho/metagraf/pkg/modules"
+	"github.com/spf13/viper"
 )
 
 func init() {
 	createPipelineCmd.Flags().StringVar(&Namespace, "namespace", "", "namespace to work on, if not supplied it will use current working namespace")
-	createPipelineCmd.Flags().StringVar(&Branch, "branch","", "Override branch to build from.")
+	createPipelineCmd.Flags().StringVar(&Branch, "branch", "", "Override branch to build from.")
 	createPipelineCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
 	createCmd.AddCommand(createPipelineCmd)
 }

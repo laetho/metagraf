@@ -18,8 +18,8 @@ package modules
 
 import (
 	"fmt"
-	"html/template"
 	"github.com/laetho/metagraf/pkg/metagraf"
+	"html/template"
 	"os"
 	"path/filepath"
 	"strings"

@@ -19,9 +19,9 @@ package modules
 import (
 	"context"
 	"fmt"
+	"github.com/laetho/metagraf/internal/pkg/helpers/helpers"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	log "k8s.io/klog"
-	"github.com/laetho/metagraf/internal/pkg/helpers/helpers"
 	"os"
 	"sort"
 	"strings"
@@ -82,7 +82,6 @@ func GenRoute(mg *metagraf.MetaGraf) {
 		}
 	}
 
-
 	sort.Strings(ports)
 
 	l := make(map[string]string)
@@ -99,16 +98,15 @@ func GenRoute(mg *metagraf.MetaGraf) {
 		},
 		Spec: routev1.RouteSpec{
 			To: routev1.RouteTargetReference{
-				Kind: "Service",
-				Name: objname,
+				Kind:   "Service",
+				Name:   objname,
 				Weight: &weight,
 			},
 			Path: Context,
 			Port: &routev1.RoutePort{
 				TargetPort: intstr.IntOrString{
-					Type: 1,
+					Type:   1,
 					StrVal: strings.Replace(ports[0], "/", "-", -1),
-
 				},
 			},
 		},
@@ -124,7 +122,7 @@ func GenRoute(mg *metagraf.MetaGraf) {
 
 func StoreRoute(obj routev1.Route) {
 	client := k8sclient.GetRouteClient().Routes(NameSpace)
-    route, _ := client.Get(context.TODO(), obj.Name, metav1.GetOptions{} )
+	route, _ := client.Get(context.TODO(), obj.Name, metav1.GetOptions{})
 	if len(route.ResourceVersion) > 0 {
 		obj.ResourceVersion = route.ResourceVersion
 		_, err := client.Update(context.TODO(), &obj, metav1.UpdateOptions{})
@@ -148,15 +146,15 @@ func StoreRoute(obj routev1.Route) {
 func DeleteRoute(name string) {
 	client := k8sclient.GetRouteClient().Routes(NameSpace)
 
-	_, err := client.Get(context.TODO(),name, metav1.GetOptions{})
+	_, err := client.Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {
-		fmt.Println("Route: ", name, "does not exist in namespace: ", NameSpace,", skipping...")
+		fmt.Println("Route: ", name, "does not exist in namespace: ", NameSpace, ", skipping...")
 		return
 	}
 
 	err = client.Delete(context.TODO(), name, metav1.DeleteOptions{})
 	if err != nil {
-		fmt.Println( "Unable to delete Route: ", name, " in namespace: ", NameSpace)
+		fmt.Println("Unable to delete Route: ", name, " in namespace: ", NameSpace)
 		return
 	}
 	fmt.Println("Deleted Route: ", name, ", in namespace: ", NameSpace)

@@ -29,7 +29,7 @@ var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "display version and build information",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("mg",MGVersion)
+		fmt.Println("mg", MGVersion)
 
 	},
 }

@@ -19,10 +19,10 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/spf13/cobra"
-	"github.com/tidwall/gjson"
 	"github.com/laetho/metagraf/internal/pkg/params/params"
 	"github.com/laetho/metagraf/pkg/metagraf"
+	"github.com/spf13/cobra"
+	"github.com/tidwall/gjson"
 	"os"
 	"strings"
 )
@@ -113,13 +113,13 @@ var getCmdJSONPatchLabels = &cobra.Command{
 
 func sanitizeLabelValue(val string) string {
 	ret := strings.Replace(val, " ", "_", -1)
-	ret = strings.Replace(ret, ",", "-", -1 )
+	ret = strings.Replace(ret, ",", "-", -1)
 	return ret
 }
 
 func sanitizeKey(key string) string {
 	if params.NameSpacingStripHost {
-		parts := strings.Split(key,"/")
+		parts := strings.Split(key, "/")
 		if len(parts) > 1 {
 			return strings.Join(parts[1:], "")
 		}

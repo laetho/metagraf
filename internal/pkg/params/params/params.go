@@ -27,6 +27,11 @@ var (
 	// Format value can be either json or yaml. Controls output format.
 	Format string = "json"
 
+	// Everything bool is a flag for indicating if we want to delete or operate on all resources.
+	// As an example, mg dev down --everything. Which deletes all created resources and artifacts from
+	// mg dev up command.
+	Everything bool = false
+
 	// DefaultReplicas
 	DefaultReplicas int32 = 1
 
@@ -71,7 +76,7 @@ var (
 	// Set to true for generating ServiceMonitor objects when creating services.
 	ServiceMonitor bool = false
 	// ServiceMonitor definition of which port to scrape.
-	ServiceMonitorPort int32
+	ServiceMonitorPort        int32
 	ServiceMonitorPortDefault int32 = 8080
 	// ServiceMonitor definition of scraping interval.
 	ServiceMonitorInterval string = "10s"
@@ -94,7 +99,7 @@ var (
 	RegistryPassword string
 
 	// Toggle for generating corev1.Affinity{} in Pod Templates in Deployment or DeploymentConfig.
-	WithAffinityRules			bool
+	WithAffinityRules bool
 	// Default value for WithAffinityRules if it's not set.
 	WithPodAffinityRulesDefault bool = false
 	// Name of node label to use as a topologyKey when generating pod affinity rules.
@@ -104,5 +109,4 @@ var (
 	PodAntiAffinityWeight int32
 	// The default value for PodAntiAffinityWeight
 	PodAntiAffinityWeightDefault int32 = 100
-
 )

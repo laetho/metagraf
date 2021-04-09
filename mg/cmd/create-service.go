@@ -1,24 +1,24 @@
 package cmd
 
 import (
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-	log "k8s.io/klog"
 	"github.com/laetho/metagraf/internal/pkg/params/params"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	"github.com/laetho/metagraf/pkg/modules"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	log "k8s.io/klog"
 	"os"
 )
 
 func init() {
 	createCmd.AddCommand(createServiceCmd)
-	createServiceCmd.Flags().StringVarP(&Namespace, "namespace", "n","", "namespace to work on, if not supplied it will use current working namespace")
+	createServiceCmd.Flags().StringVarP(&Namespace, "namespace", "n", "", "namespace to work on, if not supplied it will use current working namespace")
 	createServiceCmd.Flags().StringVar(&OName, "name", "", "Overrides name of application used to prefix configmaps.")
 	createServiceCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
-	createServiceCmd.Flags().BoolVar(&params.ServiceMonitor, "service-monitor",false, "Set flag to also create a ServiceMonitor resource. Requires a cluster with the prometheus-operator.")
+	createServiceCmd.Flags().BoolVar(&params.ServiceMonitor, "service-monitor", false, "Set flag to also create a ServiceMonitor resource. Requires a cluster with the prometheus-operator.")
 	createServiceCmd.Flags().StringVar(&params.ServiceMonitorPath, "service-monitor-path", params.ServiceMonitorPathDefault, "Path to scrape metrics from.")
 	createServiceCmd.Flags().Int32Var(&params.ServiceMonitorPort, "service-monitor-port", params.ServiceMonitorPortDefault, "Set Service port to scrape by a ServiceMonitor.")
-	createServiceCmd.Flags().StringVar(&params.ServiceMonitorOperatorName, "service-monitor-operator-name", params.ServiceMonitorOperatorName,"Name of prometheus-operator instance to create ServiceMonitor for.")
+	createServiceCmd.Flags().StringVar(&params.ServiceMonitorOperatorName, "service-monitor-operator-name", params.ServiceMonitorOperatorName, "Name of prometheus-operator instance to create ServiceMonitor for.")
 }
 
 var createServiceCmd = &cobra.Command{
@@ -49,4 +49,3 @@ var createServiceCmd = &cobra.Command{
 		modules.GenService(&mg)
 	},
 }
-
