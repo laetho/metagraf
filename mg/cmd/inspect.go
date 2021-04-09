@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	params2 "github.com/laetho/metagraf/internal/pkg/params"
+	params "github.com/laetho/metagraf/internal/pkg/params"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	"github.com/laetho/metagraf/pkg/modules"
 	"github.com/spf13/cobra"
@@ -15,7 +15,7 @@ func init() {
 	RootCmd.AddCommand(InspectCmd)
 	InspectCmd.Flags().BoolVar(&Enforce, "enforce", false, "Enforce findings, defaults to false and informs only.")
 	InspectCmd.AddCommand(InspectPropertiesCmd)
-	InspectPropertiesCmd.Flags().StringVar(&params2.PropertiesFile, "cvfile", "", "File with component configuration values. (key=value pairs)")
+	InspectPropertiesCmd.Flags().StringVar(&params.PropertiesFile, "cvfile", "", "File with component configuration values. (key=value pairs)")
 }
 
 var InspectCmd = &cobra.Command{
@@ -68,13 +68,13 @@ var InspectPropertiesCmd = &cobra.Command{
 		}
 
 		mg := metagraf.Parse(args[0])
-		params2.PropertiesFile = args[1]
+		params.PropertiesFile = args[1]
 		modules.Variables = GetCmdProperties(mg.GetProperties())
 
 		if !ValidateProperties(modules.Variables) {
 			os.Exit(1)
 		} else {
-			fmt.Printf("The %v configuration is valid for this metaGraf specification.\n", params2.PropertiesFile)
+			fmt.Printf("The %v configuration is valid for this metaGraf specification.\n", params.PropertiesFile)
 		}
 	},
 }

@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"fmt"
-	"metagraf/pkg/metagraf"
-	"metagraf/pkg/modules"
+	"github.com/laetho/metagraf/pkg/metagraf"
+	"github.com/laetho/metagraf/pkg/modules"
 	"testing"
 )
 

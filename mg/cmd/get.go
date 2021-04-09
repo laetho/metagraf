@@ -19,7 +19,7 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	params2 "github.com/laetho/metagraf/internal/pkg/params"
+	"github.com/laetho/metagraf/internal/pkg/params"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	"github.com/spf13/cobra"
 	"github.com/tidwall/gjson"
@@ -33,13 +33,13 @@ func init() {
 	getCmd.AddCommand(getCmdGJSONPath)
 	getCmdJSONPatch.AddCommand(getCmdJSONPatchLabels)
 	getCmdJSONPatchLabels.Flags().StringVarP(
-		&params2.NameSpacingFilter,
+		&params.NameSpacingFilter,
 		"filter",
 		"f",
 		"",
 		"Filter to use while fetching annotations and turning them into labels. Example: \"kubernetes.io\" or \"productowner\"")
 	getCmdJSONPatchLabels.Flags().BoolVarP(
-		&params2.NameSpacingStripHost,
+		&params.NameSpacingStripHost,
 		"striphost",
 		"s",
 		false,
@@ -99,7 +99,7 @@ var getCmdJSONPatchLabels = &cobra.Command{
 			if !validLabel(sanitizeLabelValue(v)) {
 				continue
 			}
-			if strings.Contains(k, params2.NameSpacingFilter) {
+			if strings.Contains(k, params.NameSpacingFilter) {
 				data.Metadata.Labels[sanitizeKey(k)] = sanitizeLabelValue(v)
 			}
 		}
@@ -118,7 +118,7 @@ func sanitizeLabelValue(val string) string {
 }
 
 func sanitizeKey(key string) string {
-	if params2.NameSpacingStripHost {
+	if params.NameSpacingStripHost {
 		parts := strings.Split(key, "/")
 		if len(parts) > 1 {
 			return strings.Join(parts[1:], "")

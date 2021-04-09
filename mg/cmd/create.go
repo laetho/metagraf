@@ -18,7 +18,7 @@ package cmd
 
 import (
 	"fmt"
-	params2 "github.com/laetho/metagraf/internal/pkg/params"
+	"github.com/laetho/metagraf/internal/pkg/params"
 	log "k8s.io/klog"
 	"os"
 
@@ -46,7 +46,7 @@ func init() {
 	createConfigMapCmd.Flags().StringVarP(&Namespace, "namespace", "n", "", "namespace to work on, if not supplied it will use current working namespace")
 	createConfigMapCmd.Flags().StringVar(&OName, "name", "", "Overrides name of application used to prefix configmaps.")
 	createConfigMapCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
-	createConfigMapCmd.Flags().StringVar(&params2.PropertiesFile, "cvfile", "", "File with component configuration values. (key=value pairs)")
+	createConfigMapCmd.Flags().StringVar(&params.PropertiesFile, "cvfile", "", "File with component configuration values. (key=value pairs)")
 	createRouteCmd.Flags().StringVarP(&Namespace, "namespace", "n", "", "namespace to work on, if not supplied it will use current working namespace")
 	createRouteCmd.Flags().StringVar(&OName, "name", "", "Overrides name of application.")
 	createRouteCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")

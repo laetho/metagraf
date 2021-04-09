@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	params2 "github.com/laetho/metagraf/internal/pkg/params"
+	"github.com/laetho/metagraf/internal/pkg/params"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	"github.com/laetho/metagraf/pkg/modules"
 	"github.com/spf13/cobra"
@@ -13,8 +13,8 @@ func init() {
 	createRefCmd.Flags().StringVarP(&Namespace, "namespace", "n", "", "namespace to fetch template form")
 	createRefCmd.Flags().StringVarP(&Template, "template", "t", "metagraf-refdoc.md", "name of ConfigMap for go template")
 	createRefCmd.Flags().StringVarP(&Suffix, "suffix", "s", ".html", "file suffix of the generated content")
-	createRefCmd.Flags().StringVarP(&params2.RefTemplateFile, "templatefile", "f", "", "file path to go template to use when creating reference doucment")
-	createRefCmd.Flags().StringVarP(&params2.RefTemplateOutputFile, "outputfile", "O", "", "output file, may include leading path")
+	createRefCmd.Flags().StringVarP(&params.RefTemplateFile, "templatefile", "f", "", "file path to go template to use when creating reference doucment")
+	createRefCmd.Flags().StringVarP(&params.RefTemplateOutputFile, "outputfile", "O", "", "output file, may include leading path")
 }
 
 var createRefCmd = &cobra.Command{
