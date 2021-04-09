@@ -18,7 +18,7 @@ package modules
 
 import (
 	"fmt"
-	params2 "github.com/laetho/metagraf/internal/pkg/params"
+	"github.com/laetho/metagraf/internal/pkg/params"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	"html/template"
 	"io/ioutil"
@@ -118,8 +118,8 @@ func GenRef(mg *metagraf.MetaGraf) {
 	// Template string
 	ts := ""
 
-	if len(params2.RefTemplateFile) > 0 {
-		_, err := os.Stat(params2.RefTemplateFile)
+	if len(params.RefTemplateFile) > 0 {
+		_, err := os.Stat(params.RefTemplateFile)
 		if os.IsNotExist(err) {
 			log.Infof("Fetching template: %v", Template)
 			cm, err := GetConfigMap(Template)
@@ -129,8 +129,8 @@ func GenRef(mg *metagraf.MetaGraf) {
 			}
 			ts = cm.Data["template"]
 		} else {
-			log.Infof("Fetching template from file: %v", params2.RefTemplateFile)
-			c, err := ioutil.ReadFile(params2.RefTemplateFile)
+			log.Infof("Fetching template from file: %v", params.RefTemplateFile)
+			c, err := ioutil.ReadFile(params.RefTemplateFile)
 			if err != nil {
 				panic(err)
 			}
@@ -181,8 +181,8 @@ func GenRef(mg *metagraf.MetaGraf) {
 	}
 
 	filename := ""
-	if len(params2.RefTemplateOutputFile) > 0 {
-		filename = params2.RefTemplateOutputFile
+	if len(params.RefTemplateOutputFile) > 0 {
+		filename = params.RefTemplateOutputFile
 	} else {
 		filename = "/tmp/" + Name(mg) + Suffix
 	}

@@ -17,7 +17,7 @@ limitations under the License.
 package metagraf
 
 import (
-	params2 "github.com/laetho/metagraf/internal/pkg/params"
+	params "github.com/laetho/metagraf/internal/pkg/params"
 	"github.com/pkg/errors"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -88,7 +88,7 @@ func (mg MetaGraf) Labels(name string) map[string]string {
 		if !validLabelValue(sanitizeLabelValue(v)) {
 			continue
 		}
-		if strings.Contains(k, params2.NameSpacingFilter) {
+		if strings.Contains(k, params.NameSpacingFilter) {
 			l[sanitizeKey(k)] = sanitizeLabelValue(v)
 		}
 	}
@@ -198,7 +198,7 @@ func sanitizeLabelValue(val string) string {
 }
 
 func sanitizeKey(key string) string {
-	if params2.NameSpacingStripHost {
+	if params.NameSpacingStripHost {
 		parts := strings.Split(key, "/")
 		if len(parts) > 1 {
 			return strings.Join(parts[1:], "")

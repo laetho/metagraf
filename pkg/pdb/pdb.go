@@ -19,8 +19,8 @@ package pdb
 import (
 	"context"
 	"github.com/golang/glog"
-	k8sclient2 "github.com/laetho/metagraf/internal/pkg/k8sclient"
-	params2 "github.com/laetho/metagraf/internal/pkg/params"
+	k8sclient "github.com/laetho/metagraf/internal/pkg/k8sclient"
+	params "github.com/laetho/metagraf/internal/pkg/params"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	"github.com/laetho/metagraf/pkg/modules"
 	"k8s.io/api/policy/v1beta1"
@@ -74,10 +74,10 @@ func GenPodDisruptionBudget(mg *metagraf.MetaGraf, replicas int32) v1beta1.PodDi
 		},
 	}
 
-	if !params2.Dryrun {
+	if !params.Dryrun {
 		StorePodDisruptionBudget(obj)
 	}
-	if params2.Output {
+	if params.Output {
 		MarshalObject(obj.DeepCopyObject())
 	}
 	return obj
@@ -86,9 +86,9 @@ func GenPodDisruptionBudget(mg *metagraf.MetaGraf, replicas int32) v1beta1.PodDi
 func StorePodDisruptionBudget(obj v1beta1.PodDisruptionBudget) {
 
 	glog.Infof("ResourceVersion: %v Length: %v", obj.ResourceVersion, len(obj.ResourceVersion))
-	glog.Infof("Namespace: %v", params2.NameSpace)
+	glog.Infof("Namespace: %v", params.NameSpace)
 
-	client := k8sclient2.GetKubernetesClient().PolicyV1beta1().PodDisruptionBudgets(params2.NameSpace)
+	client := k8sclient.GetKubernetesClient().PolicyV1beta1().PodDisruptionBudgets(params.NameSpace)
 	if len(obj.ResourceVersion) > 0 {
 		// update
 		result, err := client.Update(context.TODO(), &obj, metav1.UpdateOptions{})
@@ -108,7 +108,7 @@ func StorePodDisruptionBudget(obj v1beta1.PodDisruptionBudget) {
 // todo: need to restructure code, this is a duplication
 // Marshal kubernetes resource to json
 func MarshalObject(obj runtime.Object) {
-	switch params2.Format {
+	switch params.Format {
 	case "json":
 		opt := json.SerializerOptions{
 			Yaml:   false,

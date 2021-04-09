@@ -3,7 +3,7 @@ package oam
 import (
 	"fmt"
 	oamv1 "github.com/crossplane/oam-kubernetes-runtime/apis/core/v1alpha2"
-	params2 "github.com/laetho/metagraf/internal/pkg/params"
+	params "github.com/laetho/metagraf/internal/pkg/params"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	"github.com/laetho/metagraf/pkg/modules"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -41,7 +41,7 @@ func GenOAMComponent(mg *metagraf.MetaGraf) {
 		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:                       mg.Metadata.Name,
-			Namespace:                  params2.NameSpace,
+			Namespace:                  params.NameSpace,
 			DeletionGracePeriodSeconds: nil,
 			Labels:                     nil,
 			Annotations:                nil,

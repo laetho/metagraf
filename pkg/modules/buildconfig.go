@@ -19,10 +19,10 @@ package modules
 import (
 	"context"
 	"fmt"
-	helpers2 "github.com/laetho/metagraf/internal/pkg/helpers"
-	imageurl2 "github.com/laetho/metagraf/internal/pkg/imageurl"
-	k8sclient2 "github.com/laetho/metagraf/internal/pkg/k8sclient"
-	params2 "github.com/laetho/metagraf/internal/pkg/params"
+	"github.com/laetho/metagraf/internal/pkg/helpers"
+	"github.com/laetho/metagraf/internal/pkg/imageurl"
+	"github.com/laetho/metagraf/internal/pkg/k8sclient"
+	"github.com/laetho/metagraf/internal/pkg/params"
 	log "k8s.io/klog"
 	"os"
 	"strings"
@@ -36,7 +36,7 @@ import (
 
 func GenBuildConfig(mg *metagraf.MetaGraf) {
 	var buildsource buildv1.BuildSource
-	var imgurl imageurl2.ImageURL
+	var imgurl imageurl.ImageURL
 	var EnvVars []corev1.EnvVar
 
 	err := imgurl.Parse(mg.Spec.BuildImage)
@@ -56,19 +56,19 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 
 	if BaseEnvs {
 		log.V(2).Info("Populate environment variables form base image.")
-		client := k8sclient2.GetImageClient()
+		client := k8sclient.GetImageClient()
 
-		ist := helpers2.GetImageStreamTags(
+		ist := helpers.GetImageStreamTags(
 			client,
 			imgurl.Namespace,
 			imgurl.Image+":"+imgurl.Tag)
 
-		ImageInfo := helpers2.GetDockerImageFromIST(ist)
+		ImageInfo := helpers.GetDockerImageFromIST(ist)
 
 		// Environment Variables from buildimage
 		for _, e := range ImageInfo.Config.Env {
 			es := strings.Split(e, "=")
-			if helpers2.SliceInString(EnvBlacklistFilter, strings.ToLower(es[0])) {
+			if helpers.SliceInString(EnvBlacklistFilter, strings.ToLower(es[0])) {
 				continue
 			}
 			EnvVars = append(EnvVars, corev1.EnvVar{Name: es[0], Value: es[1]})
@@ -96,8 +96,8 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 	// Construct toObjRef for BuildConfig output overrides
 	var toObjRefName = objname
 	var toObjRefTag = "latest"
-	if len(params2.OutputImagestream) > 0 {
-		toObjRefName = params2.OutputImagestream
+	if len(params.OutputImagestream) > 0 {
+		toObjRefName = params.OutputImagestream
 	}
 	if len(Tag) > 0 {
 		toObjRefTag = Tag
@@ -163,8 +163,8 @@ func genBinaryBuildSource() buildv1.BuildSource {
 
 func genGitBuildSource(mg *metagraf.MetaGraf) buildv1.BuildSource {
 	var branch string
-	if len(params2.SourceRef) > 0 {
-		branch = params2.SourceRef
+	if len(params.SourceRef) > 0 {
+		branch = params.SourceRef
 	} else {
 		branch = mg.Spec.Branch
 	}
@@ -182,7 +182,7 @@ func genGitBuildSource(mg *metagraf.MetaGraf) buildv1.BuildSource {
 }
 
 func StoreBuildConfig(obj buildv1.BuildConfig) {
-	client := k8sclient2.GetBuildClient().BuildConfigs(NameSpace)
+	client := k8sclient.GetBuildClient().BuildConfigs(NameSpace)
 	bc, _ := client.Get(context.TODO(), obj.Name, metav1.GetOptions{})
 
 	if len(bc.ResourceVersion) > 0 {
@@ -204,7 +204,7 @@ func StoreBuildConfig(obj buildv1.BuildConfig) {
 }
 
 func DeleteBuildConfig(name string) {
-	client := k8sclient2.GetBuildClient().BuildConfigs(NameSpace)
+	client := k8sclient.GetBuildClient().BuildConfigs(NameSpace)
 
 	_, err := client.Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {

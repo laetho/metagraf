@@ -19,7 +19,7 @@ package modules
 import (
 	"context"
 	"fmt"
-	k8sclient2 "github.com/laetho/metagraf/internal/pkg/k8sclient"
+	k8sclient "github.com/laetho/metagraf/internal/pkg/k8sclient"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	log "k8s.io/klog"
 	"os"
@@ -77,7 +77,7 @@ func StoreImageStream(obj imagev1.ImageStream) {
 	log.Infof("ResourceVersion: %v Length: %v", obj.ResourceVersion, len(obj.ResourceVersion))
 	log.Infof("Namespace: %v", NameSpace)
 
-	client := k8sclient2.GetImageClient().ImageStreams(NameSpace)
+	client := k8sclient.GetImageClient().ImageStreams(NameSpace)
 
 	im, err := client.Get(context.TODO(), obj.Name, metav1.GetOptions{})
 	if len(im.ResourceVersion) > 0 {
@@ -99,7 +99,7 @@ func StoreImageStream(obj imagev1.ImageStream) {
 }
 
 func DeleteImageStream(name string) {
-	client := k8sclient2.GetImageClient().ImageStreams(NameSpace)
+	client := k8sclient.GetImageClient().ImageStreams(NameSpace)
 
 	_, err := client.Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {

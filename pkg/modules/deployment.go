@@ -20,9 +20,9 @@ import (
 	"context"
 	"github.com/golang/glog"
 	"github.com/laetho/metagraf/internal/pkg/affinity"
-	helpers2 "github.com/laetho/metagraf/internal/pkg/helpers"
-	k8sclient2 "github.com/laetho/metagraf/internal/pkg/k8sclient"
-	params2 "github.com/laetho/metagraf/internal/pkg/params"
+	"github.com/laetho/metagraf/internal/pkg/helpers"
+	"github.com/laetho/metagraf/internal/pkg/k8sclient"
+	"github.com/laetho/metagraf/internal/pkg/params"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	"github.com/spf13/viper"
 	"k8s.io/apimachinery/pkg/util/intstr"
@@ -89,7 +89,7 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 
 	// ImageInfo := helpers.SkopeoImageInfo(DockerImage)
 	HasImageInfo := false
-	ImageInfo, err := helpers2.ImageInfo(mg)
+	ImageInfo, err := helpers.ImageInfo(mg)
 	if err != nil {
 		HasImageInfo = false
 	} else {
@@ -102,7 +102,7 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 	if BaseEnvs && HasImageInfo {
 		for _, e := range ImageInfo.Config.Env {
 			es := strings.Split(e, "=")
-			if helpers2.SliceInString(EnvBlacklistFilter, strings.ToLower(es[0])) {
+			if helpers.SliceInString(EnvBlacklistFilter, strings.ToLower(es[0])) {
 				continue
 			}
 			EnvVars = append(EnvVars, corev1.EnvVar{Name: es[0], Value: es[1]})
@@ -156,7 +156,7 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 			Labels: l,
 		},
 		Spec: appsv1.DeploymentSpec{
-			Replicas:             &params2.Replicas,
+			Replicas:             &params.Replicas,
 			RevisionHistoryLimit: &RevisionHistoryLimit,
 			Selector:             &s,
 			Strategy: appsv1.DeploymentStrategy{
@@ -177,8 +177,8 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 		Status: appsv1.DeploymentStatus{},
 	}
 
-	if params2.WithAffinityRules {
-		obj.Spec.Template.Spec.Affinity = affinity.SoftPodAntiAffinity(objname, params2.PodAntiAffinityTopologyKey, params2.PodAntiAffinityWeight)
+	if params.WithAffinityRules {
+		obj.Spec.Template.Spec.Affinity = affinity.SoftPodAntiAffinity(objname, params.PodAntiAffinityTopologyKey, params.PodAntiAffinityWeight)
 	}
 
 	if !Dryrun {
@@ -194,7 +194,7 @@ func StoreDeployment(obj appsv1.Deployment) {
 	glog.Infof("ResourceVersion: %v Length: %v", obj.ResourceVersion, len(obj.ResourceVersion))
 	glog.Infof("Namespace: %v", NameSpace)
 
-	client := k8sclient2.GetKubernetesClient().AppsV1().Deployments(NameSpace)
+	client := k8sclient.GetKubernetesClient().AppsV1().Deployments(NameSpace)
 	if len(obj.ResourceVersion) > 0 {
 		// update
 		result, err := client.Update(context.TODO(), &obj, metav1.UpdateOptions{})

@@ -20,8 +20,8 @@ import (
 	"context"
 	"fmt"
 	monitoringv1 "github.com/coreos/prometheus-operator/pkg/apis/monitoring/v1"
-	k8sclient2 "github.com/laetho/metagraf/internal/pkg/k8sclient"
-	params2 "github.com/laetho/metagraf/internal/pkg/params"
+	"github.com/laetho/metagraf/internal/pkg/k8sclient"
+	"github.com/laetho/metagraf/internal/pkg/params"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
@@ -40,7 +40,7 @@ func GenServiceMonitor(mg *metagraf.MetaGraf) {
 	l := make(map[string]string)
 	l["app"] = objname
 	l["app.kubernetes.io/instance"] = objname
-	l["prometheus"] = params2.ServiceMonitorOperatorName
+	l["prometheus"] = params.ServiceMonitorOperatorName
 
 	// Selector
 	s := make(map[string]string)
@@ -52,8 +52,8 @@ func GenServiceMonitor(mg *metagraf.MetaGraf) {
 			IntVal: FindServiceMonitorPort(mg),
 		},
 		Path:     FindServiceMonitorPath(mg),
-		Scheme:   params2.ServiceMonitorScheme,
-		Interval: params2.ServiceMonitorInterval,
+		Scheme:   params.ServiceMonitorScheme,
+		Interval: params.ServiceMonitorInterval,
 	}
 	eps = append(eps, ep)
 
@@ -87,23 +87,23 @@ func GenServiceMonitor(mg *metagraf.MetaGraf) {
 // control scrape path for ServiceMonitor resource.
 func FindServiceMonitorPath(mg *metagraf.MetaGraf) string {
 	// mg cli value, return provided if not default.
-	if len(params2.ServiceMonitorPath) > 0 && params2.ServiceMonitorPath != params2.ServiceMonitorPathDefault {
-		return params2.ServiceMonitorPath
+	if len(params.ServiceMonitorPath) > 0 && params.ServiceMonitorPath != params.ServiceMonitorPathDefault {
+		return params.ServiceMonitorPath
 	}
 	// Annotation, if not provided return annotation value.
 	if len(mg.Metadata.Annotations["servicemonitor.monitoring.coreos.com/path"]) > 0 {
 		return mg.Metadata.Annotations["servicemonitor.monitoring.coreos.com/path"]
 	}
 	// Default, return default value
-	return params2.ServiceMonitorPathDefault
+	return params.ServiceMonitorPathDefault
 }
 
 // Parses metaGraf specification to look for annotation to
 // control scrape port when generating ServiceMonitor resource.
 func FindServiceMonitorPort(mg *metagraf.MetaGraf) int32 {
 	// mg cli value, return provided if not default.
-	if params2.ServiceMonitorPort > 1024 && params2.ServiceMonitorPort != params2.ServiceMonitorPortDefault {
-		return params2.ServiceMonitorPort
+	if params.ServiceMonitorPort > 1024 && params.ServiceMonitorPort != params.ServiceMonitorPortDefault {
+		return params.ServiceMonitorPort
 	}
 	// Annotation, if not provided return annotation value.
 	if _, ok := mg.Metadata.Annotations["servicemonitor.monitoring.coreos.com/port"]; ok {
@@ -116,11 +116,11 @@ func FindServiceMonitorPort(mg *metagraf.MetaGraf) int32 {
 		}
 	}
 	// Default, return default value
-	return params2.ServiceMonitorPortDefault
+	return params.ServiceMonitorPortDefault
 }
 
 func StoreServiceMonitor(obj monitoringv1.ServiceMonitor) {
-	client := k8sclient2.GetMonitoringV1Client().ServiceMonitors(NameSpace)
+	client := k8sclient.GetMonitoringV1Client().ServiceMonitors(NameSpace)
 	res, _ := client.Get(context.TODO(), obj.Name, metav1.GetOptions{})
 
 	if len(res.ResourceVersion) > 0 {
@@ -144,7 +144,7 @@ func StoreServiceMonitor(obj monitoringv1.ServiceMonitor) {
 }
 
 func DeleteServiceMonitor(name string) {
-	client := k8sclient2.GetMonitoringV1Client().ServiceMonitors(NameSpace)
+	client := k8sclient.GetMonitoringV1Client().ServiceMonitors(NameSpace)
 
 	_, err := client.Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {

@@ -19,9 +19,9 @@ package modules
 import (
 	"context"
 	"fmt"
-	helpers2 "github.com/laetho/metagraf/internal/pkg/helpers"
-	k8sclient2 "github.com/laetho/metagraf/internal/pkg/k8sclient"
-	params2 "github.com/laetho/metagraf/internal/pkg/params"
+	"github.com/laetho/metagraf/internal/pkg/helpers"
+	"github.com/laetho/metagraf/internal/pkg/k8sclient"
+	"github.com/laetho/metagraf/internal/pkg/params"
 	"github.com/openshift/api/image/docker10"
 	"github.com/spf13/viper"
 	log "k8s.io/klog"
@@ -88,7 +88,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 
 	// ImageInfo := helpers.SkopeoImageInfo(DockerImage)
 	HasImageInfo := false
-	ImageInfo, err := helpers2.ImageInfo(mg)
+	ImageInfo, err := helpers.ImageInfo(mg)
 	if err != nil {
 		HasImageInfo = false
 	} else {
@@ -100,7 +100,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 	if BaseEnvs && HasImageInfo {
 		for _, e := range ImageInfo.Config.Env {
 			es := strings.Split(e, "=")
-			if helpers2.SliceInString(EnvBlacklistFilter, strings.ToLower(es[0])) {
+			if helpers.SliceInString(EnvBlacklistFilter, strings.ToLower(es[0])) {
 				continue
 			}
 			EnvVars = append(EnvVars, corev1.EnvVar{Name: es[0], Value: es[1]})
@@ -168,7 +168,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 			Labels: l,
 		},
 		Spec: appsv1.DeploymentConfigSpec{
-			Replicas:             params2.Replicas,
+			Replicas:             params.Replicas,
 			RevisionHistoryLimit: &RevisionHistoryLimit,
 			Selector:             s,
 			Strategy: appsv1.DeploymentStrategy{
@@ -202,7 +202,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 // Determine if we're using container build by the project or if we are just referencing
 // an existing container.
 func imageRef(mg *metagraf.MetaGraf) string {
-	if len(mg.Spec.Image) > 0 && params2.DisableDeploymentImageAliasing {
+	if len(mg.Spec.Image) > 0 && params.DisableDeploymentImageAliasing {
 		return mg.Spec.Image
 	} else {
 		registry := viper.GetString("registry")
@@ -229,7 +229,7 @@ func volumes(mg *metagraf.MetaGraf, ImageInfo *docker10.DockerImage) ([]corev1.V
 	for k := range ImageInfo.Config.Volumes {
 		// Volume Definitions
 		Volume := corev1.Volume{
-			Name: objname + helpers2.PathToIdentifier(k),
+			Name: objname + helpers.PathToIdentifier(k),
 			VolumeSource: corev1.VolumeSource{
 				EmptyDir: &corev1.EmptyDirVolumeSource{},
 			},
@@ -238,7 +238,7 @@ func volumes(mg *metagraf.MetaGraf, ImageInfo *docker10.DockerImage) ([]corev1.V
 
 		VolumeMount := corev1.VolumeMount{
 			MountPath: k,
-			Name:      objname + helpers2.PathToIdentifier(k),
+			Name:      objname + helpers.PathToIdentifier(k),
 		}
 		VolumeMounts = append(VolumeMounts, VolumeMount)
 	}
@@ -313,7 +313,7 @@ func volumes(mg *metagraf.MetaGraf, ImageInfo *docker10.DockerImage) ([]corev1.V
 }
 
 func StoreDeploymentConfig(obj appsv1.DeploymentConfig) {
-	client := k8sclient2.GetAppsClient().DeploymentConfigs(NameSpace)
+	client := k8sclient.GetAppsClient().DeploymentConfigs(NameSpace)
 	dc, _ := client.Get(context.TODO(), obj.Name, metav1.GetOptions{})
 
 	if len(dc.ResourceVersion) > 0 {
@@ -337,7 +337,7 @@ func StoreDeploymentConfig(obj appsv1.DeploymentConfig) {
 }
 
 func DeleteDeploymentConfig(name string) {
-	client := k8sclient2.GetAppsClient().DeploymentConfigs(NameSpace)
+	client := k8sclient.GetAppsClient().DeploymentConfigs(NameSpace)
 
 	_, err := client.Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {

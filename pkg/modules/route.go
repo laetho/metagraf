@@ -19,9 +19,9 @@ package modules
 import (
 	"context"
 	"fmt"
-	helpers2 "github.com/laetho/metagraf/internal/pkg/helpers"
-	imageurl2 "github.com/laetho/metagraf/internal/pkg/imageurl"
-	k8sclient2 "github.com/laetho/metagraf/internal/pkg/k8sclient"
+	"github.com/laetho/metagraf/internal/pkg/helpers"
+	"github.com/laetho/metagraf/internal/pkg/imageurl"
+	"github.com/laetho/metagraf/internal/pkg/k8sclient"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	log "k8s.io/klog"
 	"os"
@@ -50,10 +50,10 @@ func GenRoute(mg *metagraf.MetaGraf) {
 		DockerImage = ""
 	}
 
-	client := k8sclient2.GetImageClient()
-	var imgurl imageurl2.ImageURL
+	client := k8sclient.GetImageClient()
+	var imgurl imageurl.ImageURL
 	err := imgurl.Parse(DockerImage)
-	ist := helpers2.GetImageStreamTags(
+	ist := helpers.GetImageStreamTags(
 		client,
 		imgurl.Namespace,
 		imgurl.Image+":"+imgurl.Tag)
@@ -61,10 +61,10 @@ func GenRoute(mg *metagraf.MetaGraf) {
 		log.Errorf("%v", err)
 	}
 
-	ImageInfo := helpers2.GetDockerImageFromIST(ist)
+	ImageInfo := helpers.GetDockerImageFromIST(ist)
 	log.V(2).Infof("Docker image ports: %v", ImageInfo.Config.ExposedPorts)
 
-	serviceports := GetServicePorts(mg, helpers2.ImageExposedPortsToServicePorts(ImageInfo.Config))
+	serviceports := GetServicePorts(mg, helpers.ImageExposedPortsToServicePorts(ImageInfo.Config))
 	// Find http port
 	// todo: This needs to be more solid
 	var ports []string
@@ -121,7 +121,7 @@ func GenRoute(mg *metagraf.MetaGraf) {
 }
 
 func StoreRoute(obj routev1.Route) {
-	client := k8sclient2.GetRouteClient().Routes(NameSpace)
+	client := k8sclient.GetRouteClient().Routes(NameSpace)
 	route, _ := client.Get(context.TODO(), obj.Name, metav1.GetOptions{})
 	if len(route.ResourceVersion) > 0 {
 		obj.ResourceVersion = route.ResourceVersion
@@ -144,7 +144,7 @@ func StoreRoute(obj routev1.Route) {
 }
 
 func DeleteRoute(name string) {
-	client := k8sclient2.GetRouteClient().Routes(NameSpace)
+	client := k8sclient.GetRouteClient().Routes(NameSpace)
 
 	_, err := client.Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {

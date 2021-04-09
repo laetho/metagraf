@@ -19,10 +19,10 @@ package modules
 import (
 	"context"
 	"fmt"
-	helpers2 "github.com/laetho/metagraf/internal/pkg/helpers"
-	imageurl2 "github.com/laetho/metagraf/internal/pkg/imageurl"
-	k8sclient2 "github.com/laetho/metagraf/internal/pkg/k8sclient"
-	params2 "github.com/laetho/metagraf/internal/pkg/params"
+	"github.com/laetho/metagraf/internal/pkg/helpers"
+	"github.com/laetho/metagraf/internal/pkg/imageurl"
+	"github.com/laetho/metagraf/internal/pkg/k8sclient"
+	"github.com/laetho/metagraf/internal/pkg/params"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -43,12 +43,12 @@ func GenService(mg *metagraf.MetaGraf) {
 		DockerImage = mg.Spec.Image
 	}
 
-	var imgurl imageurl2.ImageURL
+	var imgurl imageurl.ImageURL
 	_ = imgurl.Parse(DockerImage)
 
 	// ImageInfo := helpers.SkopeoImageInfo(DockerImage)
 	HasImageInfo := false
-	ImageInfo, err := helpers2.ImageInfo(mg)
+	ImageInfo, err := helpers.ImageInfo(mg)
 	if err != nil {
 		HasImageInfo = false
 	} else {
@@ -56,17 +56,17 @@ func GenService(mg *metagraf.MetaGraf) {
 	}
 
 	if HasImageInfo {
-		client := k8sclient2.GetImageClient()
-		ist := helpers2.GetImageStreamTags(
+		client := k8sclient.GetImageClient()
+		ist := helpers.GetImageStreamTags(
 			client,
 			imgurl.Namespace,
 			imgurl.Image+":"+imgurl.Tag)
-		ImageInfo = helpers2.GetDockerImageFromIST(ist)
+		ImageInfo = helpers.GetDockerImageFromIST(ist)
 	}
 
 	var serviceports []corev1.ServicePort
 	if HasImageInfo {
-		serviceports = GetServicePorts(mg, helpers2.ImageExposedPortsToServicePorts(ImageInfo.Config))
+		serviceports = GetServicePorts(mg, helpers.ImageExposedPortsToServicePorts(ImageInfo.Config))
 	} else {
 		var ports []corev1.ServicePort
 		serviceports = GetServicePorts(mg, ports)
@@ -103,7 +103,7 @@ func GenService(mg *metagraf.MetaGraf) {
 	}
 
 	// Optinonally also create a ServiceMonitor resource.
-	if params2.ServiceMonitor {
+	if params.ServiceMonitor {
 		if Output && Format == "yaml" {
 			fmt.Println("---")
 		}
@@ -167,7 +167,7 @@ func defaultServicePorts() []corev1.ServicePort {
 }
 
 func StoreService(obj corev1.Service) {
-	client := k8sclient2.GetCoreClient().Services(NameSpace)
+	client := k8sclient.GetCoreClient().Services(NameSpace)
 	svc, _ := client.Get(context.TODO(), obj.Name, metav1.GetOptions{})
 
 	if len(svc.ResourceVersion) > 0 {
@@ -192,7 +192,7 @@ func StoreService(obj corev1.Service) {
 }
 
 func DeleteService(name string) {
-	client := k8sclient2.GetCoreClient().Services(NameSpace)
+	client := k8sclient.GetCoreClient().Services(NameSpace)
 
 	_, err := client.Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {

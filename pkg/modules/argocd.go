@@ -23,8 +23,8 @@ import (
 	"fmt"
 	argoapp "github.com/argoproj/argo-cd/pkg/apis/application/v1alpha1"
 	"github.com/golang/glog"
-	k8sclient2 "github.com/laetho/metagraf/internal/pkg/k8sclient"
-	params2 "github.com/laetho/metagraf/internal/pkg/params"
+	"github.com/laetho/metagraf/internal/pkg/k8sclient"
+	"github.com/laetho/metagraf/internal/pkg/params"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	"gopkg.in/yaml.v3"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -36,29 +36,29 @@ import (
 func GetArgoCDApplicationSyncPolicy() *argoapp.SyncPolicy {
 	sp := &argoapp.SyncPolicy{}
 
-	if params2.ArgoCDAutomatedSyncPolicy {
+	if params.ArgoCDAutomatedSyncPolicy {
 		sp.Automated = &argoapp.SyncPolicyAutomated{
-			Prune:    params2.ArgoCDAutomatedSyncPolicyPrune,
-			SelfHeal: params2.ArgoCDAutomatedSyncPolicySelfHeal,
+			Prune:    params.ArgoCDAutomatedSyncPolicyPrune,
+			SelfHeal: params.ArgoCDAutomatedSyncPolicySelfHeal,
 		}
 	}
 
-	if params2.ArgoCDSyncPolicyRetry {
+	if params.ArgoCDSyncPolicyRetry {
 
 	}
 	return sp
 }
 
 func GetArgoCDApplicationNamespace() string {
-	if len(params2.ArgoCDApplicationNamespace) > 0 {
-		return params2.ArgoCDApplicationNamespace
+	if len(params.ArgoCDApplicationNamespace) > 0 {
+		return params.ArgoCDApplicationNamespace
 	}
 	return NameSpace
 }
 
 func GetArgoCDSourceDirectory() *argoapp.ApplicationSourceDirectory {
 	asd := argoapp.ApplicationSourceDirectory{
-		Recurse: params2.ArgoCDApplicationSourceDirectoryRecurse,
+		Recurse: params.ArgoCDApplicationSourceDirectoryRecurse,
 		Jsonnet: argoapp.ApplicationSourceJsonnet{},
 	}
 	return &asd
@@ -84,12 +84,12 @@ func GenArgoApplication(mg *metagraf.MetaGraf) {
 				Namespace: NameSpace,
 			},
 			Source: argoapp.ApplicationSource{
-				RepoURL:        params2.ArgoCDApplicationRepoURL,
-				Path:           params2.ArgoCDApplicationRepoPath,
-				TargetRevision: params2.ArgoCDApplicationTargetRevision,
+				RepoURL:        params.ArgoCDApplicationRepoURL,
+				Path:           params.ArgoCDApplicationRepoPath,
+				TargetRevision: params.ArgoCDApplicationTargetRevision,
 			},
 
-			Project:    params2.ArgoCDApplicationProject,
+			Project:    params.ArgoCDApplicationProject,
 			SyncPolicy: GetArgoCDApplicationSyncPolicy(),
 			Info:       meta,
 		},
@@ -143,7 +143,7 @@ func StoreArgoCDApplication(obj argoapp.Application) {
 	glog.Infof("ResourceVersion: %v Length: %v", obj.ResourceVersion, len(obj.ResourceVersion))
 	glog.Infof("Namespace: %v", NameSpace)
 
-	client := k8sclient2.GetArgoCDClient().Applications(NameSpace)
+	client := k8sclient.GetArgoCDClient().Applications(NameSpace)
 	if len(obj.ResourceVersion) > 0 {
 		// update
 		result, err := client.Update(context.TODO(), &obj, metav1.UpdateOptions{})

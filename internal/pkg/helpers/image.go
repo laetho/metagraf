@@ -21,8 +21,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	imageurl2 "github.com/laetho/metagraf/internal/pkg/imageurl"
-	k8sclient2 "github.com/laetho/metagraf/internal/pkg/k8sclient"
+	"github.com/laetho/metagraf/internal/pkg/imageurl"
+	"github.com/laetho/metagraf/internal/pkg/k8sclient"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	dockerv10 "github.com/openshift/api/image/docker10"
 	imagev1 "github.com/openshift/api/image/v1"
@@ -121,10 +121,10 @@ func ImageInfo(mg *metagraf.MetaGraf) (*dockerv10.DockerImage, error) {
 		return nil, errors.New("blah")
 	}
 
-	var imgurl imageurl2.ImageURL
+	var imgurl imageurl.ImageURL
 	imgurl.Parse(DockerImage)
 
-	client := k8sclient2.GetImageClient()
+	client := k8sclient.GetImageClient()
 
 	ist := GetImageStreamTags(
 		client,
