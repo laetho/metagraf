@@ -22,7 +22,7 @@ import (
 	"github.com/laetho/metagraf/internal/pkg/helpers/helpers"
 	"github.com/laetho/metagraf/internal/pkg/imageurl/imageurl"
 	"github.com/laetho/metagraf/internal/pkg/k8sclient/k8sclient"
-	"github.com/laetho/metagraf/internal/pkg/params/params"
+	params2 "github.com/laetho/metagraf/internal/pkg/params"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -103,7 +103,7 @@ func GenService(mg *metagraf.MetaGraf) {
 	}
 
 	// Optinonally also create a ServiceMonitor resource.
-	if params.ServiceMonitor {
+	if params2.ServiceMonitor {
 		if Output && Format == "yaml" {
 			fmt.Println("---")
 		}

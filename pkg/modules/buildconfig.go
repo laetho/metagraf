@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"github.com/laetho/metagraf/internal/pkg/helpers/helpers"
 	"github.com/laetho/metagraf/internal/pkg/k8sclient/k8sclient"
-	"github.com/laetho/metagraf/internal/pkg/params/params"
+	params2 "github.com/laetho/metagraf/internal/pkg/params"
 	log "k8s.io/klog"
 	"os"
 	"strings"
@@ -96,8 +96,8 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 	// Construct toObjRef for BuildConfig output overrides
 	var toObjRefName = objname
 	var toObjRefTag = "latest"
-	if len(params.OutputImagestream) > 0 {
-		toObjRefName = params.OutputImagestream
+	if len(params2.OutputImagestream) > 0 {
+		toObjRefName = params2.OutputImagestream
 	}
 	if len(Tag) > 0 {
 		toObjRefTag = Tag
@@ -163,8 +163,8 @@ func genBinaryBuildSource() buildv1.BuildSource {
 
 func genGitBuildSource(mg *metagraf.MetaGraf) buildv1.BuildSource {
 	var branch string
-	if len(params.SourceRef) > 0 {
-		branch = params.SourceRef
+	if len(params2.SourceRef) > 0 {
+		branch = params2.SourceRef
 	} else {
 		branch = mg.Spec.Branch
 	}

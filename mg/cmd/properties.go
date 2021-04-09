@@ -19,7 +19,7 @@ package cmd
 import (
 	"bufio"
 	"fmt"
-	"github.com/laetho/metagraf/internal/pkg/params/params"
+	params2 "github.com/laetho/metagraf/internal/pkg/params"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	"github.com/laetho/metagraf/pkg/modules"
 	log "k8s.io/klog"
@@ -145,7 +145,7 @@ func MergeAndValidateProperties(base metagraf.MGProperties, merge metagraf.MGPro
 		// Only set in base MGProperties if the key is valid.
 		if _, ok := base[p.MGKey()]; !ok {
 			if len(p.Value) == 0 && p.Required {
-				fmt.Printf("Configured property %v must have a value in %v\n", p.MGKey(), params.PropertiesFile)
+				fmt.Printf("Configured property %v must have a value in %v\n", p.MGKey(), params2.PropertiesFile)
 			} else {
 				target := base[p.MGKey()]
 				target.Value = p.Value
@@ -170,7 +170,7 @@ func GetCmdProperties(mgp metagraf.MGProperties) metagraf.MGProperties {
 			mgp[property.MGKey()] = property
 		}
 	}
-	fileprops := ReadPropertiesFile(params.PropertiesFile)
+	fileprops := ReadPropertiesFile(params2.PropertiesFile)
 	// Fetch possible variables from metaGraf specification
 	mgp = MergeAndValidateProperties(mgp, PropertiesFromEnv(mgp), false)
 	// Fetch variable overrides from file if specified with --cvfile

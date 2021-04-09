@@ -24,7 +24,7 @@ import (
 	argoapp "github.com/argoproj/argo-cd/pkg/apis/application/v1alpha1"
 	"github.com/golang/glog"
 	"github.com/laetho/metagraf/internal/pkg/k8sclient/k8sclient"
-	"github.com/laetho/metagraf/internal/pkg/params/params"
+	params2 "github.com/laetho/metagraf/internal/pkg/params"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	"gopkg.in/yaml.v3"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -36,29 +36,29 @@ import (
 func GetArgoCDApplicationSyncPolicy() *argoapp.SyncPolicy {
 	sp := &argoapp.SyncPolicy{}
 
-	if params.ArgoCDAutomatedSyncPolicy {
+	if params2.ArgoCDAutomatedSyncPolicy {
 		sp.Automated = &argoapp.SyncPolicyAutomated{
-			Prune:    params.ArgoCDAutomatedSyncPolicyPrune,
-			SelfHeal: params.ArgoCDAutomatedSyncPolicySelfHeal,
+			Prune:    params2.ArgoCDAutomatedSyncPolicyPrune,
+			SelfHeal: params2.ArgoCDAutomatedSyncPolicySelfHeal,
 		}
 	}
 
-	if params.ArgoCDSyncPolicyRetry {
+	if params2.ArgoCDSyncPolicyRetry {
 
 	}
 	return sp
 }
 
 func GetArgoCDApplicationNamespace() string {
-	if len(params.ArgoCDApplicationNamespace) > 0 {
-		return params.ArgoCDApplicationNamespace
+	if len(params2.ArgoCDApplicationNamespace) > 0 {
+		return params2.ArgoCDApplicationNamespace
 	}
 	return NameSpace
 }
 
 func GetArgoCDSourceDirectory() *argoapp.ApplicationSourceDirectory {
 	asd := argoapp.ApplicationSourceDirectory{
-		Recurse: params.ArgoCDApplicationSourceDirectoryRecurse,
+		Recurse: params2.ArgoCDApplicationSourceDirectoryRecurse,
 		Jsonnet: argoapp.ApplicationSourceJsonnet{},
 	}
 	return &asd
@@ -84,12 +84,12 @@ func GenArgoApplication(mg *metagraf.MetaGraf) {
 				Namespace: NameSpace,
 			},
 			Source: argoapp.ApplicationSource{
-				RepoURL:        params.ArgoCDApplicationRepoURL,
-				Path:           params.ArgoCDApplicationRepoPath,
-				TargetRevision: params.ArgoCDApplicationTargetRevision,
+				RepoURL:        params2.ArgoCDApplicationRepoURL,
+				Path:           params2.ArgoCDApplicationRepoPath,
+				TargetRevision: params2.ArgoCDApplicationTargetRevision,
 			},
 
-			Project:    params.ArgoCDApplicationProject,
+			Project:    params2.ArgoCDApplicationProject,
 			SyncPolicy: GetArgoCDApplicationSyncPolicy(),
 			Info:       meta,
 		},

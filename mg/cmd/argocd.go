@@ -18,7 +18,7 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/laetho/metagraf/internal/pkg/params/params"
+	params2 "github.com/laetho/metagraf/internal/pkg/params"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	"github.com/laetho/metagraf/pkg/modules"
 	"github.com/spf13/cobra"
@@ -34,17 +34,17 @@ func init() {
 	argocdCreateCmd.PersistentFlags().BoolVar(&Dryrun, "dryrun", false, "do not create objects, only output")
 	argocdCreateCmd.PersistentFlags().StringVarP(&Namespace, "namespace", "n", "", "namespace to work on")
 	argocdCreateCmd.AddCommand(argocdCreateApplicationCmd)
-	argocdCreateApplicationCmd.Flags().StringVar(&params.ArgoCDApplicationProject, "project", "", "Project reference")
-	argocdCreateApplicationCmd.Flags().StringVar(&params.ArgoCDApplicationNamespace, "argo-namespace", "", "Namespace for the ArgoCD Application resource.")
-	argocdCreateApplicationCmd.Flags().StringVarP(&params.ArgoCDApplicationRepoURL, "repo", "r", "", "Repository URL")
-	argocdCreateApplicationCmd.Flags().StringVarP(&params.ArgoCDApplicationRepoPath, "path", "p", "", "Path to manifests inside the repository")
-	argocdCreateApplicationCmd.Flags().StringVar(&params.ArgoCDApplicationTargetRevision, "target-revision", params.ArgoCDApplicationTargetRevision, "Git ref for commit to synchronise.")
-	argocdCreateApplicationCmd.Flags().BoolVar(&params.ArgoCDApplicationSourceDirectoryRecurse, "recurse", false, "Recursively traverse basepath looking for manifests")
-	argocdCreateApplicationCmd.Flags().BoolVar(&params.ArgoCDSyncPolicyRetry, "retry", false, "Retry failed synchronizations?")
-	argocdCreateApplicationCmd.Flags().Int64Var(&params.ArgoCDSyncPolicyRetryLimit, "retry-limit", 2, "Retry limit")
-	argocdCreateApplicationCmd.Flags().BoolVarP(&params.ArgoCDAutomatedSyncPolicy, "auto", "a", false, "Generate an automated sync policy?")
-	argocdCreateApplicationCmd.Flags().BoolVar(&params.ArgoCDAutomatedSyncPolicyPrune, "auto-prune", false, "Automatically delete removed items")
-	argocdCreateApplicationCmd.Flags().BoolVar(&params.ArgoCDAutomatedSyncPolicySelfHeal, "auto-heal", false, "Try to self heal?")
+	argocdCreateApplicationCmd.Flags().StringVar(&params2.ArgoCDApplicationProject, "project", "", "Project reference")
+	argocdCreateApplicationCmd.Flags().StringVar(&params2.ArgoCDApplicationNamespace, "argo-namespace", "", "Namespace for the ArgoCD Application resource.")
+	argocdCreateApplicationCmd.Flags().StringVarP(&params2.ArgoCDApplicationRepoURL, "repo", "r", "", "Repository URL")
+	argocdCreateApplicationCmd.Flags().StringVarP(&params2.ArgoCDApplicationRepoPath, "path", "p", "", "Path to manifests inside the repository")
+	argocdCreateApplicationCmd.Flags().StringVar(&params2.ArgoCDApplicationTargetRevision, "target-revision", params2.ArgoCDApplicationTargetRevision, "Git ref for commit to synchronise.")
+	argocdCreateApplicationCmd.Flags().BoolVar(&params2.ArgoCDApplicationSourceDirectoryRecurse, "recurse", false, "Recursively traverse basepath looking for manifests")
+	argocdCreateApplicationCmd.Flags().BoolVar(&params2.ArgoCDSyncPolicyRetry, "retry", false, "Retry failed synchronizations?")
+	argocdCreateApplicationCmd.Flags().Int64Var(&params2.ArgoCDSyncPolicyRetryLimit, "retry-limit", 2, "Retry limit")
+	argocdCreateApplicationCmd.Flags().BoolVarP(&params2.ArgoCDAutomatedSyncPolicy, "auto", "a", false, "Generate an automated sync policy?")
+	argocdCreateApplicationCmd.Flags().BoolVar(&params2.ArgoCDAutomatedSyncPolicyPrune, "auto-prune", false, "Automatically delete removed items")
+	argocdCreateApplicationCmd.Flags().BoolVar(&params2.ArgoCDAutomatedSyncPolicySelfHeal, "auto-heal", false, "Try to self heal?")
 
 	_ = argocdCreateCmd.MarkPersistentFlagRequired("namespace")
 	_ = argocdCreateApplicationCmd.MarkFlagRequired("project")

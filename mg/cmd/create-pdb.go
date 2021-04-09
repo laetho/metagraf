@@ -17,7 +17,7 @@ limitations under the License.
 package cmd
 
 import (
-	"github.com/laetho/metagraf/internal/pkg/params/params"
+	params2 "github.com/laetho/metagraf/internal/pkg/params"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	"github.com/laetho/metagraf/pkg/pdb"
 	"github.com/spf13/cobra"
@@ -28,8 +28,8 @@ import (
 
 func init() {
 	createCmd.AddCommand(createPodDisruptionBudget)
-	createPodDisruptionBudget.Flags().Int32Var(&params.Replicas, "replicas", params.DefaultReplicas, "Number of replicas.")
-	createPodDisruptionBudget.Flags().StringVarP(&params.NameSpace, "namespace", "n", "", "Set namespace for generated resource.")
+	createPodDisruptionBudget.Flags().Int32Var(&params2.Replicas, "replicas", params2.DefaultReplicas, "Number of replicas.")
+	createPodDisruptionBudget.Flags().StringVarP(&params2.NameSpace, "namespace", "n", "", "Set namespace for generated resource.")
 }
 
 var createPodDisruptionBudget = &cobra.Command{
@@ -51,10 +51,10 @@ var createPodDisruptionBudget = &cobra.Command{
 			}
 		}
 		// Migration to params not complete.
-		params.Dryrun = Dryrun
-		params.Output = Output
+		params2.Dryrun = Dryrun
+		params2.Output = Output
 		mg := metagraf.Parse(args[0])
 
-		pdb.GenPodDisruptionBudget(&mg, params.Replicas)
+		pdb.GenPodDisruptionBudget(&mg, params2.Replicas)
 	},
 }

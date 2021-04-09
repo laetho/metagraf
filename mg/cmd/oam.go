@@ -18,7 +18,7 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/laetho/metagraf/internal/pkg/params/params"
+	params2 "github.com/laetho/metagraf/internal/pkg/params"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	"github.com/laetho/metagraf/pkg/oam"
 	"github.com/spf13/cobra"
@@ -61,8 +61,8 @@ var oamCreateComponentCmd = &cobra.Command{
 		}
 		mg := metagraf.Parse(args[0])
 
-		if len(params.NameSpace) == 0 {
-			params.NameSpace = Namespace
+		if len(params2.NameSpace) == 0 {
+			params2.NameSpace = Namespace
 		}
 		oam.GenOAMComponent(&mg)
 	},
@@ -80,8 +80,8 @@ var oamCreateApplicationConfigurationCmd = &cobra.Command{
 		}
 		mg := metagraf.Parse(args[0])
 
-		if len(params.NameSpace) == 0 {
-			params.NameSpace = Namespace
+		if len(params2.NameSpace) == 0 {
+			params2.NameSpace = Namespace
 		}
 
 		oam.GenOAMApplicationConfiguration(&mg)

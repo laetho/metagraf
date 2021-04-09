@@ -17,7 +17,7 @@ limitations under the License.
 package affinity
 
 import (
-	"github.com/laetho/metagraf/internal/pkg/params/params"
+	params2 "github.com/laetho/metagraf/internal/pkg/params"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -45,7 +45,7 @@ func SoftPodAntiAffinity(app string, topologyKey string, weight int32) *corev1.A
 	var terms []corev1.WeightedPodAffinityTerm
 	var namespaces []string
 
-	namespaces = append(namespaces, params.NameSpace)
+	namespaces = append(namespaces, params2.NameSpace)
 
 	terms = append(terms, corev1.WeightedPodAffinityTerm{
 		Weight: weight,
@@ -68,7 +68,7 @@ func HardPodAntiAffinity(app string, topologyKey string) *corev1.Affinity {
 	var terms []corev1.PodAffinityTerm
 	var namespaces []string
 
-	namespaces = append(namespaces, params.NameSpace)
+	namespaces = append(namespaces, params2.NameSpace)
 
 	terms = append(terms, corev1.PodAffinityTerm{
 		LabelSelector: AntiAffinityLabelSelector("app", metav1.LabelSelectorOpIn, app),

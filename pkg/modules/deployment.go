@@ -22,7 +22,7 @@ import (
 	"github.com/laetho/metagraf/internal/pkg/affinity"
 	"github.com/laetho/metagraf/internal/pkg/helpers/helpers"
 	"github.com/laetho/metagraf/internal/pkg/k8sclient/k8sclient"
-	"github.com/laetho/metagraf/internal/pkg/params/params"
+	params2 "github.com/laetho/metagraf/internal/pkg/params"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	"github.com/spf13/viper"
 	"k8s.io/apimachinery/pkg/util/intstr"
@@ -156,7 +156,7 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 			Labels: l,
 		},
 		Spec: appsv1.DeploymentSpec{
-			Replicas:             &params.Replicas,
+			Replicas:             &params2.Replicas,
 			RevisionHistoryLimit: &RevisionHistoryLimit,
 			Selector:             &s,
 			Strategy: appsv1.DeploymentStrategy{
@@ -177,8 +177,8 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 		Status: appsv1.DeploymentStatus{},
 	}
 
-	if params.WithAffinityRules {
-		obj.Spec.Template.Spec.Affinity = affinity.SoftPodAntiAffinity(objname, params.PodAntiAffinityTopologyKey, params.PodAntiAffinityWeight)
+	if params2.WithAffinityRules {
+		obj.Spec.Template.Spec.Affinity = affinity.SoftPodAntiAffinity(objname, params2.PodAntiAffinityTopologyKey, params2.PodAntiAffinityWeight)
 	}
 
 	if !Dryrun {

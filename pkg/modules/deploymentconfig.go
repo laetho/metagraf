@@ -20,7 +20,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/laetho/metagraf/internal/pkg/k8sclient/k8sclient"
-	"github.com/laetho/metagraf/internal/pkg/params/params"
+	params2 "github.com/laetho/metagraf/internal/pkg/params"
 	"github.com/openshift/api/image/docker10"
 	"github.com/spf13/viper"
 	log "k8s.io/klog"
@@ -168,7 +168,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 			Labels: l,
 		},
 		Spec: appsv1.DeploymentConfigSpec{
-			Replicas:             params.Replicas,
+			Replicas:             params2.Replicas,
 			RevisionHistoryLimit: &RevisionHistoryLimit,
 			Selector:             s,
 			Strategy: appsv1.DeploymentStrategy{
@@ -202,7 +202,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 // Determine if we're using container build by the project or if we are just referencing
 // an existing container.
 func imageRef(mg *metagraf.MetaGraf) string {
-	if len(mg.Spec.Image) > 0 && params.DisableDeploymentImageAliasing {
+	if len(mg.Spec.Image) > 0 && params2.DisableDeploymentImageAliasing {
 		return mg.Spec.Image
 	} else {
 		registry := viper.GetString("registry")
