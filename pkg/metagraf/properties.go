@@ -12,6 +12,7 @@ func (mgp *MGProperty) DefaultValueAsValue() {
 	mgp.Value = mgp.Default
 }
 
+// Map a MGProperty to metaGraf EnvironmentVar
 func (mgp *MGProperty) ToEnvironmentVar() EnvironmentVar {
 	return EnvironmentVar{
 		Name:        mgp.Key,
@@ -166,6 +167,7 @@ func (mg *MetaGraf) GetProperties() MGProperties {
 	return props
 }
 
+// Returns a MGProperty by key (name) from MGProperties collection.
 func (mgp MGProperties) GetByKey(key string) (MGProperty, error) {
 	for _, p := range mgp {
 		if p.Key == key {
