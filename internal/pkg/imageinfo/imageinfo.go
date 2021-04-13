@@ -5,11 +5,11 @@ import (
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/remote"
-	corev1 "k8s.io/api/core/v1"
 	"github.com/laetho/metagraf/internal/pkg/helpers"
 	"github.com/laetho/metagraf/internal/pkg/params"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	"github.com/laetho/metagraf/pkg/mgver"
+	corev1 "k8s.io/api/core/v1"
 )
 
 // Type alias of Config type from go-containerregistry, for creating our own method sets.

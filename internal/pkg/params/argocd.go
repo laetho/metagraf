@@ -16,7 +16,7 @@ limitations under the License.
 
 package params
 
-var(
+var (
 	ArgoCDApplicationProject string
 	// In which namespace do we want the ArgoCD Application CR to be created
 	ArgoCDApplicationNamespace string

@@ -26,5 +26,4 @@ var (
 
 	// Format value can be either json or yaml. Controls output format.
 	Format string = "json"
-
 )

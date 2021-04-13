@@ -20,7 +20,6 @@ import (
 	"strings"
 )
 
-
 func StringInSlice(a string, list []string) bool {
 	for _, b := range list {
 		if b == a {
@@ -29,6 +28,7 @@ func StringInSlice(a string, list []string) bool {
 	}
 	return false
 }
+
 // Sanitize a string for a k8s label field
 func LabelString(s string) string {
 	if len(s) > 63 {
@@ -39,7 +39,7 @@ func LabelString(s string) string {
 
 // Checks if a strings in a slice is part of a string.
 func SliceInString(list []string, str string) bool {
-	for _,filter := range list {
+	for _, filter := range list {
 		if strings.Contains(str, filter) {
 			return true
 		}

@@ -25,7 +25,7 @@ import (
 )
 
 // Returns a slice of k8s.io v1 ServicePort{} types from a Docker image config.
-func ImageExposedPortsToServicePorts(config *docker10.DockerConfig ) []corev1.ServicePort {
+func ImageExposedPortsToServicePorts(config *docker10.DockerConfig) []corev1.ServicePort {
 	var ports []corev1.ServicePort
 	for k := range config.ExposedPorts {
 		ss := strings.Split(k, "/")

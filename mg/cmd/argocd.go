@@ -18,8 +18,8 @@ package cmd
 
 import (
 	"github.com/laetho/metagraf/internal/pkg/params"
+	"github.com/laetho/metagraf/pkg/generators/argocd"
 	"github.com/laetho/metagraf/pkg/metagraf"
-	"github.com/laetho/metagraf/pkg/modules"
 	"github.com/spf13/cobra"
 )
 
@@ -31,12 +31,12 @@ func init() {
 	argocdCreateCmd.PersistentFlags().BoolVar(&params.Dryrun, "dryrun", false, "do not create objects, only output")
 	argocdCreateCmd.PersistentFlags().StringVarP(&params.NameSpace, "namespace", "n", "", "namespace to work on")
 	argocdCreateCmd.AddCommand(argocdCreateApplicationCmd)
-	argocdCreateApplicationCmd.Flags().StringVar(&params.ArgoCDApplicationProject, "project", "", "Project reference")
-	argocdCreateApplicationCmd.Flags().StringVar(&params.ArgoCDApplicationNamespace, "argo-namespace", "", "Namespace for the ArgoCD Application resource.")
-	argocdCreateApplicationCmd.Flags().StringVarP(&params.ArgoCDApplicationRepoURL, "repo", "r", "", "Repository URL")
-	argocdCreateApplicationCmd.Flags().StringVarP(&params.ArgoCDApplicationRepoPath, "path", "p", "", "Path to manifests inside the repository")
-	argocdCreateApplicationCmd.Flags().StringVar(&params.ArgoCDApplicationTargetRevision, "target-revision", params.ArgoCDApplicationTargetRevision, "Git ref for commit to synchronise.")
-	argocdCreateApplicationCmd.Flags().BoolVar(&params.ArgoCDApplicationSourceDirectoryRecurse, "recurse", false, "Recursively traverse basepath looking for manifests")
+	argocdCreateApplicationCmd.Flags().StringVar(&argocd.AppOpts.ApplicationProject, "project", "", "Project reference")
+	argocdCreateApplicationCmd.Flags().StringVar(&argocd.AppOpts.ApplicationDestinationNamespace, "argo-namespace", "", "Namespace for the ArgoCD Application resource.")
+	argocdCreateApplicationCmd.Flags().StringVarP(&argocd.AppOpts.ApplicationRepoURL, "repo", "r", "", "Repository URL")
+	argocdCreateApplicationCmd.Flags().StringVarP(&argocd.AppOpts.ApplicationRepoPath, "path", "p", "", "Path to manifests inside the repository")
+	argocdCreateApplicationCmd.Flags().StringVar(&argocd.AppOpts.ApplicationTargetRevision, "target-revision", params.ArgoCDApplicationTargetRevision, "Git ref for commit to synchronise.")
+	argocdCreateApplicationCmd.Flags().BoolVar(&argocd.AppOpts.ApplicationSourceDirectoryRecurse, "recurse", false, "Recursively traverse basepath looking for manifests")
 	argocdCreateApplicationCmd.Flags().BoolVar(&params.ArgoCDSyncPolicyRetry, "retry", false, "Retry failed synchronizations?")
 	argocdCreateApplicationCmd.Flags().Int64Var(&params.ArgoCDSyncPolicyRetryLimit, "retry-limit", 2, "Retry limit")
 	argocdCreateApplicationCmd.Flags().BoolVarP(&params.ArgoCDAutomatedSyncPolicy, "auto", "a", false, "Generate an automated sync policy?")
@@ -61,6 +61,7 @@ var argocdCreateCmd = &cobra.Command{
 	Long:  `Create Subcommands for ArgoCD`,
 }
 
+/*
 var argocdCreateApplicationCmd = &cobra.Command{
 	TraverseChildren: true,
 	Use:              "application <metagraf>",
@@ -70,12 +71,39 @@ var argocdCreateApplicationCmd = &cobra.Command{
 		requireMetagraf(args)
 		requireNamespace()
 		mg := metagraf.Parse(args[0])
-		app := modules.GenArgoApplication(&mg)
+
+		app := modules.GenArgoApplication(&mg, )
 		if !params.Dryrun {
 			modules.StoreArgoCDApplication(app)
 		}
 		if params.Output{
 			modules.OutputArgoCDApplication(app)
 		}
+	},
+}
+*/
+
+var argocdCreateApplicationCmd = &cobra.Command{
+	TraverseChildren: true,
+	Use:              "application <metagraf>",
+	Short:            "argocd create application",
+	Long:             `Creates an ArgoCD Application resource from a metagraf specification`,
+	Run: func(cmd *cobra.Command, args []string) {
+		requireMetagraf(args)
+		requireNamespace()
+		mg := metagraf.Parse(args[0])
+
+		generator := argocd.NewApplicationGenerator(mg, metagraf.MGProperties{}, argocd.AppOpts )
+		app := generator.Application()
+
+
+		if params.Output {
+			argocd.OutputApplication(app, params.Format)
+		}
+
+		if !params.Dryrun {
+			argocd.StoreApplication(app)
+		}
+
 	},
 }

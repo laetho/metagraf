@@ -1,3 +1,5 @@
+package argocd
+
 /*
 Copyright 2020 The metaGraf Authors
 
@@ -13,8 +15,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-
-package modules
 
 import (
 	"bytes"
@@ -33,27 +33,93 @@ import (
 	"os"
 )
 
-func GetArgoCDApplicationSyncPolicy() *argoapp.SyncPolicy {
+// Generator for the Application type
+type ApplicationGenerator struct {
+	MetaGraf   metagraf.MetaGraf
+	Properties metagraf.MGProperties
+	Options    ApplicationOptions
+	Resource   argoapp.Application
+}
+
+type ApplicationOption func(*ApplicationOptions)
+
+type ApplicationOptions struct {
+	Namespace                         string
+	ApplicationProject                string
+	ApplicationDestinationNamespace   string
+	ApplicationRepoURL                string
+	ApplicationRepoPath               string
+	ApplicationTargetRevision         string
+	ApplicationSourceDirectoryRecurse bool
+	SyncPolicyRetry                   bool
+	SyncPolicyRetryLimit              int64
+	AutomatedSyncPolicy               bool
+	AutomatedSyncPolicyPrune          bool
+	AutomatedSyncPolicySelfHeal       bool
+}
+
+// Instance of ApplicationOptions that can be used for propagating flags.
+var AppOpts ApplicationOptions
+
+func NewApplicationOptions(options ...ApplicationOption) ApplicationOptions {
+	o := &ApplicationOptions{}
+	for _, opt := range options {
+		opt(o)
+	}
+	return *o
+}
+
+func NewApplicationGenerator(mg metagraf.MetaGraf, prop metagraf.MGProperties, options ApplicationOptions) ApplicationGenerator {
+	g := ApplicationGenerator{
+		MetaGraf:   mg,
+		Properties: prop,
+		Options:    options,
+	}
+
+	return g
+}
+
+func (g *ApplicationOptions) SetOptions(options ...ApplicationOption) {
+	for _, opt := range options {
+		opt(g)
+	}
+}
+
+// Sets the Kubernetes namespace for the generated Application resource.
+func ApplicationNamespace(ns string) ApplicationOption {
+	return func(o *ApplicationOptions) {
+		o.Namespace = ns
+	}
+}
+
+// Sets the Kubernetes namespace for the generated Application resource.
+func ApplicationTargetNamespace(ns string) ApplicationOption {
+	return func(o *ApplicationOptions) {
+		o.Namespace = ns
+	}
+}
+
+func ApplicationDestinationNamepace(ns string) ApplicationOption {
+	return func(g *ApplicationOptions) {
+		g.ApplicationDestinationNamespace = ns
+	}
+}
+
+func (g ApplicationGenerator) applicationSyncPolicy() *argoapp.SyncPolicy {
+
 	sp := &argoapp.SyncPolicy{}
 
-	if params.ArgoCDAutomatedSyncPolicy {
+	if g.Options.AutomatedSyncPolicy {
 		sp.Automated = &argoapp.SyncPolicyAutomated{
-			Prune:    params.ArgoCDAutomatedSyncPolicyPrune,
-			SelfHeal: params.ArgoCDAutomatedSyncPolicySelfHeal,
+			Prune:    g.Options.AutomatedSyncPolicyPrune,
+			SelfHeal: g.Options.AutomatedSyncPolicySelfHeal,
 		}
 	}
 
-	if params.ArgoCDSyncPolicyRetry {
+	if g.Options.SyncPolicyRetry {
 
 	}
 	return sp
-}
-
-func GetArgoCDApplicationNamespace() string {
-	if len(params.ArgoCDApplicationNamespace) > 0 {
-		return params.ArgoCDApplicationNamespace
-	}
-	return NameSpace
 }
 
 func GetArgoCDSourceDirectory() *argoapp.ApplicationSourceDirectory {
@@ -64,7 +130,7 @@ func GetArgoCDSourceDirectory() *argoapp.ApplicationSourceDirectory {
 	return &asd
 }
 
-func GenArgoApplication(mg *metagraf.MetaGraf) argoapp.Application {
+func (g *ApplicationGenerator) Application() argoapp.Application {
 
 	var meta []argoapp.Info
 
@@ -74,23 +140,23 @@ func GenArgoApplication(mg *metagraf.MetaGraf) argoapp.Application {
 			APIVersion: "argoproj.io/v1alpha1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      mg.Name(OName, Version),
-			Namespace: GetArgoCDApplicationNamespace(),
-			Labels:    mg.Metadata.Labels,
+			Name:      g.MetaGraf.Name("", ""),
+			Namespace: g.Options.ApplicationDestinationNamespace,
+			Labels:    g.MetaGraf.Metadata.Labels,
 		},
 		Spec: argoapp.ApplicationSpec{
 			Destination: argoapp.ApplicationDestination{
 				Server:    "https://kubernetes.default.svc",
-				Namespace: params.NameSpace,
+				Namespace: g.Options.ApplicationDestinationNamespace,
 			},
 			Source: argoapp.ApplicationSource{
-				RepoURL:        params.ArgoCDApplicationRepoURL,
-				Path:           params.ArgoCDApplicationRepoPath,
-				TargetRevision: params.ArgoCDApplicationTargetRevision,
+				RepoURL:        g.Options.ApplicationRepoURL,
+				Path:           g.Options.ApplicationRepoPath,
+				TargetRevision: g.Options.ApplicationTargetRevision,
 			},
 
 			Project:    params.ArgoCDApplicationProject,
-			SyncPolicy: GetArgoCDApplicationSyncPolicy(),
+			SyncPolicy: g.applicationSyncPolicy(),
 			Info:       meta,
 		},
 		Operation: nil,
@@ -98,7 +164,7 @@ func GenArgoApplication(mg *metagraf.MetaGraf) argoapp.Application {
 	return obj
 }
 
-func OutputArgoCDApplication(obj argoapp.Application) {
+func OutputApplication(obj argoapp.Application, format string) {
 	opt := json.SerializerOptions{
 		Yaml:   false,
 		Pretty: true,
@@ -120,7 +186,7 @@ func OutputArgoCDApplication(obj argoapp.Application) {
 
 	delete(jsonMap, "status")
 
-	if Format == "json" {
+	if format == "json" {
 		oj, err := gojson.MarshalIndent(jsonMap, "", "  ")
 		if err != nil {
 			panic(err)
@@ -136,7 +202,7 @@ func OutputArgoCDApplication(obj argoapp.Application) {
 	}
 }
 
-func StoreArgoCDApplication(obj argoapp.Application) {
+func StoreApplication(obj argoapp.Application) {
 
 	glog.V(2).Infof("ResourceVersion: %v Length: %v", obj.ResourceVersion, len(obj.ResourceVersion))
 	glog.V(2).Infof("Namespace: %v", params.NameSpace)

@@ -34,8 +34,6 @@ type MGProperty struct {
 // MGProperty.Source + ":" + MGProperty.Key
 type MGProperties map[string]MGProperty
 
-type Metagraf []MetaGraf
-
 type MetagrafType string
 
 const (
@@ -190,4 +188,7 @@ type EnvironmentVar struct {
 	Description string `json:"description"`
 	Default     string `json:"default,omitempty"`
 	Example     string `json:"example,omitempty"`
+}
+
+type Generator interface {
 }
