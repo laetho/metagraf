@@ -68,7 +68,7 @@ func init() {
 	AppOpts.AutomatedSyncPolicy = true
 	AppOpts.AutomatedSyncPolicyPrune = true
 	AppOpts.AutomatedSyncPolicySelfHeal = true
-	AppOpts.SyncPolicyRetry = true
+	AppOpts.SyncPolicyRetry = false
 	AppOpts.SyncPolicyRetryLimit = 5
 
 }
@@ -132,7 +132,11 @@ func (g ApplicationGenerator) applicationSyncPolicy() *argoapp.SyncPolicy {
 	}
 
 	if g.Options.SyncPolicyRetry {
-
+		rp := &argoapp.RetryStrategy{
+			Limit:   g.Options.SyncPolicyRetryLimit,
+			Backoff: nil,
+		}
+		sp.Retry = rp
 	}
 	return sp
 }
