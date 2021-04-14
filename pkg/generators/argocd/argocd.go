@@ -43,14 +43,14 @@ type ApplicationGenerator struct {
 type ApplicationOption func(*ApplicationOptions)
 
 type ApplicationOptions struct {
-	Namespace                         string
-	ApplicationProject                string
-	ApplicationDestinationNamespace   string
-	ApplicationRepoURL                string
-	ApplicationRepoPath               string
-	ApplicationTargetRevision         string
+	Namespace                       string
+	ApplicationProject              string
+	ApplicationDestinationNamespace string
+	ApplicationRepoURL              string
+	ApplicationRepoPath             string
+	ApplicationTargetRevision       string
 	// Kubernetes API Server endpoint.
-	ApplicationDestinationServer	  string
+	ApplicationDestinationServer      string
 	ApplicationSourceDirectoryRecurse bool
 	SyncPolicyRetry                   bool
 	SyncPolicyRetryLimit              int64

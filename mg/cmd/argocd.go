@@ -93,9 +93,8 @@ var argocdCreateApplicationCmd = &cobra.Command{
 		requireNamespace()
 		mg := metagraf.Parse(args[0])
 
-		generator := argocd.NewApplicationGenerator(mg, metagraf.MGProperties{}, argocd.AppOpts )
-		app := generator.Application(mg.Name(OName,Version))
-
+		generator := argocd.NewApplicationGenerator(mg, metagraf.MGProperties{}, argocd.AppOpts)
+		app := generator.Application(mg.Name(OName, Version))
 
 		if params.Output {
 			argocd.OutputApplication(app, params.Format)
