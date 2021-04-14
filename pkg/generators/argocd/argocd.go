@@ -22,7 +22,6 @@ import (
 	gojson "encoding/json"
 	"fmt"
 	argoapp "github.com/argoproj/argo-cd/pkg/apis/application/v1alpha1"
-	"github.com/golang/glog"
 	"github.com/laetho/metagraf/internal/pkg/k8sclient"
 	"github.com/laetho/metagraf/internal/pkg/params"
 	"github.com/laetho/metagraf/pkg/metagraf"
@@ -50,6 +49,8 @@ type ApplicationOptions struct {
 	ApplicationRepoURL                string
 	ApplicationRepoPath               string
 	ApplicationTargetRevision         string
+	// Kubernetes API Server endpoint.
+	ApplicationDestinationServer	  string
 	ApplicationSourceDirectoryRecurse bool
 	SyncPolicyRetry                   bool
 	SyncPolicyRetryLimit              int64
@@ -61,21 +62,35 @@ type ApplicationOptions struct {
 // Instance of ApplicationOptions that can be used for propagating flags.
 var AppOpts ApplicationOptions
 
+func init() {
+	// Initialize AppOpts with defaults
+	AppOpts.ApplicationDestinationServer = "https://kubernetes.default.svc"
+	AppOpts.AutomatedSyncPolicy = true
+	AppOpts.AutomatedSyncPolicyPrune = true
+	AppOpts.AutomatedSyncPolicySelfHeal = true
+	AppOpts.SyncPolicyRetry = true
+	AppOpts.SyncPolicyRetryLimit = 5
+
+}
+
+// Creates a new ApplicationOptions based on defaults from AppOpts and runs
+// the functional ApplicationOption methods against it from options.
 func NewApplicationOptions(options ...ApplicationOption) ApplicationOptions {
-	o := &ApplicationOptions{}
+	opts := AppOpts
+	o := &opts
 	for _, opt := range options {
 		opt(o)
 	}
 	return *o
 }
 
+// Factory for creating a new ApplicationGenerator
 func NewApplicationGenerator(mg metagraf.MetaGraf, prop metagraf.MGProperties, options ApplicationOptions) ApplicationGenerator {
 	g := ApplicationGenerator{
 		MetaGraf:   mg,
 		Properties: prop,
 		Options:    options,
 	}
-
 	return g
 }
 
@@ -130,7 +145,7 @@ func GetArgoCDSourceDirectory() *argoapp.ApplicationSourceDirectory {
 	return &asd
 }
 
-func (g *ApplicationGenerator) Application() argoapp.Application {
+func (g *ApplicationGenerator) Application(name string) argoapp.Application {
 
 	var meta []argoapp.Info
 
@@ -140,13 +155,13 @@ func (g *ApplicationGenerator) Application() argoapp.Application {
 			APIVersion: "argoproj.io/v1alpha1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      g.MetaGraf.Name("", ""),
+			Name:      name,
 			Namespace: g.Options.ApplicationDestinationNamespace,
 			Labels:    g.MetaGraf.Metadata.Labels,
 		},
 		Spec: argoapp.ApplicationSpec{
 			Destination: argoapp.ApplicationDestination{
-				Server:    "https://kubernetes.default.svc",
+				Server:    g.Options.ApplicationDestinationServer,
 				Namespace: g.Options.ApplicationDestinationNamespace,
 			},
 			Source: argoapp.ApplicationSource{
@@ -204,22 +219,22 @@ func OutputApplication(obj argoapp.Application, format string) {
 
 func StoreApplication(obj argoapp.Application) {
 
-	glog.V(2).Infof("ResourceVersion: %v Length: %v", obj.ResourceVersion, len(obj.ResourceVersion))
-	glog.V(2).Infof("Namespace: %v", params.NameSpace)
+	log.V(2).Infof("ResourceVersion: %v Length: %v", obj.ResourceVersion, len(obj.ResourceVersion))
+	log.V(2).Infof("Namespace: %v", params.NameSpace)
 
 	client := k8sclient.GetArgoCDClient().Applications(params.NameSpace)
 	if len(obj.ResourceVersion) > 0 {
 		// update
 		result, err := client.Update(context.TODO(), &obj, metav1.UpdateOptions{})
 		if err != nil {
-			glog.Info(err)
+			log.Info(err)
 		}
-		glog.Infof("Updated ArgoCD Application: %v(%v)", result.Name, obj.Name)
+		log.Infof("Updated ArgoCD Application: %v(%v)", result.Name, obj.Name)
 	} else {
 		result, err := client.Create(context.TODO(), &obj, metav1.CreateOptions{})
 		if err != nil {
-			glog.Info(err)
+			log.Info(err)
 		}
-		glog.Infof("Created ArgoCD Application: %v(%v)", result.Name, obj.Name)
+		log.Infof("Created ArgoCD Application: %v(%v)", result.Name, obj.Name)
 	}
 }

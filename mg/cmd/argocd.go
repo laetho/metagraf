@@ -94,7 +94,7 @@ var argocdCreateApplicationCmd = &cobra.Command{
 		mg := metagraf.Parse(args[0])
 
 		generator := argocd.NewApplicationGenerator(mg, metagraf.MGProperties{}, argocd.AppOpts )
-		app := generator.Application()
+		app := generator.Application(mg.Name(OName,Version))
 
 
 		if params.Output {
