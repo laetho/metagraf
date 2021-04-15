@@ -92,7 +92,8 @@ var argocdCreateApplicationCmd = &cobra.Command{
 		requireMetagraf(args)
 		requireNamespace()
 		mg := metagraf.Parse(args[0])
-
+		// ToDo Fix namespace propagation from persistent flags.
+		argocd.AppOpts.Namespace = params.NameSpace
 		generator := argocd.NewApplicationGenerator(mg, metagraf.MGProperties{}, argocd.AppOpts)
 		app := generator.Application(mg.Name(OName, Version))
 

@@ -21,6 +21,8 @@ import (
 	"context"
 	gojson "encoding/json"
 	"fmt"
+	"os"
+
 	argoapp "github.com/argoproj/argo-cd/pkg/apis/application/v1alpha1"
 	"github.com/laetho/metagraf/internal/pkg/k8sclient"
 	"github.com/laetho/metagraf/internal/pkg/params"
@@ -29,7 +31,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/serializer/json"
 	log "k8s.io/klog"
-	"os"
 )
 
 // Generator for the Application type
@@ -160,13 +161,14 @@ func (g *ApplicationGenerator) Application(name string) argoapp.Application {
 		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      name,
-			Namespace: g.Options.ApplicationDestinationNamespace,
+			Namespace: g.Options.Namespace,
 			Labels:    g.MetaGraf.Metadata.Labels,
 		},
 		Spec: argoapp.ApplicationSpec{
 			Destination: argoapp.ApplicationDestination{
 				Server:    g.Options.ApplicationDestinationServer,
-				Namespace: g.Options.ApplicationDestinationNamespace,
+				// todo revert to g.Options.ApplicationDestinationNamespace
+				Namespace: g.Options.Namespace,
 			},
 			Source: argoapp.ApplicationSource{
 				RepoURL:        g.Options.ApplicationRepoURL,
@@ -174,7 +176,7 @@ func (g *ApplicationGenerator) Application(name string) argoapp.Application {
 				TargetRevision: g.Options.ApplicationTargetRevision,
 			},
 
-			Project:    params.ArgoCDApplicationProject,
+			Project:    g.Options.ApplicationProject,
 			SyncPolicy: g.applicationSyncPolicy(),
 			Info:       meta,
 		},

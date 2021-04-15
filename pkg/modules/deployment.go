@@ -18,6 +18,9 @@ package modules
 
 import (
 	"context"
+	"strconv"
+	"strings"
+
 	"github.com/golang/glog"
 	"github.com/laetho/metagraf/internal/pkg/affinity"
 	"github.com/laetho/metagraf/internal/pkg/helpers"
@@ -26,8 +29,6 @@ import (
 	"github.com/laetho/metagraf/pkg/metagraf"
 	"github.com/spf13/viper"
 	"k8s.io/apimachinery/pkg/util/intstr"
-	"strconv"
-	"strings"
 
 	//corev1 "k8s.io/api/core/v1"
 	appsv1 "k8s.io/api/apps/v1"
@@ -154,6 +155,7 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 		ObjectMeta: metav1.ObjectMeta{
 			Name:   objname,
 			Labels: l,
+			Namespace: namespace,
 		},
 		Spec: appsv1.DeploymentSpec{
 			Replicas:             &params.Replicas,
@@ -167,6 +169,7 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 				ObjectMeta: metav1.ObjectMeta{
 					Name:   objname,
 					Labels: l,
+					Namespace: namespace,
 				},
 				Spec: corev1.PodSpec{
 					Containers: Containers,
