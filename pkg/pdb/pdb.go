@@ -18,6 +18,10 @@ package pdb
 
 import (
 	"context"
+	"math"
+	"os"
+	"time"
+
 	"github.com/golang/glog"
 	k8sclient "github.com/laetho/metagraf/internal/pkg/k8sclient"
 	params "github.com/laetho/metagraf/internal/pkg/params"
@@ -30,10 +34,46 @@ import (
 	"k8s.io/apimachinery/pkg/util/intstr"
 	log "k8s.io/klog"
 	"k8s.io/kubectl/pkg/scheme"
-	"math"
-	"os"
-	"time"
 )
+
+func GenDefaultPodDisruptionBudget(mg *metagraf.MetaGraf) v1beta1.PodDisruptionBudget {
+	name := modules.Name(mg) // @todo refactor how we create a name.
+
+	l := make(map[string]string)
+	l["app"] = name
+
+	selector := metav1.LabelSelector{
+		MatchLabels: l,
+	}
+
+	obj := v1beta1.PodDisruptionBudget{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "PodDisruptionBudget",
+			APIVersion: "v1beta1",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name: name,
+			CreationTimestamp: metav1.Time{
+				Time: time.Now(),
+			},
+		},
+		Spec: v1beta1.PodDisruptionBudgetSpec{
+			MinAvailable: &intstr.IntOrString{
+				Type:   0,
+				IntVal: 1,
+			},
+			Selector: &selector,
+		},
+	}
+
+	if !params.Dryrun {
+		StorePodDisruptionBudget(obj)
+	}
+	if params.Output {
+		MarshalObject(obj.DeepCopyObject())
+	}
+	return obj
+}
 
 func GenPodDisruptionBudget(mg *metagraf.MetaGraf, replicas int32) v1beta1.PodDisruptionBudget {
 	name := modules.Name(mg) // @todo refactor how we create a name.

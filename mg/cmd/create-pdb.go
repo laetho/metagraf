@@ -17,13 +17,14 @@ limitations under the License.
 package cmd
 
 import (
+	"os"
+
 	"github.com/laetho/metagraf/internal/pkg/params"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	"github.com/laetho/metagraf/pkg/pdb"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	log "k8s.io/klog"
-	"os"
 )
 
 func init() {
@@ -55,6 +56,6 @@ var createPodDisruptionBudget = &cobra.Command{
 		params.Output = Output
 		mg := metagraf.Parse(args[0])
 
-		pdb.GenPodDisruptionBudget(&mg, params.Replicas)
+		pdb.GenDefaultPodDisruptionBudget(&mg)
 	},
 }
