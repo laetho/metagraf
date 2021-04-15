@@ -85,7 +85,7 @@ func ValidateProperties(mgprops metagraf.MGProperties) bool {
 	reqvars := mgprops.GetRequired().SourceKeyMap(true)
 
 	fail := false
-	for key, _ := range reqvars {
+	for key := range reqvars {
 		property := mgprops[key]
 		if len(property.Value) == 0 {
 			fail = true
