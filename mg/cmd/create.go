@@ -18,9 +18,10 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/laetho/metagraf/internal/pkg/params"
 	log "k8s.io/klog"
-	"os"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
