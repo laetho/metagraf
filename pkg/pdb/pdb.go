@@ -49,7 +49,7 @@ func GenDefaultPodDisruptionBudget(mg *metagraf.MetaGraf) v1beta1.PodDisruptionB
 	obj := v1beta1.PodDisruptionBudget{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "PodDisruptionBudget",
-			APIVersion: "v1beta1",
+			APIVersion: "policy/v1beta1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name: name,
