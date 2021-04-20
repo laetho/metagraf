@@ -56,6 +56,7 @@ func GenDefaultPodDisruptionBudget(mg *metagraf.MetaGraf) v1beta1.PodDisruptionB
 			CreationTimestamp: metav1.Time{
 				Time: time.Now(),
 			},
+			Namespace: params.NameSpace,
 		},
 		Spec: v1beta1.PodDisruptionBudgetSpec{
 			MinAvailable: &intstr.IntOrString{
