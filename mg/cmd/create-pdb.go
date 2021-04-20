@@ -36,6 +36,7 @@ func init() {
 var createPodDisruptionBudget = &cobra.Command{
 	Use:   "poddisruptionbudget <metagraf>",
 	Short: "create PodDisruptionBudget from metaGraf file",
+	Aliases: []string{"pdb"},
 	Long:  MGBanner + `create PodDisruptionBudget`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
