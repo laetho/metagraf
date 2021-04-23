@@ -17,7 +17,10 @@ limitations under the License.
 package pdb
 
 import (
+	"bytes"
 	"context"
+	gojson "encoding/json"
+	"fmt"
 	"math"
 	"os"
 	"time"
@@ -27,13 +30,13 @@ import (
 	params "github.com/laetho/metagraf/internal/pkg/params"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	"github.com/laetho/metagraf/pkg/modules"
+	"gopkg.in/yaml.v3"
 	"k8s.io/api/policy/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/serializer/json"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	log "k8s.io/klog"
-	"k8s.io/kubectl/pkg/scheme"
 )
 
 func GenDefaultPodDisruptionBudget(mg *metagraf.MetaGraf) v1beta1.PodDisruptionBudget {
@@ -149,30 +152,40 @@ func StorePodDisruptionBudget(obj v1beta1.PodDisruptionBudget) {
 // todo: need to restructure code, this is a duplication
 // Marshal kubernetes resource to json
 func MarshalObject(obj runtime.Object) {
+	opt := json.SerializerOptions{
+		Yaml:   false,
+		Pretty: true,
+		Strict: true,
+	}
+	s := json.NewSerializerWithOptions(json.DefaultMetaFactory, nil, nil, opt)
+
+	var buff bytes.Buffer
+	err := s.Encode(obj.DeepCopyObject(), &buff)
+	if err != nil {
+		log.Error(err)
+		os.Exit(1)
+	}
+	jsonMap := make(map[string]interface{})
+	err = gojson.Unmarshal(buff.Bytes(), &jsonMap)
+	if err != nil {
+		panic(err)
+	}
+
+	delete(jsonMap, "status")
+
 	switch params.Format {
 	case "json":
-		opt := json.SerializerOptions{
-			Yaml:   false,
-			Pretty: true,
-			Strict: true,
-		}
-		s := json.NewSerializerWithOptions(json.DefaultMetaFactory, scheme.Scheme, scheme.Scheme, opt)
-		err := s.Encode(obj, os.Stdout)
+		oj, err := gojson.MarshalIndent(jsonMap, "", "  ")
 		if err != nil {
-			log.Error(err)
-			os.Exit(1)
+			panic(err)
 		}
+		fmt.Println(string(oj))
+		return
 	case "yaml":
-		opt := json.SerializerOptions{
-			Yaml:   true,
-			Pretty: true,
-			Strict: true,
-		}
-		s := json.NewSerializerWithOptions(json.DefaultMetaFactory, scheme.Scheme, scheme.Scheme, opt)
-		err := s.Encode(obj, os.Stdout)
+		oy, err := yaml.Marshal(jsonMap)
 		if err != nil {
-			log.Error(err)
-			os.Exit(1)
+			panic(err)
 		}
+		fmt.Println(string(oy))
 	}
 }
