@@ -19,12 +19,13 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
+	"os"
+	"strings"
+
 	"github.com/laetho/metagraf/internal/pkg/params"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	"github.com/spf13/cobra"
 	"github.com/tidwall/gjson"
-	"os"
-	"strings"
 )
 
 func init() {
@@ -44,6 +45,10 @@ func init() {
 		"s",
 		false,
 		"Strips hostname from annotations and labels when creating a jsonpatch.")
+	getCmd.AddCommand(getCmdResourceName)
+	getCmdResourceName.Flags().StringVar(&OName, "name", "", "Overrides name in spec for resourcename generation.")
+	getCmdResourceName.Flags().StringVar(&Version, "version", "", "Overrides version in resourcename generation.")
+
 
 }
 
@@ -74,6 +79,17 @@ var getCmdJSONPatch = &cobra.Command{
 	Use:   "jsonpatch",
 	Short: "patch subcommands",
 	Long:  `patch subcommands`,
+}
+
+var getCmdResourceName = &cobra.Command{
+	Use:   "resourcename <metagraf>",
+	Short: "Returns the metagraf conventional base resourcename.",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+		requireMetagraf(args)
+		mg := metagraf.Parse(args[0])
+		fmt.Println(mg.Name(OName,Version))
+	},
 }
 
 var getCmdJSONPatchLabels = &cobra.Command{
