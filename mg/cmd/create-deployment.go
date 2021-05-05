@@ -22,7 +22,7 @@ func init() {
 	createDeploymentCmd.Flags().BoolVar(&BaseEnvs, "baseenv", false, "Hydrate deploymentconfig with baseimage environment variables")
 	createDeploymentCmd.Flags().BoolVar(&Defaults, "defaults", false, "Populate Environment variables with default values from metaGraf")
 	createDeploymentCmd.Flags().StringVarP(&ImageNS, "imagens", "i", "", "Image Namespace, used to override default namespace")
-	createDeploymentCmd.Flags().StringVar(&params.ImageName, "image", "", "Set image artifact name. Overrides imagename from metaGraf spec parsing behaviour.")
+	createDeploymentCmd.Flags().StringVar(&params.ImageName, "imagename", "", "Set image artifact name. Overrides imagename from metaGraf spec parsing behaviour.")
 	createDeploymentCmd.Flags().StringVarP(&Registry, "registry", "r", viper.GetString("registry"), "Specify container registry host")
 	createDeploymentCmd.Flags().StringVarP(&Tag, "tag", "t", "latest", "specify custom tag")
 	createDeploymentCmd.Flags().Int32Var(&params.Replicas, "replicas", params.DefaultReplicas, "Number of replicas.")
