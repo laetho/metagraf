@@ -86,4 +86,8 @@ var (
 	PodAntiAffinityWeight int32
 	// The default value for PodAntiAffinityWeight
 	PodAntiAffinityWeightDefault int32 = 100
+
+	// String to hold a container image name override
+	ImageName string
+
 )

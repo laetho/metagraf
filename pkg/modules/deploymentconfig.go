@@ -19,15 +19,16 @@ package modules
 import (
 	"context"
 	"fmt"
+	"os"
+	"strconv"
+	"strings"
+
 	"github.com/laetho/metagraf/internal/pkg/helpers"
 	"github.com/laetho/metagraf/internal/pkg/k8sclient"
 	"github.com/laetho/metagraf/internal/pkg/params"
 	"github.com/openshift/api/image/docker10"
 	"github.com/spf13/viper"
 	log "k8s.io/klog"
-	"os"
-	"strconv"
-	"strings"
 
 	"github.com/laetho/metagraf/pkg/metagraf"
 
@@ -211,7 +212,11 @@ func imageRef(mg *metagraf.MetaGraf) string {
 			registry = Registry
 		}
 
+		if len(params.ImageName) > 0 {
+			return registry + "/" + ImageNS + "/" + params.ImageName + ":" + Tag
+		}
 		return registry + "/" + ImageNS + "/" + Name(mg) + ":" + Tag
+
 	}
 }
 
