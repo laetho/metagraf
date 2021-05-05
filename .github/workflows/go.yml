@@ -3,14 +3,14 @@ name: Go Builder
 on:
   push:
     paths-ignore:
-      - 'docs/**'
-      - '.github/**'
-      - 'templates/**'
+     # - 'docs/**'
+     # - '.github/**'
+     # - 'templates/**'
   pull_request:
-    paths-ignore:
-      - 'docs/**'
-      - '.github/**'
-      - 'templates/**'
+    #paths-ignore:
+    #  - 'docs/**'
+    #  - '.github/**'
+    #  - 'templates/**'
 
 jobs:
   build:
