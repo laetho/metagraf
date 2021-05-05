@@ -21,7 +21,6 @@ jobs:
         os: [ ubuntu-latest, macos-latest, windows-latest ]
     runs-on: ${{ matrix.os }}
     steps:
-
       - name: Setup Go
         uses: actions/setup-go@v2
         with:
@@ -29,7 +28,7 @@ jobs:
         id: go
 
       - name: Go modules cache
-      - uses: actions/cache@v2
+        uses: actions/cache@v2
         with:
           # In order:
           # * Module download cache
