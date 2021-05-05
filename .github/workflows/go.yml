@@ -1,0 +1,63 @@
+name: Go Builder
+
+on:
+  push:
+    paths-ignore:
+      - 'docs/**'
+      - '.github/**'
+      - 'templates/**'
+  pull_request:
+    paths-ignore:
+      - 'docs/**'
+      - '.github/**'
+      - 'templates/**'
+
+jobs:
+  build:
+    name: Build mg
+    strategy:
+      matrix:
+        go-version: [ 1.16.x ]
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
+    runs-on: ${{ matrix.os }}
+    steps:
+
+      - name: Setup Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.go-version }}
+        id: go
+
+      - name: Go modules cache
+      - uses: actions/cache@v2
+        with:
+          # In order:
+          # * Module download cache
+          # * Build cache (Linux)
+          # * Build cache (Mac)
+          # * Build cache (Windows)
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+            ~/Library/Caches/go-build
+            %LocalAppData%\go-build
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - name: Build Linux
+        run: |
+          if [ ${RUNNER_OS} == "Linux" ]; then
+            GITHASH=$(git rev-parse --short HEAD)
+            GITTAG=$(git tag -l --points-at HEAD)
+            GITBRANCH=$(git rev-parse --abbrev-ref HEAD)
+            echo ${GITHASH}
+            echo ${GITTAG}
+            echo ${GITBRANCH}
+          elif [${RUNNER_OS} == "Windows" ]; then
+            echo ${RUNNER_OS}
+          else
+            echo "${RUNNER_OS} not supported"
+            exit 1
+          fi
+        shell: bash
