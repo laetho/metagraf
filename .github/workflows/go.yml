@@ -2,7 +2,7 @@ name: Go Builder
 
 on:
   push:
-    paths-ignore:
+    #paths-ignore:
      # - 'docs/**'
      # - '.github/**'
      # - 'templates/**'
@@ -15,16 +15,12 @@ on:
 jobs:
   build:
     name: Build mg
-    strategy:
-      matrix:
-        go-version: [ 1.16.x ]
-        os: [ ubuntu-latest, macos-latest ]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     steps:
       - name: Setup Go
         uses: actions/setup-go@v2
         with:
-          go-version: ${{ matrix.go-version }}
+          go-version: 1.16.x
         id: go
 
       - name: Go modules cache
@@ -44,17 +40,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
 
+      - name: Checkout
+        uses: actions/checkout@v2
+
       - name: Build
-        run: |
-          if [ ${RUNNER_OS} == "Linux" ]; then
-            GITHASH=$(git rev-parse --short HEAD)
-            GITTAG=$(git tag -l --points-at HEAD)
-            GITBRANCH=$(git rev-parse --abbrev-ref HEAD)
-            echo ${GITHASH}
-            echo ${GITTAG}
-            echo ${GITBRANCH}
-          else
-            echo "${RUNNER_OS} not supported"
-            exit 1
-          fi
+        run: cd mg && ./build.sh
         shell: bash
