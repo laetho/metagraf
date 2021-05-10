@@ -19,12 +19,13 @@ package cmd
 import (
 	"bufio"
 	"fmt"
+	"os"
+	"strings"
+
 	"github.com/laetho/metagraf/internal/pkg/params"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	"github.com/laetho/metagraf/pkg/modules"
 	log "k8s.io/klog"
-	"os"
-	"strings"
 )
 
 func PropertiesFromEnv(mgp metagraf.MGProperties) metagraf.MGProperties {
@@ -48,7 +49,15 @@ func PropertiesFromCmd(mgp metagraf.MGProperties) metagraf.MGProperties {
 		if p, ok := mgp[k]; ok {
 			p.Value = v
 			mgp[p.MGKey()] = p
-			continue
+		} else {
+			property := metagraf.MGProperty{
+				Source:   "local",
+				Key:      k,
+				Value:    v,
+				Required: false,
+				Default:  "",
+			}
+			mgp[property.MGKey()] = property
 		}
 	}
 	return mgp
