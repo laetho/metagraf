@@ -19,6 +19,8 @@ package modules
 import (
 	"context"
 	"fmt"
+	"os"
+
 	"github.com/laetho/metagraf/internal/pkg/helpers"
 	"github.com/laetho/metagraf/internal/pkg/imageurl"
 	"github.com/laetho/metagraf/internal/pkg/k8sclient"
@@ -28,7 +30,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	log "k8s.io/klog"
-	"os"
 )
 
 func GenService(mg *metagraf.MetaGraf) {
@@ -75,8 +76,7 @@ func GenService(mg *metagraf.MetaGraf) {
 	selectors := make(map[string]string)
 	selectors["app"] = objname
 
-	labels := make(map[string]string)
-	labels["app"] = objname
+	labels := Labels(objname, labelsFromParams(params.Labels))
 
 	obj := corev1.Service{
 		TypeMeta: metav1.TypeMeta{

@@ -19,13 +19,14 @@ package modules
 import (
 	"context"
 	"fmt"
+	"os"
+	"strings"
+
 	"github.com/laetho/metagraf/internal/pkg/helpers"
 	"github.com/laetho/metagraf/internal/pkg/imageurl"
 	"github.com/laetho/metagraf/internal/pkg/k8sclient"
 	"github.com/laetho/metagraf/internal/pkg/params"
 	log "k8s.io/klog"
-	"os"
-	"strings"
 
 	"github.com/laetho/metagraf/pkg/metagraf"
 
@@ -76,9 +77,7 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 	}
 
 	// Resource labels
-	l := make(map[string]string)
-	l["app"] = objname
-	l["deploymentconfig"] = objname
+	l := Labels(objname, labelsFromParams(params.Labels))
 
 	km := Variables.KeyMap()
 	for _, e := range mg.Spec.Environment.Build {

@@ -19,14 +19,16 @@ package modules
 import (
 	"context"
 	"fmt"
-	"github.com/laetho/metagraf/internal/pkg/helpers"
-	"github.com/laetho/metagraf/internal/pkg/imageurl"
-	"github.com/laetho/metagraf/internal/pkg/k8sclient"
-	"k8s.io/apimachinery/pkg/util/intstr"
-	log "k8s.io/klog"
 	"os"
 	"sort"
 	"strings"
+
+	"github.com/laetho/metagraf/internal/pkg/helpers"
+	"github.com/laetho/metagraf/internal/pkg/imageurl"
+	"github.com/laetho/metagraf/internal/pkg/k8sclient"
+	"github.com/laetho/metagraf/internal/pkg/params"
+	"k8s.io/apimachinery/pkg/util/intstr"
+	log "k8s.io/klog"
 
 	"github.com/laetho/metagraf/pkg/metagraf"
 
@@ -84,8 +86,8 @@ func GenRoute(mg *metagraf.MetaGraf) {
 
 	sort.Strings(ports)
 
-	l := make(map[string]string)
-	l["app"] = objname
+	// Resource labels
+	l := Labels(objname, labelsFromParams(params.Labels))
 
 	obj := routev1.Route{
 		TypeMeta: metav1.TypeMeta{

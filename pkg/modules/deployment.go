@@ -51,8 +51,7 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 	}
 
 	// Resource labels
-	l := make(map[string]string)
-	l["app"] = objname
+	l := Labels(objname, labelsFromParams(params.Labels))
 	l["deployment"] = objname
 
 	// Selector

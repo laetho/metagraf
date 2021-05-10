@@ -19,10 +19,12 @@ package modules
 import (
 	"context"
 	"fmt"
+	"os"
+
 	k8sclient "github.com/laetho/metagraf/internal/pkg/k8sclient"
+	"github.com/laetho/metagraf/internal/pkg/params"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	log "k8s.io/klog"
-	"os"
 
 	imagev1 "github.com/openshift/api/image/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -35,8 +37,7 @@ func GenImageStream(mg *metagraf.MetaGraf, namespace string) {
 	log.V(2).Infof("Generated ImageStream name: %v", objname)
 
 	// Resource labels
-	l := make(map[string]string)
-	l["app"] = objname
+	l := Labels(objname, labelsFromParams(params.Labels))
 
 	objref := corev1.ObjectReference{}
 	objref.Kind = ""

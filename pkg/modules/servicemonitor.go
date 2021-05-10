@@ -19,6 +19,9 @@ package modules
 import (
 	"context"
 	"fmt"
+	"os"
+	"strconv"
+
 	monitoringv1 "github.com/coreos/prometheus-operator/pkg/apis/monitoring/v1"
 	"github.com/laetho/metagraf/internal/pkg/k8sclient"
 	"github.com/laetho/metagraf/internal/pkg/params"
@@ -26,8 +29,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	log "k8s.io/klog"
-	"os"
-	"strconv"
 )
 
 func GenServiceMonitorAndService(mg *metagraf.MetaGraf) {
@@ -36,9 +37,9 @@ func GenServiceMonitorAndService(mg *metagraf.MetaGraf) {
 
 func GenServiceMonitor(mg *metagraf.MetaGraf) {
 	objname := Name(mg)
+
 	// Resource labels
-	l := make(map[string]string)
-	l["app"] = objname
+	l := Labels(objname, labelsFromParams(params.Labels))
 	l["app.kubernetes.io/instance"] = objname
 	l["prometheus"] = params.ServiceMonitorOperatorName
 

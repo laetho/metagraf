@@ -20,13 +20,15 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+	"os"
+	"strings"
+
 	k8sclient "github.com/laetho/metagraf/internal/pkg/k8sclient"
+	"github.com/laetho/metagraf/internal/pkg/params"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	log "k8s.io/klog"
-	"os"
-	"strings"
 )
 
 /*
@@ -129,8 +131,8 @@ func genConfigMapsFromConfig(conf *metagraf.Config, mg *metagraf.MetaGraf) {
 
 	objname := Name(mg)
 
-	l := make(map[string]string)
-	l["app"] = objname
+	// Resource labels
+	l := Labels(objname, labelsFromParams(params.Labels))
 
 	cm := corev1.ConfigMap{
 		TypeMeta: metav1.TypeMeta{

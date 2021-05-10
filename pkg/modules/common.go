@@ -17,15 +17,16 @@ limitations under the License.
 package modules
 
 import (
+	"os"
+	"strconv"
+	"strings"
+
 	"github.com/blang/semver"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	log "k8s.io/klog"
 	"k8s.io/klog/v2"
-	"os"
-	"strconv"
-	"strings"
 
 	"k8s.io/apimachinery/pkg/runtime/serializer/json"
 	"k8s.io/client-go/kubernetes/scheme"
@@ -394,4 +395,27 @@ func GetGlobalConfigMapVolumes(mg *metagraf.MetaGraf, Volumes *[]corev1.Volume, 
 			}
 		}
 	}
+}
+
+func labelsFromParams(labels []string) map[string]string {
+	ret := make(map[string]string)
+	for _,s := range labels {
+		split := strings.Split(s,"=")
+		if len(split) != 2 {
+			continue
+		}
+		ret[split[0]] = split[1]
+	}
+	return ret
+}
+
+// Generate standardised labels map
+func Labels(name string, input map[string]string ) map[string]string {
+	// Resource labels
+	l := make(map[string]string)
+	l["app"] = name
+	for k, v := range input {
+		l[k] = v
+	}
+	return l
 }

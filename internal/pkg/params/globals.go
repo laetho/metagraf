@@ -17,7 +17,6 @@ limitations under the License.
 package params
 
 var (
-
 	// Dryrun bool indicated if mg should do operations against a Kubernetes API.
 	Dryrun bool
 
@@ -26,4 +25,7 @@ var (
 
 	// Format value can be either json or yaml. Controls output format.
 	Format string = "json"
+
+	// Slice of strings to hold any labels added through --labels argument.
+	Labels []string
 )
