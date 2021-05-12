@@ -49,7 +49,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 
 	// Resource labels
 	l := Labels(objname, labelsFromParams(params.Labels))
-	l["deployment"] = objname
+	l["deploymentconfig"] = objname
 
 
 	// Selector
