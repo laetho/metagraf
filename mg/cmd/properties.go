@@ -198,13 +198,11 @@ func FlagPassingHack() {
 	modules.Output = Output
 	modules.Dryrun = Dryrun
 	modules.NameSpace = Namespace
-	modules.Verbose = Verbose
 	modules.Defaults = Defaults
 	modules.Format = Format
 	modules.Suffix = Suffix
 	modules.Template = Template
 	modules.ImageNS = ImageNS
-	modules.Enforce = Enforce
 	modules.Registry = Registry
 	modules.Tag = Tag
 	modules.OName = OName

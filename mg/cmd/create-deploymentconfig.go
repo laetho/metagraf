@@ -26,6 +26,7 @@ func init() {
 	createDeploymentConfigCmd.Flags().StringVarP(&Tag, "tag", "t", "latest", "specify custom tag")
 	createDeploymentConfigCmd.Flags().Int32Var(&params.Replicas, "replicas", params.DefaultReplicas, "Number of replicas.")
 	createDeploymentConfigCmd.Flags().BoolVar(&params.DisableDeploymentImageAliasing, "disable-aliasing", false, "Only applies to .spec.image references. Aliasing will use mg conventions for image references. Setting this to true will disable that behavior.")
+	createDeploymentConfigCmd.Flags().BoolVar(&params.DownwardAPIEnvVars,"downward-api-envvars",false,"Enables generation of environment variables from Downward API. An opinionated selection.")
 }
 
 var createDeploymentConfigCmd = &cobra.Command{

@@ -26,6 +26,14 @@ var (
 	// DefaultReplicas
 	DefaultReplicas int32 = 1
 
+	// Boolean flag indicating if we want to enable population of
+	// Pod specification fields as environment variables.
+	DownwardAPIEnvVars = false
+
+	// Boolean flag indicating fi we want to mount a volume
+	// containing annotations and labels
+	DownwardAPIVolume = false
+
 	// Replicas, indicate how many of a thing we want.
 	Replicas int32
 

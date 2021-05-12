@@ -97,6 +97,9 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 	}
 
 	EnvVars = GetEnvVars(mg, Variables)
+	if params.DownwardAPIEnvVars {
+		EnvVars = append(EnvVars, DownwardAPIEnvVars()...)
+	}
 	// Environment Variables from baserunimage
 	if BaseEnvs && HasImageInfo {
 		for _, e := range ImageInfo.Config.Env {
