@@ -17,6 +17,11 @@ limitations under the License.
 package cmd
 
 import (
+	"bufio"
+	"fmt"
+	"os"
+	"os/exec"
+
 	"github.com/laetho/metagraf/internal/pkg/params"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	"github.com/laetho/metagraf/pkg/modules"
@@ -38,13 +43,16 @@ func init() {
 	devCmdUp.Flags().StringVarP(&params.OutputImagestream, "istream", "i", "", "specify if you want to output to another imagestream than the component name")
 	devCmdUp.Flags().StringVarP(&Context, "context", "c", "/", "Application contextroot. (\"/<context>\"). Used when creating Route object.")
 	devCmdUp.Flags().BoolVarP(&CreateGlobals, "globals", "g", false, "Override default behavior and force creation of global secrets. Will not overwrite existing ones.")
-	devCmdUp.Flags().BoolVar(&params.CreateSecrets,"create-secrets", false, "Creates empty secrets referenced in metagraf specification. Needs to be manually filled with values.")
+	devCmdUp.Flags().BoolVar(&params.CreateSecrets, "create-secrets", false, "Creates empty secrets referenced in metagraf specification. Needs to be manually filled with values.")
 	devCmdUp.Flags().BoolVar(&params.ServiceMonitor, "service-monitor", false, "Set flag to also create a ServiceMonitor resource. Requires a cluster with the prometheus-operator.")
 	devCmdUp.Flags().Int32Var(&params.ServiceMonitorPort, "service-monitor-port", params.ServiceMonitorPort, "Set Service port to scrape in ServiceMonitor.")
 	devCmdUp.Flags().StringVar(&params.ServiceMonitorOperatorName, "service-monitor-operator-name", params.ServiceMonitorOperatorName, "Name of prometheus-operator instance to create ServiceMonitor for.")
 	devCmdDown.Flags().StringVarP(&params.NameSpace, "namespace", "n", "", "namespace to work on, if not supplied it will use current active namespace.")
 	devCmdDown.Flags().BoolVar(&params.Everything, "everything", false, "Delete all resources and artifacts generated from mg dev up.")
 	devCmdDown.Flags().StringVar(&OName, "name", "", "Overrides name of application.")
+	devCmd.AddCommand(devCmdBuild)
+	devCmdBuild.Flags().StringVarP(&params.NameSpace, "namespace", "n", "", "namespace to work on, if not supplied it will use current active namespace.")
+	devCmdBuild.Flags().BoolVar(&params.LocalBuild, "local", false, "Builds application from src in current (.) direcotry.")
 }
 
 var devCmd = &cobra.Command{
@@ -83,6 +91,42 @@ var devCmdDown = &cobra.Command{
 	},
 }
 
+var devCmdBuild = &cobra.Command{
+	Use:   "build <metagraf.json>",
+	Short: "build the container from generated BuildConfig",
+	Long:  `dev subcommands`,
+	Run: func(cmd *cobra.Command, args []string) {
+		requireMetagraf(args)
+		requireNamespace()
+
+		mg := metagraf.Parse(args[0])
+		bc := mg.Name(OName, Version)
+
+		path, err := exec.LookPath("oc")
+		if err != nil {
+			log.Fatal(err)
+		}
+		arg := []string{"start-build", bc,"-n", params.NameSpace, "--follow"}
+		if params.LocalBuild {
+			arg = append(arg, "--from-file=.")
+		}
+		c := exec.Command(path, arg...)
+		stdout, err := c.StdoutPipe()
+		if err != nil {
+			log.Fatal(err)
+		}
+		c.Env = append(os.Environ())
+		c.Start()
+
+		buf := bufio.NewReader(stdout)
+		line := []byte{}
+		for err == nil {
+			line, _,err = buf.ReadLine()
+			fmt.Println(string(line))
+		}
+	},
+}
+
 func devUp(mgf string) {
 	mg := metagraf.Parse(mgf)
 	modules.Variables = GetCmdProperties(mg.GetProperties())
@@ -113,4 +157,12 @@ func devDown(mgf string) {
 	if params.Everything {
 		modules.DeleteSecrets(&mg)
 	}
+}
+
+func checkForOC() bool {
+	_, err := exec.LookPath("oc")
+	if err != nil {
+		return false
+	}
+	return true
 }
