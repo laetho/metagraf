@@ -18,6 +18,10 @@ package k8sclient
 
 import (
 	"flag"
+	"os"
+	"path/filepath"
+	"runtime"
+
 	argocdv1alpha1client "github.com/argoproj/argo-cd/pkg/client/clientset/versioned/typed/application/v1alpha1"
 	monitoringv1client "github.com/coreos/prometheus-operator/pkg/client/versioned/typed/monitoring/v1"
 	appsv1client "github.com/openshift/client-go/apps/clientset/versioned/typed/apps/v1"
@@ -29,9 +33,6 @@ import (
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	log "k8s.io/klog"
-	"os"
-	"path/filepath"
-	"runtime"
 )
 
 var RestConfig *rest.Config
@@ -64,7 +65,7 @@ func getKubeConfig() string {
 
 // Get rest.Config from outside or inside cluster
 func getRestConfig(kc string) *rest.Config {
-	log.Infof("kubeconfig: %v", kc)
+	log.V(1).Infof("kubeconfig: %v", kc)
 	var config *rest.Config
 
 	if _, err := os.Stat(kc); os.IsNotExist(err) {

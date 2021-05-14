@@ -233,7 +233,7 @@ func volumes(mg *metagraf.MetaGraf, ImageInfo *docker10.DockerImage) ([]corev1.V
 	var VolumeMounts []corev1.VolumeMount
 
 	// Volumes & VolumeMounts from base image into podspec
-	log.Info("ImageInfo: Got ", len(ImageInfo.Config.Volumes), " volumes from base image...")
+	log.V(2).Info("ImageInfo: Got ", len(ImageInfo.Config.Volumes), " volumes from base image...")
 	for k := range ImageInfo.Config.Volumes {
 		// Volume Definitions
 		Volume := corev1.Volume{

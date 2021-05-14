@@ -17,10 +17,10 @@ limitations under the License.
 package cmd
 
 import (
-	"github.com/laetho/metagraf/internal/pkg/params"
-	"github.com/spf13/viper"
-	log "k8s.io/klog"
 	"os"
+
+	"github.com/laetho/metagraf/internal/pkg/params"
+	log "k8s.io/klog"
 )
 
 // Require atleast one argument that is the metagraf specification.
@@ -35,7 +35,6 @@ func requireMetagraf(args []string) {
 // params.NameSpace variable.
 func requireNamespace() {
 	if len(params.NameSpace) == 0 {
-		params.NameSpace = viper.GetString("namespace")
 		if len(params.NameSpace) == 0 {
 			log.Error(StrMissingNamespace)
 			os.Exit(-1)

@@ -74,7 +74,7 @@ func FindMetagrafConfigMaps(mg *metagraf.MetaGraf) map[string]string {
 		}
 	}
 
-	log.Info("FindMetagrafConfigMaps(): Found", len(maps), " ConfigMaps to mount...")
+	log.V(2).Info("FindMetagrafConfigMaps(): Found", len(maps), " ConfigMaps to mount...")
 
 	return maps
 }
@@ -110,7 +110,7 @@ func GetMetagrafConfigsByType(mg *metagraf.MetaGraf, ctype string) []metagraf.Co
 	specific to NT internal workings for now.
 */
 func GenConfigMaps(mg *metagraf.MetaGraf) {
-	log.Info("GenConfigMaps: Handle", len(mg.Spec.Config), " configs...")
+	log.V(2).Info("GenConfigMaps: Handle", len(mg.Spec.Config), " configs...")
 	for _, c := range mg.Spec.Config {
 		if c.Type != "parameters" {
 			continue

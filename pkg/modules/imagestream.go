@@ -75,8 +75,8 @@ func GenImageStream(mg *metagraf.MetaGraf, namespace string) {
 
 func StoreImageStream(obj imagev1.ImageStream) {
 
-	log.Infof("ResourceVersion: %v Length: %v", obj.ResourceVersion, len(obj.ResourceVersion))
-	log.Infof("Namespace: %v", NameSpace)
+	log.V(2).Infof("ResourceVersion: %v Length: %v", obj.ResourceVersion, len(obj.ResourceVersion))
+	log.V(2).Infof("Namespace: %v", NameSpace)
 
 	client := k8sclient.GetImageClient().ImageStreams(NameSpace)
 
@@ -87,7 +87,7 @@ func StoreImageStream(obj imagev1.ImageStream) {
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		log.Infof("ImageStream: %v exists, skipping...", obj.Name)
+		log.V(2).Infof("ImageStream: %v exists, skipping...", obj.Name)
 	} else {
 		result, err := client.Create(context.TODO(), &obj, metav1.CreateOptions{})
 		if err != nil {

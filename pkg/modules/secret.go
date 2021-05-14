@@ -19,12 +19,13 @@ package modules
 import (
 	"context"
 	"fmt"
-	k8sclient "github.com/laetho/metagraf/internal/pkg/k8sclient"
-	"github.com/laetho/metagraf/pkg/metagraf"
-	log "k8s.io/klog"
 	"os"
 	"strconv"
 	"strings"
+
+	k8sclient "github.com/laetho/metagraf/internal/pkg/k8sclient"
+	"github.com/laetho/metagraf/pkg/metagraf"
+	log "k8s.io/klog"
 
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -46,8 +47,29 @@ func FindSecrets(mg *metagraf.MetaGraf) map[string]string {
 	return maps
 }
 
-// todo: flag creation of resource secrets?
 func GenSecrets(mg *metagraf.MetaGraf) {
+
+	for _, e := range mg.Spec.Environment.Local {
+		if len(e.SecretFrom) > 0 {
+			if !secretExists(strings.ToLower(e.SecretFrom)) {
+				labels := make(map[string]string)
+				labels["app"] = strings.ToLower(mg.Name(OName,Version))
+
+				obj := CreateEmptySecret(e.SecretFrom,labels)
+				if !Dryrun {
+					StoreSecret(obj)
+				}
+				if Output {
+					MarshalObject(obj.DeepCopyObject())
+				}
+			} else {
+				continue
+			}
+		} else {
+			continue
+		}
+	}
+
 	for _, r := range mg.Spec.Resources {
 
 		// Is secret generation necessary?
@@ -97,10 +119,10 @@ func secretExists(name string) bool {
 	cli := k8sclient.GetCoreClient()
 	obj, err := cli.Secrets(NameSpace).Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {
-		log.Error(err)
+		log.V(2).Info("Secret %v not found in namespace %v.", name, NameSpace)
 		return false
 	}
-	log.Info("Secret ", obj.Name, " exists in namespace: ", NameSpace)
+	log.V(2).Info("Secret ", obj.Name, " exists in namespace: ", NameSpace)
 	return true
 }
 
@@ -198,7 +220,7 @@ func StoreSecret(obj corev1.Secret) {
 	client := k8sclient.GetCoreClient().Secrets(NameSpace)
 	sec, err := client.Get(context.TODO(), obj.Name, metav1.GetOptions{})
 	if err != nil {
-		log.Infof("Could not fetch Secret: %v", err)
+		log.V(2).Infof("Could not fetch Secret: %v", err)
 	}
 	if len(sec.ResourceVersion) > 0 {
 		result, err := client.Update(context.TODO(), &obj, metav1.UpdateOptions{})
@@ -215,7 +237,7 @@ func StoreSecret(obj corev1.Secret) {
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		log.Infof("Created Secret: %v(%v)", result.Name, obj.Name)
+		fmt.Println("Created Secret: %v(%v)", result.Name, obj.Name)
 	}
 }
 
@@ -251,4 +273,29 @@ func DeleteSecret(name string) {
 		return
 	}
 	fmt.Println("Deleted Secret: ", name, ", in namespace: ", NameSpace)
+}
+
+func CreateEmptySecret(name string, labels map[string]string ) corev1.Secret {
+
+	stringdata := make(map[string]string)
+	data := make(map[string][]byte)
+
+	stringdata["example"] = "value"
+	data["binary_example"] = []byte("value")
+
+	sec := corev1.Secret{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "Secret",
+			APIVersion: "v1",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:   name,
+			Labels: labels,
+		},
+		Type:       "opaque",
+		StringData: stringdata,
+		Data:       data,
+	}
+
+	return sec
 }
