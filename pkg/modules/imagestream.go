@@ -89,13 +89,13 @@ func StoreImageStream(obj imagev1.ImageStream) {
 		}
 		log.V(2).Infof("ImageStream: %v exists, skipping...", obj.Name)
 	} else {
-		result, err := client.Create(context.TODO(), &obj, metav1.CreateOptions{})
+		_, err := client.Create(context.TODO(), &obj, metav1.CreateOptions{})
 		if err != nil {
 			log.Error(err)
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		log.Infof("Created ImageStream: %v(%v)", result.Name, obj.Name)
+		fmt.Println("Created ImageStream:", obj.Name, "in namespace:", NameSpace)
 	}
 }
 

@@ -340,7 +340,7 @@ func StoreDeploymentConfig(obj appsv1.DeploymentConfig) {
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		fmt.Println("Created DeploymentConfig: ", result.Name, " in Namespace: ", obj.Name)
+		fmt.Println("Created DeploymentConfig: ", result.Name, " in Namespace: ", NameSpace)
 	}
 }
 
