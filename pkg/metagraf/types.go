@@ -70,14 +70,25 @@ type MetaGraf struct {
 		Repository string `json:"repository,omitempty"`
 		// Repository Secret Reference, git pull secret
 		RepSecRef string `json:"repsecref,omitempty"`
+
 		// Check out and build code from another branch than master. Defaults to master if
 		// not provided.
 		Branch string `json:"branch,omitempty"`
-		// When a docker image url is provided, we assume you want to wrap an existing
-		// container image with a metaGraf definition.
+
+		// When a spec.image is specified, we want to deliver an existing image with
+		// manifest generation provided with tools like mg.
 		Image        string `json:"image,omitempty"`
-		BuildImage   string `json:"buildimage,omitempty"`   // Image used to build the software referenced in Repository.
-		BaseRunImage string `json:"baserunimage,omitempty"` // Image to inject artifacts from above build.
+
+		// When spec.dockerfile is provided we will attempt to build the container image
+		// with local tools, if present. Image and Dockerfile are mutually exclusive
+		Dockerfile	string	`json:"dockerfile,omitempty"`
+
+		// Image used to build the software referenced in Repository.
+		BuildImage   string `json:"buildimage,omitempty"`
+
+		// Image to inject artifacts from above build.
+		BaseRunImage string `json:"baserunimage,omitempty"`
+
 		// StartupProbe, a v1.Probe{} definition from upstream Kubernetes.
 		StartupProbe v1.Probe `json:"startupProbe,omitempty"`
 		// LivenessProbe, a v1.Probe{} definition from upstream Kubernetes.
