@@ -119,7 +119,7 @@ func secretExists(name string) bool {
 	cli := k8sclient.GetCoreClient()
 	obj, err := cli.Secrets(NameSpace).Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {
-		log.V(2).Info("Secret %v not found in namespace %v.", name, NameSpace)
+		log.V(2).Infof("Secret %v not found in namespace %v.", name, NameSpace)
 		return false
 	}
 	log.V(2).Info("Secret ", obj.Name, " exists in namespace: ", NameSpace)
@@ -237,7 +237,7 @@ func StoreSecret(obj corev1.Secret) {
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		fmt.Println("Created Secret: %v(%v)", result.Name, obj.Name)
+		fmt.Printf("Created Secret: %v(%v)", result.Name, obj.Name)
 	}
 }
 
