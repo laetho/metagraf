@@ -32,8 +32,11 @@ import (
 
 func init() {
 	RootCmd.AddCommand(devCmd)
+	devCmd.PersistentFlags().BoolVar(&Output, "output", false, "also output objects")
+	devCmd.PersistentFlags().BoolVar(&Dryrun, "dryrun", false, "do not create objects, only output")
+	devCmd.PersistentFlags().StringVarP(&Format, "format", "o", "json", "specify json or yaml, json id default")
+
 	devCmd.AddCommand(devCmdUp)
-	devCmd.AddCommand(devCmdDown)
 	devCmdUp.Flags().StringVarP(&params.NameSpace, "namespace", "n", "", "namespace to work on, if not supplied it will use current active namespace.")
 	devCmdUp.Flags().StringVar(&params.SourceRef, "ref", "", "use for overriding source ref or branch ref in buildconfig.")
 	devCmdUp.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
@@ -47,9 +50,12 @@ func init() {
 	devCmdUp.Flags().BoolVar(&params.ServiceMonitor, "service-monitor", false, "Set flag to also create a ServiceMonitor resource. Requires a cluster with the prometheus-operator.")
 	devCmdUp.Flags().Int32Var(&params.ServiceMonitorPort, "service-monitor-port", params.ServiceMonitorPort, "Set Service port to scrape in ServiceMonitor.")
 	devCmdUp.Flags().StringVar(&params.ServiceMonitorOperatorName, "service-monitor-operator-name", params.ServiceMonitorOperatorName, "Name of prometheus-operator instance to create ServiceMonitor for.")
+
+	devCmd.AddCommand(devCmdDown)
 	devCmdDown.Flags().StringVarP(&params.NameSpace, "namespace", "n", "", "namespace to work on, if not supplied it will use current active namespace.")
 	devCmdDown.Flags().BoolVar(&params.Everything, "everything", false, "Delete all resources and artifacts generated from mg dev up.")
 	devCmdDown.Flags().StringVar(&OName, "name", "", "Overrides name of application.")
+
 	devCmd.AddCommand(devCmdBuild)
 	devCmdBuild.Flags().StringVarP(&params.NameSpace, "namespace", "n", "", "namespace to work on, if not supplied it will use current active namespace.")
 	devCmdBuild.Flags().BoolVar(&params.LocalBuild, "local", false, "Builds application from src in current (.) direcotry.")
