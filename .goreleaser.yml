@@ -1,5 +1,7 @@
 # This is an example .goreleaser.yml file with some sane defaults.
 # Make sure to check the documentation at http://goreleaser.com
+project_name: metaGraf
+
 before:
   hooks:
     # You may remove this if you don't use go modules.
@@ -60,7 +62,19 @@ builds:
       - -X 'metagraf/pkg/mgver.GitTag={{.Env.GITTAG}}'
       - -X 'metagraf/pkg/mgver.GitBranch={{.Env.GITBRANCH}}'
 archives:
-  - format: binary
+  - format: tar.gz
+    id: mg
+    name_template: "mg-{{.Version}}-{{.Os}}-{{.Arch}}"
+    builds:
+      - "mg-linux"
+      - "mg-darwin"
+      - "mg-win"
+    wrap_in_directory: true
+    format_overrides:
+      - goos: windows
+        format: zip
+    files:
+      - LICENSE
 checksum:
   name_template: 'checksums.txt'
 snapshot:
