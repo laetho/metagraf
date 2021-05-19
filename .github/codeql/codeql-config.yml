@@ -1,2 +1,6 @@
+paths:
+  - internal/
+  - pkg/
+  - mg/
 paths-ignore:
-  - 'vendor/*'
+  - '**/vendor/*'
