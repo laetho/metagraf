@@ -3,4 +3,9 @@ collections/
 vendor/
 out/
 Gopkg.lock
+mg/mg
+mg/mg.exe
+mg/mg.osx
+mg/push.sh
+mg/test.sh
 
