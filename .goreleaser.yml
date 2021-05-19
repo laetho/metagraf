@@ -4,24 +4,67 @@ before:
   hooks:
     # You may remove this if you don't use go modules.
     - go mod tidy
+    - go vet -v ./...
+    - go test ./...
 builds:
-  - env:
-      - CGO_ENABLED=0
+  -
+    id: "mg-linux"
+    dir: mg
+    binary: mg
+    env:
+    - CGO_ENABLED=0
+    - GITHASH=$(git rev-parse --short HEAD)
+    - GITTAG=$(git tag -l --points-at HEAD)
+    - GITBRANCH=$(git rev-parse --abbrev-ref HEAD) 
     goos:
       - linux
-      - windows
+    goarch:
+      - amd64
+    ldflags:
+      - -extldflags '-static'
+      - -X 'metagraf/pkg/mgver.GitHash={{.Env.GITHASH}}'
+      - -X 'metagraf/pkg/mgver.GitTag={{.Env.GITTAG}}'
+      - -X 'metagraf/pkg/mgver.GitBranch={{.Env.GITBRANCH}}'
+  -
+    id: "mg-darwin"
+    dir: mg
+    binary: mg
+    env:
+      - CGO_ENABLED=0
+      - GITHASH=$(git rev-parse --short HEAD)
+      - GITTAG=$(git tag -l --points-at HEAD)
+      - GITBRANCH=$(git rev-parse --abbrev-ref HEAD)
+    goos:
       - darwin
+    goarch:
+      - amd64
+    ldflags:
+      - -X 'metagraf/pkg/mgver.GitHash={{.Env.GITHASH}}'
+      - -X 'metagraf/pkg/mgver.GitTag={{.Env.GITTAG}}'
+      - -X 'metagraf/pkg/mgver.GitBranch={{.Env.GITBRANCH}}'
+  -
+    id: "mg-win"
+    dir: mg
+    binary: mg
+    env:
+      - CGO_ENABLED=0
+      - GITHASH=$(git rev-parse --short HEAD)
+      - GITTAG=$(git tag -l --points-at HEAD)
+      - GITBRANCH=$(git rev-parse --abbrev-ref HEAD)
+    goos:
+      - windows
+    goarch:
+      - amd64
+    ldflags:
+      - -X 'metagraf/pkg/mgver.GitHash={{.Env.GITHASH}}'
+      - -X 'metagraf/pkg/mgver.GitTag={{.Env.GITTAG}}'
+      - -X 'metagraf/pkg/mgver.GitBranch={{.Env.GITBRANCH}}'
 archives:
-  - replacements:
-      darwin: Darwin
-      linux: Linux
-      windows: Windows
-      386: i386
-      amd64: x86_64
+  - format: binary
 checksum:
   name_template: 'checksums.txt'
 snapshot:
-  name_template: "{{ .Tag }}-next"
+  name_template: "latest"
 changelog:
   sort: asc
   filters:
