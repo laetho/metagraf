@@ -66,8 +66,8 @@ dockers:
     goos: linux
     goarch: amd64
     image_templates:
-      - "gcr.io/laetho/mg:latest"
-      - "gcr.io/laetho/mg:{{.Version}}"
+      - "ghcr.io/laetho/mg:latest"
+      - "ghcr.io/laetho/mg:{{.Version}}"
     dockerfile: Dockerfile
     use_buildx: true
     skip_push: false
