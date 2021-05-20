@@ -6,7 +6,7 @@ Gopkg.lock
 mg/mg
 mg/mg.exe
 mg/mg.osx
-mg/push.sh
+push.sh
 mg/test.sh
 
 dist/
