@@ -61,6 +61,18 @@ builds:
       - -X 'metagraf/pkg/mgver.GitHash={{.Env.GITHASH}}'
       - -X 'metagraf/pkg/mgver.GitTag={{.Env.GITTAG}}'
       - -X 'metagraf/pkg/mgver.GitBranch={{.Env.GITBRANCH}}'
+dockers:
+  -
+    goos: linux
+    goarch: amd64
+    image_templates:
+      - "gcr.io/laetho/mg:latest"
+      - "gcr.io/laetho/mg:{{.Version}}"
+    dockerfile: Dockerfile
+    use_buildx: true
+    skip_push: false
+    build_flag_templates:
+      - "--platform=linux/amd64"
 archives:
   - format: tar.gz
     id: mg
