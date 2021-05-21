@@ -27,6 +27,7 @@ import (
 	"github.com/laetho/metagraf/pkg/modules"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	corev1 "k8s.io/api/core/v1"
 	log "k8s.io/klog"
 )
 
@@ -50,6 +51,7 @@ func init() {
 	devCmdUp.Flags().BoolVar(&params.ServiceMonitor, "service-monitor", false, "Set flag to also create a ServiceMonitor resource. Requires a cluster with the prometheus-operator.")
 	devCmdUp.Flags().Int32Var(&params.ServiceMonitorPort, "service-monitor-port", params.ServiceMonitorPort, "Set Service port to scrape in ServiceMonitor.")
 	devCmdUp.Flags().StringVar(&params.ServiceMonitorOperatorName, "service-monitor-operator-name", params.ServiceMonitorOperatorName, "Name of prometheus-operator instance to create ServiceMonitor for.")
+
 
 	devCmd.AddCommand(devCmdDown)
 	devCmdDown.Flags().StringVarP(&params.NameSpace, "namespace", "n", "", "namespace to work on, if not supplied it will use current active namespace.")
@@ -138,6 +140,7 @@ func devUp(mgf string) {
 	modules.Variables = GetCmdProperties(mg.GetProperties())
 	log.V(2).Info("Current MGProperties: ", modules.Variables)
 
+	modules.PullPolicy = corev1.PullAlways
 	modules.GenSecrets(&mg)
 	modules.GenConfigMaps(&mg)
 	modules.GenImageStream(&mg, params.NameSpace)

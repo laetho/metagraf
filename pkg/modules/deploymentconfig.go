@@ -142,7 +142,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 	Container := corev1.Container{
 		Name:            objname,
 		Image:           imageRef(mg),
-		ImagePullPolicy: corev1.PullIfNotPresent,
+		ImagePullPolicy: PullPolicy,
 		Ports:           ContainerPorts,
 		VolumeMounts:    VolumeMounts,
 		Env:             EnvVars,

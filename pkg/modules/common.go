@@ -49,6 +49,8 @@ var (
 	OName         string
 	Context       string // Application context root from FlagPassingHack.
 	CreateGlobals bool
+	// Sets the default pull policy for all metagraf modules
+	PullPolicy	  corev1.PullPolicy = corev1.PullIfNotPresent
 )
 
 var Variables metagraf.MGProperties
