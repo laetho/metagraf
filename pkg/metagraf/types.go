@@ -118,8 +118,14 @@ type MetaGraf struct {
 				Consumes []EnvironmentVar `json:"consumes,omitempty"`
 			} `json:"external,omitempty"`
 		} `json:"environment,omitempty"`
+
 		Config []Config `json:"config,omitempty"`
+
+		// Slice of metagraf.Secret's for describing secrets needed in execution context.
 		Secret []Secret `json:"secret,omitempty"`
+
+		// Slice of metagraf.Secret's needed in build context.
+		BuildSecret[]Secret `json:"buildsecrets,omitempty"`
 	} `json:"spec"`
 }
 
