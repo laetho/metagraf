@@ -53,3 +53,19 @@ func (e *EnvironmentVar) GetType() string {
 		return "default"
 	}
 }
+
+// Returns slice of MetaGraf.EnvironmentVar's from specification.
+func (mg MetaGraf) BuildVars() []EnvironmentVar {
+	return mg.Spec.Environment.Build
+}
+
+// Returns slice of corev1.EnvVar's for all build
+func (mg MetaGraf) KubernetesBuildVars() []corev1.EnvVar {
+	ev := []corev1.EnvVar{}
+	for _, v := range mg.BuildVars() {
+		ev = append(ev, v.ToEnvVar())
+	}
+	return ev
+}
+
+
