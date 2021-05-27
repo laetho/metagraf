@@ -125,7 +125,7 @@ type MetaGraf struct {
 		Secret []Secret `json:"secret,omitempty"`
 
 		// Slice of metagraf.Secret's needed in build context.
-		BuildSecret []Secret `json:"buildsecrets,omitempty"`
+		BuildSecret []Secret `json:"buildsecret,omitempty"`
 	} `json:"spec"`
 }
 

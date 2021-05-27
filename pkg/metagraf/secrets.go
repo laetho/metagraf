@@ -22,6 +22,9 @@ func (mg MetaGraf) BuildSecretsToVolumes() ([]corev1.Volume) {
 				},
 			},
 		}
+		if len(s.Items) > 0 {
+			v.Secret.Items = s.Items
+		}
 		vols = append(vols,v)
 	}
 	return vols
