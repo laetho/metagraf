@@ -8,7 +8,7 @@ func (s Secret) VolumeName() string {
 	return "vol-"+s.Name
 }
 
-// Creates a slice of corev1.Volume{} definitions from secrets defined
+// Creates a slice of corev1.Volume{} definitions from buildsecrets defined
 // in the metaGraf specification.
 func (mg MetaGraf) BuildSecretsToVolumes() ([]corev1.Volume) {
 	var vols []corev1.Volume
@@ -27,7 +27,7 @@ func (mg MetaGraf) BuildSecretsToVolumes() ([]corev1.Volume) {
 	return vols
 }
 
-// Creates a slice of corev1.Volume{} definitions from secrets defined
+// Creates a slice of corev1.VolumeMount{} definitions from buildsecrets defined
 // in the metaGraf specification.
 func (mg MetaGraf) BuildSecretsToVolumeMounts() ([]corev1.VolumeMount) {
 	var vols []corev1.VolumeMount
@@ -45,9 +45,10 @@ func (mg MetaGraf) BuildSecretsToVolumeMounts() ([]corev1.VolumeMount) {
 	return vols
 }
 
-func (mg MetaGraf) SecretsToVolumes() ([]corev1.Volume, []corev1.VolumeMount) {
+// Creates a slice of corev1.Volume{} definitions from secrets defined
+// in the metaGraf specification.
+func (mg MetaGraf) SecretsToVolumes() ([]corev1.Volume) {
 	var vols []corev1.Volume
-	var volms []corev1.VolumeMount
 
 	for _, s := range mg.Spec.Secret {
 		v := corev1.Volume{
@@ -61,5 +62,23 @@ func (mg MetaGraf) SecretsToVolumes() ([]corev1.Volume, []corev1.VolumeMount) {
 		vols = append(vols,v)
 	}
 
-	return vols, volms
+	return vols
+}
+// Creates a slice of corev1.VolumeMount{} definitions from secrets defined
+// in the metaGraf specification.
+func (mg MetaGraf) SecretsToVolumeMounts() ([]corev1.VolumeMount) {
+	var vols []corev1.VolumeMount
+
+	for _, s := range mg.Spec.Secret {
+		v := corev1.VolumeMount{
+			Name:             s.VolumeName(),
+			ReadOnly:         true,
+		}
+		if len(s.MountPath) > 0 {
+			v.MountPath = s.MountPath
+		}
+		vols = append(vols,v)
+	}
+
+	return vols
 }
