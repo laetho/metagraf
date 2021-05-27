@@ -77,14 +77,14 @@ type MetaGraf struct {
 
 		// When a spec.image is specified, we want to deliver an existing image with
 		// manifest generation provided with tools like mg.
-		Image        string `json:"image,omitempty"`
+		Image string `json:"image,omitempty"`
 
 		// When spec.dockerfile is provided we will attempt to build the container image
 		// with local tools, if present. Image and Dockerfile are mutually exclusive
-		Dockerfile	string	`json:"dockerfile,omitempty"`
+		Dockerfile string `json:"dockerfile,omitempty"`
 
 		// Image used to build the software referenced in Repository.
-		BuildImage   string `json:"buildimage,omitempty"`
+		BuildImage string `json:"buildimage,omitempty"`
 
 		// Image to inject artifacts from above build.
 		BaseRunImage string `json:"baserunimage,omitempty"`
@@ -125,7 +125,7 @@ type MetaGraf struct {
 		Secret []Secret `json:"secret,omitempty"`
 
 		// Slice of metagraf.Secret's needed in build context.
-		BuildSecret[]Secret `json:"buildsecrets,omitempty"`
+		BuildSecret []Secret `json:"buildsecrets,omitempty"`
 	} `json:"spec"`
 }
 
@@ -177,9 +177,12 @@ type Secret struct {
 	Name        string `json:"name"`
 	Global      bool   `json:"global,omitempty"`
 	Description string `json:"description,omitempty"`
-	Value       string `json:"value,omitempty"` // Never use this!
-	// If set, we will attempt to mount it at provided path.
+
+	// Indicated where in the filesystem we would like to mount the Secret.
 	MountPath string `json:"mountpath,omitempty"`
+
+	// Using Kubernetes v1.KeyToPath struct for mapping individual secret key's to filenames.
+	Items []v1.KeyToPath `json:"items,omitempty"`
 }
 
 type EnvironmentVar struct {
