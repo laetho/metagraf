@@ -39,7 +39,6 @@ func init() {
 
 	devCmd.AddCommand(devCmdUp)
 	devCmdUp.Flags().StringVarP(&params.NameSpace, "namespace", "n", "", "namespace to work on, if not supplied it will use current active namespace.")
-	devCmdUp.Flags().StringVar(&params.SourceRef, "ref", "", "use for overriding source ref or branch ref in buildconfig.")
 	devCmdUp.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
 	devCmdUp.Flags().StringVar(&params.PropertiesFile, "cvfile", "", "Property file with component configuration values. Can be generated with \"mg generate properties\" command.)")
 	devCmdUp.Flags().StringVar(&OName, "name", "", "Overrides name of application.")
@@ -59,6 +58,7 @@ func init() {
 	devCmdDown.Flags().StringVar(&OName, "name", "", "Overrides name of application.")
 
 	devCmd.AddCommand(devCmdBuild)
+	devCmdBuild.Flags().StringVar(&params.SourceRef, "ref", "master", "Specify the git ref or branch ref to build.")
 	devCmdBuild.Flags().StringVarP(&params.NameSpace, "namespace", "n", "", "namespace to work on, if not supplied it will use current active namespace.")
 	devCmdBuild.Flags().BoolVar(&params.LocalBuild, "local", false, "Builds application from src in current (.) direcotry.")
 }
@@ -110,6 +110,17 @@ var devCmdBuild = &cobra.Command{
 		mg := metagraf.Parse(args[0])
 		bc := mg.Name(OName, Version)
 
+		FlagPassingHack()
+		modules.NameSpace = params.NameSpace
+
+		// Remove RepSecRef from generated BuildConfig if --local argument is provided.
+		if params.LocalBuild && len(mg.Spec.RepSecRef) > 0 {
+			mg.Spec.RepSecRef = ""
+		}
+
+		modules.GenImageStream(&mg, params.NameSpace)
+		modules.GenBuildConfig(&mg)
+
 		path, err := exec.LookPath("oc")
 		if err != nil {
 			log.Fatal(err)
@@ -143,8 +154,6 @@ func devUp(mgf string) {
 	modules.PullPolicy = corev1.PullAlways
 	modules.GenSecrets(&mg)
 	modules.GenConfigMaps(&mg)
-	modules.GenImageStream(&mg, params.NameSpace)
-	modules.GenBuildConfig(&mg)
 	modules.GenDeploymentConfig(&mg)
 	modules.GenService(&mg)
 	modules.GenRoute(&mg)

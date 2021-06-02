@@ -185,16 +185,21 @@ func genGitBuildSource(mg *metagraf.MetaGraf) buildv1.BuildSource {
 		branch = mg.Spec.Branch
 	}
 
-	return buildv1.BuildSource{
+	bs := buildv1.BuildSource{
 		Type: "Git",
 		Git: &buildv1.GitBuildSource{
 			URI: mg.Spec.Repository,
 			Ref: branch,
 		},
-		SourceSecret: &corev1.LocalObjectReference{
-			Name: mg.Spec.RepSecRef,
-		},
 	}
+
+	if len(mg.Spec.RepSecRef) > 0 {
+		bs.SourceSecret = &corev1.LocalObjectReference{
+			Name: mg.Spec.RepSecRef,
+		}
+	}
+
+	return bs
 }
 
 func StoreBuildConfig(obj buildv1.BuildConfig) {

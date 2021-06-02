@@ -177,7 +177,7 @@ var kanikoCreateRegistryCredentialsCmd = &cobra.Command{
 			if err != nil {
 				log.Fatal(err)
 			}
-			fmt.Println("created secret: %v", res.Name)
+			fmt.Printf("created secret: %v", res.Name)
 		}
 
 		if Output {

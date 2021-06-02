@@ -9,6 +9,7 @@ require (
 	github.com/coreos/prometheus-operator v0.41.1
 	github.com/crossplane/crossplane-runtime v0.9.0 // indirect
 	github.com/crossplane/oam-kubernetes-runtime v0.0.9
+	github.com/ghodss/yaml v1.0.0
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
 	github.com/google/go-containerregistry v0.4.0
 	github.com/google/gofuzz v1.2.0 // indirect
