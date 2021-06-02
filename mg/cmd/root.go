@@ -19,12 +19,13 @@ package cmd
 import (
 	"flag"
 	"fmt"
+	"os"
+
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 	log "k8s.io/klog"
-	"os"
 )
 
 var MGVersion string
@@ -40,6 +41,8 @@ var (
 	Output        bool = false
 	Version       string
 	Dryrun        bool = false // If true do not create
+	Watch		  bool = false
+	Keep		  bool = true
 	Branch        string
 	BaseEnvs      bool = false
 	Defaults      bool = false // Should we hydrate default values in declarative state.

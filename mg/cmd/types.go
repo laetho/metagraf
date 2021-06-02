@@ -17,11 +17,16 @@ limitations under the License.
 package cmd
 
 import (
-	log "k8s.io/klog"
 	"strings"
+
+	log "k8s.io/klog"
 )
 
 type CmdMessage string
+
+const (
+	errNoSecretNameProvided string = "Name for Secret not provided. Aborting."
+	)
 
 var StrActiveProject CmdMessage = "Active project is:"
 var StrMissingMetaGraf CmdMessage = "Missing path to metaGraf specification."

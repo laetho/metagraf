@@ -1,10 +1,12 @@
 package kaniko
 
 import (
+	"context"
 	"encoding/json"
-	"fmt"
+	"io"
 
 	"github.com/ghodss/yaml"
+	"github.com/laetho/metagraf/internal/pkg/k8sclient"
 	log "k8s.io/klog"
 
 	"github.com/laetho/metagraf/pkg/metagraf"
@@ -15,6 +17,11 @@ import (
 const (
 	errNoDockerfile = "metaGraf specifies no Dockerfile, aborting build"
 )
+
+type Generator interface {
+	Create(obj interface{}) error
+	Delete(obj interface{}) error
+}
 
 // Generator for the Application type
 type KanikoPodGenerator struct {
@@ -45,6 +52,8 @@ type KanikoPodOptions struct {
 	// usage scenarios.
 	ContextArg string
 
+	StdIn     bool
+	StdInOnce bool
 }
 
 // Instance of ApplicationOptions that can be used for propagating flags and addressable outside of pacage.
@@ -86,17 +95,18 @@ func NewKanikoPodGenerator(mg metagraf.MetaGraf, prop metagraf.MGProperties, opt
 func (g *KanikoPodGenerator) GenerateKanikoPod(name string) corev1.Pod {
 
 	g.Resource = corev1.Pod{
-		TypeMeta:   metav1.TypeMeta{
+		TypeMeta: metav1.TypeMeta{
 			Kind:       "Pod",
 			APIVersion: "v1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name: "kaniko-"+g.MetaGraf.Name("",""),
+			Name:      "kaniko-" + g.MetaGraf.Name("", ""),
 			Namespace: g.Options.Namespace,
 		},
 		Spec: corev1.PodSpec{
 			RestartPolicy: corev1.RestartPolicyNever,
-			Containers: g.kanikoPod("kaniko-"+g.MetaGraf.Name("","")),
+			Containers:    g.kanikoPod("kaniko-" + g.MetaGraf.Name("", "")),
+			Volumes:       g.MetaGraf.BuildSecretsToVolumes(),
 		},
 	}
 
@@ -121,37 +131,85 @@ func (g *KanikoPodGenerator) podArgs() []string {
 
 func (g *KanikoPodGenerator) kanikoPod(name string) []corev1.Container {
 	var containers []corev1.Container
+
 	c := corev1.Container{
 		Name:                     name,
 		Image:                    g.Options.Image,
 		Args:                     g.podArgs(),
 		Env:                      g.MetaGraf.KubernetesBuildVars(),
-		VolumeMounts:             nil,
-		VolumeDevices:            nil,
+		VolumeMounts:             g.MetaGraf.BuildSecretsToVolumeMounts(),
+		TerminationMessagePath:   "/dev/termination-log",
+		TerminationMessagePolicy: corev1.TerminationMessageReadFile,
 	}
-	return append(containers,c)
+	return append(containers, c)
 }
 
-func (g *KanikoPodGenerator) MarshalToYaml() {
-	MarshalToYaml(g.Resource)
+func (g *KanikoPodGenerator) Create(obj corev1.Pod) error {
+	client := k8sclient.GetCoreClient().Pods(g.Options.Namespace)
+
+	result, err := client.Create(context.TODO(), &obj, metav1.CreateOptions{})
+	if err != nil {
+		return err
+	}
+	log.Infof("Created Kaniko Build Pod: %v(%v)", result.Name, obj.Name)
+
+	return nil
 }
 
-func (g *KanikoPodGenerator) MarshalToJson() {
-	MarshalToJson(g.Resource)
+func(g *KanikoPodGenerator) Delete(obj corev1.Pod ) error {
+	client := k8sclient.GetCoreClient().Pods(g.Options.Namespace)
+
+	err := client.Delete(context.TODO(), obj.Name, metav1.DeleteOptions{})
+	if err != nil {
+		return err
+	}
+	log.Infof("Delete Kaniko Build Pod: %v", obj.Name)
+
+	return nil
 }
 
-func MarshalToYaml(obj interface{}) {
+
+// Return a reference to a io.ReadCloser based on a Pod Log Request or an error.
+func (g *KanikoPodGenerator) LogsReader(obj corev1.Pod) (*io.ReadCloser, error) {
+	client := k8sclient.GetCoreClient().Pods(g.Options.Namespace)
+
+	podLogOptions :=  corev1.PodLogOptions{
+		Container:                    obj.Name,
+		Follow:                       true,
+		TailLines:                    nil,
+	}
+
+	podLogReq := client.GetLogs(obj.Name,&podLogOptions)
+	stream, err := podLogReq.Stream(context.TODO())
+	if err != nil {
+		return nil, err
+	}
+
+	return &stream, nil
+}
+
+func (g *KanikoPodGenerator) ToYaml() ([]byte, error) {
+	b, err := MarshalToYaml(g.Resource)
+	return b, err
+}
+
+func (g *KanikoPodGenerator) ToJson() ([]byte, error) {
+	b, err := MarshalToJson(g.Resource)
+	return b, err
+}
+
+func MarshalToYaml(obj interface{}) ([]byte, error) {
 	y, err := yaml.Marshal(obj)
 	if err != nil {
-		panic(err)
+		return []byte{}, err
 	}
-	fmt.Println(string(y))
+	return y, nil
 }
 
-func MarshalToJson(obj interface{}) {
-	j, err := json.MarshalIndent(obj,"", "  ")
+func MarshalToJson(obj interface{}) ([]byte, error) {
+	j, err := json.MarshalIndent(obj, "", "  ")
 	if err != nil {
-		panic(err)
+		return []byte{}, err
 	}
-	fmt.Println(string(j))
+	return j, nil
 }
