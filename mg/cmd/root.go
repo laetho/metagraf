@@ -19,7 +19,6 @@ package cmd
 import (
 	"flag"
 	"fmt"
-	"os"
 
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
@@ -33,10 +32,12 @@ var MGBanner string = "mg " + MGVersion
 
 // @todo: This should be moved to it's own package to avoid cyclic dependencies since both cmd and modules package use them.
 var (
-	Namespace string
-	OName     string // Flag for overriding application name.
-	Config    string // Viper config override
-	Verbose   bool   = false
+	Namespace    string
+	OName        string // Flag for overriding application name.
+	ConfigPath   string // Viper config override
+	ConfigFile string = "config"
+	ConfigFormat string = "yaml"
+	Verbose      bool   = false
 	// Output flag, makes mg output generated kubernetes resources in json or yaml.
 	Output        bool = false
 	Version       string
@@ -77,28 +78,29 @@ datastructure and help you generate kubernetes primitives`,
 }
 
 func init() {
-	RootCmd.PersistentFlags().StringVar(&Config, "config", "", "config file (default is $HOME/.config/mg/mg.yaml)")
+	RootCmd.PersistentFlags().StringVar(&ConfigPath, "config", "", "config file (default is $HOME/.config/mg/config.yaml)")
 	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
 	cobra.OnInitialize(initConfig)
 }
 
 func initConfig() {
-	viper.SetConfigType("yaml")
 
 	home, err := homedir.Dir()
 	if err != nil {
 		fmt.Println(err)
-		os.Exit(1)
+		log.Fatal(err)
 	}
 
-	if Config != "" {
-		fmt.Printf("Using configfile: %v %v", os.Stdout, Config)
-		viper.SetConfigFile(Config)
+	viper.SetConfigType("yaml")
+	if len(ConfigPath) > 0 {
+		viper.SetConfigFile(ConfigPath)
 	} else {
+		ConfigPath = home+"/.config/mg/"
 		//fmt.Println(os.Stderr, "Using default config file: ~/.config/mg/config.yaml")
-		viper.AddConfigPath(home + "/.config/mg/")
+		viper.AddConfigPath(ConfigPath)
 		viper.SetConfigName("config")
 	}
+	log.Infof("Using configfile: %v", ConfigPath)
 
 	viper.AutomaticEnv()
 	if err := viper.ReadInConfig(); err != nil {

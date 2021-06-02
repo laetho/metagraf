@@ -18,9 +18,11 @@ package cmd
 
 import (
 	"fmt"
+
 	"github.com/laetho/metagraf/internal/pkg/helpers"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	log "k8s.io/klog"
 )
 
 func init() {
@@ -41,15 +43,17 @@ var configCmdSet = &cobra.Command{
 	Long:  `set`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 2 {
-			fmt.Println("Insufficient arguments")
-			return
+			log.Fatal("Insufficient arguments")
+
 		}
 		if helpers.StringInSlice(args[0], configkeys) {
 			viper.Set(args[0], args[1])
 			err := viper.WriteConfig()
 			if err != nil {
-				fmt.Println("ERROR:", err)
-				return
+				err = viper.SafeWriteConfig()
+				if err != nil {
+					log.Fatal(err)
+				}
 			}
 		}
 	},
