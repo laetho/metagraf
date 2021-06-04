@@ -135,6 +135,15 @@ func ReadPropertiesFile(propfile string) metagraf.MGProperties {
 //
 func MergeAndValidateProperties(base metagraf.MGProperties, merge metagraf.MGProperties, novalidate bool) metagraf.MGProperties {
 	for _, p := range merge {
+
+		// Do not allow setting values on a sticky key.
+		// Sticky keys are values fetched from secrets or configmaps.
+		if p.Source == "local" && novalidate {
+			if _, ok := base["sticky|"+p.Key]; ok {
+				log.Fatalf("You tried to set a custom value on a secretfrom og valuefrom property. This is not allowed! Check you properties file on key: %v=%v", p.MGKey(), p.Value)
+			}
+		}
+
 		if novalidate {
 			if _, ok := base[p.MGKey()]; !ok {
 				base[p.MGKey()] = p

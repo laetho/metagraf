@@ -122,18 +122,24 @@ func (mg *MetaGraf) GetProperties() MGProperties {
 
 	// Environment Section
 	for _, env := range mg.Spec.Environment.Local {
-		if len(env.SecretFrom) > 0 {
-			continue
-		}
-		if len(env.EnvFrom) > 0 {
-			continue
-		}
+
 		p := MGProperty{
-			Source:   "local",
+			Source:   "",
 			Key:      env.Name,
 			Value:    "",
 			Required: env.Required,
 			Default:  env.Default,
+		}
+
+		// If a source is "sticky" it cannot be changed during configuration injection.
+		if len(env.SecretFrom) > 0 {
+			p.Source = "sticky"
+			p.Required = false
+		} else if len(env.EnvFrom) > 0 {
+			p.Source = "sticky"
+			p.Required = false
+		} else {
+			p.Source = "local"
 		}
 
 		// Environment variables of type JVM_SYS_PROP will
