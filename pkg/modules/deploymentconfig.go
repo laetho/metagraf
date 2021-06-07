@@ -332,7 +332,7 @@ func StoreDeploymentConfig(obj appsv1.DeploymentConfig) {
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		fmt.Println("Updated DeploymentConfig: ", obj.Name, " in Namespace: ", obj.Name)
+		fmt.Println("Updated DeploymentConfig: ", obj.Name, " in Namespace: ", NameSpace)
 	} else {
 		result, err := client.Create(context.TODO(), &obj, metav1.CreateOptions{})
 		if err != nil {
