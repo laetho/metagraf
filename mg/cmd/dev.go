@@ -108,7 +108,7 @@ var devCmdWatch = &cobra.Command{
 		chProcessing := make(chan bool, 1)
 
 		wg.Add(2)
-
+		defer wg.Wait()
 		go filteredFileWatcher(chEvents, chProcessing)
 
 		for {
@@ -129,7 +129,7 @@ var devCmdWatch = &cobra.Command{
 				chProcessing<-false
 			}
 		}
-		wg.Wait()
+
 	},
 }
 
