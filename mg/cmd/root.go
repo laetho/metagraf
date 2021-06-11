@@ -57,6 +57,9 @@ var (
 	Context       string           // Flag for setting application context root.
 	CreateGlobals bool     = false // Flag for overriding default behaviour of skipping creation of global secrets.
 	CVars         []string         // Slice of strings to hold overridden values.
+
+	// Holds a slice of paths to ignore in mg dev watch cmd.
+	IgnoredPaths []string
 )
 
 // Array of available config keys

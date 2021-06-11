@@ -79,6 +79,7 @@ func init() {
 	devCmd.AddCommand(devCmdWatch)
 	devCmdWatch.Flags().StringVarP(&params.NameSpace, "namespace", "n", "", "namespace to work on, if not supplied it will use current active namespace.")
 	devCmdWatch.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
+	devCmdWatch.Flags().StringSliceVar(&IgnoredPaths, "ignore-paths", []string{}, "List of paths to ignore when watching file changes, seperated by \",\".")
 	devCmdWatch.Flags().StringVar(&params.PropertiesFile, "cvfile", "", "Property file with component configuration values. Can be generated with \"mg generate properties\" command.)")
 }
 
@@ -129,7 +130,6 @@ var devCmdWatch = &cobra.Command{
 				chProcessing<-false
 			}
 		}
-
 	},
 }
 
@@ -197,7 +197,6 @@ func devUp(mgf string) {
 	modules.GenDeploymentConfig(&mg)
 	modules.GenService(&mg)
 	modules.GenRoute(&mg)
-
 }
 
 func devDown(mgf string) {
@@ -269,6 +268,11 @@ func filteredFileWatcher(chEvents chan<- WatchEvent, chProcessing <-chan bool) {
 	}
 
 	watchDir := func(path string, info os.FileInfo, err error) error {
+		for _,ignored := range IgnoredPaths {
+			if strings.Contains(path, ignored) {
+				return nil
+			}
+		}
 		if info.Mode().IsDir() {
 			return watcher.Add(path)
 		}
