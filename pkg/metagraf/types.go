@@ -124,6 +124,9 @@ type MetaGraf struct {
 		// Slice of metagraf.Secret's for describing secrets needed in execution context.
 		Secret []Secret `json:"secret,omitempty"`
 
+		// Volume definitions for describing PersistentVolumes used by the component.
+		Volume []Volume `json:"volume,omitempty"`
+
 		// Slice of metagraf.Secret's needed in build context.
 		BuildSecret []Secret `json:"buildsecret,omitempty"`
 	} `json:"spec"`
@@ -188,26 +191,52 @@ type Secret struct {
 type EnvironmentVar struct {
 	Name     string `json:"name"`
 	Required bool   `json:"required"`
+
 	Type     string `json:"type,omitempty"`
+
 	// Expose environment variables from ConfigMap resources.
 	// All keys, value pairs in secret will be exported from
 	// the ConfigMap into a running Pod.  The Environment.Name
 	// will just be a placeholder value.
 	EnvFrom string `json:"envfrom,omitempty"`
+
 	// Expose  contents of a kubernets Secret as environment variables
 	// exported into a running container. The values are only available
 	// inside a running Pod or if you have access to view secrets in the
 	// namespace. Exposes all key, values from the Secret. The
 	// EnvironmentVar.Name will just be a placeholder.
 	SecretFrom string `json:"secretfrom,omitempty"`
+
 	// When exporting environment variables from a Secret or Configmap resource, you
 	// have the option to specify the name of a key to export. If provided
 	// the value from the referenced key will appear as EnvironmentVar.Name
 	// inside the running Pod.
 	Key         string `json:"key,omitempty"`
+
+	// Description of the EnvironmentVar. What is it used for.
 	Description string `json:"description"`
+
+	// Field to hold the Default value. Take care with Default values in the spec. A good practice is to not use them.
 	Default     string `json:"default,omitempty"`
+
+	// Textual field for describing an example value.
 	Example     string `json:"example,omitempty"`
+}
+
+// The structure for defining volumes to used by the component.
+type Volume struct {
+	// Name of the volume.
+	Name string `json:"name"`
+	// A description of the volume. What is this volume used for.
+	Description string `json:"description,omitempty"`
+	// Indicated where in the Pod filesystem we would like to mount the Volume.
+	MountPath string `json:"mountpath,omitempty"`
+	// A list of PersistentVolumeAccessMode's
+	AccessModes []v1.PersistentVolumeAccessMode `json:"accessmodes"`
+	// Declare the size of persistent storage to claim.
+	Capacity []v1.ResourceList `json:"capacity,omitempty"`
+	// Describe a hostPath based volume.
+	HostPath v1.HostPathVolumeSource `json:"hostPath,omitempty"`
 }
 
 type Generator interface {

@@ -52,6 +52,19 @@ type KanikoPodOptions struct {
 	// usage scenarios.
 	ContextArg string
 
+	// --cache Indicate if we want to use caching at all.
+	Cache bool
+
+	// Uses --cache-dir to set local directory as cache for base images. In our context
+	// this will be a Volume in the metaGraf specifiation that becomes a PersistantVolume.
+	CacheDir string
+
+	// Option for skipping cert verification on image push to a registry.
+	SkipTLSVerify bool
+
+	// Option for skipping cert verification on image pulls from a registry.
+	SkipTLSVerifyPull bool
+
 	StdIn     bool
 	StdInOnce bool
 }
@@ -89,10 +102,14 @@ func NewKanikoPodGenerator(mg metagraf.MetaGraf, prop metagraf.MGProperties, opt
 	g.Options.DockerfileArg = mg.Spec.Dockerfile
 	g.Options.ContextArg = mg.Spec.Repository
 
+	if len(g.MetaGraf.Spec.Image) > 0 {
+		g.Options.DestinationArg = g.MetaGraf.Spec.Image
+	}
+
 	return g
 }
 
-func (g *KanikoPodGenerator) GenerateKanikoPod(name string) corev1.Pod {
+func (g *KanikoPodGenerator) Generate(name string) corev1.Pod {
 
 	g.Resource = corev1.Pod{
 		TypeMeta: metav1.TypeMeta{
@@ -106,7 +123,7 @@ func (g *KanikoPodGenerator) GenerateKanikoPod(name string) corev1.Pod {
 		Spec: corev1.PodSpec{
 			RestartPolicy: corev1.RestartPolicyNever,
 			Containers:    g.kanikoPod("kaniko-" + g.MetaGraf.Name("", "")),
-			Volumes:       g.MetaGraf.BuildSecretsToVolumes(),
+			Volumes:       append(g.MetaGraf.BuildSecretsToVolumes(), g.MetaGraf.Volumes()...),
 		},
 	}
 
@@ -122,8 +139,23 @@ func (g *KanikoPodGenerator) podArgs() []string {
 	if len(g.Options.DestinationArg) > 0 {
 		args = append(args, "--destination="+g.Options.DestinationArg)
 	}
+
 	if len(g.Options.ContextArg) > 0 {
 		args = append(args, "--context="+g.Options.ContextArg)
+	}
+	if g.Options.SkipTLSVerifyPull {
+		args = append(args, "--skip-tls-verify-pull")
+	}
+	if g.Options.SkipTLSVerify {
+		args = append(args, "--skip-tls-verify")
+	}
+	if g.Options.Cache {
+		args = append(args, "--cache=true")
+	}
+	if g.Options.Cache && len(g.Options.CacheDir) > 0 {
+		args = append(args, "--cache-dir="+g.Options.CacheDir)
+		// Also cache RUN and copy layers.
+		args = append(args, "--cache-copy-layers")
 	}
 
 	return args
@@ -137,7 +169,7 @@ func (g *KanikoPodGenerator) kanikoPod(name string) []corev1.Container {
 		Image:                    g.Options.Image,
 		Args:                     g.podArgs(),
 		Env:                      g.MetaGraf.KubernetesBuildVars(),
-		VolumeMounts:             g.MetaGraf.BuildSecretsToVolumeMounts(),
+		VolumeMounts:             append(g.MetaGraf.BuildSecretsToVolumeMounts(),g.MetaGraf.VolumesToVolumeMounts()...),
 		TerminationMessagePath:   "/dev/termination-log",
 		TerminationMessagePolicy: corev1.TerminationMessageReadFile,
 	}

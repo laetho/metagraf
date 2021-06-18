@@ -1,7 +1,9 @@
 package cmd
 
 import (
+	"archive/tar"
 	"bufio"
+	"compress/gzip"
 	"context"
 	"encoding/base64"
 	"fmt"
@@ -34,6 +36,12 @@ func init() {
 	kanikoBuildCmd.Flags().StringVar(&kaniko.KanikoPodOpts.DockerfileArg, "dockerfile", "Dockerfile", "Specify Kaniko --dockerfile argument")
 	kanikoBuildCmd.Flags().StringVar(&kaniko.KanikoPodOpts.ContextArg, "context","", "Specify Kaniko --context argument. Overrides Git ref from metaGraf specification.")
 	kanikoBuildCmd.Flags().StringVar(&kaniko.KanikoPodOpts.DestinationArg, "destination", "", "Specify Kaniko --destination argument. Registry reference.")
+
+	kanikoBuildCmd.Flags().BoolVar(&kaniko.KanikoPodOpts.Cache, "cache", false, "Specify Kaniko --cache to enable caching.")
+	kanikoBuildCmd.Flags().StringVar(&kaniko.KanikoPodOpts.CacheDir, "cache-dir", "", "Specify Kaniko --cache-dir to cache baseimages on local filesystem path.")
+
+	kanikoBuildCmd.Flags().BoolVar(&kaniko.KanikoPodOpts.SkipTLSVerify, "skip-tls-verify", false, "Set this flag to skip TLS verification when pushing to a registry.")
+	kanikoBuildCmd.Flags().BoolVar(&kaniko.KanikoPodOpts.SkipTLSVerifyPull, "skip-tls-verify-pull", false, "Set this flag to skip TLS verification when pulling from a registry.")
 
 	kanikoCreateCmd.AddCommand(kanikoCreateRegistryCredentialsCmd)
 	kanikoCreateRegistryCredentialsCmd.Flags().StringVarP(&Namespace, "namespace", "n", "", "Kubernetes namespace for generated Secret.")
@@ -68,7 +76,7 @@ var kanikoBuildCmd = &cobra.Command{
 		log.V(2).Info("Current MGProperties: ", modules.Variables)
 
 		generator := kaniko.NewKanikoPodGenerator(mg, metagraf.MGProperties{}, kaniko.KanikoPodOpts)
-		obj := generator.GenerateKanikoPod("blah")
+		obj := generator.Generate("blah")
 
 		if Output {
 			b, err := kaniko.MarshalToYaml(obj)
@@ -86,8 +94,6 @@ var kanikoBuildCmd = &cobra.Command{
 		}
 
 		if Watch {
-
-
 			stream, err := generator.LogsReader(obj)
 			if err != nil {
 				log.Fatal(err)
@@ -112,7 +118,7 @@ var kanikoBuildCmd = &cobra.Command{
 			}
 		}
 
-		if !Keep {
+		if Watch && !Keep {
 			err := generator.Delete(obj)
 			if err != nil {
 				log.Fatal(err)
@@ -194,4 +200,33 @@ func readInput() string {
 	text, _ := reader.ReadString('\n')
 	text = strings.Trim(text, "\n\r")
 	return text
+}
+
+// Creates a .tar.gz archive from a slice of paths.
+func pathToTarGZ(tarball string, files []string) error {
+	file, err := os.Create(tarball)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	gzw := gzip.NewWriter(file)
+	defer gzw.Close()
+
+	tarw := tar.NewWriter(gzw)
+	defer tarw.Close()
+
+	for _, file := range files {
+		err := addToTarWriter(file, tarw)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func addToTarWriter(filepath string, tarWriter *tar.Writer) error {
+
+	return nil
 }
