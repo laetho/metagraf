@@ -21,57 +21,16 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/laetho/metagraf/internal/pkg/helpers"
-	"github.com/laetho/metagraf/internal/pkg/imageurl"
 	"github.com/laetho/metagraf/internal/pkg/k8sclient"
 	"github.com/laetho/metagraf/internal/pkg/params"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/util/intstr"
 	log "k8s.io/klog"
 )
 
 func GenService(mg *metagraf.MetaGraf) {
 	objname := Name(mg)
-
-	var DockerImage string
-	if len(mg.Spec.BaseRunImage) > 0 {
-		DockerImage = mg.Spec.BaseRunImage
-	} else if len(mg.Spec.BuildImage) > 0 {
-		DockerImage = mg.Spec.BuildImage
-	} else {
-		DockerImage = mg.Spec.Image
-	}
-
-	var imgurl imageurl.ImageURL
-	_ = imgurl.Parse(DockerImage)
-
-	// ImageInfo := helpers.SkopeoImageInfo(DockerImage)
-	HasImageInfo := false
-	ImageInfo, err := helpers.ImageInfo(mg)
-	if err != nil {
-		HasImageInfo = false
-	} else {
-		HasImageInfo = true
-	}
-
-	if HasImageInfo {
-		client := k8sclient.GetImageClient()
-		ist := helpers.GetImageStreamTags(
-			client,
-			imgurl.Namespace,
-			imgurl.Image+":"+imgurl.Tag)
-		ImageInfo = helpers.GetDockerImageFromIST(ist)
-	}
-
-	var serviceports []corev1.ServicePort
-	if HasImageInfo {
-		serviceports = GetServicePorts(mg, helpers.ImageExposedPortsToServicePorts(ImageInfo.Config))
-	} else {
-		var ports []corev1.ServicePort
-		serviceports = GetServicePorts(mg, ports)
-	}
 
 	selectors := make(map[string]string)
 	selectors["app"] = objname
@@ -88,7 +47,7 @@ func GenService(mg *metagraf.MetaGraf) {
 			Labels: labels,
 		},
 		Spec: corev1.ServiceSpec{
-			Ports:           serviceports,
+			Ports:           mg.GetServicePorts(),
 			Selector:        selectors,
 			Type:            "ClusterIP",
 			SessionAffinity: "None",
@@ -111,60 +70,6 @@ func GenService(mg *metagraf.MetaGraf) {
 	}
 }
 
-// Applies protocol and port conventions for generating standardized Kubernetes Service
-// resource. Defaults to 80->8080 mapping if no annotations or image
-// port configuration is found.
-func GetServicePorts(mg *metagraf.MetaGraf, imageports []corev1.ServicePort) []corev1.ServicePort {
-
-	// Apply mg default service port
-	if len(imageports) == 0 && len(mg.Spec.Ports) == 0 {
-		return defaultServicePorts()
-	}
-
-	var serviceports []corev1.ServicePort
-	if len(mg.Spec.Ports) > 0 {
-		serviceports = mg.ServicePortsBySpec()
-	} else {
-		serviceports = mg.ServicePortsByAnnotation()
-		log.V(2).Infof("ServicePort from Annotations: %v", len(serviceports))
-	}
-
-	var output []corev1.ServicePort
-	// Rewrite port mappings for container image imageports that
-	// matches annotations to acheive protocol standardization.
-	if len(imageports) > 0 {
-		for _, ip := range imageports {
-			for _, sp := range serviceports {
-				if ip.Port == sp.TargetPort.IntVal {
-					ip = sp
-				}
-			}
-			output = append(output, ip)
-		}
-	} else {
-		return serviceports
-	}
-
-	return output
-}
-
-// Returns the mg tool's opinionated default if ports in a metagraf spec
-// or the container image has no default exposed ports.
-func defaultServicePorts() []corev1.ServicePort {
-	var serviceports []corev1.ServicePort
-
-	serviceports = append(serviceports, corev1.ServicePort{
-		Name:     "http",
-		Port:     int32(80),
-		Protocol: "TCP",
-		TargetPort: intstr.IntOrString{
-			Type:   0,
-			IntVal: int32(8080),
-			StrVal: "8080",
-		},
-	})
-	return serviceports
-}
 
 func StoreService(obj corev1.Service) {
 	client := k8sclient.GetCoreClient().Services(NameSpace)

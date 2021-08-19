@@ -19,11 +19,7 @@ package metagraf
 import (
 	params "github.com/laetho/metagraf/internal/pkg/params"
 	"github.com/pkg/errors"
-	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/util/intstr"
-	log "k8s.io/klog"
-	"strconv"
 	"strings"
 )
 
@@ -98,94 +94,7 @@ func (mg MetaGraf) Labels(name string) map[string]string {
 	return l
 }
 
-// Checks the metagraf specification for k8s.io namespaced port information.
-// Format:
-// <protocol>.service.k8s.io/port : value
-func (mg MetaGraf) ServicePortsByAnnotation() []corev1.ServicePort {
-	var ports []corev1.ServicePort
-	for k, v := range mg.Metadata.Annotations {
-		if strings.Contains(k, ".service.k8s.io/port") {
-			protocol := strings.Split(k, ".")[0]
-			switch protocol {
-			case "http":
-				intport, err := strconv.Atoi(v)
-				if err != nil {
-					log.Warningf("Unable to convert port to numeric value for annotation: %v", k)
-					continue
-				}
-				ports = append(ports, corev1.ServicePort{
-					Name:     "http",
-					Port:     int32(80),
-					Protocol: "TCP",
-					TargetPort: intstr.IntOrString{
-						Type:   0,
-						IntVal: int32(intport),
-						StrVal: v,
-					},
-				})
-			case "https":
-				intport, err := strconv.Atoi(v)
-				if err != nil {
-					log.Warningf("Unable to convert port to numeric value for annotation: %v", k)
-					continue
-				}
-				ports = append(ports, corev1.ServicePort{
-					Name:     "https",
-					Port:     int32(443),
-					Protocol: "TCP",
-					TargetPort: intstr.IntOrString{
-						Type:   0,
-						IntVal: int32(intport),
-						StrVal: v,
-					},
-				})
-			}
-		}
-	}
-	return ports
-}
 
-func (mg MetaGraf) ServicePortsBySpec() []corev1.ServicePort {
-	var ports []corev1.ServicePort
-	for protocol, port := range mg.Spec.Ports {
-		switch protocol {
-		case "http":
-			ports = append(ports, corev1.ServicePort{
-				Name:     "http",
-				Port:     int32(80),
-				Protocol: "TCP",
-				TargetPort: intstr.IntOrString{
-					Type:   0,
-					IntVal: port,
-					StrVal: protocol,
-				},
-			})
-		case "https":
-			ports = append(ports, corev1.ServicePort{
-				Name:     "https",
-				Port:     int32(443),
-				Protocol: "TCP",
-				TargetPort: intstr.IntOrString{
-					Type:   0,
-					IntVal: port,
-					StrVal: protocol,
-				},
-			})
-		default:
-			ports = append(ports, corev1.ServicePort{
-				Name:     "TCP-" + protocol,
-				Protocol: "TCP",
-				Port:     port,
-				TargetPort: intstr.IntOrString{
-					Type:   0,
-					IntVal: port,
-					StrVal: protocol,
-				},
-			})
-		}
-	}
-	return ports
-}
 
 func sanitizeLabelValue(val string) string {
 	// If a value includes a (, split the string and only return the part

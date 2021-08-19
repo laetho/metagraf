@@ -23,8 +23,6 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/laetho/metagraf/internal/pkg/helpers"
-	"github.com/laetho/metagraf/internal/pkg/imageurl"
 	"github.com/laetho/metagraf/internal/pkg/k8sclient"
 	"github.com/laetho/metagraf/internal/pkg/params"
 	"k8s.io/apimachinery/pkg/util/intstr"
@@ -41,32 +39,9 @@ func GenRoute(mg *metagraf.MetaGraf) {
 
 	objname := Name(mg)
 
-	var DockerImage string
-	if len(mg.Spec.BaseRunImage) > 0 {
-		DockerImage = mg.Spec.BaseRunImage
-	} else if len(mg.Spec.BuildImage) > 0 {
-		DockerImage = mg.Spec.BuildImage
-	} else if len(mg.Spec.Image) > 0 {
-		DockerImage = mg.Spec.Image
-	} else {
-		DockerImage = ""
-	}
+	// serviceports := GetServicePorts(mg, helpers.ImageExposedPortsToServicePorts(ImageInfo.Config))
+	serviceports := mg.GetServicePorts()
 
-	client := k8sclient.GetImageClient()
-	var imgurl imageurl.ImageURL
-	err := imgurl.Parse(DockerImage)
-	ist := helpers.GetImageStreamTags(
-		client,
-		imgurl.Namespace,
-		imgurl.Image+":"+imgurl.Tag)
-	if err != nil {
-		log.Errorf("%v", err)
-	}
-
-	ImageInfo := helpers.GetDockerImageFromIST(ist)
-	log.V(2).Infof("Docker image ports: %v", ImageInfo.Config.ExposedPorts)
-
-	serviceports := GetServicePorts(mg, helpers.ImageExposedPortsToServicePorts(ImageInfo.Config))
 	// Find http port
 	// todo: This needs to be more solid
 	var ports []string

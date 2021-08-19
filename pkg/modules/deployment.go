@@ -89,7 +89,7 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 
 	// ImageInfo := helpers.SkopeoImageInfo(DockerImage)
 	HasImageInfo := false
-	ImageInfo, err := helpers.ImageInfo(mg)
+	ImageInfo, err := helpers.ImageInfo(mg.GetDockerImageURL())
 	if err != nil {
 		HasImageInfo = false
 	} else {

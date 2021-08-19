@@ -19,18 +19,17 @@ package helpers
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
+	"os"
+	"os/exec"
+
 	"github.com/laetho/metagraf/internal/pkg/imageurl"
 	"github.com/laetho/metagraf/internal/pkg/k8sclient"
-	"github.com/laetho/metagraf/pkg/metagraf"
 	dockerv10 "github.com/openshift/api/image/docker10"
 	imagev1 "github.com/openshift/api/image/v1"
 	imagev1client "github.com/openshift/client-go/image/clientset/versioned/typed/image/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	log "k8s.io/klog"
-	"os"
-	"os/exec"
 )
 
 func GetImageStreamTags(c *imagev1client.ImageV1Client, ns string, n string) *imagev1.ImageStreamTag {
@@ -109,20 +108,10 @@ func GetImage(c *imagev1client.ImageV1Client, i string) *imagev1.Image {
 }
 
 // Returns docker information based on images referenced in spec.
-func ImageInfo(mg *metagraf.MetaGraf) (*dockerv10.DockerImage, error) {
-	var DockerImage string
-	if len(mg.Spec.BaseRunImage) > 0 {
-		DockerImage = mg.Spec.BaseRunImage
-	} else if len(mg.Spec.BuildImage) > 0 {
-		DockerImage = mg.Spec.BuildImage
-	} else if len(mg.Spec.Image) > 0 {
-		DockerImage = mg.Spec.Image
-		// @todo, we need a way to natively inspect a upstream image when we're not running in openshift, or make the new way default.
-		return nil, errors.New("blah")
-	}
+func ImageInfo(image string) (*dockerv10.DockerImage, error) {
 
 	var imgurl imageurl.ImageURL
-	imgurl.Parse(DockerImage)
+	imgurl.Parse(image)
 
 	client := k8sclient.GetImageClient()
 
