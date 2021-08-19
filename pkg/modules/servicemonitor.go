@@ -27,7 +27,6 @@ import (
 	"github.com/laetho/metagraf/internal/pkg/params"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/util/intstr"
 	log "k8s.io/klog"
 )
 
@@ -49,10 +48,8 @@ func GenServiceMonitor(mg *metagraf.MetaGraf) {
 
 	eps := []monitoringv1.Endpoint{}
 	ep := monitoringv1.Endpoint{
-		TargetPort: &intstr.IntOrString{
-			IntVal: FindServiceMonitorPort(mg),
-		},
-		Path:     FindServiceMonitorPath(mg),
+		Port:     GetServiceMonitorNamedPort(mg),
+		Path:     GetServiceMonitorPath(mg),
 		Scheme:   params.ServiceMonitorScheme,
 		Interval: params.ServiceMonitorInterval,
 	}
@@ -86,7 +83,7 @@ func GenServiceMonitor(mg *metagraf.MetaGraf) {
 
 // Parses metaGraf specification to look for annotation to
 // control scrape path for ServiceMonitor resource.
-func FindServiceMonitorPath(mg *metagraf.MetaGraf) string {
+func GetServiceMonitorPath(mg *metagraf.MetaGraf) string {
 	// mg cli value, return provided if not default.
 	if len(params.ServiceMonitorPath) > 0 && params.ServiceMonitorPath != params.ServiceMonitorPathDefault {
 		return params.ServiceMonitorPath
@@ -118,6 +115,16 @@ func FindServiceMonitorPort(mg *metagraf.MetaGraf) int32 {
 	}
 	// Default, return default value
 	return params.ServiceMonitorPortDefault
+}
+
+func GetServiceMonitorNamedPort(mg *metagraf.MetaGraf) string {
+	monitorPort := FindServiceMonitorPort(mg)
+	for specPortName, specPort := range mg.Spec.Ports {
+		if monitorPort == specPort {
+			return specPortName
+		}
+	}
+	return string(monitorPort)
 }
 
 func StoreServiceMonitor(obj monitoringv1.ServiceMonitor) {
