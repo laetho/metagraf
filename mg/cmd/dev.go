@@ -233,9 +233,12 @@ func s2ibuild(bc string, ns string, local bool) error {
 	}
 
 	arg := []string{"start-build", bc, "-n", ns, "--follow"}
+
 	if local {
-		arg = append(arg, "--from-file=.")
+		arg = append(arg, "--from-dir=.")
+		arg = append(arg, "--exclude=''")
 	}
+
 	c := exec.Command(path, arg...)
 	stdout, pipeerr := c.StdoutPipe()
 	if pipeerr != nil {
