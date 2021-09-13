@@ -17,16 +17,16 @@ go test .././...
 
 CGO_ENABLED=0 go build -ldflags \
 	"-extldflags '-static' \
-	-X 'metagraf/pkg/mgver.GitHash=${GITHASH}' \
-	-X 'metagraf/pkg/mgver.GitTag=${GITTAG}' \
-	-X 'metagraf/pkg/mgver.GitBranch=${GITBRANCH}'" 
+	-X 'github.com/laetho/metagraf/pkg/mgver.GitHash=${GITHASH}' \
+	-X 'github.com/laetho/metagraf/pkg/mgver.GitTag=${GITTAG}' \
+	-X 'github.com/laetho/metagraf/pkg/mgver.GitBranch=${GITBRANCH}'"
 
 GOOS=darwin GOARCH=amd64 go build -o mg.osx -ldflags \
-  "-X 'metagraf/pkg/mgver.GitHash=${GITHASH}' \
-  -X 'metagraf/pkg/mgver.GitTag=${GITTAG}' \
-  -X 'metagraf/pkg/mgver.GitBranch=${GITBRANCH}'"	
+  "-X 'github.com/laetho/metagraf/pkg/mgver.GitHash=${GITHASH}' \
+  -X 'github.com/laetho/metagraf/pkg/mgver.GitTag=${GITTAG}' \
+  -X 'github.com/laetho/metagraf/pkg/mgver.GitBranch=${GITBRANCH}'"
 
 GOOS=windows GOARCH=amd64 go build -o mg.exe -ldflags \
-  "-X 'metagraf/pkg/mgver.GitHash=${GITHASH}' \
-  -X 'metagraf/pkg/mgver.GitTag=${GITTAG}' \
-  -X 'metagraf/pkg/mgver.GitBranch=${GITBRANCH}'" 
+  "-X 'github.com/laetho/metagraf/pkg/mgver.GitHash=${GITHASH}' \
+  -X 'github.com/laetho/metagraf/pkg/mgver.GitTag=${GITTAG}' \
+  -X 'github.com/laetho/metagraf/pkg/mgver.GitBranch=${GITBRANCH}'"

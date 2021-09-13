@@ -24,9 +24,9 @@ builds:
       - amd64
     ldflags:
       - -extldflags '-static'
-      - -X 'metagraf/pkg/mgver.GitHash={{.Env.GITHASH}}'
-      - -X 'metagraf/pkg/mgver.GitTag={{.Env.GITTAG}}'
-      - -X 'metagraf/pkg/mgver.GitBranch={{.Env.GITBRANCH}}'
+      - -X 'github.com/laetho/metagraf/pkg/mgver.GitHash={{.Env.GITHASH}}'
+      - -X 'github.com/laetho/metagraf/pkg/mgver.GitTag={{.Env.GITTAG}}'
+      - -X 'github.com/laetho/metagraf/pkg/mgver.GitBranch={{.Env.GITBRANCH}}'
   -
     id: "mg-darwin"
     dir: mg
@@ -41,9 +41,9 @@ builds:
     goarch:
       - amd64
     ldflags:
-      - -X 'metagraf/pkg/mgver.GitHash={{.Env.GITHASH}}'
-      - -X 'metagraf/pkg/mgver.GitTag={{.Env.GITTAG}}'
-      - -X 'metagraf/pkg/mgver.GitBranch={{.Env.GITBRANCH}}'
+      - -X 'github.com/laetho/metagraf/pkg/mgver.GitHash={{.Env.GITHASH}}'
+      - -X 'github.com/laetho/metagraf/pkg/mgver.GitTag={{.Env.GITTAG}}'
+      - -X 'github.com/laetho/metagraf/pkg/mgver.GitBranch={{.Env.GITBRANCH}}'
   -
     id: "mg-win"
     dir: mg
@@ -58,9 +58,9 @@ builds:
     goarch:
       - amd64
     ldflags:
-      - -X 'metagraf/pkg/mgver.GitHash={{.Env.GITHASH}}'
-      - -X 'metagraf/pkg/mgver.GitTag={{.Env.GITTAG}}'
-      - -X 'metagraf/pkg/mgver.GitBranch={{.Env.GITBRANCH}}'
+      - -X 'github.com/laetho/metagraf/pkg/mgver.GitHash={{.Env.GITHASH}}'
+      - -X 'github.com/laetho/metagraf/pkg/mgver.GitTag={{.Env.GITTAG}}'
+      - -X 'github.com/laetho/metagraf/pkg/mgver.GitBranch={{.Env.GITBRANCH}}'
 dockers:
   -
     goos: linux
