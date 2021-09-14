@@ -178,6 +178,13 @@ func genBinaryBuildSource() buildv1.BuildSource {
 }
 
 func genGitBuildSource(mg *metagraf.MetaGraf) buildv1.BuildSource {
+
+	// When using the Git repository as a source without specifying the ref field,
+	//OpenShift Enterprise performs a shallow clone (--depth=1 clone).
+	//That means only the HEAD (usually the master branch) is downloaded.
+	//This results in repositories downloading faster, including the commit history.
+	// https://docs.openshift.com/enterprise/3.2/dev_guide/builds.html#source-code
+
 	var branch string
 	if len(params.SourceRef) > 0 {
 		branch = params.SourceRef

@@ -72,7 +72,7 @@ func init() {
 	devCmdDown.Flags().StringVar(&OName, "name", "", "Overrides name of application.")
 
 	devCmd.AddCommand(devCmdBuild)
-	devCmdBuild.Flags().StringVar(&params.SourceRef, "ref", "master", "Specify the git ref or branch ref to build.")
+	devCmdBuild.Flags().StringVar(&params.SourceRef, "ref", "", "Specify the git ref or branch ref to build.")
 	devCmdBuild.Flags().StringVarP(&params.NameSpace, "namespace", "n", "", "namespace to work on, if not supplied it will use current active namespace.")
 	devCmdBuild.Flags().BoolVar(&params.LocalBuild, "local", false, "Builds application from src in current (.) direcotry.")
 
