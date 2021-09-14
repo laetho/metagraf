@@ -129,6 +129,12 @@ type MetaGraf struct {
 
 		// Slice of metagraf.Secret's needed in build context.
 		BuildSecret []Secret `json:"buildsecret,omitempty"`
+
+		// Storage class name to be used by statefulsets in pvc template
+		PersistentVolumeClaimStorageClass string `json:"persistentVolumeClaimStorageClass,omitempty"`
+		PersistentVolumeClaimStorageSize  string `json:"persistentVolumeClaimStorageSize,omitempty"`
+
+		// deployment type reference, to distinguish between Deployment and StatefulSet. Deployment is considered default if not defined
 	} `json:"spec"`
 }
 
@@ -192,7 +198,7 @@ type EnvironmentVar struct {
 	Name     string `json:"name"`
 	Required bool   `json:"required"`
 
-	Type     string `json:"type,omitempty"`
+	Type string `json:"type,omitempty"`
 
 	// Expose environment variables from ConfigMap resources.
 	// All keys, value pairs in secret will be exported from
@@ -211,16 +217,16 @@ type EnvironmentVar struct {
 	// have the option to specify the name of a key to export. If provided
 	// the value from the referenced key will appear as EnvironmentVar.Name
 	// inside the running Pod.
-	Key         string `json:"key,omitempty"`
+	Key string `json:"key,omitempty"`
 
 	// Description of the EnvironmentVar. What is it used for.
 	Description string `json:"description"`
 
 	// Field to hold the Default value. Take care with Default values in the spec. A good practice is to not use them.
-	Default     string `json:"default,omitempty"`
+	Default string `json:"default,omitempty"`
 
 	// Textual field for describing an example value.
-	Example     string `json:"example,omitempty"`
+	Example string `json:"example,omitempty"`
 }
 
 // The structure for defining volumes to used by the component.
