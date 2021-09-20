@@ -173,7 +173,6 @@ func GenStatefulSet(mg *metagraf.MetaGraf, namespace string) {
 				},
 			},
 		},
-		Status: appsv1.StatefulSetStatus{},
 	}
 
 	if params.WithAffinityRules {
@@ -203,7 +202,7 @@ func GenStatefulSet(mg *metagraf.MetaGraf, namespace string) {
 		StoreStatefulSet(obj)
 	}
 	if Output {
-		MarshalObject(obj.DeepCopyObject())
+		MarshalObjectWithoutStatus(obj.DeepCopyObject())
 	}
 }
 

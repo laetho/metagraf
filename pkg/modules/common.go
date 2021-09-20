@@ -17,12 +17,16 @@ limitations under the License.
 package modules
 
 import (
+	"bytes"
+	gojson "encoding/json"
+	"fmt"
 	"os"
 	"strconv"
 	"strings"
 
 	"github.com/blang/semver"
 	"github.com/laetho/metagraf/pkg/metagraf"
+	"gopkg.in/yaml.v3"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	log "k8s.io/klog"
@@ -50,7 +54,7 @@ var (
 	Context       string // Application context root from FlagPassingHack.
 	CreateGlobals bool
 	// Sets the default pull policy for all metagraf modules
-	PullPolicy	  corev1.PullPolicy = corev1.PullIfNotPresent
+	PullPolicy corev1.PullPolicy = corev1.PullIfNotPresent
 )
 
 var Variables metagraf.MGProperties
@@ -348,6 +352,44 @@ func MarshalObject(obj runtime.Object) {
 	}
 }
 
+func MarshalObjectWithoutStatus(obj runtime.Object) {
+	opt := json.SerializerOptions{
+		Yaml:   false,
+		Pretty: true,
+		Strict: true,
+	}
+	s := json.NewSerializerWithOptions(json.DefaultMetaFactory, nil, nil, opt)
+
+	var buff bytes.Buffer
+	err := s.Encode(obj.DeepCopyObject(), &buff)
+	if err != nil {
+		log.Error(err)
+		os.Exit(1)
+	}
+	jsonMap := make(map[string]interface{})
+	err = gojson.Unmarshal(buff.Bytes(), &jsonMap)
+	if err != nil {
+		panic(err)
+	}
+
+	delete(jsonMap, "status")
+
+	if Format == "json" {
+		oj, err := gojson.MarshalIndent(jsonMap, "", "  ")
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println(string(oj))
+		return
+	} else {
+		oy, err := yaml.Marshal(jsonMap)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println(string(oy))
+	}
+}
+
 func GetGlobalConfigMapVolumes(mg *metagraf.MetaGraf, Volumes *[]corev1.Volume, VolumeMounts *[]corev1.VolumeMount) {
 	// Only handle global ConfigMaps
 	for _, v := range mg.Spec.Config {
@@ -397,8 +439,8 @@ func GetGlobalConfigMapVolumes(mg *metagraf.MetaGraf, Volumes *[]corev1.Volume, 
 
 func labelsFromParams(labels []string) map[string]string {
 	ret := make(map[string]string)
-	for _,s := range labels {
-		split := strings.Split(s,"=")
+	for _, s := range labels {
+		split := strings.Split(s, "=")
 		if len(split) != 2 {
 			continue
 		}
@@ -408,7 +450,7 @@ func labelsFromParams(labels []string) map[string]string {
 }
 
 // Generate standardised labels map
-func Labels(name string, input map[string]string ) map[string]string {
+func Labels(name string, input map[string]string) map[string]string {
 	// Resource labels
 	l := make(map[string]string)
 	l["app"] = name
@@ -425,9 +467,9 @@ func DownwardAPIEnvVars() []corev1.EnvVar {
 
 	// Map for fieldRefs: Name, fieldRef
 	fieldRefs := map[string]string{
-		"POD_NAME":"metadata.name",
-		"POD_NAMESPACE":"metadata.namespace",
-		"NODE_NAME":"spec.nodeName",
+		"POD_NAME":      "metadata.name",
+		"POD_NAMESPACE": "metadata.namespace",
+		"NODE_NAME":     "spec.nodeName",
 	}
 
 	for k, v := range fieldRefs {
@@ -441,4 +483,3 @@ func DownwardAPIEnvVars() []corev1.EnvVar {
 	}
 	return vars
 }
-
