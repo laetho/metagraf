@@ -120,6 +120,18 @@ func GenStatefulSet(mg *metagraf.MetaGraf, namespace string) {
 
 		Volumes, VolumeMounts = volumes(mg, ImageInfo)
 	}
+
+	// If create sts pvc is true, we also need a volume mount for it
+	// TODO: path is hardcoded to '/data'
+	if params.CreateStatefulSetPersistentVolumeClaim {
+		PersistentVolumeMount := corev1.VolumeMount{
+			MountPath: "/data",
+			Name:      objname,
+		}
+		VolumeMounts = append(VolumeMounts, PersistentVolumeMount)
+
+	}
+
 	// Tying Container PodSpec together
 	Container := corev1.Container{
 		Name:            objname,
