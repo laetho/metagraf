@@ -19,6 +19,7 @@ package cmd
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"os"
 	"strings"
 
@@ -63,31 +64,36 @@ func PropertiesFromCmd(mgp metagraf.MGProperties) metagraf.MGProperties {
 	return mgp
 }
 
-// Used for splitting --cvfile .properties files with strings.FieldsFunc()
+// MgPropertyLineSplit Used for splitting --cvfile .properties files with strings.FieldsFunc()
 func MgPropertyLineSplit(r rune) bool {
 	return r == '|' || r == '='
 }
 
-// Reads a properties file and returns a metagraf.MGProperties structure
-func ReadPropertiesFile(propfile string) metagraf.MGProperties {
-	props := metagraf.MGProperties{}
-
-	if len(propfile) == 0 {
-		return props
-	}
-
-	file, err := os.Open(propfile)
-	if err != nil {
-		log.Error(err)
-		os.Exit(1)
-	}
-	defer func() {
-		err := file.Close()
+// ReadPropertiesFromFile Reads a properties file and returns a metagraf.MGProperties structure
+func ReadPropertiesFromFile(propfile string) metagraf.MGProperties {
+	if len(propfile) > 0 {
+		file, err := os.Open(propfile)
 		if err != nil {
-			log.Warningf("Unable to close file: %v", err)
+			log.Error(err)
+			os.Exit(1)
 		}
-	}()
-	scanner := bufio.NewScanner(file)
+		defer func() {
+			err := file.Close()
+			if err != nil {
+				log.Warningf("Unable to close file: %v", err)
+			}
+		}()
+		return ParseProps(file)
+	} else {
+		return metagraf.MGProperties{}
+	}
+
+}
+
+
+func ParseProps(reader io.Reader) metagraf.MGProperties {
+	mgProps := metagraf.MGProperties{}
+	scanner := bufio.NewScanner(reader)
 	scanner.Split(bufio.ScanLines)
 
 	var line string
@@ -98,38 +104,55 @@ func ReadPropertiesFile(propfile string) metagraf.MGProperties {
 			continue
 		}
 
-		a := strings.FieldsFunc(line, MgPropertyLineSplit)
-		var v []string // to hold soruce, key, value
-		if len(a) >= 3 {
-			// Handle multiple = in value.
-			val := strings.SplitAfter(line, a[0]+"|"+a[1]+"=")
-			if len(val) == 1 {
-				val = strings.SplitAfter(line, a[0]+"="+a[1]+"=")
-				if len(val) == 1 {
-					fmt.Println("Unable to parse config format!")
-					os.Exit(1)
-				}
-			}
-			v = append(v, a[0])   // Set Source
-			v = append(v, a[1])   // Set Key
-			v = append(v, val[1]) // Set value
-		} else {
-			v = a // Set Source, Key, Value from simple line parse
-		}
+		propertySlice := parsePropertyLine(line)
 
-		if len(v) != 3 {
-			fmt.Println("Configuration format error! Is it in: \"<source>|key=value\"")
+		mgProperty := metagraf.MGProperty{
+			Source: propertySlice[0],
+			Key:    propertySlice[1],
+			Value:  strings.TrimRight(propertySlice[2], "\n"),
+		}
+		mgProps[mgProperty.MGKey()] = mgProperty
+	}
+	return mgProps
+}
+
+func parsePropertyLine(line string) []string {
+	lineSplitSlice := strings.FieldsFunc(line, MgPropertyLineSplit)
+	var propertySlice []string
+	if splitByMultipleEqualSigns(lineSplitSlice) {
+		propertySlice = concatenateValueSplitByEqualsSign(line, lineSplitSlice)
+	} else {
+		propertySlice = lineSplitSlice // Set Source, Key, Value from simple line parse
+	}
+
+	if len(propertySlice) != 3 {
+		fmt.Println("Configuration format error! Is it in: \"<source>|key=value\"")
+		os.Exit(1)
+	}
+
+	return propertySlice
+}
+
+// Occasionally properties will contain multiple equals sign,
+// then we must concatenate the parts from the initial split
+func concatenateValueSplitByEqualsSign(line string, lineSplitSlice []string) []string {
+	val := strings.SplitAfter(line, lineSplitSlice[0]+"|"+lineSplitSlice[1]+"=")
+	if len(val) == 1 {
+		val = strings.SplitAfter(line, lineSplitSlice[0]+"="+lineSplitSlice[1]+"=")
+		if len(val) == 1 {
+			fmt.Println("Unable to parse config format!")
 			os.Exit(1)
 		}
-
-		t := metagraf.MGProperty{
-			Source: v[0],
-			Key:    v[1],
-			Value:  strings.TrimRight(v[2], "\n"),
-		}
-		props[t.MGKey()] = t
 	}
-	return props
+	var propertySlice []string
+	propertySlice = append(propertySlice, lineSplitSlice[0]) // Set Source
+	propertySlice = append(propertySlice, lineSplitSlice[1]) // Set Key
+	propertySlice = append(propertySlice, val[1])            // Set value
+	return propertySlice
+}
+
+func splitByMultipleEqualSigns(lineSplitSlice []string) bool {
+	return len(lineSplitSlice) >= 3
 }
 
 //
@@ -188,7 +211,7 @@ func GetCmdProperties(mgp metagraf.MGProperties) metagraf.MGProperties {
 			mgp[property.MGKey()] = property
 		}
 	}
-	fileprops := ReadPropertiesFile(params.PropertiesFile)
+	fileprops := ReadPropertiesFromFile(params.PropertiesFile)
 	// Fetch possible variables from metaGraf specification
 	mgp = MergeAndValidateProperties(mgp, PropertiesFromEnv(mgp), false)
 	// Fetch variable overrides from file if specified with --cvfile
