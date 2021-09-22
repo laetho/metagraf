@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/laetho/metagraf/pkg/metagraf"
 	"github.com/stretchr/testify/assert"
 	"os"
@@ -87,4 +88,45 @@ func TestMultipleProperties(t *testing.T) {
 	assert.Len(t, actualResult, 2, "Expected 2 MGProperties, but got %d", len(actualResult))
 	assert.Equal(t, expectedProperty1, actualProperty1)
 	assert.Equal(t, expectedProperty2, actualProperty2)
+}
+
+func TestPropertiesFile(t *testing.T) {
+
+	f, err := os.CreateTemp("", "sample")
+	check(err)
+	defer os.Remove(f.Name())
+	fmt.Println("Temp file name:", f.Name())
+
+	fileContent := "local|JAVA_OPTIONS=-Dconfig.file=/config/application.properties\n" +
+				   "build|MAVEN_OPS=-xms123m,-aaa4311G\n"
+
+	_, err = f.WriteString(fileContent)
+	check(err)
+
+	actualResult := ReadPropertiesFromFile(f.Name())
+
+	actualProperty1 := actualResult["local|JAVA_OPTIONS"]
+	actualProperty2 := actualResult["build|MAVEN_OPS"]
+
+	expectedProperty1 := metagraf.MGProperty{
+		Source: "local",
+		Key: "JAVA_OPTIONS",
+		Value: "-Dconfig.file=/config/application.properties",
+	}
+
+	expectedProperty2 := metagraf.MGProperty{
+		Source: "build",
+		Key: "MAVEN_OPS",
+		Value: "-xms123m,-aaa4311G",
+	}
+
+	assert.Len(t, actualResult, 2, "Expected 2 MGProperties, but got %d", len(actualResult))
+	assert.Equal(t, expectedProperty1, actualProperty1)
+	assert.Equal(t, expectedProperty2, actualProperty2)
+}
+
+func check(e error) {
+	if e != nil {
+		panic(e)
+	}
 }
