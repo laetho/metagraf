@@ -54,7 +54,7 @@ func TestMissingSourceHintFunctionShouldExit(t *testing.T) {
 		ParseProps(&propertyFileContent)
 		return
 	}
-	cmd := exec.Command(os.Args[0], "-test.run=TestMissingSourceHintProperty")
+	cmd := exec.Command(os.Args[0], "-test.run=TestMissingSourceHintFunctionShouldExit")
 	cmd.Env = append(os.Environ(), "BE_CRASHER=1")
 	err := cmd.Run()
 
@@ -75,14 +75,14 @@ func TestMultipleProperties(t *testing.T) {
 
 	expectedProperty1 := metagraf.MGProperty{
 		Source: "local",
-		Key:    "JAVA_OPTIONS",
-		Value:  "-Dconfig.file=/config/application.properties",
+		Key: "JAVA_OPTIONS",
+		Value: "-Dconfig.file=/config/application.properties",
 	}
 
 	expectedProperty2 := metagraf.MGProperty{
 		Source: "build",
-		Key:    "MAVEN_OPS",
-		Value:  "-xms123m,-aaa4311G",
+		Key: "MAVEN_OPS",
+		Value: "-xms123m,-aaa4311G",
 	}
 
 	assert.Len(t, actualResult, 2, "Expected 2 MGProperties, but got %d", len(actualResult))
