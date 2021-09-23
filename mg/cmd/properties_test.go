@@ -11,8 +11,7 @@ import (
 )
 
 func TestSimpleLocalSourceProperty(t *testing.T) {
-	var propertyFileContent bytes.Buffer
-	propertyFileContent.WriteString("local|Nisse=Nasse")
+	propertyFileContent := fileContent("local|Nisse=Nasse")
 
 	actualResult := ParseProps(&propertyFileContent)
 	actualProperty := actualResult["local|Nisse"]
@@ -28,8 +27,8 @@ func TestSimpleLocalSourceProperty(t *testing.T) {
 }
 
 func TestPropertyWithMultipleEqualsSigns(t *testing.T) {
-	var propertyFileContent bytes.Buffer
-	propertyFileContent.WriteString("local|JAVA_OPTIONS=-Dconfig.file=/config/application.properties")
+	propertyFileContent := fileContent(
+		"local|JAVA_OPTIONS=-Dconfig.file=/config/application.properties")
 
 	actualResult := ParseProps(&propertyFileContent)
 	actualProperty := actualResult["local|JAVA_OPTIONS"]
@@ -45,10 +44,12 @@ func TestPropertyWithMultipleEqualsSigns(t *testing.T) {
 }
 
 
-func TestMissingSourceHintPropertyFunctionShouldExit(t *testing.T) {
-	var propertyFileContent bytes.Buffer
-	propertyFileContent.WriteString("Nisse=Nasse")
+func TestMissingSourceHintFunctionShouldExit(t *testing.T) {
+	propertyFileContent := fileContent("Nisse=Nasse")
 
+	// Pretty weird way to handle a test case where the function under test does an os.exit(1) during execution
+	// Solution is proposed by golang authors, though :-D
+	// A better solution is to refactor the function under test to return error as opposed to do a hard exit of the program
 	if os.Getenv("BE_CRASHER") == "1" {
 		ParseProps(&propertyFileContent)
 		return
@@ -64,12 +65,46 @@ func TestMissingSourceHintPropertyFunctionShouldExit(t *testing.T) {
 }
 
 func TestMultipleProperties(t *testing.T) {
-	var propertyFileContent bytes.Buffer
-	propertyFileContent.WriteString(
+	propertyFileContent := fileContent(
 		"local|JAVA_OPTIONS=-Dconfig.file=/config/application.properties\n" +
-			"build|MAVEN_OPS=-xms123m,-aaa4311G\n")
+				"build|MAVEN_OPS=-xms123m,-aaa4311G\n")
 
 	actualResult := ParseProps(&propertyFileContent)
+	actualProperty1 := actualResult["local|JAVA_OPTIONS"]
+	actualProperty2 := actualResult["build|MAVEN_OPS"]
+
+	expectedProperty1 := metagraf.MGProperty{
+		Source: "local",
+		Key:    "JAVA_OPTIONS",
+		Value:  "-Dconfig.file=/config/application.properties",
+	}
+
+	expectedProperty2 := metagraf.MGProperty{
+		Source: "build",
+		Key:    "MAVEN_OPS",
+		Value:  "-xms123m,-aaa4311G",
+	}
+
+	assert.Len(t, actualResult, 2, "Expected 2 MGProperties, but got %d", len(actualResult))
+	assert.Equal(t, expectedProperty1, actualProperty1)
+	assert.Equal(t, expectedProperty2, actualProperty2)
+}
+
+func TestPropertiesFile(t *testing.T) {
+
+	tempFile, err := os.CreateTemp("", "sample")
+	check(err)
+	defer os.Remove(tempFile.Name())
+	fmt.Println("Temp file name:", tempFile.Name())
+
+	fileContent := "local|JAVA_OPTIONS=-Dconfig.file=/config/application.properties\n" +
+				   "build|MAVEN_OPS=-xms123m,-aaa4311G\n"
+
+	_, err = tempFile.WriteString(fileContent)
+	check(err)
+
+	actualResult := ReadPropertiesFromFile(tempFile.Name())
+
 	actualProperty1 := actualResult["local|JAVA_OPTIONS"]
 	actualProperty2 := actualResult["build|MAVEN_OPS"]
 
@@ -90,39 +125,10 @@ func TestMultipleProperties(t *testing.T) {
 	assert.Equal(t, expectedProperty2, actualProperty2)
 }
 
-func TestPropertiesFile(t *testing.T) {
-
-	f, err := os.CreateTemp("", "sample")
-	check(err)
-	defer os.Remove(f.Name())
-	fmt.Println("Temp file name:", f.Name())
-
-	fileContent := "local|JAVA_OPTIONS=-Dconfig.file=/config/application.properties\n" +
-				   "build|MAVEN_OPS=-xms123m,-aaa4311G\n"
-
-	_, err = f.WriteString(fileContent)
-	check(err)
-
-	actualResult := ReadPropertiesFromFile(f.Name())
-
-	actualProperty1 := actualResult["local|JAVA_OPTIONS"]
-	actualProperty2 := actualResult["build|MAVEN_OPS"]
-
-	expectedProperty1 := metagraf.MGProperty{
-		Source: "local",
-		Key: "JAVA_OPTIONS",
-		Value: "-Dconfig.file=/config/application.properties",
-	}
-
-	expectedProperty2 := metagraf.MGProperty{
-		Source: "build",
-		Key: "MAVEN_OPS",
-		Value: "-xms123m,-aaa4311G",
-	}
-
-	assert.Len(t, actualResult, 2, "Expected 2 MGProperties, but got %d", len(actualResult))
-	assert.Equal(t, expectedProperty1, actualProperty1)
-	assert.Equal(t, expectedProperty2, actualProperty2)
+func fileContent(content string) bytes.Buffer {
+	var propertyFileContent bytes.Buffer
+	propertyFileContent.WriteString(content)
+	return propertyFileContent
 }
 
 func check(e error) {
