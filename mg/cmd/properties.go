@@ -43,7 +43,7 @@ func PropertiesFromEnv(mgp metagraf.MGProperties) metagraf.MGProperties {
 // Modifies a MGProperties map with values from --cvars
 // argument. Only supports local environment variables
 // for now.
-func PropertiesFromCmd(mgp metagraf.MGProperties) metagraf.MGProperties {
+func propertiesFromCmdUsingCvarsFlag(mgp metagraf.MGProperties) metagraf.MGProperties {
 	// Parse and get values from --cvars
 	cvars := CmdCVars(CVars).Parse()
 	for k, v := range cvars {
@@ -69,8 +69,8 @@ func MgPropertyLineSplit(r rune) bool {
 	return r == '|' || r == '='
 }
 
-// ReadPropertiesFromFile Reads a properties file and returns a metagraf.MGProperties structure
-func ReadPropertiesFromFile(propfile string) metagraf.MGProperties {
+// propertiesFromFile Reads a properties file and returns a metagraf.MGProperties structure
+func propertiesFromFile(propfile string) metagraf.MGProperties {
 	if len(propfile) > 0 {
 		file, err := os.Open(propfile)
 		if err != nil {
@@ -83,15 +83,14 @@ func ReadPropertiesFromFile(propfile string) metagraf.MGProperties {
 				log.Warningf("Unable to close file: %v", err)
 			}
 		}()
-		return ParseProps(file)
+		return parseProps(file)
 	} else {
 		return metagraf.MGProperties{}
 	}
 
 }
 
-
-func ParseProps(reader io.Reader) metagraf.MGProperties {
+func parseProps(reader io.Reader) metagraf.MGProperties {
 	mgProps := metagraf.MGProperties{}
 	scanner := bufio.NewScanner(reader)
 	scanner.Split(bufio.ScanLines)
