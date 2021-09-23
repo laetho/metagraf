@@ -7,8 +7,35 @@ import (
 	"github.com/stretchr/testify/assert"
 	"os"
 	"os/exec"
+	"strings"
 	"testing"
 )
+
+
+func TestGettingToKnowGo(t *testing.T) {
+	myMap := make(map[string]string)
+	myMap["nisse"] = "Nasse"
+	myMap["Ludde"] = "Ladde"
+
+	if myMap["nisse"] != "" {
+		fmt.Println("It exists!")
+	}
+
+	if val, ok := myMap["Ludde"]; ok {
+		fmt.Printf("I exists! The lookup returned %v and the value is %s ", ok, val)
+	}
+
+	if strings.HasPrefix(myMap["bla"], "nis") {
+		fmt.Println("Should not print this")
+	}
+
+	if strings.HasPrefix(myMap["nisse"], "Na") {
+		assert.True(t, true, "Value starts with Na??")
+	}else{
+		fmt.Println("Hey, missed conditional statement above!")
+	}
+
+}
 
 func TestSimpleLocalSourceProperty(t *testing.T) {
 	propertyFileContent := fileContent("local|Nisse=Nasse")
