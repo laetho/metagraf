@@ -18,15 +18,26 @@ package imageurl
 
 import (
 	"fmt"
+	log "k8s.io/klog"
 	"net/url"
+	"os"
 	"strings"
 )
-
 type ImageURL struct {
 	URL       *url.URL
 	Namespace string
 	Image     string
 	Tag       string
+}
+
+func NewImageUrl(buildImage string) ImageURL {
+	var imgurl ImageURL
+	err := imgurl.Parse(buildImage)
+	if err != nil {
+		log.Errorf("Malformed BuildImage url provided in metaGraf file; %v", buildImage)
+		os.Exit(1)
+	}
+	return imgurl
 }
 
 func (u *ImageURL) Parse(url string) error {

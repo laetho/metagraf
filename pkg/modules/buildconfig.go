@@ -36,88 +36,43 @@ import (
 	//"github.com/openshift/oc/pkg/helpers/source-to-image/tar"
 )
 
-func TriggerLocalBuild(mg metagraf.MetaGraf) {
-/*
-	br := buildv1.BuildRequest{
-		TypeMeta:              metav1.TypeMeta{},
-		ObjectMeta:            metav1.ObjectMeta{},
-	}
-	br.Kind = "BuildRequest"
-	br.APIVersion = "build.openshift.io/v1"
-	br.ObjectMeta.Name = mg.Name("","")
-	brt := buildv1.BuildTriggerCause{}
-	brt.Message = "Triggered by mg."
-	br.TriggeredBy = []buildv1.BuildTriggerCause{brt}
-	client := k8sclient.GetBuildClient()
-	build, err := client.BuildConfigs(params.NameSpace).Instantiate(context.TODO(), br.ObjectMeta.Name,&br, metav1.CreateOptions{})
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	fmt.Println("Started", build.Name)
-
-	tar.
- */
-}
-
 func GenBuildConfig(mg *metagraf.MetaGraf) {
-	var buildsource buildv1.BuildSource
-	var imgurl imageurl.ImageURL
-	var EnvVars []corev1.EnvVar
 
-	err := imgurl.Parse(mg.Spec.BuildImage)
-	if err != nil {
+	imgurl := imageurl.NewImageUrl(mg.Spec.BuildImage)
+	imageStreamTagObjRef := constructImageStreamTagObjRef(imgurl)
 
-		log.Errorf("Malformed BuildImage url provided in metaGraf file; %v", mg.Spec.BuildImage)
-		os.Exit(1)
-	}
-
-	objname := Name(mg)
-
-	if len(mg.Spec.BaseRunImage) > 0 && len(mg.Spec.Repository) > 0 {
-		buildsource = genBinaryBuildSource()
-	} else if len(mg.Spec.BuildImage) > 0 && len(mg.Spec.BaseRunImage) < 1 {
-		buildsource = genGitBuildSource(mg)
-	}
-
+	containerEnvVarsMap := make(map[string]corev1.EnvVar)
 	if BaseEnvs {
-		log.V(2).Info("Populate environment variables form base image.")
-		client := k8sclient.GetImageClient()
+		imageEnvVars := fetchEnvironmentVariablesFromBuildImage(imgurl)
+		envVarsFromBaseImage := mapEnvVarsFromBaseImage(imageEnvVars)
 
-		ist := helpers.GetImageStreamTags(
-			client,
-			imgurl.Namespace,
-			imgurl.Image+":"+imgurl.Tag)
-
-		ImageInfo := helpers.GetDockerImageFromIST(ist)
-
-		// Environment Variables from buildimage
-		for _, e := range ImageInfo.Config.Env {
-			es := strings.Split(e, "=")
-			if helpers.SliceInString(EnvBlacklistFilter, strings.ToLower(es[0])) {
-				continue
-			}
-			EnvVars = append(EnvVars, corev1.EnvVar{Name: es[0], Value: es[1]})
+		for _, envVar := range envVarsFromBaseImage {
+			containerEnvVarsMap[envVar.Name] = envVar
 		}
+
 	}
 
-	// Resource labels
-	l := Labels(objname, labelsFromParams(params.Labels))
+	envVarsFromMetaGraf := mapBuildParamsFromMetaGraf(mg)
+	for _, envVar := range envVarsFromMetaGraf {
+		containerEnvVarsMap[envVar.Name] = envVar
+	}
 
-	km := Variables.KeyMap()
-	for _, e := range mg.Spec.Environment.Build {
-		if e.Required == true {
-			if len(km[e.Name]) > 0 {
-				EnvVars = append(EnvVars, corev1.EnvVar{Name: e.Name, Value: km[e.Name]})
-			} else {
-				EnvVars = append(EnvVars, corev1.EnvVar{Name: e.Name, Value: e.Default})
-			}
-		} else if e.Required == false {
-			EnvVars = append(EnvVars, corev1.EnvVar{Name: e.Name, Value: "null"})
-		}
+	envVarsFromBuildParams := mapBuildParamsFromCommandline(params.BuildParams)
+	for _, envVar := range envVarsFromBuildParams {
+		containerEnvVarsMap[envVar.Name] = envVar
+	}
+
+
+	containerEnvVars := make([]corev1.EnvVar, 0, len(containerEnvVarsMap))
+
+	for  _, value := range containerEnvVarsMap {
+		containerEnvVars = append(containerEnvVars, value)
 	}
 
 	// Construct toObjRef for BuildConfig output overrides
+	// Resource labels
+	objname := Name(mg)
+	labels := Labels(objname, labelsFromParams(params.Labels))
 	var toObjRefName = objname
 	var toObjRefTag = "latest"
 	if len(params.OutputImagestream) > 0 {
@@ -138,21 +93,17 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:   objname,
-			Labels: l,
+			Labels: labels,
 		},
 		Spec: buildv1.BuildConfigSpec{
 			RunPolicy: buildv1.BuildRunPolicySerial,
 			CommonSpec: buildv1.CommonSpec{
-				Source: buildsource,
+				Source: ConstructBuildSource(mg),
 				Strategy: buildv1.BuildStrategy{
 					Type: buildv1.SourceBuildStrategyType,
 					SourceStrategy: &buildv1.SourceBuildStrategy{
-						Env: EnvVars,
-						From: corev1.ObjectReference{
-							Kind:      "ImageStreamTag",
-							Namespace: imgurl.Namespace,
-							Name:      imgurl.Image + ":" + imgurl.Tag,
-						},
+						Env:  containerEnvVars,
+						From: imageStreamTagObjRef,
 					},
 				},
 				Output: buildv1.BuildOutput{
@@ -170,47 +121,78 @@ func GenBuildConfig(mg *metagraf.MetaGraf) {
 	}
 }
 
-func genBinaryBuildSource() buildv1.BuildSource {
-	return buildv1.BuildSource{
-		Type:   "Source",
-		Binary: &buildv1.BinaryBuildSource{},
-	}
-}
-
-func genGitBuildSource(mg *metagraf.MetaGraf) buildv1.BuildSource {
-
-	// When using the Git repository as a source without specifying the ref field,
-	//OpenShift Enterprise performs a shallow clone (--depth=1 clone).
-	//That means only the HEAD (usually the master branch) is downloaded.
-	//This results in repositories downloading faster, including the commit history.
-	// https://docs.openshift.com/enterprise/3.2/dev_guide/builds.html#source-code
-
-	var branch string
-	if len(params.SourceRef) > 0 {
-		branch = params.SourceRef
-	} else {
-		branch = mg.Spec.Branch
-	}
-
-	bs := buildv1.BuildSource{
-		Type: "Git",
-		Git: &buildv1.GitBuildSource{
-			URI: mg.Spec.Repository,
-			Ref: branch,
-		},
-	}
-
-	if len(mg.Spec.RepSecRef) > 0 {
-		bs.SourceSecret = &corev1.LocalObjectReference{
-			Name: mg.Spec.RepSecRef,
+func mapBuildParamsFromCommandline(buildParams []string) []corev1.EnvVar {
+	var containerEnvVars []corev1.EnvVar
+	for _, envVarRaw := range buildParams {
+		if strings.Contains(envVarRaw, "=") {
+			keyVal := strings.SplitN(envVarRaw, "=", 2) // Use strings.SplitN with n=2 to limit the result to two substrings.
+			key := keyVal[0]
+			val := keyVal[1]
+			envVar := corev1.EnvVar{Name: key, Value: val}
+			containerEnvVars = append(containerEnvVars, envVar)
+			log.Infof("Added build param %s", envVar)
+		} else {
+			log.Warningf("BuildParam [%s] doesn't fit expected pattern of KEY=VAL!", envVarRaw)
 		}
 	}
 
-	return bs
+	return containerEnvVars
+}
+
+func mapBuildParamsFromMetaGraf(mg *metagraf.MetaGraf) []corev1.EnvVar {
+	var containerEnvVars []corev1.EnvVar
+	configPropertiesFromMetaGraf := Variables.KeyMap()
+	for _, buildEnvVar := range mg.Spec.Environment.Build {
+		if buildEnvVar.Required == true {
+			if len(configPropertiesFromMetaGraf[buildEnvVar.Name]) > 0 {
+				containerEnvVars = append(containerEnvVars, corev1.EnvVar{Name: buildEnvVar.Name, Value: configPropertiesFromMetaGraf[buildEnvVar.Name]})
+			} else {
+				containerEnvVars = append(containerEnvVars, corev1.EnvVar{Name: buildEnvVar.Name, Value: buildEnvVar.Default})
+			}
+		} else if buildEnvVar.Required == false {
+			containerEnvVars = append(containerEnvVars, corev1.EnvVar{Name: buildEnvVar.Name, Value: "null"})
+		}
+	}
+	return containerEnvVars
+}
+
+func fetchEnvironmentVariablesFromBuildImage(imgurl imageurl.ImageURL) []string {
+	client := k8sclient.GetImageClient()
+	ist := helpers.GetImageStreamTags(
+		client,
+		imgurl.Namespace,
+		imgurl.Image+":"+imgurl.Tag)
+	dockerImage := helpers.GetDockerImageFromIST(ist)
+	// Environment Variables from buildimage
+	imageEnvs := dockerImage.Config.Env
+	return imageEnvs
+}
+
+func constructImageStreamTagObjRef(imgurl imageurl.ImageURL) corev1.ObjectReference {
+	imageStreamTag := corev1.ObjectReference{
+		Kind:      "ImageStreamTag",
+		Namespace: imgurl.Namespace,
+		Name:      imgurl.Image + ":" + imgurl.Tag,
+	}
+	return imageStreamTag
+}
+
+func mapEnvVarsFromBaseImage(imageEnvs []string) []corev1.EnvVar {
+	log.V(2).Info("Populate environment variables form base image.")
+
+	var containerEnvVars []corev1.EnvVar
+	for _, e := range imageEnvs {
+		es := strings.Split(e, "=")
+		if helpers.SliceInString(EnvBlacklistFilter, strings.ToLower(es[0])) {
+			continue
+		}
+		containerEnvVars = append(containerEnvVars, corev1.EnvVar{Name: es[0], Value: es[1]})
+	}
+	return containerEnvVars
 }
 
 func StoreBuildConfig(obj buildv1.BuildConfig) {
-	client := k8sclient.GetBuildClient().BuildConfigs(NameSpace)
+	client := k8sclient.GetBuildClient().BuildConfigs(params.NameSpace)
 	bc, _ := client.Get(context.TODO(), obj.Name, metav1.GetOptions{})
 
 	if len(bc.ResourceVersion) > 0 {
@@ -220,14 +202,14 @@ func StoreBuildConfig(obj buildv1.BuildConfig) {
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		fmt.Println("Updated BuildConfig: ", obj.Name, " in Namespace: ", NameSpace)
+		fmt.Println("Updated BuildConfig: ", obj.Name, " in Namespace: ", params.NameSpace)
 	} else {
 		_, err := client.Create(context.TODO(), &obj, metav1.CreateOptions{})
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		fmt.Println("Created BuildConfig: ", obj.Name, " in Namespace: ", NameSpace)
+		fmt.Println("Created BuildConfig: ", obj.Name, " in Namespace: ", params.NameSpace)
 	}
 }
 
