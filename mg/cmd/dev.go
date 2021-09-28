@@ -75,6 +75,7 @@ func init() {
 	devCmdBuild.Flags().StringVar(&params.SourceRef, "ref", "", "Specify the git ref or branch ref to build.")
 	devCmdBuild.Flags().StringVarP(&params.NameSpace, "namespace", "n", "", "namespace to work on, if not supplied it will use current active namespace.")
 	devCmdBuild.Flags().BoolVar(&params.LocalBuild, "local", false, "Builds application from src in current (.) direcotry.")
+	devCmdBuild.Flags().StringSliceVar(&params.BuildParams, "buildparams", []string{}, "Slice of key=value pairs, seperated by , to override or append build params used by underlying build mechanism")
 
 	devCmd.AddCommand(devCmdWatch)
 	devCmdWatch.Flags().StringVarP(&params.NameSpace, "namespace", "n", "", "namespace to work on, if not supplied it will use current active namespace.")

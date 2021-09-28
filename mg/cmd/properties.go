@@ -29,7 +29,66 @@ import (
 	log "k8s.io/klog"
 )
 
-func PropertiesFromEnv(mgp metagraf.MGProperties) metagraf.MGProperties {
+// GetCmdProperties Process cmd parameters based on metagraf defined properties.
+func GetCmdProperties(mgp metagraf.MGProperties) metagraf.MGProperties {
+	if Defaults {
+		for _, property := range mgp {
+			property.DefaultValueAsValue()
+			mgp[property.MGKey()] = property
+		}
+	}
+	// Fetch possible variables from metaGraf specification
+	mgp = MergeAndValidateProperties(mgp, propertiesFromEnv(mgp), false)
+	// Fetch variable overrides from file if specified with --cvfile
+	mgp = MergeAndValidateProperties(mgp, propertiesFromFile(params.PropertiesFile), true)
+	// Fetch from commandline with --cvars
+	mgp = MergeAndValidateProperties(mgp, propertiesFromCmdUsingCvarsFlag(mgp), false)
+	return mgp
+}
+
+// MergeAndValidateProperties merges the base property set from metagraf.json with a user defined source (like commandline, file etc.)
+func MergeAndValidateProperties(base metagraf.MGProperties, merge metagraf.MGProperties, novalidate bool) metagraf.MGProperties {
+	for _, mgProp := range merge {
+
+		// Do not allow setting values on a sticky key.
+		// Sticky keys are values fetched from secrets or configmaps.
+		if mgProp.Source == "local" && novalidate {
+			if _, ok := base["sticky|"+mgProp.Key]; ok {
+				log.Fatalf("You tried to set a custom value on a secretfrom og valuefrom property. This is not allowed! Check you properties file on key: %v=%v", mgProp.MGKey(), mgProp.Value)
+			}
+		}
+
+		if novalidate {
+			if _, ok := base[mgProp.MGKey()]; !ok {
+				base[mgProp.MGKey()] = mgProp
+			} else {
+				property := base[mgProp.MGKey()]
+				property.Value = mgProp.Value
+				base[mgProp.MGKey()] = property
+			}
+			continue
+		}
+		// Allow for setting Kubernetes service discovery environment variables
+		// even though they are not part of of the metagraf specification.
+		if strings.Contains(mgProp.Key, "_SERVICE_") && !novalidate {
+			base[mgProp.MGKey()] = mgProp
+		}
+
+		// Only set in base MGProperties if the key is valid.
+		if _, ok := base[mgProp.MGKey()]; !ok {
+			if len(mgProp.Value) == 0 && mgProp.Required {
+				fmt.Printf("Configured property %v must have a value in %v\n", mgProp.MGKey(), params.PropertiesFile)
+			} else {
+				target := base[mgProp.MGKey()]
+				target.Value = mgProp.Value
+				base[target.MGKey()] = target
+			}
+		}
+	}
+	return base
+}
+
+func propertiesFromEnv(mgp metagraf.MGProperties) metagraf.MGProperties {
 	for _, v := range os.Environ() {
 		key, val := keyValueFromEnv(v)
 		if p, ok := mgp["local:"+key]; ok {
@@ -43,7 +102,7 @@ func PropertiesFromEnv(mgp metagraf.MGProperties) metagraf.MGProperties {
 // Modifies a MGProperties map with values from --cvars
 // argument. Only supports local environment variables
 // for now.
-func PropertiesFromCmd(mgp metagraf.MGProperties) metagraf.MGProperties {
+func propertiesFromCmdUsingCvarsFlag(mgp metagraf.MGProperties) metagraf.MGProperties {
 	// Parse and get values from --cvars
 	cvars := CmdCVars(CVars).Parse()
 	for k, v := range cvars {
@@ -69,8 +128,8 @@ func MgPropertyLineSplit(r rune) bool {
 	return r == '|' || r == '='
 }
 
-// ReadPropertiesFromFile Reads a properties file and returns a metagraf.MGProperties structure
-func ReadPropertiesFromFile(propfile string) metagraf.MGProperties {
+// propertiesFromFile Reads a properties file and returns a metagraf.MGProperties structure
+func propertiesFromFile(propfile string) metagraf.MGProperties {
 	if len(propfile) > 0 {
 		file, err := os.Open(propfile)
 		if err != nil {
@@ -83,15 +142,14 @@ func ReadPropertiesFromFile(propfile string) metagraf.MGProperties {
 				log.Warningf("Unable to close file: %v", err)
 			}
 		}()
-		return ParseProps(file)
+		return parseProps(file)
 	} else {
 		return metagraf.MGProperties{}
 	}
 
 }
 
-
-func ParseProps(reader io.Reader) metagraf.MGProperties {
+func parseProps(reader io.Reader) metagraf.MGProperties {
 	mgProps := metagraf.MGProperties{}
 	scanner := bufio.NewScanner(reader)
 	scanner.Split(bufio.ScanLines)
@@ -155,70 +213,10 @@ func splitByMultipleEqualSigns(lineSplitSlice []string) bool {
 	return len(lineSplitSlice) >= 3
 }
 
-//
-func MergeAndValidateProperties(base metagraf.MGProperties, merge metagraf.MGProperties, novalidate bool) metagraf.MGProperties {
-	for _, p := range merge {
-
-		// Do not allow setting values on a sticky key.
-		// Sticky keys are values fetched from secrets or configmaps.
-		if p.Source == "local" && novalidate {
-			if _, ok := base["sticky|"+p.Key]; ok {
-				log.Fatalf("You tried to set a custom value on a secretfrom og valuefrom property. This is not allowed! Check you properties file on key: %v=%v", p.MGKey(), p.Value)
-			}
-		}
-
-		if novalidate {
-			if _, ok := base[p.MGKey()]; !ok {
-				base[p.MGKey()] = p
-			} else {
-				property := base[p.MGKey()]
-				property.Value = p.Value
-				base[p.MGKey()] = property
-			}
-			continue
-		}
-		// Allow for setting Kubernetes service discovery environment variables
-		// even though they are not part of of the metagraf specification.
-		if strings.Contains(p.Key, "_SERVICE_") && !novalidate {
-			base[p.MGKey()] = p
-		}
-
-		// Only set in base MGProperties if the key is valid.
-		if _, ok := base[p.MGKey()]; !ok {
-			if len(p.Value) == 0 && p.Required {
-				fmt.Printf("Configured property %v must have a value in %v\n", p.MGKey(), params.PropertiesFile)
-			} else {
-				target := base[p.MGKey()]
-				target.Value = p.Value
-				base[target.MGKey()] = target
-			}
-		}
-	}
-	return base
-}
-
 // Splits a shell environment variable into key and value parts
 // and returns them seperatly.
 func keyValueFromEnv(s string) (string, string) {
 	return strings.Split(s, "=")[0], strings.Split(s, "=")[1]
-}
-
-// Process cmd parameters based on metagraf defined properties.
-func GetCmdProperties(mgp metagraf.MGProperties) metagraf.MGProperties {
-	if Defaults {
-		for _, property := range mgp {
-			property.DefaultValueAsValue()
-			mgp[property.MGKey()] = property
-		}
-	}
-	fileprops := ReadPropertiesFromFile(params.PropertiesFile)
-	// Fetch possible variables from metaGraf specification
-	mgp = MergeAndValidateProperties(mgp, PropertiesFromEnv(mgp), false)
-	// Fetch variable overrides from file if specified with --cvfile
-	mgp = MergeAndValidateProperties(mgp, fileprops, true)
-	// Fetch from commandline with --cvars
-	mgp = MergeAndValidateProperties(mgp, PropertiesFromCmd(mgp), false)
-	return mgp
 }
 
 func FlagPassingHack() {

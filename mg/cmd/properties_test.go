@@ -13,7 +13,7 @@ import (
 func TestSimpleLocalSourceProperty(t *testing.T) {
 	propertyFileContent := fileContent("local|Nisse=Nasse")
 
-	actualResult := ParseProps(&propertyFileContent)
+	actualResult := parseProps(&propertyFileContent)
 	actualProperty := actualResult["local|Nisse"]
 
 	expectedProperty := metagraf.MGProperty{
@@ -30,7 +30,7 @@ func TestPropertyWithMultipleEqualsSigns(t *testing.T) {
 	propertyFileContent := fileContent(
 		"local|JAVA_OPTIONS=-Dconfig.file=/config/application.properties")
 
-	actualResult := ParseProps(&propertyFileContent)
+	actualResult := parseProps(&propertyFileContent)
 	actualProperty := actualResult["local|JAVA_OPTIONS"]
 
 	expectedProperty := metagraf.MGProperty{
@@ -51,7 +51,7 @@ func TestMissingSourceHintFunctionShouldExit(t *testing.T) {
 	// Solution is proposed by golang authors, though :-D
 	// A better solution is to refactor the function under test to return error as opposed to do a hard exit of the program
 	if os.Getenv("BE_CRASHER") == "1" {
-		ParseProps(&propertyFileContent)
+		parseProps(&propertyFileContent)
 		return
 	}
 	cmd := exec.Command(os.Args[0], "-test.run=TestMissingSourceHintFunctionShouldExit")
@@ -69,7 +69,7 @@ func TestMultipleProperties(t *testing.T) {
 		"local|JAVA_OPTIONS=-Dconfig.file=/config/application.properties\n" +
 				"build|MAVEN_OPS=-xms123m,-aaa4311G\n")
 
-	actualResult := ParseProps(&propertyFileContent)
+	actualResult := parseProps(&propertyFileContent)
 	actualProperty1 := actualResult["local|JAVA_OPTIONS"]
 	actualProperty2 := actualResult["build|MAVEN_OPS"]
 
@@ -103,7 +103,7 @@ func TestPropertiesFile(t *testing.T) {
 	_, err = tempFile.WriteString(fileContent)
 	check(err)
 
-	actualResult := ReadPropertiesFromFile(tempFile.Name())
+	actualResult := propertiesFromFile(tempFile.Name())
 
 	actualProperty1 := actualResult["local|JAVA_OPTIONS"]
 	actualProperty2 := actualResult["build|MAVEN_OPS"]

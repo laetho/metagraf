@@ -34,6 +34,7 @@ func init() {
 	createBuildConfigCmd.Flags().StringVarP(&Namespace, "namespace", "n", "", "namespace to work on, if not supplied it will use current working namespace")
 	createBuildConfigCmd.Flags().StringVar(&params.SourceRef, "ref", "", "specify source ref or branch name.")
 	createBuildConfigCmd.Flags().StringSliceVar(&CVars, "cvars", []string{}, "Slice of key=value pairs, seperated by ,")
+	createBuildConfigCmd.Flags().StringSliceVar(&params.BuildParams, "buildparams", []string{}, "Slice of key=value pairs, seperated by ,")
 }
 
 var createBuildConfigCmd = &cobra.Command{

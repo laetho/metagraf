@@ -39,6 +39,8 @@ var (
 
 	// PropertiesFile, assigned with --cvfile.
 	PropertiesFile string
+	// BuildParams Slice of strings to hold overridden values when using dev-build command.
+	BuildParams    []string
 
 	// Potentially used by BuildConfig creation to override output imagestream
 	OutputImagestream string
