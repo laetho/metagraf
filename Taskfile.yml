@@ -36,8 +36,13 @@ tasks:
     desc: run tests
     cmds:
       - go vet ./...
-      - go test ./...
+      - go test ./... -covermode=atomic -coverpkg=./... -coverprofile=coverage.txt
   
+  cover:
+    desc: open the cover tool
+    cmds:
+      - go tool cover -html=coverage.txt
+
   default:
     cmds:
       - task: setup
