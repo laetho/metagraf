@@ -12,3 +12,4 @@ mg/test.sh
 
 dist/
 dist/
+.task/

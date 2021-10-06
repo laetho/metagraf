@@ -1,0 +1,45 @@
+# https://taskfile.dev
+version: '3'
+
+
+tasks:
+  build:
+    desc: build binary
+    env:
+      CGO_ENABLED: 0
+    vars:
+      GITHASH:
+        sh: git rev-parse --short HEAD
+      GITTAG:
+        sh: git tag -l --points-at HEAD
+      GITBRANCH:
+        sh: git rev-parse --abbrev-ref HEAD
+    dir: mg
+    sources:
+    - "**/*.go"
+    generates:
+      - mg
+    cmds: 
+    - |
+      go build -ldflags "-extldflags '-static'
+      -X 'github.com/laetho/metagraf/pkg/mgver.GitHash={{.GITHASH}}' 
+      -X 'github.com/laetho/metagraf/pkg/mgver.GitTag={{.GITTAG}}' 
+      -X 'github.com/laetho/metagraf/pkg/mgver.GitBranch={{.GITBRANCH}}'"
+
+
+  setup:
+    desc: install dependencies
+    cmds:
+      - go mod tidy
+  
+  test:
+    desc: run tests
+    cmds:
+      - go vet ./...
+      - go test ./...
+  
+  default:
+    cmds:
+      - task: setup
+      - task: test
+      - task: build
