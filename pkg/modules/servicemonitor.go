@@ -105,7 +105,7 @@ func FindServiceMonitorPort(mg *metagraf.MetaGraf) int32 {
 	}
 	// Annotation, if not provided return annotation value.
 	if _, ok := mg.Metadata.Annotations["servicemonitor.monitoring.coreos.com/port"]; ok {
-		port, err := strconv.Atoi(mg.Metadata.Annotations["servicemonitor.monitoring.coreos.com/port"])
+		port, err := strconv.ParseInt(mg.Metadata.Annotations["servicemonitor.monitoring.coreos.com/port"], 10, 32) // convert to 32bit 10-base integer
 		if err != nil {
 			panic(err)
 		}
