@@ -37,6 +37,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
       -
+        name: set variables
+        run: |
+          echo "GITHASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+          echo "GITTAG=$(git tag -l --points-at HEAD)" >> $GITHUB_ENV
+          echo "GITBRANCH=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_ENV
+      -
         name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v2
         with:
