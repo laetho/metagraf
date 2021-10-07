@@ -8,59 +8,25 @@ before:
     - go mod tidy
     - go vet -v ./...
     - go test ./...
+
 builds:
   -
-    id: "mg-linux"
-    dir: mg
     binary: mg
+    dir: mg
+    goos:
+    - windows
+    - darwin
+    - linux
+    goarch:
+    - "amd64"
     env:
     - CGO_ENABLED=0
-    - GITHASH=$(git rev-parse --short HEAD)
-    - GITTAG=$(git tag -l --points-at HEAD)
-    - GITBRANCH=$(git rev-parse --abbrev-ref HEAD) 
-    goos:
-      - linux
-    goarch:
-      - amd64
     ldflags:
-      - -extldflags '-static'
-      - -X 'github.com/laetho/metagraf/pkg/mgver.GitHash={{.Env.GITHASH}}'
-      - -X 'github.com/laetho/metagraf/pkg/mgver.GitTag={{.Env.GITTAG}}'
-      - -X 'github.com/laetho/metagraf/pkg/mgver.GitBranch={{.Env.GITBRANCH}}'
-  -
-    id: "mg-darwin"
-    dir: mg
-    binary: mg
-    env:
-      - CGO_ENABLED=0
-      - GITHASH=$(git rev-parse --short HEAD)
-      - GITTAG=$(git tag -l --points-at HEAD)
-      - GITBRANCH=$(git rev-parse --abbrev-ref HEAD)
-    goos:
-      - darwin
-    goarch:
-      - amd64
-    ldflags:
-      - -X 'github.com/laetho/metagraf/pkg/mgver.GitHash={{.Env.GITHASH}}'
-      - -X 'github.com/laetho/metagraf/pkg/mgver.GitTag={{.Env.GITTAG}}'
-      - -X 'github.com/laetho/metagraf/pkg/mgver.GitBranch={{.Env.GITBRANCH}}'
-  -
-    id: "mg-win"
-    dir: mg
-    binary: mg
-    env:
-      - CGO_ENABLED=0
-      - GITHASH=$(git rev-parse --short HEAD)
-      - GITTAG=$(git tag -l --points-at HEAD)
-      - GITBRANCH=$(git rev-parse --abbrev-ref HEAD)
-    goos:
-      - windows
-    goarch:
-      - amd64
-    ldflags:
-      - -X 'github.com/laetho/metagraf/pkg/mgver.GitHash={{.Env.GITHASH}}'
-      - -X 'github.com/laetho/metagraf/pkg/mgver.GitTag={{.Env.GITTAG}}'
-      - -X 'github.com/laetho/metagraf/pkg/mgver.GitBranch={{.Env.GITBRANCH}}'
+    - -extldflags '-static'
+    - -X "github.com/laetho/metagraf/pkg/mgver.GitHash={{ .Env.GITHASH }}"
+    - -X "github.com/laetho/metagraf/pkg/mgver.GitTag={{ .Env.GITTAG }}"
+    - -X "github.com/laetho/metagraf/pkg/mgver.GitBranch={{ .Env.GITBRANCH }}"
+
 dockers:
   -
     goos: linux
@@ -73,27 +39,36 @@ dockers:
     skip_push: false
     build_flag_templates:
       - "--platform=linux/amd64"
+
 archives:
   - format: tar.gz
     id: mg
     name_template: "mg-{{.Version}}-{{.Os}}-{{.Arch}}"
-    builds:
-      - "mg-linux"
-      - "mg-darwin"
-      - "mg-win"
     wrap_in_directory: true
     format_overrides:
       - goos: windows
         format: zip
     files:
       - LICENSE
+
 checksum:
   name_template: 'checksums.txt'
+
 snapshot:
   name_template: "latest"
+
 changelog:
   sort: asc
   filters:
     exclude:
       - '^docs:'
       - '^test:'
+
+brews:
+- name: metagraf
+  tap:
+    owner: "{{ tolower .Env.GITHUB_REPOSITORY_OWNER}}"
+    name: homebrew-metagraf
+    token: "{{ .Env.GITHUB_TOKEN }}"
+  install: |
+    bin.install "mg"
