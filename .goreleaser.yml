@@ -67,7 +67,7 @@ changelog:
 brews:
 - name: metagraf
   tap:
-    owner: "{{ tolower .Env.GITHUB_REPOSITORY_OWNER}}"
+    owner: "{{ .Env.GITHUB_REPOSITORY_OWNER}}"
     name: homebrew-metagraf
     token: "{{ .Env.GITHUB_TOKEN }}"
   install: |
