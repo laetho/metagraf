@@ -17,11 +17,12 @@ limitations under the License.
 package helpers
 
 import (
+	"strconv"
+	"strings"
+
 	"github.com/openshift/api/image/docker10"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
-	"strconv"
-	"strings"
 )
 
 // Returns a slice of k8s.io v1 ServicePort{} types from a Docker image config.
@@ -29,7 +30,7 @@ func ImageExposedPortsToServicePorts(config *docker10.DockerConfig) []corev1.Ser
 	var ports []corev1.ServicePort
 	for k := range config.ExposedPorts {
 		ss := strings.Split(k, "/")
-		port, _ := strconv.Atoi(ss[0])
+		port, _ := strconv.ParseInt(ss[0], 10, 32) // convert to 32bit 10-base integer
 		ContainerPort := corev1.ServicePort{
 			Name:     strings.ToLower(ss[0]) + "-" + ss[1],
 			Port:     int32(port),

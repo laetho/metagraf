@@ -51,7 +51,6 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 	l := Labels(objname, labelsFromParams(params.Labels))
 	l["deploymentconfig"] = objname
 
-
 	// Selector
 	s := make(map[string]string)
 	s["app"] = objname
@@ -128,7 +127,7 @@ func GenDeploymentConfig(mg *metagraf.MetaGraf) {
 	if HasImageInfo {
 		for k := range ImageInfo.Config.ExposedPorts {
 			ss := strings.Split(k, "/")
-			port, _ := strconv.Atoi(ss[0])
+			port, _ := strconv.ParseInt(ss[0], 10, 32) // convert to 32bit 10-base integer
 			ContainerPort := corev1.ContainerPort{
 				ContainerPort: int32(port),
 				Protocol:      corev1.Protocol(strings.ToUpper(ss[1])),

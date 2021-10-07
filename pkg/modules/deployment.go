@@ -116,7 +116,7 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 	if HasImageInfo {
 		for k := range ImageInfo.Config.ExposedPorts {
 			ss := strings.Split(k, "/")
-			port, _ := strconv.Atoi(ss[0])
+			port, _ := strconv.ParseInt(ss[0], 10, 32) // convert to 32bit 10-base integer
 			ContainerPort := corev1.ContainerPort{
 				ContainerPort: int32(port),
 				Protocol:      corev1.Protocol(strings.ToUpper(ss[1])),
@@ -155,8 +155,8 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 			APIVersion: "apps/v1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:   objname,
-			Labels: l,
+			Name:      objname,
+			Labels:    l,
 			Namespace: namespace,
 		},
 		Spec: appsv1.DeploymentSpec{
@@ -169,8 +169,8 @@ func GenDeployment(mg *metagraf.MetaGraf, namespace string) {
 			},
 			Template: corev1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
-					Name:   objname,
-					Labels: l,
+					Name:      objname,
+					Labels:    l,
 					Namespace: namespace,
 				},
 				Spec: corev1.PodSpec{

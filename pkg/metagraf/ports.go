@@ -65,7 +65,6 @@ func (mg MetaGraf) ServicePorts() []corev1.ServicePort {
 	return serviceports
 }
 
-
 func (mg MetaGraf) ImagePorts() []corev1.ServicePort {
 
 	var imgurl imageurl.ImageURL
@@ -114,7 +113,7 @@ func (mg MetaGraf) ServicePortsByAnnotation() []corev1.ServicePort {
 			protocol := strings.Split(k, ".")[0]
 			switch protocol {
 			case "http":
-				intport, err := strconv.Atoi(v)
+				intport, err := strconv.ParseInt(v, 10, 32) // convert to 32bit 10-base integer
 				if err != nil {
 					log.Warningf("Unable to convert port to numeric value for annotation: %v", k)
 					continue
@@ -130,7 +129,7 @@ func (mg MetaGraf) ServicePortsByAnnotation() []corev1.ServicePort {
 					},
 				})
 			case "https":
-				intport, err := strconv.Atoi(v)
+				intport, err := strconv.ParseInt(v, 10, 32) // convert to 32bit 10-base integer
 				if err != nil {
 					log.Warningf("Unable to convert port to numeric value for annotation: %v", k)
 					continue
