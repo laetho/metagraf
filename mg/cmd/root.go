@@ -19,6 +19,7 @@ package cmd
 import (
 	"flag"
 	"fmt"
+	"os"
 
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
@@ -35,15 +36,15 @@ var (
 	Namespace    string
 	OName        string // Flag for overriding application name.
 	ConfigPath   string // Viper config override
-	ConfigFile string = "config"
+	ConfigFile   string = "config"
 	ConfigFormat string = "yaml"
 	Verbose      bool   = false
 	// Output flag, makes mg output generated kubernetes resources in json or yaml.
 	Output        bool = false
 	Version       string
 	Dryrun        bool = false // If true do not create
-	Watch		  bool = false
-	Keep		  bool = true
+	Watch         bool = false
+	Keep          bool = true
 	Branch        string
 	BaseEnvs      bool = false
 	Defaults      bool = false // Should we hydrate default values in declarative state.
@@ -98,7 +99,12 @@ func initConfig() {
 	if len(ConfigPath) > 0 {
 		viper.SetConfigFile(ConfigPath)
 	} else {
-		ConfigPath = home+"/.config/mg/"
+		ConfigPath = home + "/.config/mg/"
+		_, err = os.Stat(ConfigPath)
+		if os.IsNotExist(err) {
+			// Folder does not exists, create it
+			os.MkdirAll(ConfigPath, 0750)
+		}
 		//fmt.Println(os.Stderr, "Using default config file: ~/.config/mg/config.yaml")
 		viper.AddConfigPath(ConfigPath)
 		viper.SetConfigName("config")
