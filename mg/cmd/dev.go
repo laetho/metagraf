@@ -75,6 +75,7 @@ func init() {
 	devCmdBuild.Flags().StringVar(&params.SourceRef, "ref", "", "Specify the git ref or branch ref to build.")
 	devCmdBuild.Flags().StringVarP(&params.NameSpace, "namespace", "n", "", "namespace to work on, if not supplied it will use current active namespace.")
 	devCmdBuild.Flags().BoolVar(&params.LocalBuild, "local", false, "Builds application from src in current (.) direcotry.")
+	devCmdBuild.Flags().StringVar(&params.FileBuild, "file", "", "Specify a file to be copied to the container image being built. I.e. .war. This flag can be used instead of 'local'")
 	devCmdBuild.Flags().StringSliceVar(&params.BuildParams, "buildparams", []string{}, "Slice of key=value pairs, seperated by , to override or append build params used by underlying build mechanism")
 
 	devCmd.AddCommand(devCmdWatch)
@@ -228,6 +229,8 @@ func buildGenerate(mg *metagraf.MetaGraf, ns string, local bool) {
 }
 
 func s2ibuild(bc string, ns string, local bool) error {
+	fmt.Println("Starting s2i")
+
 	path, err := exec.LookPath("oc")
 	if err != nil {
 		return err
@@ -235,10 +238,16 @@ func s2ibuild(bc string, ns string, local bool) error {
 
 	arg := []string{"start-build", bc, "-n", ns, "--follow"}
 
-	if local {
+	if len(params.FileBuild) > 0 {
+		fmt.Println("Building with file: " + params.FileBuild)
+		arg = append(arg, "--from-file=" + params.FileBuild)
+	}else if local {
 		arg = append(arg, "--from-dir=.")
 		arg = append(arg, "--exclude=''")
 	}
+
+	fmt.Println("Executing oc command: ")
+	fmt.Println(arg)
 
 	c := exec.Command(path, arg...)
 	stdout, pipeerr := c.StdoutPipe()
