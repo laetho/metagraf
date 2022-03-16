@@ -11,7 +11,6 @@ require (
 	github.com/crossplane/oam-kubernetes-runtime v0.0.9
 	github.com/fsnotify/fsnotify v1.4.9
 	github.com/ghodss/yaml v1.0.0
-	github.com/go-fsnotify/fsnotify v0.0.0-20180321022601-755488143dae // indirect
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
 	github.com/google/go-containerregistry v0.4.0
 	github.com/google/gofuzz v1.2.0 // indirect
@@ -37,7 +36,7 @@ require (
 	k8s.io/apimachinery v0.19.10
 	k8s.io/client-go v12.0.0+incompatible
 	k8s.io/klog v1.0.0
-	k8s.io/klog/v2 v2.3.0
+	k8s.io/klog/v2 v2.50.1
 	k8s.io/kubectl v0.19.10 // indirect
 	sigs.k8s.io/application v0.8.1
 	sigs.k8s.io/controller-runtime v0.6.2 // indirect
