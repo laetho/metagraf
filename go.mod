@@ -11,7 +11,6 @@ require (
 	github.com/crossplane/oam-kubernetes-runtime v0.0.9
 	github.com/fsnotify/fsnotify v1.4.9
 	github.com/ghodss/yaml v1.0.0
-	github.com/go-fsnotify/fsnotify v0.0.0-20180321022601-755488143dae // indirect
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
 	github.com/google/go-containerregistry v0.4.0
 	github.com/google/gofuzz v1.2.0 // indirect
@@ -23,7 +22,7 @@ require (
 	github.com/pelletier/go-toml v1.6.0 // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/cast v1.3.1 // indirect
-	github.com/spf13/cobra v1.0.0
+	github.com/spf13/cobra v1.5.0
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.6.1
 	github.com/tidwall/gjson v1.8.1
